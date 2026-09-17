@@ -1,0 +1,85 @@
+# Quizzy 答题程序 v1
+
+个人自学刷题工具，v1 只支持**选择题**（单选 / 多选 / 判断）。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对 3 次自动移出。
+
+完整设计见 [DESIGN.md](./DESIGN.md)。
+
+## 技术栈
+
+| 层 | 选型 |
+|----|------|
+| 后端 | Spring Boot 3.5 · Java 21 · MyBatis-Plus 3.5 · MySQL 8.4 · Flyway · jjwt · EasyExcel · MapStruct · springdoc-openapi |
+| 前端 | Vue 3 · Vite 6 · TypeScript · Pinia · Element Plus · markdown-it + highlight.js |
+| 运行 | Docker Compose（dev 只起数据库，prod 全容器） |
+
+## 快速开始（开发模式）
+
+```bash
+# 1. 启动 MySQL 8.4（宿主机 3306，账号 root / 123456，自动建库 quizzy）
+docker compose -f docker-compose.dev.yml up -d
+
+# 2. 启动后端（8080），Flyway 会自动建表并灌入种子题库
+cd quizzy-server && mvn spring-boot:run
+
+# 3. 启动前端（5173，/api 代理到 8080）
+cd quizzy-web && npm install && npm run dev
+```
+
+打开 http://localhost:5173 注册一个账号即可开始。接口文档： http://localhost:8080/swagger-ui.html
+
+> 若本机已有 MySQL 占用 3306，先停掉它，或修改 `docker-compose.dev.yml` 的端口映射与 `application.yml` 的连接串。
+
+## 全容器运行（生产 / 演示）
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+前端由 nginx 托管在 http://localhost（80），`/api` 反代到后端容器，MySQL 数据落在 `quizzy-mysql-data` 卷里。
+
+## 功能
+
+- **题库**：题目增删改查，按关键词 / 题型 / 难度 / 分类 / 范围（全部 / 我的 / 公开）筛选
+- **导入导出**：Excel（主）与 JSON（辅）双向导入导出，导入时**跳过错误行**并给出逐行错误报告
+- **试卷**：固定卷（手动选题）与规则卷（按分类 / 题型 / 难度 / 题量抽题，支持排除近期已做）
+- **答题**：逐题作答，提交后即时判分并展示正确答案与解析；可回退改答案，进度落库可断点续答
+- **错题本**：答错自动入本，连续答对 3 次自动移出，支持手动移出与一键错题重练
+- **记录**：历史会话列表，未完成的可以继续作答
+
+## 判分规则
+
+| 题型 | 规则 |
+|------|------|
+| 单选 / 判断 | 选中项与正确答案一致才得分 |
+| 多选 | 必须与正确答案集合**完全一致**（顺序无关）才得分，少选、多选、错选均不得分 |
+
+每题分值在建题时指定（默认 1 分），不做部分分、不做倒扣分。跳过未答的题不计入正确率分母，结算时会提示未作答数量。
+
+## 导入模板
+
+列顺序固定为：
+
+```text
+题型 | 题干 | 选项A | 选项B | 选项C | 选项D | 选项E | 选项F | 答案 | 解析 | 难度 | 分值 | 分类 | 标签
+```
+
+- 题型：`single` / `multi` / `judge`（也认 `单选` / `多选` / `判断题`）
+- 答案：单个字母，多选用逗号分隔（`A,C`）
+- 难度：`easy` / `medium` / `hard`；分类与标签不存在时自动创建
+- 题干、选项、解析支持 Markdown
+
+JSON 结构见 `QuestionImportDTO`，可先从页面导出一份 JSON 作为样例。也可以在题库页点「下载导入模板」拿到标准 Excel 模板。
+
+## 数据模型
+
+11 张表：`user`、`category`、`tag`、`question`、`question_option`、`question_tag`、`question_stat`、
+`paper`、`paper_question`、`quiz_session`、`quiz_answer`。
+题目 `owner_id` 为 `NULL` 表示公开题（所有人可读、只读），否则为创建者私有。
+完整关系见 DESIGN.md 第 3 节。
+
+## 已知取舍
+
+- 历史作答**不做题目快照**：题目被修改后，历史记录里显示的解析会跟着变（题量与规模下可接受，需要时可在 `quiz_answer` 冗余题干字段）
+- 种子题库 34 道（Java / 并发 / JVM / Spring / MySQL / Redis / 网络），更多题目建议用 Excel 批量导入
+- 不引 Redis，答题进度直接落 MySQL
+- 单元测试只覆盖判分策略与导入校验两处最容易出静默错误的逻辑
