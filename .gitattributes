@@ -1,0 +1,4 @@
+# Windows 上 core.autocrlf=true 会把 .sh 签出成 CRLF，
+# bash 遇到 "#!/usr/bin/env bash\r" 会报 bad interpreter，脚本直接跑不起来。
+# 只钉住 shell 脚本，不动其他文件，避免全库重新规范化。
+*.sh text eol=lf
