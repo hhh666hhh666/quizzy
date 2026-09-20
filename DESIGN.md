@@ -358,22 +358,23 @@ quizzy/
 
 ### 8.2 JSON Schema
 
+导入接口 `POST /api/questions/import/json` 收的是题目对象的**裸数组**，不带 `{"questions": [...]}` 外壳
+（本文件早期版本写成了包装对象，与实现不一致，已按实现更正；决策理由见 `docs/adr/0006-bare-array-import-contract.md`）。
+
 ```json
-{
-  "questions": [
-    {
-      "type": "MULTI",
-      "stem": "关于 volatile ...",
-      "options": [{ "label": "A", "content": "..." }, { "label": "B", "content": "..." }],
-      "answer": ["A", "C"],
-      "analysis": "...",
-      "difficulty": "MEDIUM",
-      "score": 2,
-      "category": "Java 并发",
-      "tags": ["volatile", "易错"]
-    }
-  ]
-}
+[
+  {
+    "type": "MULTI",
+    "stem": "关于 volatile ...",
+    "options": [{ "label": "A", "content": "..." }, { "label": "B", "content": "..." }],
+    "answer": ["A", "C"],
+    "analysis": "...",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "Java 并发",
+    "tags": ["volatile", "易错"]
+  }
+]
 ```
 
 ### 8.3 校验与失败处理
