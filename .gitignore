@@ -2,6 +2,11 @@ target/
 node_modules/
 dist/
 *.log
+
+# 本机运行配置（含密码与 JWT 密钥），绝不入库
+.env
+# 数据库导出备份
+.backup/
 .workbuddy/
 .idea/
 *.iml

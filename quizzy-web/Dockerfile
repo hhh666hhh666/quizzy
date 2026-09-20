@@ -1,7 +1,12 @@
-FROM node:22-alpine AS build
+# 用 slim（Debian/glibc）而非 alpine：esbuild 没有 x64-musl 的官方二进制，
+# alpine 下 vite build 会报 "You installed esbuild for another platform"。
+FROM node:22-slim AS build
 WORKDIR /app
-COPY package.json ./
-RUN npm install --no-audit --no-fund
+
+# 依赖层：npm ci 严格按 package-lock.json 安装，并走 npmmirror
+COPY package.json package-lock.json ./
+RUN npm ci --registry=https://registry.npmmirror.com --no-audit --no-fund
+
 COPY . .
 RUN npm run build
 

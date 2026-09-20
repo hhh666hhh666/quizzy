@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 仅供 Docker 构建阶段使用的 Maven 配置：把中央仓库换成阿里云镜像，避免容器内直连 repo1 超时。
+     宿主机构建不受影响（本机 ~/.m2 或 E:/develop/apache-maven-3.9.9 的 settings.xml 优先）。 -->
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>aliyun-public</id>
+      <name>Aliyun Public Repository</name>
+      <url>https://maven.aliyun.com/repository/public</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>

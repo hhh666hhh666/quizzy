@@ -10,9 +10,11 @@ spring:
     name: quizzy-server
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/quizzy?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-    username: root
-    password: '123456'
+    # 默认值供本机开发用（mvn spring-boot:run 直连 3306）；
+    # 容器里由 compose 注入 SPRING_DATASOURCE_* 覆盖，指向 mysql 服务。
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://127.0.0.1:3306/quizzy?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 20
@@ -57,5 +59,7 @@ logging:
 
 quizzy:
   jwt:
-    secret: quizzy-default-jwt-secret-please-replace-in-production-0123456789abcdef
-    expire-days: 7
+    # 容器里由 compose 注入 QUIZZY_JWT_SECRET 覆盖；默认串仅供本机开发，
+    # 任何非本机环境都必须在 .env 里换成随机值。
+    secret: ${QUIZZY_JWT_SECRET:quizzy-default-jwt-secret-please-replace-in-production-0123456789abcdef}
+    expire-days: ${QUIZZY_JWT_EXPIRE_DAYS:7}

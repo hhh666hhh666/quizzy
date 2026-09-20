@@ -12,10 +12,33 @@
 | 前端 | Vue 3 · Vite 6 · TypeScript · Pinia · Element Plus · markdown-it + highlight.js |
 | 运行 | Docker Compose（dev 只起数据库，prod 全容器） |
 
+## 运行配置（.env）
+
+两个 compose 文件都从项目根目录的 `.env` 读取变量，先准备一份：
+
+```bash
+cp .env.example .env
+# 至少把 QUIZZY_JWT_SECRET 换成随机值：
+# python -c "import secrets;print(secrets.token_hex(32))"
+```
+
+`.env` 已加进 `.gitignore`，不会入库。可调的变量：
+
+| 变量 | 说明 |
+|------|------|
+| `MYSQL_ROOT_PASSWORD` | MySQL root 密码，默认 `123456` |
+| `MYSQL_DATABASE` | 库名，默认 `quizzy` |
+| `MYSQL_PORT` | 宿主机映射端口，默认 `3306` |
+| `MYSQL_DATA_DIR` | **数据落盘路径**，默认 `E:/develop/docker/mysql8/var/lib/mysql` |
+| `QUIZZY_JWT_SECRET` | JWT 签名密钥，务必替换 |
+| `QUIZZY_JWT_EXPIRE_DAYS` | 登录有效期，默认 7 天 |
+
+dev 与 prod **共用同一个 `MYSQL_DATA_DIR`**，切换运行方式数据不会丢。
+
 ## 快速开始（开发模式）
 
 ```bash
-# 1. 启动 MySQL 8.4（宿主机 3306，账号 root / 123456，自动建库 quizzy）
+# 1. 启动 MySQL 8.4（宿主机 3306，自动建库 quizzy）
 docker compose -f docker-compose.dev.yml up -d
 
 # 2. 启动后端（8080），Flyway 会自动建表并灌入种子题库
@@ -27,15 +50,41 @@ cd quizzy-web && npm install && npm run dev
 
 打开 http://localhost:5173 注册一个账号即可开始。接口文档： http://localhost:8080/swagger-ui.html
 
-> 若本机已有 MySQL 占用 3306，先停掉它，或修改 `docker-compose.dev.yml` 的端口映射与 `application.yml` 的连接串。
+> 若本机已有 MySQL 占用 3306，先停掉它，或改 `.env` 里的 `MYSQL_PORT`。
 
 ## 全容器运行（生产 / 演示）
 
 ```bash
+# dev 只起了 mysql，容器名与 prod 冲突，先停掉（数据留在 E 盘，不会被删）
+docker compose -f docker-compose.dev.yml down
+
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-前端由 nginx 托管在 http://localhost（80），`/api` 反代到后端容器，MySQL 数据落在 `quizzy-mysql-data` 卷里。
+前端由 nginx 托管在 http://localhost（80），`/api` 反代到后端容器；MySQL 数据落在 `MYSQL_DATA_DIR` 指向的目录。
+
+首次构建要分别拉取 Maven 与 npm 的全量依赖（已配阿里云 / npmmirror 镜像），大概几分钟；之后只改代码的话是增量编译。
+
+> 后端 8080 也直接映射到了宿主机，方便开 swagger。纯内网自用没问题，不需要的话把 `docker-compose.prod.yml` 里 server 的 `ports` 段删掉即可。
+
+### 排障：`--build` 时报拉不到基础镜像
+
+如果看到 `failed to fetch oauth token ... auth.docker.io ... Bad Gateway`，说明本机连不上 Docker Hub。Maven 与 npm 依赖已经走国内源，但**基础镜像本身仍来自 Docker Hub**，需要单独处理。两种解法：
+
+```bash
+# 1. 一次性：通过镜像站拉取后打回官方标签（不改全局配置，不用重启 Docker）
+for img in maven:3.9.9-eclipse-temurin-21 eclipse-temurin:21-jre node:22-slim nginx:alpine; do
+  docker pull docker.m.daocloud.io/library/$img
+  docker tag  docker.m.daocloud.io/library/$img $img
+done
+
+# 2. 一劳永逸：Docker Desktop → Settings → Docker Engine，加入后 Apply & Restart
+#    "registry-mirrors": ["https://docker.m.daocloud.io"]
+```
+
+### 排障：dev 与 prod 的容器名冲突
+
+两个 compose 里的 mysql 容器名都是 `quizzy-mysql`，不能同时运行。切换时先 `docker compose -f docker-compose.dev.yml down`——只删容器，数据在 `MYSQL_DATA_DIR` 里，不会丢。
 
 ## 功能
 
