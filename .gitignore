@@ -7,6 +7,8 @@ dist/
 .env
 # 数据库导出备份
 .backup/
+# 出题中间产物（切片清单/模型产出分片/校验明细），随时可重跑重来
+.qbgen/
 .workbuddy/
 .idea/
 *.iml
