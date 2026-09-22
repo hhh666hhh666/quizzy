@@ -56,8 +56,9 @@
         <el-table-column label="归属" width="100">
           <template #default="{ row }">{{ row.ownerId ? '我的' : '公开' }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="160">
+        <el-table-column label="操作" width="220">
           <template #default="{ row }">
+            <el-button link type="primary" @click="onView(row)">查看</el-button>
             <el-button link type="primary" :disabled="!row.editable" @click="onEdit(row)">编辑</el-button>
             <el-button link type="danger" :disabled="!row.editable" @click="onDelete(row)">删除</el-button>
           </template>
@@ -74,6 +75,11 @@
       />
     </el-card>
 
+    <QuestionDetailDialog
+      v-model:visible="detailVisible"
+      :question-id="viewingId"
+      @edit="onEditFromDetail"
+    />
     <QuestionEditDialog v-model:visible="editVisible" :question-id="editingId" @saved="load" />
     <ImportDialog v-model:visible="importVisible" @done="load" />
   </div>
@@ -85,6 +91,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteQuestion, pageQuestions } from '@/api/question'
 import { exportPath, templatePath } from '@/api/paper'
 import request from '@/api/request'
+import QuestionDetailDialog from './QuestionDetailDialog.vue'
 import QuestionEditDialog from './QuestionEditDialog.vue'
 import ImportDialog from './ImportDialog.vue'
 import type { QuestionListItemVO, QuestionQuery } from '@/types'
@@ -94,8 +101,10 @@ const total = ref(0)
 const page = ref(1)
 const size = ref(10)
 const loading = ref(false)
+const detailVisible = ref(false)
 const editVisible = ref(false)
 const importVisible = ref(false)
+const viewingId = ref<number | null>(null)
 const editingId = ref<number | null>(null)
 
 const query = reactive<QuestionQuery>({ keyword: '', type: undefined, difficulty: undefined, scope: 'all' })
@@ -125,8 +134,18 @@ function onCreate() {
   editVisible.value = true
 }
 
+function onView(row: QuestionListItemVO) {
+  viewingId.value = row.id
+  detailVisible.value = true
+}
+
 function onEdit(row: QuestionListItemVO) {
   editingId.value = row.id
+  editVisible.value = true
+}
+
+function onEditFromDetail(id: number) {
+  editingId.value = id
   editVisible.value = true
 }
 
