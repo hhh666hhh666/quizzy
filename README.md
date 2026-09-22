@@ -36,7 +36,7 @@ cp .env.example .env
 | `MYSQL_DATABASE` | 库名，默认 `quizzy` |
 | `MYSQL_PORT` | 宿主机映射端口，默认 `3306` |
 | `MYSQL_DATA_DIR` | **数据落盘路径**，默认 `E:/develop/docker/mysql8/var/lib/mysql` |
-| `QUIZZY_JWT_SECRET` | JWT 签名密钥，务必替换 |
+| `QUIZZY_JWT_SECRET` | JWT 签名密钥，务必替换；**prod 模式下缺失会直接启动失败** |
 | `QUIZZY_JWT_EXPIRE_DAYS` | 登录有效期，默认 7 天 |
 
 dev 与 prod **共用同一个 `MYSQL_DATA_DIR`**，切换运行方式数据不会丢。

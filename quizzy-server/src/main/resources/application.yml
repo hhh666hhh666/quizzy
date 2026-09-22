@@ -59,7 +59,9 @@ logging:
 
 quizzy:
   jwt:
-    # 容器里由 compose 注入 QUIZZY_JWT_SECRET 覆盖；默认串仅供本机开发，
-    # 任何非本机环境都必须在 .env 里换成随机值。
+    # 容器里由 compose 注入 QUIZZY_JWT_SECRET 覆盖。
+    # 下面这串是兜底默认值，已随公开仓库泄露；JwtUtil 检测到它会拒绝使用，
+    # 改为启动时随机生成（重启需重新登录），所以本机裸跑也只是不便，不会有安全问题。
+    # 正式环境必须在 .env 里设置 QUIZZY_JWT_SECRET，prod 的 compose 会在缺失时直接报错退出。
     secret: ${QUIZZY_JWT_SECRET:quizzy-default-jwt-secret-please-replace-in-production-0123456789abcdef}
     expire-days: ${QUIZZY_JWT_EXPIRE_DAYS:7}
