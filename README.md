@@ -1,5 +1,7 @@
 # Quizzy 答题程序 v1
 
+[![CI](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml/badge.svg)](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml)
+
 个人自学刷题工具，v1 只支持**选择题**（单选 / 多选 / 判断）。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对 3 次自动移出。
 
 完整设计见 [DESIGN.md](./DESIGN.md)。
@@ -7,7 +9,7 @@
 | 想看什么 | 去哪 |
 |----------|------|
 | 这个词在代码里到底指什么 | [CONTEXT.md](./CONTEXT.md)（术语表，纯词汇） |
-| 为什么当初这么定 | [docs/adr/](./docs/adr/)（8 条：练习语义、进度落库、公开题、判分规则、导入容错、JSON 契约、容器编排、答案存储） |
+| 为什么当初这么定 | [docs/adr/](./docs/adr/)（13 条：练习语义、进度落库、公开题、判分规则、导入容错、JSON 契约、容器编排、答案存储、构建镜像、依赖源、环境变量、健康检查、CI 只做门禁） |
 | 整体设计与接口清单 | [DESIGN.md](./DESIGN.md) |
 
 ## 技术栈
@@ -67,6 +69,8 @@ docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
+日常改完代码要重建时改用 `bash scripts/deploy.sh`，别再手敲上面这条，见下一节。
+
 前端由 nginx 托管在 http://localhost（80），`/api` 反代到后端容器；MySQL 数据落在 `MYSQL_DATA_DIR` 指向的目录。
 
 首次构建要分别拉取 Maven 与 npm 的全量依赖（已配阿里云 / npmmirror 镜像），大概几分钟；之后只改代码的话是增量编译。
@@ -91,6 +95,34 @@ done
 ### 排障：dev 与 prod 的容器名冲突
 
 两个 compose 里的 mysql 容器名都是 `quizzy-mysql`，不能同时运行。切换时先 `docker compose -f docker-compose.dev.yml down`——只删容器，数据在 `MYSQL_DATA_DIR` 里，不会丢。
+
+## CI 与部署
+
+**CI 只做门禁，不会把任何东西部署到任何机器上。** push 或 PR 到 master 时，GitHub 托管 runner 上跑四条并行检查：
+
+| job | 检查什么 |
+|------|----------|
+| 后端 | `mvn test`（7 个单测，不需要数据库） |
+| 前端 | `npm ci` + `npm run typecheck` + `npm run build` |
+| 镜像 · 后端 | 干净 Linux 上 `docker build ./quizzy-server` |
+| 镜像 · 前端 | 干净 Linux 上 `docker build ./quizzy-web` |
+
+镜像那两条是**冒烟**：只在乎「能不能从零构建出来」，不推送到任何 registry。这是最有价值的一项——Dockerfile 的坑（构建镜像平台、宿主机 `node_modules` 污染容器）只有在这种环境下才会暴露，本机因为缓存命中永远发现不了。
+
+为什么不做自动部署：部署目标只有本机 Docker Desktop，而本仓库是 **public** 的，把 self-hosted runner 装在开发机上等于让任何能开 PR 的人在那台机器上执行代码。详见 ADR 0013。
+
+> **CI 绿了不代表本机已更新。** 上线这一步要自己跑：
+>
+> ```bash
+> bash scripts/deploy.sh          # 前后端都重建
+> bash scripts/deploy.sh server   # 只重建后端
+> bash scripts/deploy.sh web      # 只重建前端
+> ```
+>
+> 脚本会先校验 `.env` 与 `QUIZZY_JWT_SECRET`，然后重建指定服务、等健康检查通过、打印最终状态。
+> **mysql 永不参与重建**，数据在宿主机 `MYSQL_DATA_DIR` 里。改完前端记得硬刷新（nginx 没设 Cache-Control）。
+
+两个 docker job 会从 Docker Hub 拉基础镜像，匿名限额是 100 次 / 6 小时**按共享出口 IP 计**，GitHub runner 共用出口 IP 容易撞顶。可选的优化：在仓库 Settings → Secrets → Actions 里配 `DOCKERHUB_USERNAME` 和 `DOCKERHUB_TOKEN`（Docker Hub → Account Settings → Personal Access Tokens），限额翻倍且改为按账号计。**不配也能跑**，登录步骤会自动跳过，只是有匿名限流风险。
 
 ## 功能
 
@@ -138,3 +170,4 @@ JSON 结构见 `QuestionImportDTO`，可先从页面导出一份 JSON 作为样�
 - 种子题库 34 道（Java / 并发 / JVM / Spring / MySQL / Redis / 网络），更多题目建议用 Excel 批量导入
 - 不引 Redis，答题进度直接落 MySQL
 - 单元测试只覆盖判分策略与导入校验两处最容易出静默错误的逻辑
+- 前端**没有单测也没有 lint**（`package.json` 里不存在这两个 script），CI 对前端的门禁只有类型检查与构建

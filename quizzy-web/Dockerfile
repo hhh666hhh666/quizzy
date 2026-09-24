@@ -3,9 +3,15 @@
 FROM node:22-slim AS build
 WORKDIR /app
 
-# 依赖层：npm ci 严格按 package-lock.json 安装，并走 npmmirror
+# NPM_REGISTRY 默认 npmmirror：官方源本机实测能通但慢约 4 倍，默认仍取国内源
+# （ADR 0010 Amendment 1）；CI 在境外 runner 上传 https://registry.npmjs.org。
+# ⚠️ ARG 要声明在用到它的这个 stage 里、且排在用到它的 RUN 之前；
+#    写到 FROM nginx:alpine 之后它就看不到了。
+ARG NPM_REGISTRY=https://registry.npmmirror.com
+
+# 依赖层：npm ci 严格按 package-lock.json 安装
 COPY package.json package-lock.json ./
-RUN npm ci --registry=https://registry.npmmirror.com --no-audit --no-fund
+RUN npm ci --registry="$NPM_REGISTRY" --no-audit --no-fund
 
 COPY . .
 RUN npm run build
