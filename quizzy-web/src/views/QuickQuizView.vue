@@ -41,16 +41,19 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { listCategories } from '@/api/question'
 import { startQuiz } from '@/api/quiz'
+import type { PaperRuleDTO } from '@/types'
 
 const router = useRouter()
 const categories = ref<any[]>([])
 const starting = ref(false)
 
-const rule = reactive({
-  categoryId: null as number | null,
-  tagIds: [] as number[],
-  types: [] as string[],
-  difficulties: [] as string[],
+// 显式标成 PaperRuleDTO：否则 types/difficulties 会被推成 string[]，
+// 能把任意字符串塞进去发给后端（TS2322 挡的就是这个）
+const rule = reactive<PaperRuleDTO>({
+  categoryId: null,
+  tagIds: [],
+  types: [],
+  difficulties: [],
   count: 20,
   excludeRecentDays: 0
 })

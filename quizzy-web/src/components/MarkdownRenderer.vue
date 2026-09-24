@@ -23,15 +23,21 @@ const props = defineProps<{ source: string }>()
   hljs.registerLanguage(lang.name || 'unknown', lang)
 })
 
+// 原来这里引用 md.utils.escapeHtml，而 md 正在初始化中——类型推断成环，
+// 于是 md 被推成 any（TS7022 / TS7023）。抽成独立函数就把环断掉了。
+// markdown-it 的 escapeHtml 不依赖实例，语义等价：只转义 & < > " 四个字符。
+const escapeHtml = (s: string): string =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
 const md = new MarkdownIt({
   html: false,
   linkify: true,
   breaks: true,
-  highlight(code: string, lang: string) {
+  highlight(code: string, lang: string): string {
     if (lang && hljs.getLanguage(lang)) {
       return `<pre class="hljs"><code>${hljs.highlight(code, { language: lang }).value}</code></pre>`
     }
-    return `<pre class="hljs"><code>${md.utils.escapeHtml(code)}</code></pre>`
+    return `<pre class="hljs"><code>${escapeHtml(code)}</code></pre>`
   }
 })
 

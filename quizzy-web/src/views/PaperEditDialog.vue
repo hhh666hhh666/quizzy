@@ -3,7 +3,7 @@
     :model-value="visible"
     :title="form.id ? '编辑试卷' : '新建试卷'"
     width="760px"
-    @update:model-value="(v) => emit('update:visible', v)"
+    @update:model-value="(v: boolean) => emit('update:visible', v)"
   >
     <el-form :model="form" label-width="80px">
       <el-form-item label="标题">
