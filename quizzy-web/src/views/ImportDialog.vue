@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :model-value="visible" title="批量导入题目" width="640px" @update:model-value="(v) => emit('update:visible', v)">
+  <el-dialog :model-value="visible" title="批量导入题目" width="640px" @update:model-value="(v: boolean) => emit('update:visible', v)">
     <el-tabs v-model="tab">
       <el-tab-pane label="Excel 导入" name="excel">
         <el-alert type="info" :closable="false" title="列顺序：题型 | 题干 | 选项A-F | 答案 | 解析 | 难度 | 分值 | 分类 | 标签" />

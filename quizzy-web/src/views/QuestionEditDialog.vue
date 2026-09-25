@@ -3,7 +3,7 @@
     :model-value="visible"
     :title="form.id ? '编辑题目' : '新建题目'"
     width="720px"
-    @update:model-value="(v) => emit('update:visible', v)"
+    @update:model-value="(v: boolean) => emit('update:visible', v)"
   >
     <el-form :model="form" label-width="90px">
       <el-form-item label="题型">
@@ -31,7 +31,7 @@
               v-if="form.type === 'MULTI'"
               :value="option.label"
               :model-value="form.answers.includes(option.label)"
-              @change="(checked) => toggleAnswer(option.label, checked)"
+              @change="(checked: boolean | string | number) => toggleAnswer(option.label, checked)"
             >
               正确项
             </el-checkbox>

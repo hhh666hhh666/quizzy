@@ -31,4 +31,6 @@ YYYY-MM-DD-TODO-<主题>.md
 | 构建期依赖走国内镜像源——这是环境约束，不是项目偏好 | ADR 0010 |
 | 密钥在 `.env`；`application.yml` 里的默认值是本机开发兜底，**别删** | ADR 0011 |
 | 后端 healthcheck 探 `/v3/api-docs`（没引 actuator），web 等它 healthy 才启动 | ADR 0012 |
-| 镜像暂不推 registry——本机自用，没有消费者 | 见镜像分发那条 |
+| CI 只做门禁（单测 / 类型检查 / 构建 / 镜像冒烟），不做自动部署；`scripts/deploy.sh` 永不重建 mysql | ADR 0013 |
+| 两个 Dockerfile 的依赖源用 build-arg 参数化，默认值保持国内源 | ADR 0010 / ADR 0013 |
+| 镜像暂不推 registry——本机自用，没有消费者（CI 已能在云端构建，见 ADR 0013） | 见镜像分发那条 |
