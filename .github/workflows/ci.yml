@@ -24,12 +24,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # 项目没有 mvnw，用 runner 自带的 Maven + 这里钉死的 JDK 21。
       # cache: maven 会缓存 ~/.m2/repository（不含 settings.xml，
       # 所以 CI 上的 Maven 走默认的官方中央仓，不受 ADR 0010 的国内源影响）。
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '21'
@@ -48,11 +48,11 @@ jobs:
       run:
         working-directory: quizzy-web
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # cache-dependency-path 是相对仓库根解析的，而 lockfile 在子目录里；
       # 不显式写的话 setup-node 会去根目录找，找不到就静默跳过缓存。
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -77,7 +77,7 @@ jobs:
     env:
       HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # 拉基础镜像走认证额度：匿名是 100 次/6 小时且按共享出口 IP 计，
       # GitHub runner 的出口 IP 是大家共用的，很容易撞顶；认证后按账号计且翻倍。
@@ -85,7 +85,7 @@ jobs:
       # 构建照跑，只是有匿名限流风险。
       - name: 登录 Docker Hub（未配 secrets 时跳过）
         if: env.HAS_DOCKERHUB == 'true'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -102,11 +102,11 @@ jobs:
     env:
       HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: 登录 Docker Hub（未配 secrets 时跳过）
         if: env.HAS_DOCKERHUB == 'true'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
