@@ -37,7 +37,7 @@
 ## 文档纪律（本项目特有，最重要的一节）
 
 - **改代码同时改文档**；文档与代码冲突时**以代码为准**，并顺手把文档改对。
-  真实教训记录在 [../adr/0006](../adr/0006-bare-array-import-contract.md)：`DESIGN.md` 曾把导入契约写成包装对象而与实现漂移。
+  真实教训记录在 [ADR 0006](../adr/0006-bare-array-import-contract.md)：原 `DESIGN.md` 曾把导入契约写成包装对象而与实现漂移；现在的契约写在 [《导入导出》](../design/导入导出.md#json-契约)。
 - **能从代码、脚本、`.env.example`、Flyway 或 springdoc 运行时得到的事实，文档只写「去哪看」，不复制一份。**
 - 新决策怎么落：
   - **结论**进 `docs/adr/`，格式照 [0006](../adr/0006-bare-array-import-contract.md) 抄（Status / Considered Options / Consequences），编号递增，**只追加不改**；
@@ -53,4 +53,6 @@
 
 ## 关于本文件的位置
 
-GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；是否要在根目录建一个转发页，与 `DESIGN.md` 的转发页策略一起决定。
+GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定——按项目纪律，这类「没定的事」只记在 [`TODO/`](../../TODO/)，不在文档里开清单。
+
+顺带一提：根目录的 `DESIGN.md` 已经是**转发页**了——原设计文档拆成了 [`docs/design/`](../design/) 下的主题文档，改设计请直接改对应主题，不要往 `DESIGN.md` 里加内容。

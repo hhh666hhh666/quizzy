@@ -1,6 +1,10 @@
 # 应急预案（Runbook）
 
-出事时按**症状**查，不按章节读。本文只写**只读诊断命令**；所有会改变状态的动作（重建容器、导出数据、停服务）都只写「用哪个脚本 / 看哪篇文档的哪一节」——命令留在脚本里，那儿才是真相源，而且脚本会随 compose 一起改。
+出事时按**症状**查，不按章节读。
+
+**命令分层**：默认只写**只读诊断命令**；会改变状态的动作一律只写「用哪个脚本 / 看哪篇文档的哪一节」——命令留在脚本里，那儿才是真相源，而且脚本会随 compose 一起改。
+
+**唯一的例外**是「容器根本起不来」那两节：那时的故障发生在脚本能跑之前，跳去别处查反而更慢，所以把处置命令直接写在这里，并标注真相源（见 [场景 · 容器起不来](#场景--容器起不来)）。
 
 ## 30 秒定性
 
@@ -55,11 +59,35 @@ docker exec quizzy-mysql mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e 'select 1'
 
 **2. 两个形态的 mysql 容器同名**——dev 与 prod 的 compose 里 mysql 容器名相同，不能同时运行。
 判据：报 `Conflict`，说容器名已存在。
-处置：先把 dev 那个停掉（命令见 [README.md](../../README.md) 的「排障：dev 与 prod 的容器名冲突」），数据在宿主机目录里不会丢。
+处置：把 dev 那个停掉。**只删容器，数据在宿主机目录里不会丢**：
+
+```bash
+docker compose -f docker-compose.dev.yml down
+```
 
 **3. 基础镜像拉不到**——Maven 与 npm 依赖已走国内源，但**基础镜像本身来自 Docker Hub**，是另一条路。
 判据：`failed to fetch oauth token ... auth.docker.io ... Bad Gateway`。
-处置：见 [README.md](../../README.md) 的「排障：`--build` 时报拉不到基础镜像」，两种解法都在那儿（一次性打 tag / 长期配 registry-mirrors）。**本文不复制那段命令**——它依赖当时的镜像站可用性。
+
+#### 一次性处理：从镜像站拉取后补回官方 tag
+
+不改全局配置、不用重启 Docker：
+
+```bash
+for img in maven:3.9.9-eclipse-temurin-21 eclipse-temurin:21-jre node:22-slim nginx:alpine; do
+  docker pull docker.m.daocloud.io/library/$img
+  docker tag  docker.m.daocloud.io/library/$img $img
+done
+```
+
+#### 长期处理：配 registry mirror
+
+Docker Desktop → Settings → Docker Engine，加入下面这段后 Apply & Restart：
+
+```json
+"registry-mirrors": ["https://docker.m.daocloud.io"]
+```
+
+⚠️ **这两段是本文档里唯一复制的写操作命令**，因为故障发生在任何脚本能跑之前。它们的真相源是 `quizzy-server/Dockerfile` 与 `quizzy-web/Dockerfile` 里的 `FROM`——**基础镜像变了要同步改这里**；镜像站是否可用也以当时为准。
 
 **4. 都不是**——看日志尾部，重点看最后 20 行：
 
@@ -114,7 +142,8 @@ docker system df        # 镜像与容器占了多少
 ## 红线清单
 
 - ❌ **不要 `docker compose down -v`**——`-v` 会删匿名卷，是这套部署里唯一可能真的把数据卷走的写法。
-- ❌ **不要重建或删除 mysql 容器**——`deploy.sh` 刻意用 `--no-deps` 绕开它（[ADR 0007](../adr/0007-dev-prod-compose-with-bind-mount.md)）。
+- ❌ **部署时不要重建或删除 mysql 容器**——`deploy.sh` 刻意用 `--no-deps` 绕开它（[ADR 0007](../adr/0007-dev-prod-compose-with-bind-mount.md)）。
+  （dev 与 prod 切换时 `docker compose ... down` 停掉它是**允许的**，见上文；禁止的是在部署流程里重建它。）
 - ❌ **不要手工删 `MYSQL_DATA_DIR` 指向的目录**——那是数据本体。
 - ❌ **不要给 unhealthy 容器加自动重启指望它自愈**——healthcheck 不触发重启（[ADR 0012](../adr/0012-healthcheck-probes-api-docs.md)）。
 - ❌ **不要在没备份的情况下改已经执行过的 Flyway 迁移**。
