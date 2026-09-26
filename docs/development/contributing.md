@@ -44,6 +44,8 @@
   - **过程**（问答、被否选项、当时为什么纠结）留在 `docs/decisions/`；
   - **未决事项**进 `docs/todo/`，命名规则见 [../todo/README.md](../todo/README.md)。
 - 两者区别见 [../README.md](../README.md)。
+- **提交前跑一次 `bash scripts/check-doc-links.sh`**——它检查 md 相对链接、以及脚本与注释里提到的 `docs/ scripts/ .github/` 路径是否还存在。CI 里有同名 job 会再验一次，红了就合不进去。
+- 上面这些对 AI 也生效：两条规则放在 [.codebuddy/rules/](../../.codebuddy/rules/)（每次会话自动加载），收尾自检用 `/wrap-up`。跨工具摘要见根目录 [`AGENTS.md`](../../AGENTS.md)。取舍见 [ADR 0014](../adr/0014-ai-discipline-in-repo.md)。
 
 ## 环境小坑
 
