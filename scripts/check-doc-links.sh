@@ -59,11 +59,27 @@ list_tracked() {
 }
 
 # ---- 1. Markdown 里的相对链接 ----
-# grep -H 一次吃下所有文件，再在 bash 里处理，避免逐文件起进程。
+# 用一次 awk 吃下所有文件，再在 bash 里处理，避免逐文件起进程。
+# awk 顺带做两件 grep 做不了的事：
+#   ① 跳过 ``` 代码块（文档里的示例不走文件系统）；
+#   ② 剥掉行内代码 `...`（docs-sync 规则里说「虚构路径用行内代码就别当链接」，
+#      这条约定得由这里兑现，否则规则自己会被自己的检查器抓）。
 # md 可能是 CRLF（.gitattributes 只钉了 *.sh），不去掉 \r 会导致全仓误报。
 mapfile -t MD_HITS < <(
   list_tracked '*.md' \
-    | xargs -0 -r grep -HoE '\]\([^)]*\)' 2>/dev/null \
+    | xargs -0 -r awk '
+        {
+          line = $0
+          gsub(/`[^`]*`/, "", line)
+          if (line ~ /^[[:space:]]*```/) { inf = !inf; next }
+          if (inf) next
+          s = line
+          while (match(s, /\]\([^)]*\)/)) {
+            print FILENAME ":" substr(s, RSTART, RLENGTH)
+            s = substr(s, RSTART + RLENGTH)
+          }
+        }
+      ' 2>/dev/null \
     | tr -d '\r' || true
 )
 
