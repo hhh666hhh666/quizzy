@@ -18,7 +18,7 @@
 - 相关：[ADR 0006](../adr/0006-bare-array-import-contract.md)（含「将来要加元信息时必须改成包装对象」的后果说明）
 
 > **Q1 - JSON 导入契约以哪个为准**：`DESIGN.md` 的 JSON Schema 一节写的是 `{"questions":[...]}` 包装对象
-> （[原文位置：`DESIGN.md:359-378`]；该文档现已拆分，契约见 [《导入导出》的 JSON 契约](../design/导入导出.md#json-契约)），但 `QuestionImportExportController.importJson` 收的是**裸数组** `[QuestionImportDTO]`。而 9-18 建的 `md-to-question-bank` skill 已经按裸数组出文件了——这个分歧不解决，以后每次生成题库都会踩。
+> （[原文位置：原根目录 `DESIGN.md:359-378`，该文件已于 2026-09-26 删除、见 git 历史]；现在的契约见 [《导入导出》的 JSON 契约](../design/导入导出.md#json-契约)），但 `QuestionImportExportController.importJson` 收的是**裸数组** `[QuestionImportDTO]`。而 9-18 建的 `md-to-question-bank` skill 已经按裸数组出文件了——这个分歧不解决，以后每次生成题库都会踩。
 >
 > A. 以实现为准取**裸数组**，回头把 DESIGN.md 那段改掉
 > B. 改实现成包装对象（会让已生成的题库文件全部失效）

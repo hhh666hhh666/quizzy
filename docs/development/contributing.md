@@ -55,4 +55,4 @@
 
 GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定——按项目纪律，这类「没定的事」只记在 [`TODO/`](../../TODO/)，不在文档里开清单。
 
-顺带一提：根目录的 `DESIGN.md` 已经是**转发页**了——原设计文档拆成了 [`docs/design/`](../design/) 下的主题文档，改设计请直接改对应主题，不要往 `DESIGN.md` 里加内容。
+顺带一提：设计文档已经全部在 [`docs/design/`](../design/) 与 [《需求范围》](../requirements/scope.md) 下；根目录那个 `DESIGN.md` 已于 2026-09-26 删除，别再往回加。
