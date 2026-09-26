@@ -3,7 +3,7 @@
 ## 2026-09-20 22:02 · 第 1 次 grill
 
 起因是「补一下对应的记录」——v1 已经实现完、git 里也有 3 个提交了，但只有 `DESIGN.md` 一份大而全的设计文档，
-决策散落在会话里。开问前先摸了仓库，查到一条关键事实：`DESIGN.md` 第 8.2 节写的 JSON 导入契约
+决策散落在会话里。开问前先摸了仓库，查到一条关键事实：当时 `DESIGN.md` 的 JSON Schema 一节写的导入契约
 （`{"questions":[...]}` 包装对象）与 `QuestionImportExportController` 的实际实现（裸数组）**不一致**，
 而 9-18 建的 `md-to-question-bank` skill 已经按裸数组在出文件了。这条矛盾成了本轮第一个问题。
 
@@ -11,13 +11,14 @@
 
 ### D1 · JSON 导入契约以裸数组为准，回头改文档
 
-- **决策**：`POST /api/questions/import/json` 收裸数组 `[QuestionImportDTO]`，把 `DESIGN.md` 8.2 节改成裸数组，不动实现。
+- **决策**：`POST /api/questions/import/json` 收裸数组 `[QuestionImportDTO]`，把当时 `DESIGN.md` 的 JSON Schema 一节改成裸数组，不动实现。
 - **因为**：采纳推荐（A 选项）。
 - **放弃**：B「改实现成包装对象」——已生成的题库文件全部失效；C「两个都收」——为一个内部工具维护两套解析路径，不值。
 - **来源**：Q1
 - 相关：[ADR 0006](../adr/0006-bare-array-import-contract.md)（含「将来要加元信息时必须改成包装对象」的后果说明）
 
-> **Q1 - JSON 导入契约以哪个为准**：`DESIGN.md:359-377` 写的是 `{"questions":[...]}` 包装对象，但 `QuestionImportExportController.importJson` 收的是**裸数组** `[QuestionImportDTO]`。而 9-18 建的 `md-to-question-bank` skill 已经按裸数组出文件了——这个分歧不解决，以后每次生成题库都会踩。
+> **Q1 - JSON 导入契约以哪个为准**：`DESIGN.md` 的 JSON Schema 一节写的是 `{"questions":[...]}` 包装对象
+> （[原文位置：`DESIGN.md:359-378`]；该文档现已拆分，契约见 [《导入导出》的 JSON 契约](../design/导入导出.md#json-契约)），但 `QuestionImportExportController.importJson` 收的是**裸数组** `[QuestionImportDTO]`。而 9-18 建的 `md-to-question-bank` skill 已经按裸数组出文件了——这个分歧不解决，以后每次生成题库都会踩。
 >
 > A. 以实现为准取**裸数组**，回头把 DESIGN.md 那段改掉
 > B. 改实现成包装对象（会让已生成的题库文件全部失效）
@@ -87,6 +88,10 @@
 - **放弃**：B「20+ 条全量写成 ADR」；C「精简到 4 条」。
 - **来源**：Q5
 - 相关：[docs/adr/](../adr/)（0001~0008）
+
+> **后续状态（2026-09-26）**：`DESIGN.md` 后来按主题拆分了，这份日志里说的「其余决策继续留在 DESIGN.md」已成历史——
+> 剩余决策随主题归进了 [`docs/design/`](../design/) 与 [《需求范围》](../requirements/scope.md)，ADR 也补到了 13 条。
+> 过程日志只追加不改写，此处保留原文，仅补此注。
 
 > **Q5 - ADR 收录范围**：20 个决策点里，按「难反转 / 不看上下文会意外 / 有真实取舍」三条标准，我认为够格的只有 8 条：① 练习语义优先于考试语义 ② 逐题即时判分 + 进度落库不引 Redis ③ owner_id 为空表示公开题 ④ 多选全对才得分 ⑤ 导入跳过错误行 ⑥ JSON 裸数组契约 ⑦ dev/prod 双 compose + MySQL 绑定挂载 ⑧ 正确答案存 `question.answer` 而非 `option.is_correct`。
 >
