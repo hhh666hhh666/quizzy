@@ -9,11 +9,16 @@
 
 | 路径 | 用途 | 读者 | 真相源 |
 |------|------|------|--------|
-| [../README.md](../README.md) | 5 分钟上手：跑起来、.env、CI 与部署、已知取舍 | 所有人 | 代码与脚本 |
+| [../README.md](../README.md) | 5 分钟上手：定位、功能、跑起来、配置要点、CI 与部署 | 所有人 | 代码与脚本 |
 | [../CONTEXT.md](../CONTEXT.md) | 领域术语表（题目 / 会话 / 错题本…纯词汇，不含实现） | 读代码的人 | 本文件 |
-| [../DESIGN.md](../DESIGN.md) | v1 设计与接口清单（大而全，待拆分） | 改代码的人 | **代码**（⚠️ 与代码冲突以代码为准） |
 | [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
+| [requirements/scope.md](./requirements/scope.md) | v1 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
+| [design/数据模型.md](./design/数据模型.md) | 实体关系、可见性、生命周期、历史一致性 | 改数据结构或写查询的人 | Flyway 迁移脚本 |
+| [design/判分与业务规则.md](./design/判分与业务规则.md) | 判分、会话、错题本、规则卷抽题 | 前后端开发者 | `ScoreStrategy` / `QuizService` / `PaperService` |
+| [design/导入导出.md](./design/导入导出.md) | Excel / JSON 契约入口、校验与容错语义 | 改导入导出、或给题库工具对齐格式的人 | DTO 与 `QuestionImportService`、ADR 0005/0006 |
+| [design/API.md](./design/API.md) | 怎么看真实接口、通用响应与错误约定 | 对接接口或改 Controller 的人 | springdoc 与各 Controller |
+| [design/前端.md](./design/前端.md) | 页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [decisions/](./decisions/) | **决策过程**日志（grill 问答原文、被否选项、未决问题） | 查「当时考虑过 X 吗」的人 | 日志自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
@@ -43,7 +48,7 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 
 ## 单一信息源纪律（本项目的真实教训）
 
-**`DESIGN.md` 8.2 节曾把 JSON 导入契约写成 `{"questions":[...]}` 包装对象，而实现收的是裸数组**——文档复制了事实，然后和实现漂移了。修正过程记录在 [ADR 0006](./adr/0006-bare-array-import-contract.md)。
+**原 `DESIGN.md` 的 JSON Schema 曾把导入契约写成 `{"questions":[...]}` 包装对象，而实现收的是裸数组**——文档复制了事实，然后和实现漂移了。修正过程记录在 [ADR 0006](./adr/0006-bare-array-import-contract.md)，现在的契约写在 [《导入导出》的 JSON 契约](./design/导入导出.md#json-契约)。
 
 由此定下两条：
 
@@ -58,6 +63,7 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 | 在一台新机器上跑起来 | [../README.md](../README.md) |
 | 知道某个词在代码里指什么 | [../CONTEXT.md](../CONTEXT.md) |
 | 排障（容器起不来 / 打不开 / 连不上库） | [operations/runbook.md](./operations/runbook.md) |
-| 改代码前摸清设计与接口 | [../DESIGN.md](../DESIGN.md) + 对应 ADR |
+| 判断某个改动超不超 v1 范围 | [requirements/scope.md](./requirements/scope.md) |
+| 改代码前摸清设计与规则 | [design/](./design/) 下对应主题 + 对应 ADR |
 | 上线 / 回滚 | [operations/deployment.md](./operations/deployment.md) |
 | 想知道还有什么没定 | [../TODO/](../TODO/) |
