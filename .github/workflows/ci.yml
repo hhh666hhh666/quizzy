@@ -19,6 +19,24 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # 放在最前面：只靠 runner 自带的 bash + git + grep，不需要任何 toolchain，几秒就跑完；
+  # 而「文档或注释指向了不存在的文件」是最容易混进主干的人为失误，让它在另外四个
+  # 重 job 还在装依赖、拉镜像时就先给出信号。同样不设 needs，与 docker 两个 job 一致。
+  # 这套 AI 协作纪律本身的取舍记在 docs/adr/0014-ai-discipline-in-repo.md。
+  docs:
+    name: 文档 · 链接与引用自检
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # 查两类：md 里 ](./x) 的相对链接要存在，脚本/注释里提到的 docs/ scripts/
+      # .github/ 路径也要存在。后者是刻意加的——移动或删除文件时注释里的路径不会
+      # 报任何错，是最沉默的一类失效；而 ADR 0006 要求文档只写「去哪看」，
+      # 指过去是空的等于没写。
+      - name: 跑 scripts/check-doc-links.sh
+        run: bash scripts/check-doc-links.sh
+
   backend:
     name: 后端 · Maven 单测
     runs-on: ubuntu-latest

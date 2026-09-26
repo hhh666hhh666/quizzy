@@ -14,6 +14,9 @@
 | [../README.md](../README.md) | 5 分钟上手：定位、功能、跑起来、配置要点、CI 与部署 | 所有人 | 代码与脚本 |
 | [../CONTEXT.md](../CONTEXT.md) | 领域术语表（题目 / 会话 / 错题本…纯词汇，不含实现） | 读代码的人 | 本文件 |
 | [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
+| [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.codebuddy/rules/` |
+| [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
+| [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
 | [requirements/scope.md](./requirements/scope.md) | v1 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
 | [design/数据模型.md](./design/数据模型.md) | 实体关系、可见性、生命周期、历史一致性 | 改数据结构或写查询的人 | Flyway 迁移脚本 |
@@ -47,6 +50,8 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 规则：**任何「未定 / 待定 / 以后再说」只能存在于 `docs/todo/`**，docs 里一律链接过去，不许在文档中间开第二份待办清单。
 
 命名与索引规则见 [todo/README.md](./todo/README.md)。那个文件里还有一张「已定，不用再想」的表——那些已经拍板并写进 ADR，列出来是为了防止以后重新纠结一遍。
+
+这条纪律对 AI 同样生效：项目规则里有**总是加载**的一条专门管它（见 [.codebuddy/rules/](../.codebuddy/rules/)），收尾时可以用 `/wrap-up` 自检。取舍记录在 [ADR 0014](./adr/0014-ai-discipline-in-repo.md)。
 
 ## 单一信息源纪律（本项目的真实教训）
 
