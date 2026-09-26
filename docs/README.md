@@ -12,7 +12,7 @@
 | [../README.md](../README.md) | 5 分钟上手：跑起来、.env、CI 与部署、已知取舍 | 所有人 | 代码与脚本 |
 | [../CONTEXT.md](../CONTEXT.md) | 领域术语表（题目 / 会话 / 错题本…纯词汇，不含实现） | 读代码的人 | 本文件 |
 | [../DESIGN.md](../DESIGN.md) | v1 设计与接口清单（大而全，待拆分） | 改代码的人 | **代码**（⚠️ 与代码冲突以代码为准） |
-| [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git log` |
+| [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [decisions/](./decisions/) | **决策过程**日志（grill 问答原文、被否选项、未决问题） | 查「当时考虑过 X 吗」的人 | 日志自身 |

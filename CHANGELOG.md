@@ -4,17 +4,18 @@
 
 ## 关于版本号（先读这段）
 
-**本仓库目前没有任何 git tag**，下面各版本段是按提交历史回溯出来的「叙事版本」，不是可以 `git checkout` 的 tag。首个正式 tag 还没打。
+**版本号以 `git tag` 为准**，遵循 SemVer（`MAJOR.MINOR.PATCH`）。本仓库的 `tag` 就是真相源，下面每个 `## [x.y.z]` 段都对应一个真实存在、可以 `git checkout` 的 tag。
 
-另外，项目里现在有三处「版本」互不同源，知道它们不一致比假装一致更重要：
+需要区分的四件事：
 
-| 出处 | 写的版本 | 说明 |
-|------|----------|------|
-| 根目录 `README.md` 标题 | v1 | 产品代次，指「选择题那一版」 |
-| 两个 compose 文件里的镜像 tag | 固定值（见 `docker-compose.prod.yml`） | 镜像标识，**不随代码变**，所以无法靠它回滚 |
-| `quizzy-web/package.json` | 另一个固定值 | 前端包版本，与后端无关 |
+| 出处 | 是什么 | 说明 |
+|------|--------|------|
+| **`git tag`**（如 `v1.0.0`） | **版本号** | 唯一真相源，与下面每个版本段一一对应 |
+| `README.md` / `DESIGN.md` 里的 **v1** | **产品代次** | 指「只做选择题的这一版」，不是版本号 |
+| compose 里的镜像 tag | 镜像标识 | 写死的固定值，**不随代码变**，所以无法靠它回滚 |
+| `pom.xml` / `package.json` 的包版本 | 各自的包版本 | Maven 坐标与 npm 包版本，与发布版本无关 |
 
-统一方案未定，见 [TODO/2026-09-20-TODO-镜像分发.md](./TODO/2026-09-20-TODO-镜像分发.md)。
+镜像 tag 与包版本的统一管理方案未定，见 [TODO/2026-09-20-TODO-镜像分发.md](./TODO/2026-09-20-TODO-镜像分发.md)。
 
 ---
 
@@ -24,9 +25,9 @@
 
 ---
 
-## [1.0.0] - 2026-09-25（叙事版本，未打 tag）
+## [1.0.0] - 2026-09-26
 
-覆盖 2026-09-17 至 2026-09-25 共 15 个提交，从 v1 首个提交到 CI 门禁落地。
+第一个正式版本。从「答题程序 v1」首个提交一路到文档体系与 CI 门禁落地，`ae273cb` → `v1.0.0`。
 
 ### Added
 
@@ -64,9 +65,8 @@
 
 - 提交信息沿用 Conventional Commits（`feat:` / `fix:` / `docs:` / `chore:`），`git log` 就是归类依据。
 - 变更记入 `[Unreleased]`；**用户可感知的破坏性变更必须在版本段里单独说明迁移方式**。
-- 打第一个 tag 时要做三件事：把 `[Unreleased]` 固化成版本段、决定版本号并与上表三处对齐、把下面的比较链接换成 tag 比较链接。
+- 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接。
 - 许可证见 [LICENSE](./LICENSE)。
 
-<!-- 版本号确定后，把下面两行换成 tag 比较链接 -->
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/3b77ec8...HEAD
-[1.0.0]: https://github.com/hhh666hhh666/quizzy/compare/ae273cb...3b77ec8
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/hhh666hhh666/quizzy/compare/ae273cb...v1.0.0
