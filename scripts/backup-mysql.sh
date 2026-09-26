@@ -5,7 +5,7 @@
 #
 # 需要 mysql 容器正在运行。备份位置读 .env 的 BACKUP_DIR，默认是项目内 .backup/。
 # ⚠️ 默认位置与 MySQL 数据目录同在 E 盘，属于同一故障域，只能算复制不算备份；
-#    最终该挪到别的盘，见 TODO/2026-09-20-TODO-数据库备份.md。
+#    最终该挪到别的盘，见 docs/todo/2026-09-20-TODO-数据库备份.md。
 set -euo pipefail
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
