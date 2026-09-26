@@ -50,5 +50,5 @@ CI 具体跑哪几条检查，看 [.github/workflows/ci.yml](../../.github/workf
 
 ## 已知未决
 
-- 后端端口是否继续暴露到宿主机 → [TODO/2026-09-20-TODO-运行与运维.md](../../TODO/2026-09-20-TODO-运行与运维.md)
-- 镜像 tag 与分发方式 → [TODO/2026-09-20-TODO-镜像分发.md](../../TODO/2026-09-20-TODO-镜像分发.md)
+- 后端端口是否继续暴露到宿主机 → [docs/todo/2026-09-20-TODO-运行与运维.md](../todo/2026-09-20-TODO-运行与运维.md)
+- 镜像 tag 与分发方式 → [docs/todo/2026-09-20-TODO-镜像分发.md](../todo/2026-09-20-TODO-镜像分发.md)

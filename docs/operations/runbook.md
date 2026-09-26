@@ -120,7 +120,7 @@ docker compose -f docker-compose.prod.yml logs --tail=100 <服务名>
 
 ## 场景 · 磁盘与日志
 
-容器日志**没有做轮转**，Docker 默认的 json-file driver 不限制大小，长期跑会一直涨。这是已登记的未决项，方案与盘位分析见 [TODO/2026-09-20-TODO-运行与运维.md](../../TODO/2026-09-20-TODO-运行与运维.md)，本文不讨论怎么改。
+容器日志**没有做轮转**，Docker 默认的 json-file driver 不限制大小，长期跑会一直涨。这是已登记的未决项，方案与盘位分析见 [docs/todo/2026-09-20-TODO-运行与运维.md](../todo/2026-09-20-TODO-运行与运维.md)，本文不讨论怎么改。
 
 应急判断用这条：
 

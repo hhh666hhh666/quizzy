@@ -42,7 +42,7 @@
 - 新决策怎么落：
   - **结论**进 `docs/adr/`，格式照 [0006](../adr/0006-bare-array-import-contract.md) 抄（Status / Considered Options / Consequences），编号递增，**只追加不改**；
   - **过程**（问答、被否选项、当时为什么纠结）留在 `docs/decisions/`；
-  - **未决事项**进 `TODO/`，命名规则见 [../../TODO/README.md](../../TODO/README.md)。
+  - **未决事项**进 `docs/todo/`，命名规则见 [../todo/README.md](../todo/README.md)。
 - 两者区别见 [../README.md](../README.md)。
 
 ## 环境小坑
@@ -53,6 +53,6 @@
 
 ## 关于本文件的位置
 
-GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定——按项目纪律，这类「没定的事」只记在 [`TODO/`](../../TODO/)，不在文档里开清单。
+GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定——按项目纪律，这类「没定的事」只记在 [`docs/todo/`](../todo/)，不在文档里开清单。
 
 顺带一提：设计文档已经全部在 [`docs/design/`](../design/) 与 [《需求范围》](../requirements/scope.md) 下；根目录那个 `DESIGN.md` 已于 2026-09-26 删除，别再往回加。

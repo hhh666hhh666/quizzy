@@ -29,7 +29,7 @@
 | [operations/backup.md](./operations/backup.md) | 备份现状、手动跑一次、恢复（未演练） | 担心数据丢的人 | `scripts/backup-mysql.sh` |
 | [testing.md](./testing.md) | 测了什么、故意不测什么、新测试放哪 | 改代码前想确认安全网的人 | `src/test`、`package.json` |
 | [development/contributing.md](./development/contributing.md) | 分支 / 提交 / PR 约定与文档纪律 | 要提交代码的人 | `git log` |
-| [../TODO/](../TODO/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |
+| [todo/](./todo/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |
 
 ## ADR 与 decisions 的区别
 
@@ -42,11 +42,11 @@
 
 ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收录标准见 `decisions/records-and-glossary.md` 的 D5）。
 
-## 未决事项只有一个入口：`TODO/`
+## 未决事项只有一个入口：`docs/todo/`
 
-规则：**任何「未定 / 待定 / 以后再说」只能存在于 `TODO/`**，docs 里一律链接过去，不许在文档中间开第二份待办清单。
+规则：**任何「未定 / 待定 / 以后再说」只能存在于 `docs/todo/`**，docs 里一律链接过去，不许在文档中间开第二份待办清单。
 
-命名与索引规则见 [TODO/README.md](../TODO/README.md)。那个文件里还有一张「已定，不用再想」的表——那些已经拍板并写进 ADR，列出来是为了防止以后重新纠结一遍。
+命名与索引规则见 [todo/README.md](./todo/README.md)。那个文件里还有一张「已定，不用再想」的表——那些已经拍板并写进 ADR，列出来是为了防止以后重新纠结一遍。
 
 ## 单一信息源纪律（本项目的真实教训）
 
@@ -68,4 +68,4 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 | 判断某个改动超不超 v1 范围 | [requirements/scope.md](./requirements/scope.md) |
 | 改代码前摸清设计与规则 | [design/](./design/) 下对应主题 + 对应 ADR |
 | 上线 / 回滚 | [operations/deployment.md](./operations/deployment.md) |
-| 想知道还有什么没定 | [../TODO/](../TODO/) |
+| 想知道还有什么没定 | [docs/todo/](./todo/) |
