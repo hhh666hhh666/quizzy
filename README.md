@@ -1,15 +1,17 @@
-# Quizzy 答题程序 v1
+# Quizzy 答题程序
 
 [![CI](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml/badge.svg)](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml)
 
-个人自学刷题工具，v1 只支持**选择题**（单选 / 多选 / 判断）。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对若干次自动移出。
+个人自学刷题工具，目前只做**选择题**（单选 / 多选 / 判断）。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对若干次自动移出。
+
+当前版本号看 [CHANGELOG.md](./CHANGELOG.md) 顶部，真相源是 `git tag`；程序里在右上角「关于」里显示。
 
 | 想看什么 | 去哪 |
 |----------|------|
 | 全部文档的索引 | [docs/README.md](./docs/README.md) |
 | 这个词在代码里到底指什么 | [CONTEXT.md](./CONTEXT.md)（术语表，纯词汇） |
 | 为什么当初这么定 | [docs/adr/](./docs/adr/)（结论卡片，编号递增） |
-| v1 范围与明确不做 | [需求范围](./docs/requirements/scope.md) |
+| 范围与明确不做 | [需求范围](./docs/requirements/scope.md) |
 | 设计与业务规则 | [docs/design/](./docs/design/)（数据模型 / 判分 / 导入导出 / API / 前端） |
 | 部署、配置、排障 | [docs/operations/](./docs/operations/) |
 
@@ -32,7 +34,7 @@
 | 前端 | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
 | 运行 | Docker Compose（dev 只起数据库，prod 全容器） |
 
-确切版本以 `pom.xml`、`package.json` 与两个 `Dockerfile` 为准。
+各依赖的确切版本以 `pom.xml`、`package.json` 与两个 `Dockerfile` 为准（这是依赖版本，与上面说的发布版本号无关）。
 
 ## 快速开始（开发模式）
 

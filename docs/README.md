@@ -17,8 +17,9 @@
 | [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.codebuddy/rules/` |
 | [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
 | [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
+| [../scripts/check-version.sh](../scripts/check-version.sh) | 版本号与 `git tag` 对齐自检；非 tag 提交上自动跳过 | 要打 tag 的人 / CI | `git tag` |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
-| [requirements/scope.md](./requirements/scope.md) | v1 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
+| [requirements/scope.md](./requirements/scope.md) | 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
 | [design/数据模型.md](./design/数据模型.md) | 实体关系、可见性、生命周期、历史一致性 | 改数据结构或写查询的人 | Flyway 迁移脚本 |
 | [design/判分与业务规则.md](./design/判分与业务规则.md) | 判分、会话、错题本、规则卷抽题 | 前后端开发者 | `ScoreStrategy` / `QuizService` / `PaperService` |
 | [design/导入导出.md](./design/导入导出.md) | Excel / JSON 契约入口、校验与容错语义 | 改导入导出、或给题库工具对齐格式的人 | DTO 与 `QuestionImportService`、ADR 0005/0006 |
@@ -70,7 +71,7 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 | 在一台新机器上跑起来 | [../README.md](../README.md) |
 | 知道某个词在代码里指什么 | [../CONTEXT.md](../CONTEXT.md) |
 | 排障（容器起不来 / 打不开 / 连不上库） | [operations/runbook.md](./operations/runbook.md) |
-| 判断某个改动超不超 v1 范围 | [requirements/scope.md](./requirements/scope.md) |
+| 判断某个改动超不超当前范围 | [requirements/scope.md](./requirements/scope.md) |
 | 改代码前摸清设计与规则 | [design/](./design/) 下对应主题 + 对应 ADR |
 | 上线 / 回滚 | [operations/deployment.md](./operations/deployment.md) |
 | 想知道还有什么没定 | [docs/todo/](./todo/) |
