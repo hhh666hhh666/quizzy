@@ -20,6 +20,7 @@ YYYY-MM-DD-TODO-<主题>.md
 | [2026-09-20-TODO-运行与运维.md](./2026-09-20-TODO-运行与运维.md) | 8080 暴露、日志轮转、探测端点 | 待办 | 中 |
 | [2026-09-20-TODO-镜像分发.md](./2026-09-20-TODO-镜像分发.md) | registry 与 tag（tag 那半已定） | 暂缓 | 低 |
 | [2026-10-01-TODO-文档入口.md](./2026-10-01-TODO-文档入口.md) | 要不要放根目录 CONTRIBUTING.md 转发页 | 待办 | 低 |
+| [2026-10-01-TODO-术语表补录.md](./2026-10-01-TODO-术语表补录.md) | 版本号那轮定下的叫法要不要进 CONTEXT.md | 待办 | 低 |
 
 ## 已定，不用再想
 
@@ -35,3 +36,4 @@ YYYY-MM-DD-TODO-<主题>.md
 | CI 只做门禁（单测 / 类型检查 / 构建 / 镜像冒烟），不做自动部署；`scripts/deploy.sh` 永不重建 mysql | ADR 0013 |
 | 两个 Dockerfile 的依赖源用 build-arg 参数化，默认值保持国内源 | ADR 0010 / ADR 0013 |
 | 镜像暂不推 registry——本机自用，没有消费者（CI 已能在云端构建，见 ADR 0013） | 见镜像分发那条 |
+| 版本号以 `git tag` 为唯一真相源；镜像 tag 跟版本号走（不带 `v`），另三处手写对齐靠 `check-version.sh` 在**推 tag 时**校验 | ADR 0015 |
