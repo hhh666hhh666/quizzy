@@ -6,22 +6,49 @@
 
 **版本号以 `git tag` 为准**，遵循 SemVer（`MAJOR.MINOR.PATCH`）。本仓库的 `tag` 就是真相源，下面每个 `## [x.y.z]` 段都对应一个真实存在、可以 `git checkout` 的 tag。
 
-需要区分的四件事：
+需要区分三件事：
 
 | 出处 | 是什么 | 说明 |
 |------|--------|------|
-| **`git tag`**（如 `v1.0.0`） | **版本号** | 唯一真相源，与下面每个版本段一一对应 |
-| `README.md` 与 `docs/requirements/scope.md` 里的 **v1** | **产品代次** | 指「只做选择题的这一版」，不是版本号 |
-| compose 里的镜像 tag | 镜像标识 | 写死的固定值，**不随代码变**，所以无法靠它回滚 |
-| `pom.xml` / `package.json` 的包版本 | 各自的包版本 | Maven 坐标与 npm 包版本，与发布版本无关 |
+| **`git tag`**（如 `v1.1.0`） | **版本号** | 唯一真相源，与下面每个版本段一一对应 |
+| compose 里的镜像 tag | 镜像标识 | 跟随版本号，但**必须手写同步**——改了版本号却忘了改它，会把上一份镜像覆盖掉 |
+| `pom.xml` / `package.json` 的包版本 | 各自的包版本 | Maven 坐标与 npm 包版本，**与发布版本无关**（`pom.xml` 还刻意带 `-SNAPSHOT`） |
 
-镜像 tag 与包版本的统一管理方案未定，见 [docs/todo/2026-09-20-TODO-镜像分发.md](./docs/todo/2026-09-20-TODO-镜像分发.md)。
+打 tag 时 `scripts/check-version.sh`（CI 的「版本 · tag 与三处对齐」job）会把上面几处与 tag 逐一比对。
+设计与取舍见 [ADR 0015](./docs/adr/0015-version-number-governance.md)；镜像分发仍未决，
+见 [docs/todo/2026-09-20-TODO-镜像分发.md](./docs/todo/2026-09-20-TODO-镜像分发.md)。
+
+> 「产品代次 v1」这个说法已于 2026-10-01 取消——它和版本号长得太像，要表达那个意思就直接写范围。
+> 下面 `[1.0.0]` 段里出现的「答题程序 v1」是当时的历史措辞，保留不改。
 
 ---
 
 ## [Unreleased]
 
 新变更先堆在这里；打 tag 时整段移入新版本段并改名。
+
+---
+
+## [1.1.0] - 2026-10-01
+
+「关于」弹窗与版本号治理。这一版把版本号从「四个互不同步的值」收敛成「`git tag` 一个真相源 +
+三处手写镜像 + 一道门禁」，并给它造了一条注入前端产物的通道。
+
+### Added
+
+- **「关于」弹窗**：顶栏可查当前版本号与构建信息。版本主行取自 `git tag`，副行只在 `HEAD` 领先 tag 时出现
+- **版本号一致性门禁**：`scripts/check-version.sh` + CI 的「版本 · tag 与三处对齐」job，
+  推 tag 时校验 `package.json` / `pom.xml` / compose 镜像 tag 与 tag 是否一致（[ADR 0015](./docs/adr/0015-version-number-governance.md)）
+
+### Changed
+
+- **版本号改由构建参数注入前后端产物**（此前前端根本没有版本号通道，后端则是写死的值）：
+  `scripts/deploy.sh` 从 `git tag` 算出后经 compose 的 `build.args` 传入。swagger UI 上显示的版本
+  也从原先写死的「产品代次」改为真实版本号
+- **镜像 tag 跟随版本号**（`quizzy-server:1.1.0` / `quizzy-web:1.1.0`）。于是退回上一个已发版本
+  可以复用本地镜像、不必重新构建；代价是同一版本号内的多次构建仍互相覆盖
+- **取消「产品代次 v1」这个说法**：`README.md` 与 `docs/requirements/scope.md` 改为直白的范围描述，
+  `CONTEXT.md` 收录「版本号」一词并注明该说法已取消
 
 ---
 
@@ -65,8 +92,9 @@
 
 - 提交信息沿用 Conventional Commits（`feat:` / `fix:` / `docs:` / `chore:`），`git log` 就是归类依据。
 - 变更记入 `[Unreleased]`；**用户可感知的破坏性变更必须在版本段里单独说明迁移方式**。
-- 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接。
+- 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/hhh666hhh666/quizzy/compare/ae273cb...v1.0.0
