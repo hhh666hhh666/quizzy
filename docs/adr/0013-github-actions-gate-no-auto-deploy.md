@@ -2,6 +2,9 @@
 
 Status: accepted
 
+> ⚠️ **已被 [ADR 0016](0016-cloud-deploy-with-release-pipeline.md) 取代（2026-10-01）**：部署目标从本机 Docker Desktop 改为阿里云 ECS，CI 从「只做门禁」升级为「构建 + tag 自动部署」。
+> 下面记的「当时为什么不做」仍然成立——0016 是**逐条回答**它（尤其是 Flyway 那条），不是无视它。
+
 push 或 PR 到 master 时，GitHub 托管 runner 上跑四条并行门禁：后端 `mvn test`、前端 `npm ci` + `typecheck` + `build`、两个镜像各自在干净 Linux 上 `docker build` 冒烟。**没有任何 job 会把产物送到任何机器上去跑**。仓库里虽有完整的 compose 编排，但部署目标只有本机 Docker Desktop——`docs/decisions/docker-run-setup.md` 的 D3 已经定了「纯 localhost 自用，不规划局域网或公网」，没有第二台机器可以推。所以这里是**持续可交付**而不是持续部署：代码随时处于能上线的状态，上线动作由 `scripts/deploy.sh` 完成，触发它的永远是人。
 
 ## Considered Options

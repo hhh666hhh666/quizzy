@@ -24,7 +24,7 @@ alwaysApply: true
 | 部署、compose、`scripts/` | `docs/operations/deployment.md`、`runbook.md` |
 | 配置、密钥、`.env` | `docs/operations/configuration.md`（ADR 0011） |
 | 测试策略 | `docs/testing.md` |
-| CI / 镜像构建 | `.github/workflows/ci.yml` + ADR 0010 / 0013 |
+| CI / 镜像构建 | `.github/workflows/` + ADR 0010 / 0016 |
 | 领域词汇 | `CONTEXT.md` |
 | 本次迭代交付项 | `CHANGELOG.md` |
 

@@ -10,9 +10,17 @@
 
 ## 产品定位
 
-quizzy 是**个人自学的刷题工具**，核心是「一道题反复练到会」。
+quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。它原先只给自己用（纯本机 `localhost`）；2026-10-01 决定**改为对公网开放、任何人注册即可使用**（迁移进行中，见 [ADR 0017](../adr/0017-public-signup-service.md)）。
 
 它采用**练习语义**而非考试语义：逐题作答、提交后即时看到对错与解析、答错的题进错题本反复练。这条定位决定了后面几乎所有取舍——凡是只服务于「防人」的功能（限时、防作弊、监考、成绩排名）都不在范围内，理由见 [ADR 0001](../adr/0001-practice-not-exam-semantics.md)。
+
+**「开放」只改了「谁来用」，没有改「练习语义」。** 它带来的是运行与合规义务——域名、ICP 备案、HTTPS、注册风控、备份责任——不是新的业务能力。
+
+## 运行形态
+
+**目标形态**（2026-10-01 定，迁移进行中）：跑在阿里云 ECS 上，推 `git tag` 后由 CI 构建镜像并经 ACR 自动部署，本机只剩开发形态。见 [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md)。
+
+⚠️ **迁移完成前，实际形态仍是本机 Docker Desktop**——跑法以 [../operations/deployment.md](../operations/deployment.md) 为准，那份文档在行为真正改变之前不会提前改。
 
 ## 范围
 
@@ -24,7 +32,7 @@ quizzy 是**个人自学的刷题工具**，核心是「一道题反复练到会
 - **答题**：逐题作答、即时判分与解析、可回退改答案、进度落库因而可断点续答
 - **错题本**：答错自动入本，练熟后自动移出，也支持手动移出与一键错题重练
 - **作答记录**：历史会话列表，未完成的可以继续作答
-- **用户**：轻量登录即可自建题库，不做后台管理与角色权限
+- **用户**：注册后即可自建题库。公开注册带图形验证码与按 IP 限流，不做后台管理与角色权限（[ADR 0017](../adr/0017-public-signup-service.md)）
 
 具体实现边界见 [《判分与业务规则》](../design/判分与业务规则.md) 与 [《数据模型》](../design/数据模型.md)。
 
@@ -40,6 +48,10 @@ quizzy 是**个人自学的刷题工具**，核心是「一道题反复练到会
 - Redis、消息队列、多级缓存
 - Refresh Token 机制
 - Excel 与 JSON 之外的导入格式
+
+**一个例外**（2026-10-01 因改为公开服务而开）：需要能**封禁滥用账号、删除违规内容**。
+这仍然不是上面那条「后台用户管理与角色权限（RBAC）」——它是一个布尔字段级的最小开关，
+不是权限体系。理由见 [ADR 0017](../adr/0017-public-signup-service.md)。
 
 ## 已定范围与约束
 
@@ -58,7 +70,9 @@ quizzy 是**个人自学的刷题工具**，核心是「一道题反复练到会
 | 构建镜像与环境依赖源的处理 | [ADR 0009](../adr/0009-glibc-build-image-and-dockerignore.md)、[ADR 0010](../adr/0010-china-mirrors-for-build-deps.md) |
 | 密钥走 `.env`，本地默认值刻意保留 | [ADR 0011](../adr/0011-env-file-with-local-defaults.md) |
 | 健康检查探哪些端点 | [ADR 0012](../adr/0012-healthcheck-probes-api-docs.md) |
-| CI 只做门禁，不做自动部署 | [ADR 0013](../adr/0013-github-actions-gate-no-auto-deploy.md) |
+| ~~CI 只做门禁，不做自动部署~~ → **改为 CI 构建镜像推 ACR、推 tag 即自动部署** | [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md)（取代 [ADR 0013](../adr/0013-github-actions-gate-no-auto-deploy.md)） |
+| 跑在阿里云 ECS；本机只剩开发形态 | [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md) |
+| 对公网开放、任何人注册即可使用 | [ADR 0017](../adr/0017-public-signup-service.md) |
 | 版本号以 `git tag` 为准，只经构建参数注入 | [ADR 0015](../adr/0015-version-number-governance.md) |
 
 ## 术语与决策入口
