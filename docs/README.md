@@ -32,6 +32,7 @@
 | [operations/configuration.md](./operations/configuration.md) | 配置从哪来、改了要重启什么 | 换机器 / 改配置的人 | `.env.example` |
 | [operations/backup.md](./operations/backup.md) | 备份现状、手动跑一次、恢复（未演练） | 担心数据丢的人 | `scripts/backup-mysql.sh` |
 | [testing.md](./testing.md) | 测了什么、故意不测什么、新测试放哪 | 改代码前想确认安全网的人 | `src/test`、`package.json` |
+| [目录结构.md](./目录结构.md) | `docs/` 的带注释目录树（看形状；用途与真相源仍看本表） | 新人 / 冷启动的 AI，想一眼看清文档都在哪 | 文件系统 |
 | [development/contributing.md](./development/contributing.md) | 分支 / 提交 / PR 约定与文档纪律 | 要提交代码的人 | `git log` |
 | [todo/](./todo/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |
 
@@ -75,3 +76,4 @@ ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收�
 | 改代码前摸清设计与规则 | [design/](./design/) 下对应主题 + 对应 ADR |
 | 上线 / 回滚 | [operations/deployment.md](./operations/deployment.md) |
 | 想知道还有什么没定 | [docs/todo/](./todo/) |
+| 想一眼看清文档都在哪 | [目录结构.md](./目录结构.md) |
