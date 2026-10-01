@@ -14,6 +14,16 @@ COPY package.json package-lock.json ./
 RUN npm ci --registry="$NPM_REGISTRY" --no-audit --no-fund
 
 COPY . .
+
+# 版本与构建信息在构建期注入（ADR 0015）：值由 scripts/deploy.sh 从 git tag 算出，
+# 经 compose 的 build.args 传进来，vite.config.ts 再 define 成 __APP_*__ 常量打进产物。
+# ⚠️ 必须声明在 npm ci 那一层**之后**、npm run build **之前**：ARG 值一变，它之后的层
+#    缓存全失效，放到前面会让每次发版都白重装一遍依赖。
+ARG APP_VERSION=dev
+ARG APP_AHEAD=0
+ARG APP_COMMIT=unknown
+ARG APP_BUILD_TIME=unknown
+
 RUN npm run build
 
 FROM nginx:alpine

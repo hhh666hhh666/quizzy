@@ -58,6 +58,9 @@ logging:
     org.springframework.web: info
 
 quizzy:
+  # 版本号在构建期注入（镜像的 ENV QUIZZY_VERSION，源头是 git tag，见 scripts/deploy.sh）。
+  # 默认 dev 只服务本机裸跑 mvn spring-boot:run 的场景，与 ADR 0011 的兜底风格一致。
+  version: ${QUIZZY_VERSION:dev}
   jwt:
     # 容器里由 compose 注入 QUIZZY_JWT_SECRET 覆盖。
     # 下面这串是兜底默认值，已随公开仓库泄露；JwtUtil 检测到它会拒绝使用，
