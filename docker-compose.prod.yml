@@ -25,8 +25,15 @@ services:
       retries: 20
 
   server:
-    build: ./quizzy-server
-    image: quizzy-server:0.1.0
+    build:
+      context: ./quizzy-server
+      # 版本号由 scripts/deploy.sh 算出并 export，compose 在解析配置时替换（ADR 0015）。
+      # 这几个值**不进 .env**——.env 是密钥与本机配置的地盘（ADR 0011）。
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+    # 镜像 tag 跟随版本号，且必须是字面量：这样每个已发版本各留一份镜像，
+    # 回滚可以直接复用本地镜像而不必重新构建（ADR 0015）。
+    image: quizzy-server:1.1.0
     container_name: quizzy-server
     restart: unless-stopped
     depends_on:
@@ -54,8 +61,15 @@ services:
       start_period: 30s
 
   web:
-    build: ./quizzy-web
-    image: quizzy-web:0.1.0
+    build:
+      context: ./quizzy-web
+      # 四个都给前端：vite 会把它们 define 成 __APP_*__ 常量打进产物（ADR 0015）
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+        APP_AHEAD: ${APP_AHEAD:-0}
+        APP_COMMIT: ${APP_COMMIT:-unknown}
+        APP_BUILD_TIME: ${APP_BUILD_TIME:-unknown}
+    image: quizzy-web:1.1.0
     container_name: quizzy-web
     restart: unless-stopped
     depends_on:

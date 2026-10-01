@@ -15,6 +15,7 @@
         <span class="title">{{ route.meta.title || '' }}</span>
         <div class="user-area">
           <span>{{ store.user?.nickname || '未登录' }}</span>
+          <el-button link type="primary" @click="aboutVisible = true">关于</el-button>
           <el-button link type="primary" @click="onLogout">退出</el-button>
         </div>
       </el-header>
@@ -22,17 +23,22 @@
         <router-view />
       </el-main>
     </el-container>
+
+    <AboutDialog v-model:visible="aboutVisible" />
   </el-container>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import AboutDialog from '@/views/AboutDialog.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
+
+const aboutVisible = ref(false)
 
 const active = computed(() => '/' + (route.path.split('/')[1] || 'questions'))
 

@@ -36,8 +36,12 @@ fail() {
   compose logs --tail=100 "$@" >&2 || true
   echo "" >&2
   echo "=== 怎么回滚 ===" >&2
-  # 镜像 tag 固定是 0.1.0，重建时被覆盖了，所以回滚只能回到上一个能用的代码版本
-  echo "  git checkout <上一个能用的 commit> && bash scripts/deploy.sh $SCOPE" >&2
+  # 镜像 tag 跟随版本号（ADR 0015），所以退回上一个**已发版本**可以直接复用本地镜像：
+  # --build 只会重打当前版本号那一份，别的版本号的镜像还在，不必重新构建。
+  echo "  退回上一个已发版本（复用本地镜像，不重新构建）：" >&2
+  echo "    git checkout <上一个版本 tag> && docker compose -f $COMPOSE_FILE up -d --no-deps ${SERVICES[*]}" >&2
+  echo "  退回其它任意提交（需要重新构建）：" >&2
+  echo "    git checkout <commit> && bash scripts/deploy.sh $SCOPE" >&2
   echo "想先停掉别让它反复重启（数据不受影响）：" >&2
   echo "  docker compose -f $COMPOSE_FILE stop $*" >&2
   echo "数据在宿主机 ${MYSQL_DATA_DIR:-（未设置）}，不在容器里，不会被卷走。" >&2
@@ -100,6 +104,30 @@ fi
 wait_ready quizzy-mysql 180 || fail "mysql 起不来" mysql
 
 # ---- 3. 重建并替换业务容器 ----
+# 版本与构建信息在构建期注入镜像（ADR 0015）。git 只在宿主机上有——两个 .dockerignore
+# 都把 .git/ 排除了，容器里跑不了 git describe，所以必须在这里算好再传进去。
+#
+# TAG 取**最近的** tag 而不是 HEAD 上的 tag：HEAD 通常领先 tag，此时版本号仍报最近那个
+# 已发布版本，另有 APP_AHEAD 说明领先几个提交、APP_COMMIT 给出确切提交。这样「关于」
+# 弹窗既对得上 CHANGELOG，又不会掩盖「你跑的不是那个 tag」这件事。
+APP_VERSION="$(git describe --tags --abbrev=0 2>/dev/null || echo v0.0.0)"
+APP_AHEAD="$(git rev-list --count "${APP_VERSION}..HEAD" 2>/dev/null || echo 0)"
+APP_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+APP_BUILD_TIME="$(date '+%Y-%m-%d %H:%M')"
+export APP_VERSION APP_AHEAD APP_COMMIT APP_BUILD_TIME
+
+echo "==> 注入版本：$APP_VERSION（领先 $APP_AHEAD 个提交 · $APP_COMMIT · 构建于 $APP_BUILD_TIME）"
+
+# compose 里的 image tag 是字面量，而 APP_VERSION 来自 git。两者对不上就说明「改了版本号
+# 却没同步 compose 的 image」——那会把上一个版本的镜像覆盖掉，悄悄毁掉回滚能力。
+# 这里**只告警不中断**：克隆下来还没打过 tag 的仓库会误报，而误报会让门禁失去意义。
+# 真正的硬门禁是同名的 scripts/check-version.sh（CI 在推 tag 时跑）。
+if ! grep -qE "image: quizzy-(server|web):${APP_VERSION#v}([[:space:]]|$)" "$COMPOSE_FILE"; then
+  echo "⚠️  $COMPOSE_FILE 里的镜像 tag 与 $APP_VERSION 对不上。" >&2
+  echo "    改了版本号却忘了同步 compose，会让上一个版本的镜像被覆盖、回滚能力失效。" >&2
+  echo "    核对：bash scripts/check-version.sh $APP_VERSION" >&2
+fi
+
 # --no-deps 是关键：跳过 depends_on，确保这一步碰不到 mysql
 echo "==> 重建并启动：${SERVICES[*]}"
 compose up -d --build --no-deps "${SERVICES[@]}" \

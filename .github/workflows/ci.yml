@@ -1,11 +1,15 @@
 name: CI
 
-# 触发：主干 push + 指向主干的 PR。
+# 触发：主干 push + 指向主干的 PR + 版本 tag。
 # 用 GitHub 托管 runner，不用 self-hosted：本仓库是 public 的，
 # 把 runner 装在开发机上等于让任何能开 PR 的人在那台机器上执行代码（见 ADR 0013）。
+# ⚠️ tag 推送上只有「版本 · tag 与三处对齐」那个 job 会真的跑，其余 job 都被自己那条
+#    if 挡掉了：tag 指向的提交在 master 上已经完整验过一遍，再跑一次纯属白烧
+#    GitHub runner 与 Docker Hub 的匿名拉取配额（100 次/6h、按共享出口 IP 计）。
 on:
   push:
     branches: [master]
+    tags: ['v*']
   pull_request:
     branches: [master]
 
@@ -41,6 +45,7 @@ jobs:
     name: 后端 · Maven 单测
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: "!startsWith(github.ref, 'refs/tags/')"
     steps:
       - uses: actions/checkout@v7
 
@@ -62,6 +67,7 @@ jobs:
     name: 前端 · 类型检查与构建
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    if: "!startsWith(github.ref, 'refs/tags/')"
     defaults:
       run:
         working-directory: quizzy-web
@@ -89,6 +95,7 @@ jobs:
     name: 镜像 · 后端冒烟构建
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: "!startsWith(github.ref, 'refs/tags/')"
     # secrets 不能出现在 if: 里（GitHub 会报 Unrecognized named-value: 'secrets'
     # 并让整个 workflow 文件作废），所以先在 job 级把它折算成一个普通布尔放进 env，
     # step 再判 env。密钥值本身不进 env，只传「有没有」。
@@ -117,6 +124,7 @@ jobs:
     name: 镜像 · 前端冒烟构建
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: "!startsWith(github.ref, 'refs/tags/')"
     env:
       HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
     steps:
@@ -131,6 +139,24 @@ jobs:
 
       - name: docker build（npm 走官方源）
         run: docker build --build-arg NPM_REGISTRY=https://registry.npmjs.org ./quizzy-web
+
+  # 只在推 tag 时跑。版本号一致性的唯一有意义时刻就是「打 tag 的那一下」：平时 HEAD 领先
+  # tag 好几个提交，那时三处包版本还写着上一个版本号，是**正常**状态，硬比必然误报。
+  # 所以它不进 PR 门禁，只在 tag 上验（ADR 0015）。
+  version:
+    name: 版本 · tag 与三处对齐
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # 默认是 fetch-depth: 1 的浅克隆，拿不到 tag；而这个 job 的前提就是 tag
+          fetch-depth: 0
+
+      # 显式把 tag 名传进去，而不是让脚本自己猜：CI 上 tag 是齐的，但显式传少一层不确定性。
+      - name: 跑 scripts/check-version.sh
+        run: bash scripts/check-version.sh "$GITHUB_REF_NAME"
 
 # 注意：这里刻意不 docker compose up。仓库里没有 .env，而
 # ${QUIZZY_JWT_SECRET:?...} 是 ADR 0011 刻意设的必填语法，缺变量时 compose 在
