@@ -55,6 +55,6 @@
 
 ## 关于本文件的位置
 
-GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定——按项目纪律，这类「没定的事」只记在 [`docs/todo/`](../todo/)，不在文档里开清单。
+GitHub 只自动识别**仓库根目录**的 `CONTRIBUTING.md`（会在 PR 页面显示提示条）。本文件放在 `docs/development/` 下不会触发那个提示；要不要在根目录建一个转发页还没定，见 [docs/todo/2026-10-01-TODO-文档入口.md](../todo/2026-10-01-TODO-文档入口.md)——按项目纪律，未决事项只记在 [`docs/todo/`](../todo/)，不在文档正文里开清单。
 
 顺带一提：设计文档已经全部在 [`docs/design/`](../design/) 与 [《需求范围》](../requirements/scope.md) 下；根目录那个 `DESIGN.md` 已于 2026-09-26 删除，别再往回加。
