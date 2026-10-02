@@ -27,3 +27,24 @@ Status: accepted · 取代 [ADR 0013](0013-github-actions-gate-no-auto-deploy.md
 - **服务器上不 clone 仓库**：CI 每次把 `docker-compose.prod.yml` 一起送过去，保证编排文件与 tag 一致——否则「服务器上的 compose 是哪个版本」会变成一个新的漂移源。
 
 相关：[ADR 0007](0007-dev-prod-compose-with-bind-mount.md)（双形态与绑定挂载）、[ADR 0010](0010-china-mirrors-for-build-deps.md)（依赖源）、[ADR 0012](0012-healthcheck-probes-api-docs.md)（探测端点）、[ADR 0015](0015-version-number-governance.md)（版本号）、[ADR 0017](0017-public-signup-service.md)（公开注册，本次改变的触发原因）。
+
+## Amendment 1（2026-10-02）：入口改由宿主 nginx 承担，证书不再自建
+
+上线前实测那台轻量服务器（`8.137.172.6`）时发现两件与正文假设不符的事：
+
+1. **它上面装着并运行着宝塔面板 11.2.0**，宝塔的 nginx 占着 `80` 与 `888`，面板自身在 `7891`。
+   而正文写的形态是「web 容器自己 hold `80:80` 与 `443:443`」——**直接冲突**。
+2. 正文担心的「大陆拉不动 Docker Hub 基础镜像」**不成立**：那台机的 `/etc/docker/daemon.json` 早就配好了
+   `registry-mirrors`，`hello-world` 一次通过。（另：系统实际是 Alibaba Cloud Linux **3** 而非 4，
+   且 `docker-ce` + `compose plugin` 早已装好并开机自启，正文里"要装 moby、要建 swap"那两步都不需要。）
+
+**改动只有两处，其余全部不变：**
+
+- **对外入口交给宿主上既有的 nginx**。quizzy 的 web 容器只绑 `127.0.0.1:8081:80`，由宿主 nginx 反代过去，
+  不与既有环境抢端口。代价是多一层 nginx，且站点配置归宝塔管、位于仓库之外，成为新的「仓库外配置漂移源」。
+- **HTTPS 不再自建**。原计划用 `acme.sh` + DNS-01 签 Let's Encrypt、并把一个仅 DNS 权限的 RAM AccessKey
+  放在服务器上；宝塔自带 Let's Encrypt 申请与自动续期，于是**整条自建链路连同那个 AccessKey 的代价一起消失**。
+  上面 Considered Options 里「DNS-01 唯一的代价是服务器上要存一个 DNS AccessKey」这句随之作废——
+  这是换成宿主 nginx 之后顺带拿到的净收益，不是额外开销。
+
+**决策过程**：`docs/todo/2026-10-02-TODO-云上入口与宝塔共存.md`（已解决）记录了三个选项与取舍依据。

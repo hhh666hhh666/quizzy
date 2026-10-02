@@ -18,7 +18,7 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 
 ## 运行形态
 
-**目标形态**（2026-10-01 定，迁移进行中）：跑在阿里云 ECS 上，推 `git tag` 后由 CI 构建镜像并经 ACR 自动部署，本机只剩开发形态。见 [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md)。
+**目标形态**（2026-10-01 定，迁移进行中）：跑在阿里云轻量应用服务器上，推 `git tag` 后由 CI 构建镜像并经 ACR 自动部署，本机只剩开发形态。对外入口由宿主上既有的 nginx 承担（那台机器上跑着宝塔面板），证书走宝塔申请与续期。见 [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md) 及其 Amendment 1。
 
 ⚠️ **迁移完成前，实际形态仍是本机 Docker Desktop**——跑法以 [../operations/deployment.md](../operations/deployment.md) 为准，那份文档在行为真正改变之前不会提前改。
 
