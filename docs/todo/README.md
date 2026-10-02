@@ -39,6 +39,7 @@ YYYY-MM-DD-TODO-<主题>.md
 | **prod 跑在阿里云轻量应用服务器（大陆·成都 / Alibaba Cloud Linux 3 / 2C2G），本机只剩开发形态** | ADR 0016 |
 | **对公网开放，任何人注册即可使用**；带图形验证码 + IP 限流 + 封禁开关 | ADR 0017 |
 | 对外入口交给宿主既有的 nginx（web 容器只绑 `127.0.0.1:8081`）；证书由宝塔申请与续期，不自建 acme.sh | ADR 0016 Amendment 1 |
+| AI 会话的**过程**记录独立成 `docs/worklog/`（一次会话一份、入库、其他会话默认不读、不写派生事实） | ADR 0018 |
 | 两个 Dockerfile 的依赖源用 build-arg 参数化，默认值保持国内源 | ADR 0010 / ADR 0013 |
 | 镜像推阿里云 ACR 个人版（不支持 AccessKey 推送，用账号全名 + 固定密码），不加浮动 tag | 见镜像分发那条 |
 | 版本号以 `git tag` 为唯一真相源；镜像 tag 跟版本号走（不带 `v`），另三处手写对齐靠 `check-version.sh` 在**推 tag 时**校验 | ADR 0015 |
