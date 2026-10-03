@@ -125,9 +125,16 @@ async function onSubmit() {
   }
   submitting.value = true
   try {
-    feedback.value = await submitAnswer(sessionId, question.questionId, answer)
+    const result = await submitAnswer(sessionId, question.questionId, answer)
+    // 刷新会话（拿 answered / userAnswers / obtainedScore），但**停在刚提交的这题**上。
+    // 不能让 load() 决定当前题：它会把位置挪到「第一道未答题」，并在 syncPicked() 里把
+    // feedback 清成 null —— 原先那句 `feedback.value = feedback.value` 是自赋值，等于
+    // 判分反馈永远不显示；而且按钮变成「下一题」后一点就跳过一道未答题。
+    const index = current.value
     await load()
-    feedback.value = feedback.value
+    current.value = index
+    syncPicked()
+    feedback.value = result
   } finally {
     submitting.value = false
   }
