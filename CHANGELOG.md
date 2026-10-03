@@ -11,11 +11,12 @@
 | 出处 | 是什么 | 说明 |
 |------|--------|------|
 | **`git tag`**（如 `v1.1.0`） | **版本号** | 唯一真相源，与下面每个版本段一一对应 |
-| compose 里的镜像 tag | 镜像标识 | 跟随版本号，但**必须手写同步**——改了版本号却忘了改它，会把上一份镜像覆盖掉 |
+| compose 里的 `image:` | 镜像标识 | 只写 `${APP_VERSION}` 变量，**不再手写版本号**；镜像由 CI 推到 ACR，服务器按 tag 拉取 |
 | `pom.xml` / `package.json` 的包版本 | 各自的包版本 | Maven 坐标与 npm 包版本，**与发布版本无关**（`pom.xml` 还刻意带 `-SNAPSHOT`） |
 
-打 tag 时 `scripts/check-version.sh`（CI 的「版本 · tag 与三处对齐」job）会把上面几处与 tag 逐一比对。
-设计与取舍见 [ADR 0015](./docs/adr/0015-version-number-governance.md)；镜像分发仍未决，
+打 tag 时 `scripts/check-version.sh`（`release.yml` 的「版本」job）会比对**两处手写点**，
+并断言 compose 用的是变量而不是写死的 tag。
+设计与取舍见 [ADR 0015](./docs/adr/0015-version-number-governance.md)（含 Amendment 1）；镜像分发已定案，
 见 [docs/todo/2026-09-20-TODO-镜像分发.md](./docs/todo/2026-09-20-TODO-镜像分发.md)。
 
 > 「产品代次 v1」这个说法已于 2026-10-01 取消——它和版本号长得太像，要表达那个意思就直接写范围。
@@ -26,6 +27,42 @@
 ## [Unreleased]
 
 新变更先堆在这里；打 tag 时整段移入新版本段并改名。
+
+---
+
+## [1.2.0] - 2026-10-03
+
+「搬到云上」这一版。prod 从本机 Docker Desktop 迁到阿里云轻量服务器，交付链路改成
+「推 tag → CI 构建推 ACR → SSH 自动部署」，并顺手补掉了几处一直缺的安全与可靠性设置。
+
+### Changed
+
+- **prod 从本机搬到阿里云轻量服务器，交付链路改为「推 tag → CI 构建推 ACR → SSH 部署」**
+  （[ADR 0016](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)，取代 ADR 0013）：
+  - `docker-compose.prod.yml` 变为**云上编排**：镜像来自 ACR、不再有 `build:`、web 只绑 `127.0.0.1:8081`、
+    MySQL 与后端都不发布端口、按 2C2G 用 `JAVA_TOOL_OPTIONS` 钉死 JVM 内存、三个服务统一加日志上限
+  - 新增 `.github/workflows/release.yml`：`version` → `flyway-verify` → `build-push` → `deploy` 四个 job 串行；
+    tag 触发从 `ci.yml` 移除，tag 的处置权统一收进它
+  - 新增 `scripts/server-deploy.sh` / `server-rollback.sh`（在服务器上跑；部署前强制备份、mysql 永不重建）；
+    **删除本机版 `scripts/deploy.sh`**——本机从此只剩开发形态
+  - 新增 `deploy/`：宿主 nginx 站点模板与云端 `.env` 模板
+- **HTTPS 与对外入口交给宿主上既有的 nginx（宝塔）**，不再自建 `acme.sh` + DNS-01
+  （[ADR 0016 Amendment 1](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)）
+- **版本号手写点从三处减到两处**：compose 的 `image:` 改用 `${APP_VERSION}` 变量，
+  `check-version.sh` 相应改成结构断言（[ADR 0015 Amendment 1](./docs/adr/0015-version-number-governance.md)）
+
+### Added
+
+- **迁移首次被 CI 验证**：新增的 `flyway-verify` job 在一次性 `mysql:8` 上按顺序重放 `db/migration`，
+  并断言文件名合 Flyway 约定、版本号严格递增——此前 `mvn test` 完全不碰数据库
+
+### Fixed
+
+- **「改完前端必须硬刷新」这个老毛病消掉了**：容器 nginx 原先没有 `Cache-Control`，
+  现在 `index.html` 明确不缓存、带内容 hash 的 `assets/` 长缓存
+- **CORS 不再对任意来源开放**：原来是 `allowedOriginPatterns("*")` 与 `allowCredentials(true)` 并存，
+  现在默认**完全不注册 CORS**（前端与 `/api` 同源本就不需要），需要时用 `QUIZZY_CORS_ALLOWED_ORIGINS` 显式开
+- **后端不再直接对公网暴露**：`8080` 端口映射删除，只经容器 nginx 暴露 `/api/`（Swagger 因此也不再对外）
 
 ---
 
@@ -95,6 +132,7 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/hhh666hhh666/quizzy/compare/ae273cb...v1.0.0
