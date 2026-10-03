@@ -1,5 +1,10 @@
 server:
   port: 8080
+  # 宿主 nginx 终止 TLS 后逐层透传 X-Forwarded-*；让 Spring 认这些头，
+  # 使 request.getScheme() / getRemoteAddr() 反映真实客户端（https + 真实 IP）。
+  # 信任前提：server 容器**不发布端口**，只有容器 nginx 能到达 → 伪造头不成立。
+  # ⚠️ 将来若给 server 加端口映射，必须重新评估这一点。
+  forward-headers-strategy: framework
   servlet:
     encoding:
       charset: UTF-8
@@ -58,9 +63,13 @@ logging:
     org.springframework.web: info
 
 quizzy:
-  # 版本号在构建期注入（镜像的 ENV QUIZZY_VERSION，源头是 git tag，见 scripts/deploy.sh）。
+  # 版本号在构建期注入（镜像的 ENV QUIZZY_VERSION，源头是 git tag，见 .github/workflows/release.yml）。
   # 默认 dev 只服务本机裸跑 mvn spring-boot:run 的场景，与 ADR 0011 的兜底风格一致。
   version: ${QUIZZY_VERSION:dev}
+  # 同源部署（前端与 /api 同域，都由宿主 nginx 反代到同一个容器）**不需要 CORS**，
+  # 所以默认留空 = 完全不注册；只有出现跨域消费者时才填，逗号分隔。见 WebConfig 的注释。
+  cors:
+    allowed-origins: ${QUIZZY_CORS_ALLOWED_ORIGINS:}
   jwt:
     # 容器里由 compose 注入 QUIZZY_JWT_SECRET 覆盖。
     # 下面这串是兜底默认值，已随公开仓库泄露；JwtUtil 检测到它会拒绝使用，

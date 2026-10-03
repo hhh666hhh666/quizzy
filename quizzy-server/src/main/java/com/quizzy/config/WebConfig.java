@@ -2,16 +2,31 @@ package com.quizzy.config;
 
 import com.quizzy.security.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
     private final JwtInterceptor jwtInterceptor;
+
+    /**
+     * 允许跨域的前端来源（逗号分隔）。默认空 = 不注册任何 CORS。
+     *
+     * 生产环境前端与 /api 同源（宿主 nginx 把两者都反代到同一个 web 容器），压根不需要 CORS；
+     * 只有本机换别的前端开发服务器、或将来前后端真的不同域时，才在 .env 里设
+     * QUIZZY_CORS_ALLOWED_ORIGINS。空值时刻意**不调用 registry.addMapping**，
+     * 这样就不可能出现「allowedOriginPatterns("*") + allowCredentials(true)」
+     * 那种在公网上等于门户大开的组合。
+     */
+    @Value("${quizzy.cors.allowed-origins:}")
+    private String allowedOrigins;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -28,11 +43,21 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = allowedOrigins == null ? new String[0]
+                : Arrays.stream(allowedOrigins.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .toArray(String[]::new);
+        if (origins.length == 0) {
+            return; // 同源部署：不注册 CORS
+        }
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOrigins(origins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                // JWT 走 Authorization 头、不用 cookie，所以不需要携带凭据；
+                // 关掉它也让「来源被误写成通配」这件事不再有安全含义。
+                .allowCredentials(false)
                 .maxAge(3600);
     }
 }

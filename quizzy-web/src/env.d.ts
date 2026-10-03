@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 // 构建期注入的版本与构建信息，值在 vite.config.ts 的 define 里生成，
-// 源头是 docker build 的 --build-arg（见 scripts/deploy.sh）。
+// 源头是 docker build 的 --build-arg（见 .github/workflows/release.yml）。
 // 宿主机直跑时分别是 dev / 0 / unknown / unknown。
 declare const __APP_VERSION__: string
 declare const __APP_AHEAD__: string

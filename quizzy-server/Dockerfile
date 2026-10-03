@@ -23,7 +23,7 @@ RUN mvn -B -DskipTests package
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# 版本号在构建期注入：值由 scripts/deploy.sh 从 git tag 算出，经 compose 的 build.args 传进来
+# 版本号在构建期注入：值由 .github/workflows/release.yml 从 git tag 算出，经 build-args 传进来
 # （ADR 0015）。⚠️ 必须在这个 stage 里**重新声明一次** ARG —— 上面 build stage 里那个出了
 # stage 就不可见，这是 ARG 的语义，不是笔误。
 ARG APP_VERSION=dev
