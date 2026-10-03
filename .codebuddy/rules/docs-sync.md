@@ -37,7 +37,7 @@ alwaysApply: true
    git grep -n '<旧名或旧路径>'
    ```
 
-3. 改完跑 `bash scripts/check-doc-links.sh`。它查两类：md 相对链接、以及脚本/注释里提到的 `docs/ scripts/ .github/` 路径。CI 上有同名 job 会再验一遍。
+3. 改完跑 `bash scripts/check-doc-links.sh`。它查两类：md 相对链接、以及脚本/注释里提到的 `docs/ scripts/ .github/` 路径。**新增的文件要先 `git add`**——它只扫已跟踪文件，没 add 就等于没验（2026-10-03 就是这么漏掉一个的）。CI 上有同名 job 会再验一遍。
 4. md 里写**示例或虚构路径用行内代码** `` `foo/bar.md` ``，别写成 `[](foo/bar.md)`——脚本只查链接，不查行内代码。
 
 ## 收尾

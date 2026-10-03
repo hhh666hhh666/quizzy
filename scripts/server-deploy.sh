@@ -4,7 +4,7 @@
 #
 #   bash server-deploy.sh <版本号> [web|server|all]      # 版本号不带 v，如 1.1.0
 #
-# 从已删除的本机版 scripts/deploy.sh 继承的设计（要改这里之前先读那一条的教训）：
+# 从已删除的本机版部署脚本（deploy.sh）继承的设计（要改这里之前先读那一条的教训）：
 #   * mysql 永不重建：用 --no-deps 绕开 depends_on，它最多在「没在跑」时被拉起一次；
 #   * up -d 之前先强制备份一次（docs/adr/0016 记的第一道保险）；
 #   * 等 healthcheck（无 healthcheck 的容器退回看 State.Status）；
