@@ -19,28 +19,26 @@
           <MarkdownRenderer :source="currentQuestion.stem" />
         </view>
 
+        <!-- 选项自己排：整行可点、内容多行自适应。
+             组件库的 radio / checkbox 会把块级内容排成居中文本（选项一多就参差不齐），
+             而且点击落在行内元素上不一定触发选中。 -->
         <view class="options">
-          <wd-checkbox-group
-            v-if="currentQuestion.type === 'MULTI'"
-            v-model="picked"
-            :disabled="submitted"
+          <view
+            v-for="option in currentQuestion.options"
+            :key="option.label"
+            :class="['option', { picked: isPicked(option.label), locked: submitted }]"
+            @click="onPick(option.label)"
           >
-            <view v-for="option in currentQuestion.options" :key="option.label" class="option">
-              <wd-checkbox :model-value="option.label">
-                <text class="opt-label">{{ option.label }}.</text>
-                <MarkdownRenderer :source="option.content" />
-              </wd-checkbox>
+            <view :class="['marker', currentQuestion.type === 'MULTI' ? 'marker--square' : '']">
+              <text v-if="isPicked(option.label)" class="marker-tick">✓</text>
             </view>
-          </wd-checkbox-group>
-
-          <wd-radio-group v-else v-model="pickedRadio" :disabled="submitted">
-            <view v-for="option in currentQuestion.options" :key="option.label" class="option">
-              <wd-radio :value="option.label">
-                <text class="opt-label">{{ option.label }}.</text>
+            <view class="option-body">
+              <text class="opt-label">{{ option.label }}.</text>
+              <view class="option-content">
                 <MarkdownRenderer :source="option.content" />
-              </wd-radio>
+              </view>
             </view>
-          </wd-radio-group>
+          </view>
         </view>
 
         <view class="feedback" v-if="feedback">
@@ -127,6 +125,25 @@ function syncPicked() {
     picked.value = q.answered ? [...q.userAnswers] : []
   } else {
     pickedRadio.value = q.answered ? q.userAnswers[0] || '' : ''
+  }
+}
+
+function isPicked(label: string): boolean {
+  const q = currentQuestion.value
+  if (!q) return false
+  return q.type === 'MULTI' ? picked.value.includes(label) : pickedRadio.value === label
+}
+
+function onPick(label: string) {
+  if (submitted.value) return
+  const q = currentQuestion.value
+  if (!q) return
+  if (q.type === 'MULTI') {
+    picked.value = picked.value.includes(label)
+      ? picked.value.filter((item) => item !== label)
+      : [...picked.value, label]
+  } else {
+    pickedRadio.value = label
   }
 }
 
@@ -224,12 +241,57 @@ function typeLabel(type: string) {
 .stem {
   margin-bottom: 16rpx;
 }
+.options {
+  margin-top: 8rpx;
+}
 .option {
-  margin: 16rpx 0;
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 16rpx;
+  margin: 12rpx 0;
+  border-radius: 12rpx;
+  background: #f7f8fa;
+}
+.option.picked {
+  background: #ecf5ff;
+}
+.marker {
+  flex: none;
+  width: 40rpx;
+  height: 40rpx;
+  margin: 4rpx 16rpx 0 0;
+  border: 2rpx solid #c8c9cc;
+  border-radius: 50%;
+  background: #fff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.marker--square {
+  border-radius: 8rpx;
+}
+.option.picked .marker {
+  background: $app-primary;
+  border-color: $app-primary;
+}
+.marker-tick {
+  color: #fff;
+  font-size: 24rpx;
+  line-height: 1;
+}
+.option-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
 }
 .opt-label {
+  flex: none;
   font-weight: 600;
   margin-right: 8rpx;
+}
+.option-content {
+  flex: 1;
 }
 .feedback {
   margin-top: 24rpx;
