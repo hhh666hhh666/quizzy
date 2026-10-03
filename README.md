@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml/badge.svg)](https://github.com/hhh666hhh666/quizzy/actions/workflows/ci.yml)
 
-个人自学刷题工具，目前只做**选择题**（单选 / 多选 / 判断）。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对若干次自动移出。
+刷题工具，目前只做**选择题**（单选 / 多选 / 判断）；正从「本机自用」改为**对公网开放的注册制服务**。练习语义：逐题作答、即时判分、马上看解析，答错的题进错题本，连续答对若干次自动移出。
 
 当前版本号看 [CHANGELOG.md](./CHANGELOG.md) 顶部，真相源是 `git tag`；程序里在右上角「关于」里显示。
 

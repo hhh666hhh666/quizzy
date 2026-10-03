@@ -24,6 +24,10 @@ YYYY-MM-DD-TODO-<主题>.md
 | [2026-09-20-TODO-镜像分发.md](./2026-09-20-TODO-镜像分发.md) | registry 与 tag | 已解决 | 低 |
 | [2026-10-01-TODO-文档入口.md](./2026-10-01-TODO-文档入口.md) | 要不要放根目录 CONTRIBUTING.md 转发页 | 待办 | 低 |
 | [2026-10-01-TODO-术语表补录.md](./2026-10-01-TODO-术语表补录.md) | 版本号那轮定下的叫法要不要进 CONTEXT.md | 已解决 | 低 |
+| [2026-10-03-TODO-移动端与小程序落地.md](./2026-10-03-TODO-移动端与小程序落地.md) | 建 quizzy-mobile、先跑通 H5 再上小程序 | 待办 | 高 |
+| [2026-10-03-TODO-微信登录与账号绑定.md](./2026-10-03-TODO-微信登录与账号绑定.md) | 小程序 wx.login 与账号绑定的方案 | 待办 | 中 |
+| [2026-10-03-TODO-注册风控.md](./2026-10-03-TODO-注册风控.md) | 公开注册的图形验证码 + IP 限流尚未实现 | 待办 | 高 |
+| [2026-10-03-TODO-备案与HTTPS.md](./2026-10-03-TODO-备案与HTTPS.md) | ICP 备案 + HTTPS + 小程序合法域名（外部前置） | 待办 | 高 |
 
 ## 已定，不用再想
 
@@ -44,3 +48,4 @@ YYYY-MM-DD-TODO-<主题>.md
 | 两个 Dockerfile 的依赖源用 build-arg 参数化，默认值保持国内源 | ADR 0010 / ADR 0013 |
 | 镜像推阿里云 ACR 个人版（不支持 AccessKey 推送，用账号全名 + 固定密码），不加浮动 tag | 见镜像分发那条 |
 | 版本号以 `git tag` 为唯一真相源；**两处**手写点（`package.json` / `pom.xml`）靠 `check-version.sh` 在推 tag 时校验，compose 那一处改成断言用的是 `${APP_VERSION}` 变量 | ADR 0015 / Amendment 1 |
+| **移动端用 uni-app 单工程覆盖 H5 + 微信小程序，PC 端 `quizzy-web` 不动；移动端只做「消费」**（建设类功能留在 PC） | ADR 0019 |

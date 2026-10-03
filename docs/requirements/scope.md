@@ -22,6 +22,8 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 
 ⚠️ **迁移完成前，实际形态仍是本机 Docker Desktop**——跑法以 [../operations/deployment.md](../operations/deployment.md) 为准，那份文档在行为真正改变之前不会提前改。
 
+**客户端形态**（2026-10-03 定）：PC Web（`quizzy-web`）+ 移动 H5 + 微信小程序，三者**共用同一后端与账号**。移动端**只做「消费」**（刷题、快速练习、错题本、答题记录，以及只读试卷列表 + 从已有试卷答题），「建设」（题库增删改查、组卷、导入导出）留在 PC。它只新增入口，**不新增业务能力**。见 [ADR 0019](../adr/0019-mobile-clients-with-uniapp.md)。
+
 ## 范围
 
 按业务能力划分，不按技术分层：
@@ -74,6 +76,7 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 | 跑在阿里云 ECS；本机只剩开发形态 | [ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md) |
 | 对公网开放、任何人注册即可使用 | [ADR 0017](../adr/0017-public-signup-service.md) |
 | 版本号以 `git tag` 为准，只经构建参数注入 | [ADR 0015](../adr/0015-version-number-governance.md) |
+| 移动端 / 小程序只是新增客户端形态，不新增业务能力；建设类功能留在 PC | [ADR 0019](../adr/0019-mobile-clients-with-uniapp.md) |
 
 ## 术语与决策入口
 

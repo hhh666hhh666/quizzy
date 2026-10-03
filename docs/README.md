@@ -26,7 +26,8 @@
 | [design/判分与业务规则.md](./design/判分与业务规则.md) | 判分、会话、错题本、规则卷抽题 | 前后端开发者 | `ScoreStrategy` / `QuizService` / `PaperService` |
 | [design/导入导出.md](./design/导入导出.md) | Excel / JSON 契约入口、校验与容错语义 | 改导入导出、或给题库工具对齐格式的人 | DTO 与 `QuestionImportService`、ADR 0005/0006 |
 | [design/API.md](./design/API.md) | 怎么看真实接口、通用响应与错误约定 | 对接接口或改 Controller 的人 | springdoc 与各 Controller |
-| [design/前端.md](./design/前端.md) | 页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
+| [design/前端.md](./design/前端.md) | **PC 端**（`quizzy-web`）页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
+| [design/移动端.md](./design/移动端.md) | 移动端 / 小程序的页面流、编译目标与后端边界（骨架） | 改移动端的人 | 现阶段本文件（`quizzy-mobile/` 建好后以代码为准） |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [decisions/](./decisions/) | **决策过程**日志（grill 问答原文、被否选项、未决问题） | 查「当时考虑过 X 吗」的人 | 日志自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
