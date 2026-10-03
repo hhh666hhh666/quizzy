@@ -2,3 +2,5 @@
 # bash 遇到 "#!/usr/bin/env bash\r" 会报 bad interpreter，脚本直接跑不起来。
 # 只钉住 shell 脚本，不动其他文件，避免全库重新规范化。
 *.sh text eol=lf
+# 同理：nginx 配置里的 CR 会被当成内容的一部分，不只是换行风格问题。
+*.conf text eol=lf

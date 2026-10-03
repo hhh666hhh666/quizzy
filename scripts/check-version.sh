@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 校验「版本号只有一个真相源」：git tag 与三处手写点是否一致（ADR 0015）。
-# 用作 CI 门禁（推 tag 时跑，见 .github/workflows/ci.yml 的「版本 · tag 与三处对齐」job）
-# 与本地提交前自检。
+# 校验「版本号只有一个真相源」：git tag 与两处手写点一致，compose 的 image 用的是变量，
+# 且 package-lock.json 没有与 package.json 漂开（ADR 0015 及其 Amendment 1）。
+# 用作 CI 门禁（推 tag 时跑，见 .github/workflows/release.yml 的「版本」job）与本地提交前自检。
 #
 #   bash scripts/check-version.sh            # 期望版本取自 HEAD 上的 tag，没有就跳过
 #   bash scripts/check-version.sh v1.1.0     # 显式指定（CI 传 github.ref_name）
@@ -44,22 +44,50 @@ check() {
   fi
 }
 
-echo "==> 校验 $RAW 与三处手写点（期望版本 $EXPECT）"
+echo "==> 校验 $RAW 与两处手写点 + compose 结构（期望版本 $EXPECT）"
 
-# 1. 前端包版本
-check 'quizzy-web/package.json' \
-  "$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-web/package.json | tr -d '\r')"
+# 1. 前端包版本（手写点之一）
+PKG_VERSION="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-web/package.json | head -1 | tr -d '\r')"
+check 'quizzy-web/package.json' "$PKG_VERSION"
+
+# 1b. package-lock.json 必须与 package.json 一致 —— 这是**派生一致性断言**，不是第三个手写点。
+#     真相源是 package.json，lockfile 只是它的快照，所以比的是「两者相等」而不是「也等于 tag」。
+#     补这条是因为它曾经是盲区：只改 package.json 时，lockfile 里那份会静默留在旧值；
+#     而下一次 `npm install` 又会把它悄悄刷回来，凭空多出一个与发版无关的改动。
+#     只取顶层那一处即可——`packages[""]` 里那份是同一个值（缩进 6 空格，不会被这个模式命中）。
+LOCK_VERSION="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-web/package-lock.json | head -1 | tr -d '\r')"
+if [ -n "$PKG_VERSION" ] && [ "$LOCK_VERSION" = "$PKG_VERSION" ]; then
+  printf '  [ok]   quizzy-web/package-lock.json = %s（与 package.json 一致）\n' "$LOCK_VERSION"
+else
+  printf '  [FAIL] quizzy-web/package-lock.json：取到「%s」，而 package.json 是「%s」——派生文件必须一致\n' \
+    "${LOCK_VERSION:-空}" "${PKG_VERSION:-空}" >&2
+  FAILED=$((FAILED + 1))
+fi
 
 # 2. 后端包版本。只认 4 空格缩进那一个 —— parent 是 8 空格、依赖里是 12 空格。
 #    保留 -SNAPSHOT 是刻意的（见 pom.xml 里的注释），比对前剥掉。
 POM_VERSION="$(sed -n 's/^    <version>\(.*\)<\/version>$/\1/p' quizzy-server/pom.xml | tr -d '\r')"
 check 'quizzy-server/pom.xml' "${POM_VERSION%-SNAPSHOT}"
 
-# 3. compose 里两个镜像 tag（它们必须是字面量，理由见 ADR 0015）
-check 'docker-compose.prod.yml (server)' \
-  "$(sed -n 's/^ *image: quizzy-server:\(.*\)$/\1/p' docker-compose.prod.yml | tr -d '\r')"
-check 'docker-compose.prod.yml (web)' \
-  "$(sed -n 's/^ *image: quizzy-web:\(.*\)$/\1/p' docker-compose.prod.yml | tr -d '\r')"
+# 3. compose 里两个 image 必须是**变量**，不能写死版本 tag（ADR 0015 Amendment 1）。
+#    云上镜像来自 ACR、tag 由部署时传入；写死会毁掉「版本 tag 即回滚落点」这件事。
+#    这里做结构断言而不是比值 —— 量变了：不再是「三处都比对值」，而是「两处比值 + 这里比形状」。
+#    ⚠️ ${APP_VERSION} 要按字面量匹配，所以用单引号拼串，别整段改成双引号。
+#    ⚠️ 放行 ${APP_VERSION:?提示语} 这种必填写法（compose 支持 `:?` 带错误信息），
+#       否则「加了提示语」会被误判成「写死了 tag」。
+check_compose_image() {
+  local svc="$1"
+  local pattern='^[[:space:]]*image:.*/quizzy-'"$svc"':\$\{APP_VERSION(:[^}]*)?\}[[:space:]]*$'
+  if grep -qE "$pattern" docker-compose.prod.yml; then
+    printf '  [ok]   %s\n' "docker-compose.prod.yml (${svc}) 的 image 用的是 \${APP_VERSION}"
+  else
+    printf '  [FAIL] docker-compose.prod.yml (%s)：image 必须写成 .../quizzy-%s:${APP_VERSION}，不要写死版本 tag\n' \
+      "$svc" "$svc" >&2
+    FAILED=$((FAILED + 1))
+  fi
+}
+check_compose_image server
+check_compose_image web
 
 # 4. CHANGELOG 里有没有对应的版本段 —— 打 tag 前它该从 [Unreleased] 固化下来了。
 #    点号在正则里要转义，否则 1.1.0 会连 1x1y0 也算命中。
@@ -76,4 +104,4 @@ if [ "$FAILED" -gt 0 ]; then
   exit 1
 fi
 
-echo "==> 通过：四处与 $RAW 一致"
+echo "==> 通过：两处手写点对齐、compose 结构正确、lockfile 未漂"

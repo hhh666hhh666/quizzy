@@ -1,39 +1,58 @@
+# quizzy · 云上 prod 编排（阿里云轻量服务器）
+#
+# 形态：镜像来自 ACR（CI 构建推送，服务器只拉取、不构建、不 clone 仓库）；
+#       对外入口是宿主 nginx（宝塔），web 容器只绑 127.0.0.1:8081。
+# 取舍与逐条理由见 docs/adr/0016-cloud-deploy-with-release-pipeline.md（含 Amendment 1）。
+#
+# ⚠️ 本文件里**没有 build:**——2C2G 的服务器上跑 Maven 必 OOM，构建一律在 CI 上做。
+# ⚠️ 变量来自服务器上的 /srv/quizzy/.env，而 compose 默认只找**自己所在目录**的 .env；
+#    所以调用方（scripts/server-deploy.sh）一律显式 `--env-file /srv/quizzy/.env`。
+
+name: quizzy   # 固定项目名，免得容器/网络名随 compose 目录名变化而漂移
+
+# 三个服务统一的日志上限：Docker 默认的 json-file 不限制大小，40G 系统盘迟早被日志吃掉。
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   mysql:
     image: mysql:8
     container_name: quizzy-mysql
     restart: unless-stopped
-    ports:
-      - "${MYSQL_PORT:-3306}:3306"
+    # 不发布任何端口：只有同一网络里的 server 能连 3306（红线，见 docs/adr/0016）。
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在 /srv/quizzy/.env 里设置 MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-quizzy}
-      TZ: Asia/Shanghai
+      TZ: ${TZ:-Asia/Shanghai}
     command:
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
-      --default-time-zone=+08:00
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+08:00
+      # 2C2G：显式钉死缓冲池与连接数，不让默认值往上飘。
+      # ⚠️ 首跑取 128M 而不是 256M：实测这台机可用内存只有 ~800MB，而 JVM 那边还要吃 400–600MB，
+      #    两处都按「2C2G 的余量」配会合起来超预算——顶不住的表现是 OOM-killer 杀进程，
+      #    症状却长成「健康检查永远不过」，极难联想到是内存。跑通、观察 free -m 有余量后再调回 256M。
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=50
     volumes:
-      # 长语法写绑定挂载，避免 Windows 盘符（E:）被短语法的冒号切错
       - type: bind
-        source: ${MYSQL_DATA_DIR:-E:/develop/docker/mysql8/var/lib/mysql}
+        source: ${MYSQL_DATA_DIR:?请在 /srv/quizzy/.env 里设置 MYSQL_DATA_DIR（Linux 绝对路径）}
         target: /var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-123456}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 20
+      start_period: 30s
+    logging: *default-logging
 
   server:
-    build:
-      context: ./quizzy-server
-      # 版本号由 scripts/deploy.sh 算出并 export，compose 在解析配置时替换（ADR 0015）。
-      # 这几个值**不进 .env**——.env 是密钥与本机配置的地盘（ADR 0011）。
-      args:
-        APP_VERSION: ${APP_VERSION:-dev}
-    # 镜像 tag 跟随版本号，且必须是字面量：这样每个已发版本各留一份镜像，
-    # 回滚可以直接复用本地镜像而不必重新构建（ADR 0015）。
-    image: quizzy-server:1.1.0
+    # 镜像 tag 跟随版本号，但由部署时传入（ADR 0015 Amendment 1：这里不再是字面量）。
+    # ⚠️ compose 不支持 ${VAR#v} 截断，所以 tag 不带 v 这件事由部署脚本保证。
+    image: ${ACR_REGISTRY:?未设置 ACR_REGISTRY}/${ACR_NAMESPACE:?未设置 ACR_NAMESPACE}/quizzy-server:${APP_VERSION:?未设置 APP_VERSION}
     container_name: quizzy-server
     restart: unless-stopped
     depends_on:
@@ -42,38 +61,40 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-quizzy}?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
-      # 必须显式配置：默认值已随公开仓库泄露，:? 会在 .env 缺失时直接报错退出，
-      # 避免带着一把全网皆知的密钥上线。生成方式见 .env.example。
-      QUIZZY_JWT_SECRET: ${QUIZZY_JWT_SECRET:?请在 .env 里设置 QUIZZY_JWT_SECRET（python -c "import secrets;print(secrets.token_hex(32))"）}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # 必填：默认值已随公开仓库泄露（ADR 0011 Amendment 1），缺失时 compose 在读配置阶段就退出。
+      QUIZZY_JWT_SECRET: ${QUIZZY_JWT_SECRET:?请在 /srv/quizzy/.env 里设置 QUIZZY_JWT_SECRET}
       QUIZZY_JWT_EXPIRE_DAYS: ${QUIZZY_JWT_EXPIRE_DAYS:-7}
-      TZ: Asia/Shanghai
+      # 同源部署默认不需要 CORS（前端与 /api 同域）；留空即完全不注册。见 WebConfig 的注释。
+      QUIZZY_CORS_ALLOWED_ORIGINS: ${QUIZZY_CORS_ALLOWED_ORIGINS:-}
+      TZ: ${TZ:-Asia/Shanghai}
       SERVER_PORT: 8080
-    ports:
-      - "8080:8080"
-    # 没有 actuator，所以探 springdoc 的 /v3/api-docs：它能证明应用上下文真的起来了。
-    # start_period 是给 Spring Boot 启动留的宽限期，这段时间内失败不计入 retries。
+      # 2C2G 硬约束：钉死堆与元空间，避免 JVM 按宿主机 1.8GiB 自动放大。
+      # 用 JAVA_TOOL_OPTIONS 而不是覆盖 entrypoint：① 不动镜像；② 不会把
+      # `java -jar /app/app.jar` 抄进 compose 变成第二份会漂的真相源。
+      # SerialGC 在 2 vCPU + 小堆下比 G1 更省。
+      # ⚠️ 首跑取 -Xms128m -Xmx384m：这台机可用内存只有 ~800MB，mysql 已占 ~480MB，
+      #    给 JVM 的余量比「2C2G 的理论值」小。超预算时 JVM 会被 OOM-killer 杀，
+      #    而症状是健康检查不过。跑通、观察有余量后再调回 512m。
+      JAVA_TOOL_OPTIONS: "-Xms128m -Xmx384m -XX:MaxMetaspaceSize=128m -XX:MaxDirectMemorySize=48m -XX:+UseSerialGC"
+    # 不发布端口：只经 web 容器的 nginx 暴露 /api/，Swagger 因此也不对外（ADR 0016）。
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1:8080/v3/api-docs || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 12
-      start_period: 30s
+      start_period: 40s
+    logging: *default-logging
 
   web:
-    build:
-      context: ./quizzy-web
-      # 四个都给前端：vite 会把它们 define 成 __APP_*__ 常量打进产物（ADR 0015）
-      args:
-        APP_VERSION: ${APP_VERSION:-dev}
-        APP_AHEAD: ${APP_AHEAD:-0}
-        APP_COMMIT: ${APP_COMMIT:-unknown}
-        APP_BUILD_TIME: ${APP_BUILD_TIME:-unknown}
-    image: quizzy-web:1.1.0
+    image: ${ACR_REGISTRY}/${ACR_NAMESPACE}/quizzy-web:${APP_VERSION}
     container_name: quizzy-web
     restart: unless-stopped
     depends_on:
       server:
         condition: service_healthy
+    # 只绑回环：对外入口交给宿主 nginx（宝塔），由它反代到 127.0.0.1:8081。
+    # 绑回环而不是 0.0.0.0，是为了①不与宝塔抢 80/443、②web 不直接对公网可达。
     ports:
-      - "80:80"
+      - "127.0.0.1:8081:80"
+    logging: *default-logging
