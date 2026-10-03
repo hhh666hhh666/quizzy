@@ -1,0 +1,217 @@
+name: Release
+
+# 推 v* tag 即发布：版本门禁 → 迁移验证 → 构建推 ACR → SSH 部署。
+# 这是本项目唯一会改动运行中服务的流水线；逐条取舍见 docs/adr/0016-cloud-deploy-with-release-pipeline.md（取代 ADR 0013）。
+# 与 ci.yml 的分工：ci.yml 管「提交能不能过」，本文件管「tag 能不能上线」。tag 不再触发 ci.yml。
+#
+# ⚠️ secrets 不能出现在 if: 里（GitHub 会报 Unrecognized named-value 并让整个 workflow 作废，
+#    故障表现是「run 失败但 jobs 数为 0」，极容易误判）——需要判「有没有」时先在 job 级 env
+#    折算成普通布尔，step 再判 env。密钥值本身不进 env，只传「有没有」。
+on:
+  push:
+    tags: ['v*']
+
+# 只需读代码：ACR 用账号密码推（不是 GITHUB_TOKEN），所以不需要 packages: write。
+permissions:
+  contents: read
+
+# 同一个 tag 的发布串行，避免两次部署交叉；不取消已开始的（部署做一半被中断更糟）。
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # 阿里云 ACR **新个人版实例**（地址形如 crpi-*.cn-<地域>.personal.cr.aliyuncs.com，
+  # 与「经典个人版」的 registry.cn-<地域>.aliyuncs.com 是两种格式，不要照后者猜）。
+  # 整段从控制台「仓库管理 → 访问凭证」抄，与服务器 /srv/quizzy/.env 里的值保持一致。
+  ACR_REGISTRY: crpi-1e1fwsxsm0ra0pky.cn-chengdu.personal.cr.aliyuncs.com
+  ACR_NAMESPACE: quizzy
+  DEPLOY_HOST: 8.137.172.6
+  DEPLOY_USER: root
+
+jobs:
+  # 1. 版本门禁：tag 与 package.json / pom.xml / CHANGELOG 对齐，且 compose 用的是 ${APP_VERSION}。
+  #    从 ci.yml 迁来——tag 的处置权统一收在本文件里。
+  version:
+    name: 版本 · tag 与两处对齐
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # 默认是 fetch-depth: 1 的浅克隆，拿不到 tag；而这个 job 的前提就是 tag
+          fetch-depth: 0
+
+      - name: 跑 scripts/check-version.sh
+        run: bash scripts/check-version.sh "$GITHUB_REF_NAME"
+
+      # 镜像 tag 不带 v（git tag 带）。compose 不支持 ${VAR#v} 截断，剥前缀只能发生在传参之前。
+      - id: meta
+        name: 算出镜像 tag（去掉 v 前缀）
+        run: echo "image_tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+  # 2. 在一次性 mysql:8 上把 db/migration 完整跑一遍。
+  #    此前 mvn test 完全不碰数据库，迁移从未被任何流程验证过（ADR 0016 的三道保险之一）。
+  #
+  #    刻意**不引 Flyway CLI 镜像**：那要多担一个外部镜像的版本与驱动打包（Flyway 10 起把每种
+  #    数据库拆成独立模块），而这里真正要验证的风险是「DDL/INSERT 在 MySQL 8 上跑不跑得通」。
+  #    用已经要用的 mysql:8 按文件顺序重放，恰好覆盖它，且少一个不可验证的依赖。
+  #    ⚠️ 它只证明「语法能跑」，不证明「数据安全」——破坏性迁移仍靠人守（ADR 0016 明说）。
+  flyway-verify:
+    name: 迁移 · 临时库重放
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: version
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: quizzy
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 按顺序重放迁移脚本
+        run: |
+          set -euo pipefail
+          prev=0
+          for f in quizzy-server/src/main/resources/db/migration/V*.sql; do
+            base="$(basename "$f")"
+            # 文件名要合 Flyway 约定，否则应用启动时会静默忽略它
+            if ! printf '%s' "$base" | grep -qE '^V[0-9]+__[^/]+\.sql$'; then
+              echo "::error::迁移文件名不合 Flyway 约定：$base"; exit 1
+            fi
+            n="$(printf '%s' "$base" | sed -E 's/^V([0-9]+)__.*/\1/')"
+            if [ "$n" -le "$prev" ]; then
+              echo "::error::迁移版本号不是严格递增：$base（上一个 $prev）"; exit 1
+            fi
+            prev="$n"
+            echo "==> 应用 $base"
+            # --network host：service 的 3306 发布在 runner 的 localhost 上
+            docker run --rm --network host -i mysql:8 \
+              mysql -h127.0.0.1 -uroot -proot quizzy < "$f"
+          done
+          echo "==> 全部迁移在 MySQL 8 上重放成功"
+
+  # 3. 构建两个镜像推 ACR。tag = 去 v 的版本号；**不推 latest**——浮动 tag 会让
+  #    「线上跑的是哪个版本」说不清，回滚落点就是版本 tag（见 docs/todo/2026-09-20-TODO-镜像分发.md）。
+  build-push:
+    name: 镜像 · 构建并推 ACR
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: [version, flyway-verify]
+    # 基础镜像走 Docker Hub：匿名额度 100 次/6h 且按共享出口 IP 计，很容易撞顶；
+    # 配了账号则翻倍且按账号计。没配也照跑，只是有匿名限流风险（fork PR 拿不到 secrets，同样降级）。
+    env:
+      HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 登录 Docker Hub（未配 secrets 时跳过）
+        if: env.HAS_DOCKERHUB == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      # ⚠️ ACR 个人版**不支持 AccessKey 推送**：用户名是「阿里云账号全名」，
+      #    密码是控制台「访问凭证」里单独设的**固定密码**。用 AccessKey 会稳定 401。
+      - name: 登录 ACR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - id: meta
+        name: 构建信息
+        run: |
+          echo "commit=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "build_time=$(date '+%Y-%m-%d %H:%M')" >> "$GITHUB_OUTPUT"
+
+      # CI 在境外 runner 上：Maven 与 npm 都切回官方源，比走国内镜像更快也更稳。
+      - name: 构建并推后端镜像
+        uses: docker/build-push-action@v6
+        with:
+          context: ./quizzy-server
+          push: true
+          # ⚠️ 关掉 buildx 默认附带的 attestation。默认开启时产物是 manifest list，
+          #    而 ACR **个人版**对它的兼容性没有验证过——首次上线不赌这个。
+          provenance: false
+          sbom: false
+          build-args: |
+            MAVEN_MIRROR=central
+            APP_VERSION=${{ github.ref_name }}
+          tags: ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/quizzy-server:${{ needs.version.outputs.image_tag }}
+
+      - name: 构建并推前端镜像
+        uses: docker/build-push-action@v6
+        with:
+          context: ./quizzy-web
+          push: true
+          # 同后端：ACR 个人版对 attestation manifest 的兼容性未验证
+          provenance: false
+          sbom: false
+          build-args: |
+            NPM_REGISTRY=https://registry.npmjs.org
+            APP_VERSION=${{ github.ref_name }}
+            APP_AHEAD=0
+            APP_COMMIT=${{ steps.meta.outputs.commit }}
+            APP_BUILD_TIME=${{ steps.meta.outputs.build_time }}
+          tags: ${{ env.ACR_REGISTRY }}/${{ env.ACR_NAMESPACE }}/quizzy-web:${{ needs.version.outputs.image_tag }}
+
+  # 4. 把 compose 与脚本送上去，再执行部署脚本（备份 → 拉取 → 重启 → 等健康）。
+  #    服务器上**不 clone 仓库**：每次送过去，保证「服务器上的编排 = 这个 tag 的编排」。
+  deploy:
+    name: 部署 · SSH 到服务器
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [version, build-push]
+    env:
+      HAS_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 准备 SSH 凭据
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          if [ "${{ env.HAS_KNOWN_HOSTS }}" = "true" ]; then
+            printf '%s\n' "${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          else
+            # 没配 known_hosts 就现场采集（首次信任，比存一份更弱的保证）
+            echo "⚠️ 未配 DEPLOY_SSH_KNOWN_HOSTS，改用 ssh-keyscan 现场采集" >&2
+            ssh-keyscan -H "${{ env.DEPLOY_HOST }}" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: 送 compose 与脚本
+        run: |
+          set -euo pipefail
+          ssh "${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}" 'mkdir -p /srv/quizzy/compose/scripts'
+          scp docker-compose.prod.yml \
+            "${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:/srv/quizzy/compose/docker-compose.prod.yml"
+          scp scripts/server-deploy.sh scripts/server-rollback.sh scripts/server-compose.sh scripts/backup-mysql.sh \
+            "${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}:/srv/quizzy/compose/scripts/"
+
+      - name: 执行部署
+        run: |
+          ssh "${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }}" \
+            "bash /srv/quizzy/compose/scripts/server-deploy.sh '${{ needs.version.outputs.image_tag }}'"
+
+      - name: 清理私钥
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
