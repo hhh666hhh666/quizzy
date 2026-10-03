@@ -22,7 +22,13 @@ services:
     image: mysql:8
     container_name: quizzy-mysql
     restart: unless-stopped
-    # 不发布任何端口：只有同一网络里的 server 能连 3306（红线，见 docs/adr/0016）。
+    # ⚠️ 只绑**宿主回环**，不是 0.0.0.0。
+    #    用途：让本机能经 SSH 隧道直连（IDEA 的数据库工具、临时排障都靠它），
+    #    同时数据库仍不对公网开口。见 ADR 0016 的 Amendment 2。
+    #    ⚠️ 必须写成 `127.0.0.1:3306:3306`。写成 `3306:3306` 等于绑 0.0.0.0，
+    #       那才是真正的红线——改这一行之前先在服务器上 `ss -tlnp | grep 3306` 复查。
+    ports:
+      - "127.0.0.1:3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在 /srv/quizzy/.env 里设置 MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-quizzy}

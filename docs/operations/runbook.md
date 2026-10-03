@@ -52,6 +52,23 @@ docker exec quizzy-mysql mysql -uroot -p"$(grep '^MYSQL_ROOT_PASSWORD=' /srv/qui
 
 结论只有一句：**删除容器 ≠ 删除数据**。真正能毁掉数据的只有「手工删那个目录」和「`down -v`」，两者都在下面的红线清单里。
 
+**顺带一条新能力**：MySQL 现在绑在宿主回环 `127.0.0.1:3306`（[ADR 0016 Amendment 2](../adr/0016-cloud-deploy-with-release-pipeline.md)），
+所以**本机可以经 SSH 隧道直连**排障，不必再从容器里绕：
+
+```bash
+ssh -N -L 13306:127.0.0.1:3306 -i ~/.ssh/quizzy/workbuddy.pem root@8.137.172.6
+# 另开一个终端：mysql -h127.0.0.1 -P13306 -uroot -p quizzy
+```
+
+⚠️ **本机的 `docker-compose.dev.yml` 也占着 `127.0.0.1:3306`** —— 没走隧道时会连到**本机的 dev 库**，
+而两边表结构与种子题都一样，界面上完全看不出来。判断连的是哪一个：
+
+```sql
+select @@max_connections;
+```
+
+云端是 `50`（compose 显式设的），本机 dev 是默认的 `151`。
+
 ## 场景 · 容器起不来
 
 按顺序排除，每一步都有明确判据：
