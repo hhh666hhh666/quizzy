@@ -18,6 +18,8 @@
 | [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
 | [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
 | [../scripts/check-version.sh](../scripts/check-version.sh) | 版本号与 `git tag` 对齐自检；非 tag 提交上自动跳过 | 要打 tag 的人 / CI | `git tag` |
+| [../scripts/server-deploy.sh](../scripts/server-deploy.sh) | 服务器上的部署与回滚脚本（CI 经 SSH 调用） | 要上线或回滚的人 | 脚本自身 |
+| [../deploy/](../deploy/) | 要放到服务器上的部署侧配置模板（宿主 nginx 站点、云端 `.env`） | 传部署的人 | 各文件自身 |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
 | [requirements/scope.md](./requirements/scope.md) | 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
 | [design/数据模型.md](./design/数据模型.md) | 实体关系、可见性、生命周期、历史一致性 | 改数据结构或写查询的人 | Flyway 迁移脚本 |
@@ -28,7 +30,7 @@
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [decisions/](./decisions/) | **决策过程**日志（grill 问答原文、被否选项、未决问题） | 查「当时考虑过 X 吗」的人 | 日志自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
-| [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/deploy.sh` |
+| [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/server-deploy.sh` 与 [../.github/workflows/release.yml](../.github/workflows/release.yml) |
 | [operations/configuration.md](./operations/configuration.md) | 配置从哪来、改了要重启什么 | 换机器 / 改配置的人 | `.env.example` |
 | [operations/backup.md](./operations/backup.md) | 备份现状、手动跑一次、恢复（未演练） | 担心数据丢的人 | `scripts/backup-mysql.sh` |
 | [testing.md](./testing.md) | 测了什么、故意不测什么、新测试放哪 | 改代码前想确认安全网的人 | `src/test`、`package.json` |

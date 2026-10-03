@@ -31,3 +31,14 @@ Status: accepted
 - **推 tag 会触发 CI 了**（此前 `ci.yml` 只监听 `push: branches: [master]`，推 tag 完全不触发）。为了保住「tag 推送不白烧 runner 与 Docker Hub 匿名拉取配额」这个性质，四个重 job 各加了一条 `if: "!startsWith(github.ref, 'refs/tags/')"`——tag 指向的提交在 master 上已经完整验过一遍，再跑一遍是纯浪费。
 
 相关：0011（`.env` 的职责边界）、0013（CI 只做门禁）、0014（误报比漏报更贵的取舍）、0006（单一信息源纪律）。
+
+## Amendment 1（2026-10-02）：compose 的 `image:` 不再是字面量，手写点从三处减到两处
+
+上面「镜像 tag 必须是字面量」这条**在搬到云上之后不再成立**。云上的形态是「CI 构建推 ACR → 服务器拉取」（[ADR 0016](0016-cloud-deploy-with-release-pipeline.md)），compose 的 `image:` 变成 `${ACR_REGISTRY}/${ACR_NAMESPACE}/quizzy-<svc>:${APP_VERSION}`：
+
+- **手写点 3 → 2**：只剩 `quizzy-web/package.json` 与 `quizzy-server/pom.xml`。compose 那一处**量变了**——从「比对值」变成「比形状」。
+- **`scripts/check-version.sh` 相应改造**：原来那两条按字面量提版本的 `sed` 会取空值而误报 FAIL；现在改成**结构断言**「`image:` 必须以 `.../quizzy-<svc>:${APP_VERSION}` 结尾」，防的是有人把它改回写死值——那会毁掉「版本 tag 即回滚落点」。
+- **「改了 tag 忘了同步 compose 会静默毁掉回滚能力」这个风险随之消失**：镜像在 ACR 里、每个版本各留一份，compose 不再持有版本号。`deploy.sh` 里那条按字面量 grep 的一致性告警一并消失（该脚本已被 `scripts/server-deploy.sh` 取代并删除）。
+- ⚠️ **新增一处不对称**：git tag 带 `v`（`v1.1.0`），镜像 tag 不带（`1.1.0`）。compose **不支持** `${VAR#v}` 这类字符串截断，所以剥前缀只能发生在传参之前——由 `release.yml` 的 `version` job 与 `server-deploy.sh` 各自完成，`check-version.sh` 的结构断言兜住这个形状。
+- 上面 Consequences 里「`deploy.sh` 算好 → compose 的 `build.args`」这条注入链，现在改由 `.github/workflows/release.yml` 的 build-args 承担；`APP_*` 仍然不进 `.env`。
+- 第 31 条「推 tag 会触发 CI、四个重 job 各加一条 `if` 挡掉」**不再成立**：tag 触发已从 `ci.yml` 移除，tag 的全部处置权收进 `release.yml`，那四条 `if` 随之删除。

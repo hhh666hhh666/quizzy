@@ -32,7 +32,7 @@
 
 见 [../testing.md](../testing.md) 的 CI 一节与 [../adr/0013](../adr/0013-github-actions-gate-no-auto-deploy.md)。
 
-⚠️ **CI 绿了不等于线上已更新。** 上线要自己跑 `scripts/deploy.sh`，见 [../operations/deployment.md](../operations/deployment.md)。
+⚠️ **CI 绿了不等于线上已更新。** 上线是推 `v*` tag 触发 [release.yml](../../.github/workflows/release.yml)（构建推 ACR → SSH 部署），见 [../operations/deployment.md](../operations/deployment.md)。
 
 ## 文档纪律（本项目特有，最重要的一节）
 

@@ -2,7 +2,7 @@
 
 ## 配置的三层
 
-1. **`.env`**（不入库，模板是 `.env.example`）→ 供两个 compose 文件读取；
+1. **`.env`**（不入库）→ 供 compose 读取。**有两份模板**：本机 dev 用 [`.env.example`](../../.env.example)，云端用 [deploy/.env.cloud.example](../../deploy/.env.cloud.example)；
 2. **compose** 把变量注入容器 → 覆盖后端配置；
 3. **`application.yml`** 里 datasource 与 jwt 写成 `${ENV:默认值}` 占位。
 
@@ -20,13 +20,20 @@
 
 | 改了什么 | 需要做什么 | 说明 |
 |----------|------------|------|
-| `.env` 里的变量 | 只需 recreate 对应容器 | 走 `scripts/deploy.sh`（见 [deployment.md](./deployment.md)），**不要重建 mysql** |
+| `.env` 里的变量 | 只需 recreate 对应容器 | 走 [deployment.md](./deployment.md) 的上线路径（服务器上由 `server-deploy.sh` recreate），**不要重建 mysql** |
 | `application.yml` | **必须重新 build 镜像** | 它已被打进镜像，只 recreate 不会生效 |
-| compose 的结构（`ports` / `volumes` / `depends_on`） | recreate 对应容器 | 同上走 deploy.sh |
-| `.dockerignore` / Dockerfile | 重新 build 镜像 | 构建上下文变了 |
+| compose 的结构（`ports` / `volumes` / `depends_on`） | recreate 对应容器 | 同上，由部署脚本 recreate |
+| `.dockerignore` / Dockerfile | 重新 build 镜像 | 构建上下文变了；镜像由 CI 构建推 ACR |
 | Flyway 迁移脚本 | 应用启动自动执行 | ⚠️ 改**已执行过**的迁移前先备份，见 [backup.md](./backup.md) |
 
-`scripts/deploy.sh` 只做「recreate + 等健康」；要重新 build 镜像也是它（`--build`），不需要分开记。
+服务器上的 `scripts/server-deploy.sh` 做「pull + recreate + 等健康」。**镜像不再在目标机上构建**——2C2G 跑不动 Maven，构建一律在 CI（[ADR 0016](../adr/0016-cloud-deploy-with-release-pipeline.md)）。
+
+## 两个只在容器形态下生效的配置
+
+| 配置 | 作用 | 注意 |
+|------|------|------|
+| `server.forward-headers-strategy: framework` | 让 Spring 认宿主 nginx 透传的 `X-Forwarded-*`，使 `getScheme()` / `getRemoteAddr()` 反映真实客户端 | 信任前提是**后端容器不发布端口**；将来若给它加端口映射，必须重新评估（否则那些头可伪造） |
+| `quizzy.cors.allowed-origins` | 允许跨域的前端来源，逗号分隔 | **默认空 = 完全不注册 CORS**。前端与 `/api` 同源，本就不需要；只有出现跨域消费者时才填 |
 
 ## 密钥：JWT 默认密钥已因仓库公开而失效
 

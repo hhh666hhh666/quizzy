@@ -32,7 +32,7 @@
 |----|------|
 | 后端 | Spring Boot 3.5 · Java 21 · MyBatis-Plus · MySQL 8.4 · Flyway · springdoc-openapi |
 | 前端 | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
-| 运行 | Docker Compose（dev 只起数据库，prod 全容器） |
+| 运行 | Docker Compose：**本机只跑 dev**（只起数据库，前后端在宿主机跑）；prod 在阿里云轻量服务器上，由 CI 构建镜像推 ACR 后自动部署 |
 
 各依赖的确切版本以 `pom.xml`、`package.json` 与两个 `Dockerfile` 为准（这是依赖版本，与上面说的发布版本号无关）。
 
@@ -53,16 +53,16 @@ cd quizzy-web && npm install && npm run dev
 
 > 若本机已有 MySQL 占用了默认端口，先停掉它，或改 `.env` 里的 `MYSQL_PORT`。
 
-## 全容器运行（生产 / 演示）
+## 运行 prod（在服务器上，不在本机）
+
+`docker-compose.prod.yml` 是**云上编排**——镜像来自 ACR、web 只绑回环，本机跑不起来它，也不该跑。
+上线是推一个 tag：
 
 ```bash
-# dev 与 prod 的 mysql 容器同名，先停掉 dev（数据在宿主机目录，不会被删）
-docker compose -f docker-compose.dev.yml down
-
-docker compose -f docker-compose.prod.yml up -d --build
+git tag v1.2.0 && git push origin v1.2.0   # 触发 release.yml：门禁 → 迁移验证 → 构建推 ACR → 部署
 ```
 
-前端由 nginx 托管在 http://localhost 。**日常改完代码要更新容器，用 `bash scripts/deploy.sh`，别手敲上面这条**——见 [部署](./docs/operations/deployment.md)。
+首次上线的一次性准备、回滚、排障，见 [部署](./docs/operations/deployment.md)。
 
 ## 配置
 
@@ -82,8 +82,11 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ## CI 与部署
 
-**CI 只做质量门禁**，不会把任何产物投放到任何机器上：后端单测、前端类型检查与构建、两个镜像在干净 Linux 上冒烟构建。
+两条流水线各管一段：
 
-所以 **CI 绿了不等于本机已更新**——上线要自己跑 `bash scripts/deploy.sh`。理由见 [ADR 0013](./docs/adr/0013-github-actions-gate-no-auto-deploy.md)，测试范围与盲区见 [测试说明](./docs/testing.md)。
+- [ci.yml](./.github/workflows/ci.yml) —— push 到 master / PR 时的质量门禁：后端单测、前端类型检查与构建、两个镜像在干净 Linux 上冒烟构建、文档链接自检。**不改动任何运行中的服务。**
+- [release.yml](./.github/workflows/release.yml) —— 推 `v*` tag 时上线：版本门禁 → 迁移重放验证 → 构建推 ACR → SSH 部署。
+
+理由与取舍见 [ADR 0016](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)（取代 [ADR 0013](./docs/adr/0013-github-actions-gate-no-auto-deploy.md)），测试范围与盲区见 [测试说明](./docs/testing.md)。
 
 本项目采用 [MIT](./LICENSE) 许可证。
