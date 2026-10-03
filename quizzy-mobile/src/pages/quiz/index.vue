@@ -147,8 +147,13 @@ async function onSubmit() {
   submitting.value = true
   try {
     const result = await submitAnswer(sessionId.value, q.questionId, answer)
-    // 先刷新会话（拿 answered / userAnswers），再把反馈贴回去
+    // 刷新会话（answered / userAnswers / obtainedScore），但**停在刚提交的这题**上。
+    // 不能让 load() 决定当前题：它会把位置挪到「第一道未答题」，于是反馈张冠李戴
+    // （题干是下一题、解析还是这题），而且按钮变成「下一题」，一点就跳过一道未答题。
+    const index = current.value
     await load()
+    current.value = index
+    syncPicked()
     feedback.value = result
   } catch {
     // unwrap 已提示
