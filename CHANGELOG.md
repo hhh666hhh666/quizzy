@@ -14,9 +14,9 @@
 | compose 里的 `image:` | 镜像标识 | 只写 `${APP_VERSION}` 变量，**不再手写版本号**；镜像由 CI 推到 ACR，服务器按 tag 拉取 |
 | `pom.xml` / `package.json` 的包版本 | 各自的包版本 | Maven 坐标与 npm 包版本，**与发布版本无关**（`pom.xml` 还刻意带 `-SNAPSHOT`） |
 
-打 tag 时 `scripts/check-version.sh`（`release.yml` 的「版本」job）会比对**两处手写点**，
+打 tag 时 `scripts/check-version.sh`（`release.yml` 的「版本」job）会比对**三处手写点**，
 并断言 compose 用的是变量而不是写死的 tag。
-设计与取舍见 [ADR 0015](./docs/adr/0015-version-number-governance.md)（含 Amendment 1）；镜像分发已定案，
+设计与取舍见 [ADR 0015](./docs/adr/0015-version-number-governance.md)（含 Amendment 1、2）；镜像分发已定案，
 见 [docs/todo/2026-09-20-TODO-镜像分发.md](./docs/todo/2026-09-20-TODO-镜像分发.md)。
 
 > 「产品代次 v1」这个说法已于 2026-10-01 取消——它和版本号长得太像，要表达那个意思就直接写范围。
@@ -28,12 +28,22 @@
 
 新变更先堆在这里；打 tag 时整段移入新版本段并改名。
 
+### Added
+
+- **新增移动端工程 `quizzy-mobile`**（uni-app · Vue3 · TypeScript · Pinia · wot-design-uni），
+  本轮只启用 H5 编译目标，落地「登录/注册 → 快速练习 → 答题 → 结果」一条主线。
+  架构见 [ADR 0019](./docs/adr/0019-mobile-clients-with-uniapp.md)（PC 端不动、移动端只做「消费」）。
+  小程序编译目标、`/m/` 部署产物与错题本/记录页留待后续。
+- **CI 新增 `mobile` job**：类型检查 + `build:h5` + 一条 `diff` 守卫（移动端的 `types` 必须与 PC 端逐字一致）。
+
 ### Changed
 
 - **MySQL 从「不发布任何端口」改为**只绑宿主回环（`127.0.0.1:3306:3306`），
   好让本机能经 SSH 隧道直连——IDEA 的数据库工具与临时排障都靠这个稳定落点。
   **公网仍然够不着**：已实测宿主 `ss` 只显示回环地址、从公网探 3306 拒连。
   取舍见 [ADR 0016 Amendment 2](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)。
+- **版本号手写点从两处回到三处**：新增 `quizzy-mobile/package.json`，
+  `check-version.sh` 相应加两条校验（[ADR 0015 Amendment 2](./docs/adr/0015-version-number-governance.md)）。
 
 ---
 

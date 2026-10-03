@@ -1,0 +1,36 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+    }
+  },
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": { "navigationBarTitleText": "Quizzy" }
+    },
+    {
+      "path": "pages/login/index",
+      "style": { "navigationBarTitleText": "登录 / 注册" }
+    },
+    {
+      "path": "pages/quick/index",
+      "style": { "navigationBarTitleText": "快速练习" }
+    },
+    {
+      "path": "pages/quiz/index",
+      "style": { "navigationBarTitleText": "答题" }
+    },
+    {
+      "path": "pages/result/index",
+      "style": { "navigationBarTitleText": "答题结果" }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "Quizzy",
+    "navigationBarBackgroundColor": "#409EFF",
+    "backgroundColor": "#F5F7FA"
+  }
+}

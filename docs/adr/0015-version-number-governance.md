@@ -42,3 +42,12 @@ Status: accepted
 - ⚠️ **新增一处不对称**：git tag 带 `v`（`v1.1.0`），镜像 tag 不带（`1.1.0`）。compose **不支持** `${VAR#v}` 这类字符串截断，所以剥前缀只能发生在传参之前——由 `release.yml` 的 `version` job 与 `server-deploy.sh` 各自完成，`check-version.sh` 的结构断言兜住这个形状。
 - 上面 Consequences 里「`deploy.sh` 算好 → compose 的 `build.args`」这条注入链，现在改由 `.github/workflows/release.yml` 的 build-args 承担；`APP_*` 仍然不进 `.env`。
 - 第 31 条「推 tag 会触发 CI、四个重 job 各加一条 `if` 挡掉」**不再成立**：tag 触发已从 `ci.yml` 移除，tag 的全部处置权收进 `release.yml`，那四条 `if` 随之删除。
+
+## Amendment 2（2026-10-03）：移动端加入后，手写点从两处回到三处
+
+[ADR 0019](0019-mobile-clients-with-uniapp.md) 新增第三个顶层前端工程 `quizzy-mobile`（uni-app，本轮只出 H5），它自带一个 `package.json`，于是 Amendment 1 里「手写点 2」的结论不再成立。
+
+- **手写点 2 → 3**：`quizzy-web/package.json`、`quizzy-server/pom.xml`、`quizzy-mobile/package.json`。
+- **`scripts/check-version.sh` 相应加两条**：移动端 `package.json` 用 `check` 与 tag 比对；其 `package-lock.json` 与 `package.json` 做派生一致性断言（与 1b 同形）。
+- **compose 那条不受影响**：移动端本轮没有镜像、没有 compose 服务，`check_compose_image` 仍只断言 `server` 与 `web`。将来移动端 H5 有部署产物时再回来加。
+- 移动端本轮**没有**版本显示 UI，这个手写点是为「将来接上注入通道」提前对齐的——不写它就会立刻开始漂。

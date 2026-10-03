@@ -31,10 +31,11 @@
 | 层 | 选型 |
 |----|------|
 | 后端 | Spring Boot 3.5 · Java 21 · MyBatis-Plus · MySQL 8.4 · Flyway · springdoc-openapi |
-| 前端 | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
+| 前端（PC） | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
+| 移动端 | uni-app · Vue 3 · TypeScript · Pinia · wot-design-uni（**当前只出 H5**，小程序待备案与 AppID） |
 | 运行 | Docker Compose：**本机只跑 dev**（只起数据库，前后端在宿主机跑）；prod 在阿里云轻量服务器上，由 CI 构建镜像推 ACR 后自动部署 |
 
-各依赖的确切版本以 `pom.xml`、`package.json` 与两个 `Dockerfile` 为准（这是依赖版本，与上面说的发布版本号无关）。
+各依赖的确切版本以 `pom.xml`、两个 `package.json` 与两个 `Dockerfile` 为准（这是依赖版本，与上面说的发布版本号无关）。
 
 ## 快速开始（开发模式）
 
@@ -47,9 +48,12 @@ cd quizzy-server && mvn spring-boot:run
 
 # 3. 启动前端（/api 代理到后端）
 cd quizzy-web && npm install && npm run dev
+
+# 4. 启动移动端 H5（可选；/api 同样代理到后端）
+cd quizzy-mobile && npm install && npm run dev:h5
 ```
 
-打开 http://localhost:5173 注册一个账号即可开始；接口文档在 http://localhost:8080/swagger-ui.html 。
+打开 http://localhost:5173 注册一个账号即可开始（移动端在 http://localhost:5174 ）；接口文档在 http://localhost:8080/swagger-ui.html 。
 
 > 若本机已有 MySQL 占用了默认端口，先停掉它，或改 `.env` 里的 `MYSQL_PORT`。
 

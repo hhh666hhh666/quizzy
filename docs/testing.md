@@ -2,7 +2,7 @@
 
 ## 一句话现状
 
-**后端有单元测试，只覆盖两处最容易出静默错误的逻辑；前端没有任何测试，也没有 lint。**
+**后端有单元测试，只覆盖两处最容易出静默错误的逻辑；两个前端工程（PC 与移动端）都没有任何测试，也没有 lint。**
 
 具体是哪两个测试类，看目录本身（数量会变，文档不写数字）：
 
@@ -20,13 +20,16 @@
 
 后端：在 `quizzy-server` 下 `mvn -B -ntp test`（与 CI 同一条命令）。
 
-前端：`quizzy-web` 下可用的是 `npm run typecheck` 与 `npm run build`——**以 `package.json` 的 `scripts` 为准**，本文件不复制那份清单。
+前端：`quizzy-web` 与 `quizzy-mobile` 各自可用 `npm run typecheck` 与构建脚本（移动端是 `build:h5`）——**以各自 `package.json` 的 `scripts` 为准**，本文件不复制那份清单。
 
 ## CI 怎么跑
 
-四条并行检查，定义见 [.github/workflows/ci.yml](../.github/workflows/ci.yml)，本文件不复述。
+五条并行检查，定义见 [.github/workflows/ci.yml](../.github/workflows/ci.yml)，本文件不复述。
+（`quizzy-server` 单测、`quizzy-web` 类型检查与构建、`quizzy-mobile` 类型检查与构建，加上两个镜像冒烟。）
 
-只有一条要单独强调：**`vite build` 走 esbuild 只剥离类型、不做检查，所以类型错误只会被 `typecheck` 这一步挡住。** 别以为「构建过了就是好的」。
+只有一条要单独强调：**`vite build`（以及移动端的 `uni build`）走 esbuild 只剥离类型、不做检查，所以类型错误只会被 `typecheck` 这一步挡住。** 别以为「构建过了就是好的」。
+
+移动端那条还多一步 `diff` 守卫：`quizzy-mobile/src/types/index.ts` 必须与 `quizzy-web/src/types/index.ts` **逐字一致**——移动端不引共享包（[ADR 0019](./adr/0019-mobile-clients-with-uniapp.md)），类型是逐份复制的镜像，这条断言把「两份必须一致」从约定变成可验证事实。
 
 另外两个镜像 job 是**冒烟**：只在干净 Linux 上验证镜像能从零构建出来，不推任何 registry。它的价值在于 ADR 0009 / 0010 记的那类坑（构建镜像平台、宿主机 `node_modules` 污染容器）**只有在这种环境才会暴露**，本机因缓存命中永远发现不了。
 

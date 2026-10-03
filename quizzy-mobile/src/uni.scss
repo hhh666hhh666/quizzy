@@ -1,0 +1,7 @@
+// 全局 scss 变量（uni-app 会把本文件注入到每个组件的样式里）。
+// ⚠️ 这里刻意不 import wot-design-uni 的任何文件：它的组件各自 import 自己的样式，
+// 是自洽的；在此再引一次只会多一个失败点。
+$app-primary: #409eff;
+$app-bg: #f5f7fa;
+$app-text: #303133;
+$app-text-secondary: #909399;

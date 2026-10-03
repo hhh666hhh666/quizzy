@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 校验「版本号只有一个真相源」：git tag 与两处手写点一致，compose 的 image 用的是变量，
-# 且 package-lock.json 没有与 package.json 漂开（ADR 0015 及其 Amendment 1）。
+# 校验「版本号只有一个真相源」：git tag 与三处手写点一致，compose 的 image 用的是变量，
+# 且 package-lock.json 没有与 package.json 漂开（ADR 0015 及其 Amendment 1、2）。
 # 用作 CI 门禁（推 tag 时跑，见 .github/workflows/release.yml 的「版本」job）与本地提交前自检。
 #
 #   bash scripts/check-version.sh            # 期望版本取自 HEAD 上的 tag，没有就跳过
@@ -44,7 +44,7 @@ check() {
   fi
 }
 
-echo "==> 校验 $RAW 与两处手写点 + compose 结构（期望版本 $EXPECT）"
+echo "==> 校验 $RAW 与三处手写点 + compose 结构（期望版本 $EXPECT）"
 
 # 1. 前端包版本（手写点之一）
 PKG_VERSION="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-web/package.json | head -1 | tr -d '\r')"
@@ -64,6 +64,21 @@ else
   FAILED=$((FAILED + 1))
 fi
 
+# 1c. 移动端包版本（手写点之二）。移动端目前没有版本显示 UI，这个手写点是
+#     为了「将来接上注入通道」提前对齐——不写它就会立刻开始漂（ADR 0015 Amendment 2）。
+MOBILE_PKG_VERSION="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-mobile/package.json | head -1 | tr -d '\r')"
+check 'quizzy-mobile/package.json' "$MOBILE_PKG_VERSION"
+
+# 1d. 移动端 lock 与 package.json 的派生一致性断言（同 1b）。
+MOBILE_LOCK_VERSION="$(sed -n 's/^  "version": "\(.*\)",$/\1/p' quizzy-mobile/package-lock.json | head -1 | tr -d '\r')"
+if [ -n "$MOBILE_PKG_VERSION" ] && [ "$MOBILE_LOCK_VERSION" = "$MOBILE_PKG_VERSION" ]; then
+  printf '  [ok]   quizzy-mobile/package-lock.json = %s（与 package.json 一致）\n' "$MOBILE_LOCK_VERSION"
+else
+  printf '  [FAIL] quizzy-mobile/package-lock.json：取到「%s」，而 package.json 是「%s」——派生文件必须一致\n' \
+    "${MOBILE_LOCK_VERSION:-空}" "${MOBILE_PKG_VERSION:-空}" >&2
+  FAILED=$((FAILED + 1))
+fi
+
 # 2. 后端包版本。只认 4 空格缩进那一个 —— parent 是 8 空格、依赖里是 12 空格。
 #    保留 -SNAPSHOT 是刻意的（见 pom.xml 里的注释），比对前剥掉。
 POM_VERSION="$(sed -n 's/^    <version>\(.*\)<\/version>$/\1/p' quizzy-server/pom.xml | tr -d '\r')"
@@ -75,6 +90,7 @@ check 'quizzy-server/pom.xml' "${POM_VERSION%-SNAPSHOT}"
 #    ⚠️ ${APP_VERSION} 要按字面量匹配，所以用单引号拼串，别整段改成双引号。
 #    ⚠️ 放行 ${APP_VERSION:?提示语} 这种必填写法（compose 支持 `:?` 带错误信息），
 #       否则「加了提示语」会被误判成「写死了 tag」。
+#    移动端本轮没有镜像与 compose 服务，所以这里仍只有 server 与 web 两个。
 check_compose_image() {
   local svc="$1"
   local pattern='^[[:space:]]*image:.*/quizzy-'"$svc"':\$\{APP_VERSION(:[^}]*)?\}[[:space:]]*$'
@@ -104,4 +120,4 @@ if [ "$FAILED" -gt 0 ]; then
   exit 1
 fi
 
-echo "==> 通过：两处手写点对齐、compose 结构正确、lockfile 未漂"
+echo "==> 通过：三处手写点对齐、compose 结构正确、lockfile 未漂"

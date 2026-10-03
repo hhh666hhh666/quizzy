@@ -86,6 +86,32 @@ jobs:
     # 下面两个冒烟 job 不设 needs，与前后端并行。理由见 ADR 0009 / 0010：
     # 它们回答的是「Dockerfile 在干净 Linux 上还能不能从零构建」，
     # 而那类坑**只在这种环境下暴露**，本机因为缓存命中永远发现不了，不该被别的 job 挡住。
+  # 移动端（uni-app，本轮只出 H5）。与 frontend 对称：只有类型检查与构建两个门禁。
+  # 额外的 types 镜像守卫：移动端不引共享包（ADR 0019），types 是逐份复制的镜像，
+  # 这条 diff 把「两份必须一致」从约定变成可验证断言——不这么兜，复制必然漂。
+  mobile:
+    name: 移动端 · 类型检查与构建（H5）
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: quizzy-mobile
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: quizzy-mobile/package-lock.json
+
+      - run: npm ci
+      # uni 的 build 同样只剥离类型、不做检查，类型错误只能靠这一步挡住。
+      - run: npm run typecheck
+      - run: npm run build:h5
+      - name: types 镜像守卫（与 quizzy-web 必须逐字一致）
+        run: diff -u ../quizzy-web/src/types/index.ts src/types/index.ts
+
   docker-server:
     name: 镜像 · 后端冒烟构建
     runs-on: ubuntu-latest
