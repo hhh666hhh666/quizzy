@@ -67,6 +67,12 @@
 
 ### Fixed
 
+- **改正一处由荧自己造成的错误结论，并补上此前完全缺失的断言**：接口测试的注释与 todo 里曾写
+  「抽题规则里没有题量」——**那是错的**。`PaperRuleDTO` 有 `count`（默认 20、夹在 1–200），
+  `PaperService#selectQuestionsByRule` 会 `ORDER BY RAND() LIMIT count`：题量一直生效，语义是**上限**。
+  误判来自荧用一条紧凑正则导出 DTO 字段，漏掉了带初始化值的 `private Integer count = 20;`。
+  顺带补上**此前没有任何用例覆盖**的语义：传 `count: 3` 必须正好抽 3 道、传 `count: 0` 夹到 1 道
+  ——在此之前 34 个接口用例没有一个碰得到它，谁删掉 `LIMIT count` 都会全绿通过。
 - **两端答题页提交后都不再显示判分反馈**：`onSubmit()` 里 `load()` 会把当前题挪到「第一道未答题」，
   并在 `syncPicked()` 里把 `feedback` 清成 null——PC 端紧跟着的 `feedback.value = feedback.value`
   是自赋值，反馈永远不显示；移动端首版则是「题干是下一题、解析是上一题」，点「下一题」还会跳过一题。

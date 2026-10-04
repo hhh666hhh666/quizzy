@@ -19,11 +19,17 @@ import static org.assertj.core.api.Assertions.within;
 class QuizApiIT extends ApiTestBase {
 
     /**
-     * 发起一次快速练习。
+     * 发起一次快速练习（不带题量，走默认值）。
      *
-     * <p>⚠️ 快速练习**必须带抽题规则**（{@code QuizService#start} 的 QUICK 分支里，
-     * 规则为空会直接报「请配置抽题规则」），而 {@code count} 那个字段只对错题重练生效。
-     * 另外规则里**没有题量**——抽到多少题由规则匹配到的题数决定，所以用例不能写死个数。
+     * <p>⚠️ 快速练习**必须带抽题规则**——{@code QuizService#start} 的 QUICK 分支里规则为空会直接报
+     * 「请配置抽题规则」。
+     *
+     * <p>题量在**规则里**（{@code PaperRuleDTO.count}，默认 20、夹在 1–200），语义是**上限**：
+     * {@code PaperService#selectQuestionsByRule} 会 {@code ORDER BY RAND() LIMIT count}，
+     * 匹配不足时有多少给多少。所以**不传 count 的用例不能写死题数**——拿到的是匹配数。
+     *
+     * <p>⚠️ 别把它和 {@code QuizStartDTO.count} 混了：**那个只对错题重练（WRONG_BOOK）生效**，
+     * 快速练习根本不看它。两个同名字段是两回事。
      */
     private long startQuick(String token) throws Exception {
         JsonNode res = apiPost("/api/quiz/start", token, payload(
@@ -77,13 +83,60 @@ class QuizApiIT extends ApiTestBase {
         assertThat(res.path("data").path("status").asText()).isEqualTo("IN_PROGRESS");
         assertThat(res.path("data").path("sourceType").asText()).isEqualTo("QUICK");
         JsonNode questions = res.path("data").path("questions");
-        // 题量由规则匹配到多少题决定（抽题规则里没有题量字段），所以只断言「对得上」，不写死个数。
+        // 这条没传题量 → 后端用默认 20 作上限；种子题库里的单选题不足 20 道，所以拿到的是匹配数。
+        // 因此只断言「两个数对得上」，不写死个数。想验题量本身请看 ruleCountIsAnUpperBound。
         assertThat(questions.size()).isEqualTo(res.path("data").path("questionCount").asInt());
         assertThat(questions.size()).isPositive();
         assertThat(questions.get(0).path("answered").asBoolean()).isFalse();
         // 题目与分值都该带出来，前端才能渲染与算总分
         assertThat(questions.get(0).path("questionId").asLong()).isPositive();
         assertThat(res.path("data").path("totalScore").asInt()).isPositive();
+    }
+
+    @Test
+    @DisplayName("规则里的题量是上限：传 3 就只抽 3 道，不是把匹配到的全给")
+    void ruleCountIsAnUpperBound() throws Exception {
+        String token = newUserToken();
+
+        // 先问出「匹配到多少道」——用一个足够大的题量拿全量，这样断言不依赖种子题库的具体条数。
+        JsonNode matched = apiPost("/api/papers/preview", token,
+                payload("types", List.of("SINGLE"), "count", 200));
+        assertThat(matched.path("code").asInt()).isZero();
+        // ⚠️ 这里必须是**严格大于** 3：匹配数要是正好 3，下面那条「传 3 抽到 3」就区分不出
+        //    「题量生效」和「把匹配到的全给」——那样这条用例等于没验。
+        assertThat(matched.path("data").size())
+                .as("种子题库里的单选题必须多于 3 道，这条用例才有鉴别力")
+                .isGreaterThan(3);
+
+        JsonNode res = apiPost("/api/quiz/start", token, payload(
+                "sourceType", "QUICK",
+                "rule", payload("types", List.of("SINGLE"), "count", 3)));
+        assertThat(res.path("code").asInt()).isZero();
+
+        JsonNode opened = session(token, res.path("data").asLong()).path("data");
+        // 这一条才是「题量生效」的证据。⚠️ 它同时是 `LIMIT count` 的哨兵：
+        // 谁把 `selectQuestionsByRule` 里的 `LIMIT count` 拿掉，这里立刻红——
+        // 在此之前，34 个接口用例**没有一个**碰得到这个语义（其余用例都没传 count）。
+        assertThat(opened.path("questionCount").asInt())
+                .as("题量是上限，应当正好 3 道")
+                .isEqualTo(3);
+        assertThat(opened.path("questions").size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("题量被夹在 1–200：传 0 也至少抽 1 道")
+    void ruleCountIsClamped() throws Exception {
+        String token = newUserToken();
+
+        JsonNode res = apiPost("/api/quiz/start", token, payload(
+                "sourceType", "QUICK",
+                "rule", payload("types", List.of("SINGLE"), "count", 0)));
+        assertThat(res.path("code").asInt()).isZero();
+
+        // PaperService 里是 `Math.min(Math.max(count, 1), 200)`——下限 1，不是「抽 0 道」。
+        assertThat(session(token, res.path("data").asLong()).path("data").path("questionCount").asInt())
+                .as("题量下限是 1")
+                .isEqualTo(1);
     }
 
     @Test
