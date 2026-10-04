@@ -38,6 +38,16 @@ public class QuestionSaveDTO {
 
     private Long categoryId;
 
+    /**
+     * 分类**名称**：没有 {@code categoryId} 时按它解析——同名已存在就复用，否则新建。
+     *
+     * <p>为什么需要它：分类是共享的、且没有独立的创建入口，所以「用户想用一个还不存在的分类」
+     * 只能发生在**保存题目**这一刻。放在同一个请求里，分类与题目要么都建出来、要么都回滚。
+     * （这与 {@code tags} 的做法一致：标签也是保存题目时按名字自动建。）
+     */
+    @Size(max = 64, message = "分类名称不超过 64 个字符")
+    private String categoryName;
+
     @Valid
     @NotNull(message = "选项不能为空")
     @Size(min = 2, max = 6, message = "题目至少需要 2 个选项，最多 6 个")

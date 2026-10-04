@@ -8,6 +8,7 @@ import com.quizzy.module.question.dto.QuestionQueryDTO;
 import com.quizzy.module.question.dto.QuestionSaveDTO;
 import com.quizzy.module.question.entity.QuestionStat;
 import com.quizzy.module.question.enums.QuestionType;
+import com.quizzy.module.question.mapper.QuestionMapper;
 import com.quizzy.module.question.mapper.QuestionStatMapper;
 import com.quizzy.support.ApiTestBase;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,24 @@ class QuestionServiceIT extends ApiTestBase {
 
     @Autowired
     QuestionStatMapper questionStatMapper;
+
+    @Autowired
+    QuestionMapper questionMapper;
+
+    /** 保存一道题，分类用**名字**给（分类没有独立的创建入口）。 */
+    private long createQuestionIn(String token, String categoryName) throws Exception {
+        JsonNode res = apiPost("/api/questions", token, payload(
+                "type", "SINGLE",
+                "stem", "IT 分类题 " + newUsername(),
+                "score", 1,
+                "categoryName", categoryName,
+                "answers", List.of("A"),
+                "options", List.of(
+                        payload("label", "A", "content", "A"),
+                        payload("label", "B", "content", "B"))));
+        assertThat(res.path("code").asInt()).as("造题失败：%s", res).isZero();
+        return res.path("data").asLong();
+    }
 
     private long createQuestion(String token) throws Exception {
         JsonNode res = apiPost("/api/questions", token, payload(
@@ -70,6 +89,25 @@ class QuestionServiceIT extends ApiTestBase {
         dto.setLabel(label);
         dto.setContent("选项 " + label);
         return dto;
+    }
+
+    @Test
+    @DisplayName("分类随题目一起诞生：按名字建出，且同名复用（不会建出两个）")
+    void categoryIsBornWithQuestionAndReused() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        String name = "IT 随题而生 " + newUsername();
+
+        long first = createQuestionIn(token, name);
+        long second = createQuestionIn(token, name);
+
+        Long firstCategoryId = questionMapper.selectById(first).getCategoryId();
+        Long secondCategoryId = questionMapper.selectById(second).getCategoryId();
+
+        assertThat(firstCategoryId).as("分类应当被建出来").isNotNull();
+        // 分类是共享的：同一个名字在语义上就是同一个分类——复用，而不是再建一个
+        assertThat(secondCategoryId).isEqualTo(firstCategoryId);
+        assertThat(first).isNotEqualTo(second);
     }
 
     @Test

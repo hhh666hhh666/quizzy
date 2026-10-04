@@ -11,6 +11,7 @@ import com.quizzy.module.category.entity.Category;
 import com.quizzy.module.category.entity.Tag;
 import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.category.mapper.TagMapper;
+import com.quizzy.module.category.service.CategoryService;
 import com.quizzy.module.category.service.TagService;
 import com.quizzy.module.question.converter.QuestionConverter;
 import com.quizzy.module.question.dto.OptionDTO;
@@ -40,6 +41,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,6 +56,7 @@ public class QuestionService {
     private final CategoryMapper categoryMapper;
     private final TagMapper tagMapper;
     private final TagService tagService;
+    private final CategoryService categoryService;
     private final QuestionConverter questionConverter;
 
     public PageResult<QuestionListItemVO> page(QuestionQueryDTO query, Long userId) {
@@ -139,12 +142,14 @@ public class QuestionService {
         validate(dto);
         Question question = new Question();
         boolean update = dto.getId() != null;
+        Long previousCategoryId = null;
         if (update) {
             Question existing = questionMapper.selectById(dto.getId());
             assertVisible(existing, userId);
             assertCanEdit(existing, userId);
             question.setId(existing.getId());
             question.setOwnerId(existing.getOwnerId());
+            previousCategoryId = existing.getCategoryId();
         } else {
             question.setOwnerId(userId);
         }
@@ -153,14 +158,20 @@ public class QuestionService {
         question.setAnalysis(StringUtils.hasText(dto.getAnalysis()) ? dto.getAnalysis() : null);
         question.setDifficulty(dto.getDifficulty() == null ? com.quizzy.module.question.enums.Difficulty.MEDIUM : dto.getDifficulty());
         question.setAnswer(AnswerUtil.join(dto.getAnswers()));
+        // 分类：优先用 id，没有 id 时按名字解析（同名复用、否则新建，与 tags 的做法一致）
+        Long categoryId = resolveCategoryId(dto);
         question.setScore(dto.getScore() == null ? 1 : dto.getScore());
-        question.setCategoryId(dto.getCategoryId());
+        question.setCategoryId(categoryId);
 
         if (update) {
             questionMapper.updateById(question);
             questionOptionMapper.delete(new LambdaQueryWrapper<QuestionOption>()
                     .eq(QuestionOption::getQuestionId, question.getId()));
             questionMapper.deleteTags(question.getId());
+            // 分类被换走 → 旧分类可能就此没人引用，交给自动清理
+            if (!Objects.equals(previousCategoryId, categoryId)) {
+                categoryService.pruneIfOrphan(previousCategoryId);
+            }
         } else {
             questionMapper.insert(question);
         }
@@ -218,6 +229,30 @@ public class QuestionService {
                 .eq(QuestionOption::getQuestionId, id));
         questionMapper.deleteTags(id);
         questionStatMapper.delete(new LambdaQueryWrapper<QuestionStat>().eq(QuestionStat::getQuestionId, id));
+        // 这道题可能是旧分类最后的引用
+        categoryService.pruneIfOrphan(question.getCategoryId());
+    }
+
+    /**
+     * 解析出这道题该挂到哪个分类。
+     *
+     * <p>有 id 就用 id（存在性在 {@link #validate} 里已校验）；没有 id 但有名字 →
+     * 按名字查，**同名复用、否则新建**。于是「想用一个还不存在的分类」与「保存题目」
+     * 在**同一个事务**里完成——不会出现「只建了分类、题目没建成」的残局。
+     * 这与 {@code tags} 的处理是一致的（标签也是保存题目时按名字自动建）。
+     *
+     * <p>⚠️ **空白名字按「没填分类」处理**，不报错：它与「不传 {@code categoryId}」等价，
+     * 而题目有没有分类在界面上一眼可见，静默忽略的危害很小；反过来把空白当错误，
+     * 会让「保存」被拒得莫名其妙。名字超长（&gt;64）仍然报 400——那才是真填错了。
+     */
+    private Long resolveCategoryId(QuestionSaveDTO dto) {
+        if (dto.getCategoryId() != null) {
+            return dto.getCategoryId();
+        }
+        if (StringUtils.hasText(dto.getCategoryName())) {
+            return categoryService.resolveByName(dto.getCategoryName()).getId();
+        }
+        return null;
     }
 
     private void applyScope(LambdaQueryWrapper<Question> wrapper, String scope, Long userId) {

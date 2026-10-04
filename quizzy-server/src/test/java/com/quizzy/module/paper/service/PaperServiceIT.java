@@ -3,9 +3,15 @@ package com.quizzy.module.paper.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.quizzy.module.paper.dto.PaperSaveDTO;
+import com.quizzy.module.paper.dto.PaperRuleDTO;
 import com.quizzy.module.paper.enums.PaperMode;
+import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.paper.entity.PaperQuestion;
 import com.quizzy.module.paper.mapper.PaperQuestionMapper;
+import com.quizzy.module.question.entity.Question;
+import com.quizzy.module.question.enums.QuestionType;
+import com.quizzy.module.question.mapper.QuestionMapper;
+import com.quizzy.module.question.service.QuestionService;
 import com.quizzy.support.ApiTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +38,30 @@ class PaperServiceIT extends ApiTestBase {
 
     @Autowired
     PaperQuestionMapper paperQuestionMapper;
+
+    @Autowired
+    QuestionMapper questionMapper;
+
+    @Autowired
+    CategoryMapper categoryMapper;
+
+    @Autowired
+    QuestionService questionService;
+
+    /** 保存一道题并放进指定**名字**的分类（分类随题目诞生）。 */
+    private long createQuestionIn(String token, String categoryName) throws Exception {
+        JsonNode res = apiPost("/api/questions", token, payload(
+                "type", "SINGLE",
+                "stem", "IT 分类题 " + newUsername(),
+                "score", 1,
+                "categoryName", categoryName,
+                "answers", List.of("A"),
+                "options", List.of(
+                        payload("label", "A", "content", "A"),
+                        payload("label", "B", "content", "B"))));
+        assertThat(res.path("code").asInt()).as("造题失败：%s", res).isZero();
+        return res.path("data").asLong();
+    }
 
     private long createQuestion(String token) throws Exception {
         JsonNode res = apiPost("/api/questions", token, payload(
@@ -102,6 +132,29 @@ class PaperServiceIT extends ApiTestBase {
         assertThat(storedRelations(paperId)).containsExactly(q3);
         assertThat(paperService.detail(paperId, owner).getQuestionIds()).containsExactly(q3);
         assertThat(paperService.detail(paperId, owner).getQuestionCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("规则卷引用的分类已不存在：那条条件失效，而不是整张卷抽不到题")
+    void ruleWithMissingCategoryStillDraws() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long userId = me.path("user").path("id").asLong();
+
+        // 先造一个「已经消失的分类 id」：分类随题目诞生，把那道题删掉它就被回收了
+        long questionId = createQuestionIn(token, "IT 将消失 " + newUsername());
+        long deadCategoryId = questionMapper.selectById(questionId).getCategoryId();
+        questionService.delete(questionId, userId);
+        assertThat(categoryMapper.selectById(deadCategoryId)).as("分类该已被回收").isNull();
+
+        PaperRuleDTO rule = new PaperRuleDTO();
+        rule.setCategoryId(deadCategoryId);
+        rule.setTypes(List.of(QuestionType.SINGLE));
+        rule.setCount(1);
+
+        // 「失效」= 跳过分类筛选、其余条件照常，所以仍然抽得到题。
+        // ⚠️ 少了那道判断，这里会是 0 题——用户只看到「没有符合要求的题目」却不知原因。
+        assertThat(paperService.preview(rule, userId)).isNotEmpty();
     }
 
     @Test

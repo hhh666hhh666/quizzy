@@ -10,6 +10,7 @@ import com.quizzy.common.PageResult;
 import com.quizzy.common.ResultCode;
 import com.quizzy.module.paper.dto.PaperRuleDTO;
 import com.quizzy.module.paper.dto.PaperSaveDTO;
+import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.paper.entity.Paper;
 import com.quizzy.module.paper.entity.PaperQuestion;
 import com.quizzy.module.paper.enums.PaperMode;
@@ -40,6 +41,7 @@ public class PaperService {
     private final PaperQuestionMapper paperQuestionMapper;
     private final QuestionMapper questionMapper;
     private final QuestionStatMapper questionStatMapper;
+    private final CategoryMapper categoryMapper;
     private final ObjectMapper objectMapper;
 
     public PageResult<PaperVO> page(long pageNo, long pageSize, Long userId) {
@@ -134,7 +136,11 @@ public class PaperService {
         int count = rule.getCount() == null ? 20 : Math.min(Math.max(rule.getCount(), 1), 200);
         LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<Question>()
                 .and(w -> w.isNull(Question::getOwnerId).or().eq(Question::getOwnerId, userId));
-        if (rule.getCategoryId() != null) {
+        // ⚠️ 分类可能已经被自动清理掉了（无人引用时自动删除）。
+        //    这时让「按分类筛」这条条件**失效**（跳过），而不是让整张卷一道题都抽不到——
+        //    否则用户只会看到「没有符合要求的题目」，完全不知道原因。
+        //    规则卷作答与「预览抽题结果」共用这里，行为自动一致。
+        if (rule.getCategoryId() != null && categoryMapper.selectById(rule.getCategoryId()) != null) {
             wrapper.eq(Question::getCategoryId, rule.getCategoryId());
         }
         if (!CollectionUtils.isEmpty(rule.getTypes())) {

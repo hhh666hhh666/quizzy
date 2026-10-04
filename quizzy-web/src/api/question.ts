@@ -5,12 +5,16 @@ export function listCategories() {
   return unwrap<any[]>(request.get('/categories'))
 }
 
-export function createCategory(name: string, sort = 0) {
-  return unwrap<any>(request.post('/categories', { name, sort }))
-}
-
-export function deleteCategory(id: number) {
-  return unwrap<void>(request.delete(`/categories/${id}`))
+/**
+ * 改分类名（**只迁移自己的题目**）。
+ *
+ * ⚠️ 这里**没有** create / delete：
+ * - 分类随「保存题目」自动建（传 `categoryName`，同一个事务里完成）；
+ * - 无人引用时由系统自动删。
+ * 分类是全体共用的，把「主动删除共享分类」这个口子留给任何注册用户是不可接受的。
+ */
+export function moveCategory(id: number, name: string) {
+  return unwrap<any>(request.put(`/categories/${id}`, { name }))
 }
 
 export function listTags() {
