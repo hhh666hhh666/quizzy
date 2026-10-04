@@ -56,6 +56,11 @@ jobs:
   #    要补后端需另加 maven-dependency-submission-action（要 contents: write，且跑一次完整 mvn），
   #    本次没做。
   #
+  # ⚠️ **前提：仓库必须开着 Dependency graph / Dependabot alerts**（仓库设置，不在这份文件里）。
+  #    关着的时候它报的是 `Dependency review is not supported on this repository`——
+  #    **看着像「这个 action 用不了」，其实是仓库开关没开**，很容易误判成方案不行。
+  #    2026-10-04 首次跑就撞了这个：两个开关当时都是关的，打开后重跑即通过。
+  #
   # 只卡 high 及以上、且只看 PR 新引入的：存量依赖的噪音不进门禁。
   # 理由与 check-doc-links.sh 头部一致——误报会让人养成「红了也照合」的习惯，那比不检查更糟。
   deps:
