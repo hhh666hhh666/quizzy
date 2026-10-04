@@ -67,6 +67,102 @@ export async function expectNoHorizontalOverflow(page: Page, containerSelector =
 }
 
 /**
+ * 用「新建题目」对话框造一道题。
+ *
+ * <p>为什么端到端用例要自己造题：错题本、多选判分这些用例**必须**知道正确答案是什么，
+ * 而种子题库里的题是随机的。自己造才知道「选哪个是错的」。
+ *
+ * <p>⚠️ Element Plus 的 label 不与 input 关联（没有 `for`），所以统一走
+ * 「先定位表单项、再取其输入框」；选项行靠 `.label` 里的字母认。
+ */
+export async function createQuestion(
+  page: Page,
+  opts: {
+    stem: string
+    options: string[]
+    correct: string[]
+    type?: 'SINGLE' | 'MULTI' | 'JUDGE'
+  }
+): Promise<void> {
+  const type = opts.type ?? 'SINGLE'
+
+  await page.goto('/questions')
+  await page.getByRole('button', { name: '新建题目' }).click()
+
+  const dialog = page.locator('.el-dialog:visible')
+  await expect(dialog).toBeVisible()
+
+  // 默认题型就是单选，只在不是单选时才点——顺带把「默认值能用」当成隐性断言。
+  // ⚠️ el-radio-button 的 <input> 拿不到可访问名（用 getByRole('radio') 定不到），
+  //    直接点它外面那层 label，与「点选项 label」的做法一致。
+  if (type !== 'SINGLE') {
+    await dialog.locator('.el-radio-button', { hasText: type === 'MULTI' ? '多选题' : '判断题' }).click()
+  }
+
+  await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(opts.stem)
+
+  // 对话框默认只给两个选项，不够就点「+ 增加选项」
+  const rows = dialog.locator('.option-row')
+  for (let i = await rows.count(); i < opts.options.length; i++) {
+    await dialog.getByRole('button', { name: '+ 增加选项' }).click()
+  }
+  for (let i = 0; i < opts.options.length; i++) {
+    await rows.nth(i).locator('.el-input__inner').fill(opts.options[i])
+  }
+
+  // 标记正确项：单选/判断渲染成 el-radio，多选渲染成 el-checkbox
+  const marker = type === 'MULTI' ? '.el-checkbox' : '.el-radio'
+  const rowCount = await rows.count()
+  for (let i = 0; i < rowCount; i++) {
+    const letter = (await rows.nth(i).locator('.label').innerText()).trim()
+    if (opts.correct.includes(letter)) {
+      await rows.nth(i).locator(marker).click()
+    }
+  }
+
+  await dialog.getByRole('button', { name: '保存' }).click()
+  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(dialog).toBeHidden()
+}
+
+/**
+ * 用「新建试卷」对话框组一张**固定卷**，把指定题干的题选进去。
+ *
+ * 固定卷而不是规则卷：题是**确定的**，用例才能知道「该选哪个才对」。
+ */
+export async function createFixedPaper(page: Page, title: string, pickStems: string[]): Promise<void> {
+  await page.goto('/papers')
+  await page.getByRole('button', { name: '新建试卷' }).click()
+
+  const dialog = page.locator('.el-dialog:visible').first()
+  await expect(dialog).toBeVisible()
+  await dialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
+  // 模式默认就是固定卷，不点它
+
+  await dialog.getByRole('button', { name: '选择题库题目' }).click()
+  const selector = page.locator('.el-dialog:visible').last()
+  for (const stem of pickStems) {
+    const row = selector.locator('.el-table__row', { hasText: stem })
+    await expect(row, `题库里应当能找到「${stem}」`).toHaveCount(1)
+    await row.locator('.el-checkbox').first().click()
+  }
+  await selector.getByRole('button', { name: '加入试卷' }).click()
+
+  await dialog.getByRole('button', { name: '保存' }).click()
+  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(dialog).toBeHidden()
+}
+
+/** 从试卷列表里找到这张卷，点「开始作答」，并等到答题页。 */
+export async function startPaperQuiz(page: Page, paperTitle: string): Promise<void> {
+  await page.goto('/papers')
+  const row = page.locator('.el-table__row', { hasText: paperTitle })
+  await expect(row).toHaveCount(1)
+  await row.getByRole('button', { name: '开始作答' }).click()
+  await expect(page).toHaveURL(/\/quiz\/\d+$/)
+}
+
+/**
  * 点名验「内容被裁掉」：只在调用方**明确知道该容器不允许滚动**时使用。
  *
  * 判据是「宽度被吃掉 **且** `overflow-x` 是 hidden」——后者是关键：

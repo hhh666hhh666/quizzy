@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { WIDTHS, expectNoHorizontalOverflow, registerNewUser } from './support/helpers'
+import { WIDTHS, expectNoHorizontalOverflow, expectNotClipped, registerNewUser } from './support/helpers'
 
 // 排版的**几何事实**由断言覆盖（ADR 0020 Amendment 1）：只改样式/文案时不用写新用例，
 // 改坏了这里自己会红。三个宽度来自《测试系统说明》「排版怎么测」。
@@ -16,6 +16,9 @@ test.describe('排版 · 几何事实', () => {
       await page.goto('/login')
       await expect(page.getByRole('tab', { name: '注册' })).toBeVisible()
       await expectNoHorizontalOverflow(page, '.login-card')
+      // 裁切是「点名式」的：只验登录卡片——它的内容（两个 Tab、输入框、按钮）
+      // 没有任何理由被裁掉。表格 / 代码块那种**本来就可滚动**的容器不在点名范围内。
+      await expectNotClipped(page, '.login-card')
     })
 
     test(`${width}px：主框架内的页面不横向溢出、主内容区不越界`, async ({ page }) => {
@@ -25,6 +28,8 @@ test.describe('排版 · 几何事实', () => {
         await page.goto(path)
         await expect(page.locator('.el-main')).toBeVisible()
         await expectNoHorizontalOverflow(page, '.el-main')
+        // 侧边菜单是固定的几条，同样没有理由被裁掉
+        await expectNotClipped(page, '.el-aside')
       }
     })
   }
