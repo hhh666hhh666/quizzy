@@ -93,9 +93,22 @@ public abstract class ApiTestBase {
         return "it_" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
     }
 
-    /** 注册一个全新账号，返回它的 token。后续请求都以这个身份发。 */
+    /** 注册一个全新账号，返回注册响应里的 data 节点（含 token 与 user.id）。 */
     protected String newUserToken() throws Exception {
-        return register(newUsername());
+        return newAccount().path("token").asText();
+    }
+
+    /**
+     * 注册一个全新账号，返回注册响应里的 {@code data} 节点。
+     *
+     * <p>服务集成层要用它：**直接调 service 时需要的是 userId，不是 token**——
+     * 而接口层需要的又是 token。一个账号两份凭据，从同一个响应里取。
+     */
+    protected JsonNode newAccount() throws Exception {
+        JsonNode res = apiPost("/api/auth/register", null, payload(
+                "username", newUsername(), "password", "it-Passw0rd", "nickname", ""));
+        assertThat(res.path("code").asInt()).as("注册应当成功，实际响应：%s", res).isZero();
+        return res.path("data");
     }
 
     protected String register(String username) throws Exception {
