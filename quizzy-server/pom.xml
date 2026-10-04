@@ -45,6 +45,14 @@
              刻意**只提这一个属性**而不是整个升 Spring Boot：改动面小、不牵动框架版本。
              这条是被 CI 的 `deps` job（依赖安全扫描）抓出来的，不是凭感觉升的。 -->
         <tomcat.version>10.1.60</tomcat.version>
+
+        <!-- 同理，覆盖 Spring Boot 管着的 jackson-bom：它带的是 jackson-core 2.21.4，
+             上面挂着两条 **high**（都是 DoS）：
+               GHSA-p6pp-m3f8-5c89  NumberInput.PATTERN_FLOAT 二次回溯 ReDoS
+               GHSA-7hhh-6rmp-j9qf  _reportInvalidToken 没有 maxErrorTokenLength 上限
+             两条的修复版本都含 **2.21.7**，且该版本确认在 Central 上（吃一堑：先查过再写）。
+             取 2.21 线内的补丁号，不跨到 2.22 那个新 minor。 -->
+        <jackson-bom.version>2.21.7</jackson-bom.version>
     </properties>
 
     <dependencies>
