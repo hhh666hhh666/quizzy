@@ -40,6 +40,12 @@
   各自有了接口测试（契约 + **数据边界**），并加了 `scripts/check-module-tests.sh`
   挂在 CI 上断言「每个带 Controller 的模块都配了测试类」（[ADR 0021](./docs/adr/0021-test-sync-discipline.md) 及其 Amendment 1）。
   守卫本身**正反两向**验过：正向 6 个模块全 ok，反向临时造一个无测试的模块必须报 MISSING。
+- **端到端补上核心链路与排版几何断言**：①一条主链路（注册 → 快速练习 → 答题 →
+  **判分反馈即时显示** → 结算 → 结果页四项统计），②几何断言（页面不横向溢出、主内容区不越界，
+  1280 / 768 两个宽度，覆盖登录页与主框架内五个页面）。
+  **视口刻意不含 375**：按 [ADR 0019](./docs/adr/0019-mobile-clients-with-uniapp.md) 移动端另有
+  quizzy-mobile，quizzy-web 实测 PC 布局最小约 501px；裁切（内容被裁掉）也**不做通用断言**——
+  表格 / 代码块本来就可滚动，必然误报，改成了调用方点名的 `expectNotClipped`。
 - **CI 新增 `api` job**（`mvn verify`；Testcontainers 自己起库，所以不需要 `services`）。
 - **新增移动端工程 `quizzy-mobile`**（uni-app · Vue3 · TypeScript · Pinia · wot-design-uni），
   本轮只启用 H5 编译目标，落地「登录/注册 → 快速练习 → 答题 → 结果」一条主线。

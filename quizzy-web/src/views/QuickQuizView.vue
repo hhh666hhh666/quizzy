@@ -22,7 +22,8 @@
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="题量">
-        <el-input-number v-model="rule.count" :min="1" :max="200" />
+        <!-- 同一页有两个 el-input-number（题量 / 排除近期），按组件类型定位会撞名，所以加 testid -->
+        <el-input-number v-model="rule.count" data-testid="quick-count" :min="1" :max="200" />
       </el-form-item>
       <el-form-item label="排除近期">
         <el-input-number v-model="rule.excludeRecentDays" :min="0" :max="365" />

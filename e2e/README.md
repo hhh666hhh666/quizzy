@@ -63,4 +63,4 @@ QUIZZY_JWT_SECRET='<32 字节以上的随机串>' mvn spring-boot:run
 - 前端页面 / 路由 / 交互 → **补这里**；
 - 只改样式 / 文案 / 排版 → 不写新断言（几何断言若已覆盖该页面会自动生效）。
 
-`specs/` 下的文件按业务链路编号（`00-smoke`、`01-auth`…），与 [ADR 0020](../docs/adr/0020-layered-test-system.md) 里那份「端到端覆盖清单」对齐。
+`specs/` 下的文件按业务链路编号（`00-` 冒烟、`01-` 排版几何、`02-` 核心链路…），与 [ADR 0020](../docs/adr/0020-layered-test-system.md) 里那份「端到端覆盖清单」对齐。
