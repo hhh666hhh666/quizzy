@@ -44,6 +44,11 @@
   依赖拿去比已知漏洞库，只卡 high 及以上、且只看新引入的——存量噪音不进门禁。
   ⚠️ **只覆盖 npm**（三份 `package-lock.json`）：Maven 不会自动进 GitHub 的 dependency graph，
   **后端仍是盲区**；这条边界写在 ci.yml 的注释与决策日志里，免得误以为「扫过了」。
+- **依赖扫描抓出并修掉 5 条真实漏洞**（都是它自己报的，不是凭感觉升的）：
+  **Tomcat 10.1.55 → 10.1.60**，清掉 3 条 **critical**（GHSA-gcx9-497g-6cp6 / 9xv2-5v5q-p794 /
+  h3x4-894j-xpx5，均网络可达、无需权限）；**jackson-bom 2.21.4 → 2.21.7**，清掉 2 条 **high**（DoS）。
+  只覆盖 `tomcat.version` / `jackson-bom.version` 两个属性，不整体升 Spring Boot。
+  ⚠️ 踩到一坑：advisory 写的修复版本 **10.1.58 已被撤版**（Central 上没有），照抄会挂构建。
 - **依赖扫描补上后端**：新增 `deps-submit` job（`maven-dependency-submission-action`），
   把 Maven 的**含传递依赖**的完整树提交成依赖快照，`deps` 排在它之后才能把后端也算进比对。
   push 上也跑——master 那条基线必须常新，否则 PR 上「base 一侧」是空的。
