@@ -271,6 +271,22 @@
 
 ### 本次新增的未决问题
 
-- **后端依赖怎么纳入扫描**：加 `advanced-security/maven-dependency-submission-action`
-  把 pom 提交进 dependency graph（要 `contents: write`，且要跑一次完整 mvn）——
-  做不做、放哪个 job，**未定**。
+- ~~**后端依赖怎么纳入扫描**~~ → **已做，见下面的 D12**。
+
+### D12 · 补后端：`deps-submit` 用 maven-dependency-submission-action 提交快照
+
+- **决策**：新增 `deps-submit` job（`advanced-security/maven-dependency-submission-action@v6.0.1`，
+  `directory: quizzy-server`），`deps` 用 `needs` 排在它**之后**。
+- **因为**：npm 会自动进 dependency graph 而 **Maven 不会**；没有后端快照，D11 那条门禁
+  **只扫得到三份 lockfile**，而 jjwt / mysql-connector-j / spring-security-crypto 全在后端——
+  那正是「看着在扫、其实没扫到」的虚假安全感。submission 生成的是**含传递依赖**的完整树，
+  而漏洞几乎总在传递依赖里，只交 pom 里那十来个直接依赖等于没扫。
+- ⚠️ **两条必须记住的约束**：
+  1. **`deps-submit` 在 push 上也跑**——master 的基线快照必须常新，否则 PR 上「base 一侧」是空的，
+     diff 无从比起；
+  2. 它要 `contents: write`，而 **fork PR 拿不到写权限** → 加 `if` 直接跳过，
+     `deps` 那边按 `needs.*.result` 处理（被跳过时退化成只审 npm，好过整个不检查）。
+- **放弃**：改用 Trivy 直接扫 pom.xml（不需要 dependency graph、也不要写权限，
+  但它与 npm 那半是两套报告，且要新引一个 action）；OWASP dependency-check（慢、误报多）。
+- **来源**：主人一句话「补」
+- 相关：D11。
