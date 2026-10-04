@@ -29,7 +29,7 @@ class WrongBookApiIT extends ApiTestBase {
         return ids;
     }
 
-    /** 快速练习必须带抽题规则（规则为空会被直接拒掉），题量由规则匹配到多少题决定。 */
+    /** 快速练习必须带抽题规则（规则为空会被直接拒掉）；规则里的题量是上限，见 QuizApiIT 里的说明。 */
     private long startQuick(String token) throws Exception {
         JsonNode res = apiPost("/api/quiz/start", token, payload(
                 "sourceType", "QUICK", "rule", payload("types", List.of("SINGLE"))));
