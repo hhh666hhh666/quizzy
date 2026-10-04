@@ -49,7 +49,9 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   await page.locator('.el-table__row', { hasText: stem })
     .getByRole('button', { name: '删除' })
     .click()
-  await page.getByRole('button', { name: '确定' }).click()
+  // ⚠️ 不能按文案「确定」找按钮：Element Plus 会在两个中文字之间**自动插入空格**（渲染成「确 定」），
+  //   所以按名字匹配不到。直接点确认框的主按钮——不受这个排版行为影响。
+  await page.locator('.el-message-box__btns .el-button--primary').click()
   await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(0)
 
   // **自动回收的证据**：没有人引用它了，下拉里不该再有
