@@ -49,25 +49,57 @@ jobs:
   # 它验的是「我引入的**别人的**代码有没有已知毛病」——与三层测试（验自有逻辑）互补，不重叠。
   #
   # ⚠️ **只在 PR 上跑**：这个 action 要拿 base 与 head 两份清单做 diff，push 事件没有可比的一侧。
-  # ⚠️ **覆盖不到后端，这条边界必须写在明处**：Maven 不会自动进 GitHub 的 dependency graph
-  #    （要靠 dependency submission 才行），所以这条**只覆盖三份 npm 的 package-lock.json**；
-  #    后端那边的 jjwt（JWT 签名）、mysql-connector-j、spring-security-crypto 仍是盲区。
-  #    一个「看着在扫、其实没扫到后端」的门禁比没有更危险——它会给人虚假的安全感。
-  #    要补后端需另加 maven-dependency-submission-action（要 contents: write，且跑一次完整 mvn），
-  #    本次没做。
-  #
-  # ⚠️ **前提：仓库必须开着 Dependency graph / Dependabot alerts**（仓库设置，不在这份文件里）。
-  #    关着的时候它报的是 `Dependency review is not supported on this repository`——
+  # ⚠️ **前提一：仓库得开着 Dependency graph / Dependabot alerts**（仓库设置，不在这份文件里）。
+  #    关着的时候它报 `Dependency review is not supported on this repository`——
   #    **看着像「这个 action 用不了」，其实是仓库开关没开**，很容易误判成方案不行。
   #    2026-10-04 首次跑就撞了这个：两个开关当时都是关的，打开后重跑即通过。
   #
+  # ⚠️ **前提二：后端得先有快照**（这就是下面 `deps-submit` 存在的理由）。
+  #    npm 会自动进 dependency graph，**Maven 不会**——少了那份快照，这条**只扫得到三份
+  #    package-lock.json**，而 jjwt（JWT 签名）/ mysql-connector-j / spring-security-crypto
+  #    全在后端那边。一个「看着在扫、其实没扫到后端」的门禁比没有更危险——它会给人虚假的安全感。
+  #
   # 只卡 high 及以上、且只看 PR 新引入的：存量依赖的噪音不进门禁。
   # 理由与 check-doc-links.sh 头部一致——误报会让人养成「红了也照合」的习惯，那比不检查更糟。
+  #
+  # 后端（Maven）的依赖快照。**push 上也跑**：master 那条基线必须常新，
+  # 否则 PR 上「base 一侧」是空的，diff 无从比起。
+  # ⚠️ 要 `contents: write`（它在写仓库的 dependency graph）。
+  # ⚠️ fork PR 拿不到写权限 → 直接跳过，否则这个 job 必红；`deps` 那边已按 result 处理这种情况。
+  deps-submit:
+    name: 依赖 · 提交后端快照（填 dependency graph）
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # 用 depgraph-maven-plugin 生成**含传递依赖**的完整树再提交——
+      # 漏洞几乎总在传递依赖里，只交 pom 里那十来个直接依赖等于没扫。
+      - name: 生成并提交 Maven 依赖快照
+        uses: advanced-security/maven-dependency-submission-action@v6.0.1
+        with:
+          directory: quizzy-server
+
   deps:
     name: 依赖 · 已知漏洞（PR 增量）
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    if: github.event_name == 'pull_request'
+    # 必须排在 deps-submit **之后**：dependency-review 比的是 base 与 head 两份**已记录**的快照，
+    # 后端那份是 deps-submit 刚写进去的，早一秒都看不到。
+    needs: deps-submit
+    # deps-submit 被跳过时（fork PR 拿不到写权限）照样跑——退化成只审 npm，好过整个不检查。
+    if: >-
+      github.event_name == 'pull_request' &&
+      (needs.deps-submit.result == 'success' || needs.deps-submit.result == 'skipped')
     steps:
       - uses: actions/checkout@v7
 
