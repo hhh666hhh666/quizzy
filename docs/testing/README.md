@@ -25,7 +25,9 @@
 - [../../quizzy-server/src/test/java/com/quizzy/module/quiz/service/ScoreStrategyTest.java](../../quizzy-server/src/test/java/com/quizzy/module/quiz/service/ScoreStrategyTest.java) — 判分策略
 - [../../quizzy-server/src/test/java/com/quizzy/module/question/service/QuestionImportServiceTest.java](../../quizzy-server/src/test/java/com/quizzy/module/question/service/QuestionImportServiceTest.java) — 导入校验
 
-## 测试边界（刻意的选择）
+## 单元层的边界（刻意的选择）
+
+⚠️ 下面两条说的是**单元层**（`*Test`），不是整个测试系统——三层各有各的边界。
 
 - **只测判分与导入校验**：这两处的错误是静默的——多选题答案集合、判断题对错写错了不会报错，只会一直错下去。
 - **全部是纯 JUnit 5**，不拉 Spring 上下文、不触发 Flyway、**不需要数据库**。
@@ -61,7 +63,8 @@
 
 - 接口层覆盖的是**契约与数据边界**，不是全部业务分支——穷尽分支仍是单元层的活；
 - 前端无单测、无 lint（暂缓，理由见 [系统说明](./系统说明.md)）；
-- **排版的审美与层级零自动化**——不做视觉回归，也只有人眼能判断「协调 / 主次」；几何事实（溢出、越界、裁切）待端到端层落地后由断言覆盖；
+- **排版的审美与层级零自动化**——不做视觉回归，也只有人眼能判断「协调 / 主次」；
+  ✅ **几何事实**（溢出、越界、裁切）**已由端到端的断言覆盖**，但只覆盖断言到的页面与视口（1280 / 768）；
 - 历史作答不做题目快照（题目被改后，历史记录里显示的解析会跟着变）；
 - 现有单元测试不覆盖 Web 层与数据库交互。
 
