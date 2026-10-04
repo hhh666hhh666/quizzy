@@ -30,6 +30,13 @@
 
 ### Added
 
+- **接口层（真 Spring + 真 MySQL）的机制就位**：`pom.xml` 声明 `maven-failsafe-plugin`、接口与集成测试
+  定为 `*IT` 命名，于是 `mvn test` **依旧只跑纯单元测试、不需要 Docker**（`mvn verify` 才跑接口层）。
+  库用 Testcontainers 起真 MySQL——不用 H2，因为迁移脚本是 MySQL 方言
+  （[ADR 0020](./docs/adr/0020-layered-test-system.md) 及其 Amendment 2）。先用 auth 模块打通：
+  统一信封、鉴权（**鉴权失败的 HTTP 状态仍是 200、401 落在信封里**这条反直觉约定也钉住了）、
+  重复用户名、密码错、校验错误各一条。
+- **CI 新增 `api` job**（`mvn verify`；Testcontainers 自己起库，所以不需要 `services`）。
 - **新增移动端工程 `quizzy-mobile`**（uni-app · Vue3 · TypeScript · Pinia · wot-design-uni），
   本轮只启用 H5 编译目标，落地「登录/注册 → 快速练习 → 答题 → 结果」一条主线。
   架构见 [ADR 0019](./docs/adr/0019-mobile-clients-with-uniapp.md)（PC 端不动、移动端只做「消费」）。
