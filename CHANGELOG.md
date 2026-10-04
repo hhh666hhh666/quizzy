@@ -40,6 +40,10 @@
   各自有了接口测试（契约 + **数据边界**），并加了 `scripts/check-module-tests.sh`
   挂在 CI 上断言「每个带 Controller 的模块都配了测试类」（[ADR 0021](./docs/adr/0021-test-sync-discipline.md) 及其 Amendment 1）。
   守卫本身**正反两向**验过：正向 6 个模块全 ok，反向临时造一个无测试的模块必须报 MISSING。
+- **服务集成层铺满 6 个模块**：在上一批试卷 / 题目之外，补上 `QuizServiceIT`（会话两表一致、
+  **判错点亮错题本标记**、结算进终态）、`WrongBookServiceIT`（**手动移出只翻标记、不删统计**、
+  错题重练抽本里的题、每人一本）、`CategoryServiceIT`（重名 409、删分类清空题目分类引用）。
+  接口 + 集成总数 41 → **52 条**。
 - **服务集成层首批落地（P3）**：新增 `PaperServiceIT`（固定卷两表一致、改卷不残留旧关系、别人的卷 404）
   与 `QuestionServiceIT`（校验失败不留半成品、删题时**题目软删但作答统计被硬删**）。
   这一层**直接调 service 并查表**，不经过 HTTP——因为「VO 可以由入参拼出来」，
