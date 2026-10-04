@@ -20,9 +20,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # 放在最前面：只靠 runner 自带的 bash + git + grep，不需要任何 toolchain，几秒就跑完；
-  # 而「文档或注释指向了不存在的文件」是最容易混进主干的人为失误，让它在另外四个
-  # 重 job 还在装依赖、拉镜像时就先给出信号。同样不设 needs，与 docker 两个 job 一致。
+  # 放最前面：只靠 runner 自带的 bash + git + grep + find，不需要任何 toolchain，几秒就跑完；
+  # 而「文档或注释指向了不存在的文件」「新模块忘了配测试」是最容易混进主干的人为失误，
+  # 让它们在另外几个重 job 还在装依赖、拉镜像时就先给出信号。同样不设 needs，与 docker 两个 job 一致。
+  # 它现在承载两条约定自检：文档链接（下）与模块测试守卫（再下）。
   # 这套 AI 协作纪律本身的取舍记在 docs/adr/0014-ai-discipline-in-repo.md。
   docs:
     name: 文档 · 链接与引用自检
@@ -37,6 +38,12 @@ jobs:
       # 指过去是空的等于没写。
       - name: 跑 scripts/check-doc-links.sh
         run: bash scripts/check-doc-links.sh
+
+      # 另一类沉默的失效：新加了模块、忘了配测试。它同样不报错，只会让安全网一直缺一块。
+      # ⚠️ 这条只验「有没有测试类」，验不了断言质量——防遗忘的兜底，不是质量保证
+      #    （见 ADR 0021 的 Consequences 与 scripts/check-module-tests.sh 的头部）。
+      - name: 跑 scripts/check-module-tests.sh
+        run: bash scripts/check-module-tests.sh
 
   backend:
     name: 后端 · Maven 单测

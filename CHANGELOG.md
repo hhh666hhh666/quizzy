@@ -36,6 +36,10 @@
   （[ADR 0020](./docs/adr/0020-layered-test-system.md) 及其 Amendment 2）。先用 auth 模块打通：
   统一信封、鉴权（**鉴权失败的 HTTP 状态仍是 200、401 落在信封里**这条反直觉约定也钉住了）、
   重复用户名、密码错、校验错误各一条。
+- **接口层铺满 6 个模块，机械守卫打开**：auth / category / paper / question / quiz / wrongbook
+  各自有了接口测试（契约 + **数据边界**），并加了 `scripts/check-module-tests.sh`
+  挂在 CI 上断言「每个带 Controller 的模块都配了测试类」（[ADR 0021](./docs/adr/0021-test-sync-discipline.md) 及其 Amendment 1）。
+  守卫本身**正反两向**验过：正向 6 个模块全 ok，反向临时造一个无测试的模块必须报 MISSING。
 - **CI 新增 `api` job**（`mvn verify`；Testcontainers 自己起库，所以不需要 `services`）。
 - **新增移动端工程 `quizzy-mobile`**（uni-app · Vue3 · TypeScript · Pinia · wot-design-uni），
   本轮只启用 H5 编译目标，落地「登录/注册 → 快速练习 → 答题 → 结果」一条主线。
