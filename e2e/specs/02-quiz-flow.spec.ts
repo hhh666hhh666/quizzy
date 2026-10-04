@@ -41,3 +41,28 @@ test('核心链路：快速练习 → 答题 → 结算 → 结果页', async ({
   await expect(page.getByText('正确率')).toBeVisible()
   await expect(page.getByText('答对')).toBeVisible()
 })
+
+// 断点续答：会话把「做到第几题」存在服务端，刷新后应当接着走，而不是从头开始。
+// 这条曾经是坏的——两端都因为刷新逻辑把位置挪走而跳题（见 CHANGELOG 里那条修复）。
+test('断点续答：答完一题后刷新，位置继续在未作答的题上', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await registerNewUser(page)
+
+  // 两道题：答完第一道再刷新，才能看出「接着走」和「从头开始」的区别。
+  await page.goto('/quiz/quick')
+  await page.locator('[data-testid="quick-count"] input').fill('2')
+  await page.getByRole('button', { name: '开始练习' }).click()
+  await expect(page).toHaveURL(/\/quiz\/\d+$/)
+
+  await page.locator('.option').first().locator('label').first().click()
+  await page.getByRole('button', { name: '提交本题' }).click()
+  await expect(page.locator('.el-alert')).toBeVisible()
+
+  // 刷新——位置是服务端给的，不是本地状态
+  await page.reload()
+
+  // 表头显示「第 X / Y 题」：应当是第 2 题（第一道已作答），而不是回到第 1 题
+  await expect(page.locator('.el-card__header')).toContainText('第 2 / 2 题')
+  // 而且第一道题的作答仍然在（会话没丢）
+  await expect(page.locator('.el-progress')).toBeVisible()
+})
