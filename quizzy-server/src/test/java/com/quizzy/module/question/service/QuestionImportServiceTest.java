@@ -19,7 +19,7 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("跳过错误行：一行失败不影响其余行，并返回逐行错误报告")
     void shouldSkipInvalidRowAndKeepOthers() {
-        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null) {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 if ("第二题".equals(dto.getStem())) {
@@ -57,7 +57,7 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("中文题型别名与多种分隔符都能正确解析")
     void shouldParseAliasesAndSeparators() {
-        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null) {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 assertEquals(2, dto.getAnswers().size());

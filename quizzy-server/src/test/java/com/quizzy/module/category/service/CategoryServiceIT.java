@@ -8,6 +8,7 @@ import com.quizzy.module.category.entity.Category;
 import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.question.entity.Question;
 import com.quizzy.module.question.mapper.QuestionMapper;
+import com.quizzy.module.question.service.QuestionService;
 import com.quizzy.support.ApiTestBase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,24 @@ class CategoryServiceIT extends ApiTestBase {
 
     @Autowired
     QuestionMapper questionMapper;
+
+    @Autowired
+    QuestionService questionService;
+
+    /** 保存一道题，分类用**名字**给（分类随题目诞生，没有独立的创建入口）。 */
+    private long createQuestionIn(String token, String categoryName) throws Exception {
+        JsonNode res = apiPost("/api/questions", token, payload(
+                "type", "SINGLE",
+                "stem", "IT 分类题 " + newUsername(),
+                "score", 1,
+                "categoryName", categoryName,
+                "answers", List.of("A"),
+                "options", List.of(
+                        payload("label", "A", "content", "A"),
+                        payload("label", "B", "content", "B"))));
+        assertThat(res.path("code").asInt()).as("造题失败：%s", res).isZero();
+        return res.path("data").asLong();
+    }
 
     private String uniqueName() {
         return "IT 分类 " + newUsername();
@@ -80,6 +99,39 @@ class CategoryServiceIT extends ApiTestBase {
         Question question = questionMapper.selectById(questionId);
         assertThat(question).isNotNull();
         assertThat(question.getCategoryId()).as("分类引用应当被清空").isNull();
+    }
+
+    @Test
+    @DisplayName("最后一道引用它的题被删掉后，分类被自动回收")
+    void orphanIsPrunedAfterItsLastQuestionIsDeleted() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long userId = me.path("user").path("id").asLong();
+
+        long questionId = createQuestionIn(token, uniqueName());
+        Long categoryId = questionMapper.selectById(questionId).getCategoryId();
+        assertThat(categoryId).as("分类应当随题目一起诞生").isNotNull();
+
+        questionService.delete(questionId, userId);
+
+        assertThat(categoryMapper.selectById(categoryId)).as("没人引用的分类该被回收").isNull();
+    }
+
+    @Test
+    @DisplayName("还有别人的题在引用时，分类不会被回收")
+    void referencedCategorySurvives() throws Exception {
+        JsonNode me = newAccount();
+        JsonNode other = newAccount();
+        String name = uniqueName();
+
+        long mine = createQuestionIn(me.path("token").asText(), name);
+        createQuestionIn(other.path("token").asText(), name); // 别人的题也挂在它下面
+        Long categoryId = questionMapper.selectById(mine).getCategoryId();
+
+        questionService.delete(mine, me.path("user").path("id").asLong());
+
+        assertThat(categoryMapper.selectById(categoryId))
+                .as("还有别人的引用，不该被回收").isNotNull();
     }
 
     @Test

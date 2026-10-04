@@ -83,11 +83,21 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="分类">
-            <el-select v-model="form.categoryId" clearable filterable allow-create default-first-option>
-              <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
-            </el-select>
-          </el-form-item>
+      <el-form-item label="分类">
+        <el-select v-model="form.categoryId" clearable filterable allow-create default-first-option>
+          <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
+        </el-select>
+        <!-- 只在选中了既有分类时才出现：新建的名字还没有 id，谈不上改名 -->
+        <el-button
+          v-if="typeof form.categoryId === 'number'"
+          link
+          type="primary"
+          class="rename-hint"
+          @click="onRenameCategory"
+        >
+          改分类名
+        </el-button>
+      </el-form-item>
         </el-col>
       </el-row>
 
@@ -107,9 +117,9 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { getQuestion, saveQuestion } from '@/api/question'
-import { listCategories, listTags } from '@/api/question'
+import { listCategories, listTags, moveCategory } from '@/api/question'
 import type { QuestionSaveDTO } from '@/types'
 
 const props = defineProps<{ visible: boolean; questionId: number | null }>()
@@ -194,6 +204,35 @@ function toggleAnswer(label: string, checked: any) {
   form.value.answers = [...set].sort()
 }
 
+/**
+ * 改分类名。
+ *
+ * ⚠️ 语义不是「原地改名」——分类是共享的，原地改会把**所有人**的题目都换名字。
+ * 后端做的是「只把我的题迁到目标分类；旧分类若因此无人引用则自动删」。
+ */
+async function onRenameCategory() {
+  const current = categories.value.find((c: any) => c.id === form.value.categoryId)
+  try {
+    const { value } = await ElMessageBox.prompt(
+      '只把你自己的题目迁到新名字下。别人的题目仍留在原分类，原分类也不会因此消失。',
+      '改分类名',
+      {
+        inputValue: current?.name ?? '',
+        inputValidator: (v: string) => (v && v.trim().length > 0 ? true : '名称不能为空')
+      }
+    )
+    const moved = await moveCategory(Number(form.value.categoryId), String(value).trim())
+    categories.value = await listCategories()
+    form.value.categoryId = moved.id
+    ElMessage.success('已改分类名')
+  } catch (e: any) {
+    // 点取消也会被 reject，别当成错误提示
+    if (e !== 'cancel') {
+      ElMessage.error(e?.message || '改分类名失败')
+    }
+  }
+}
+
 async function onSave() {
   if (!form.value.stem.trim()) {
     ElMessage.warning('题干不能为空')
@@ -205,7 +244,16 @@ async function onSave() {
   }
   saving.value = true
   try {
-    await saveQuestion({ ...form.value, tags: tagNames.value })
+    const payload: any = { ...form.value, tags: tagNames.value }
+    // 分类下拉开了 allow-create，而 v-model 绑的是 Long 类型的 id——
+    // 于是「输入一个新名字」得到的是**字符串**。把它转成 categoryName 交给后端
+    // 按名字解析（同名复用、否则新建），id 位置留空。
+    // 这样分类与题目在同一个请求里一起落库，不会出现「只建了分类、题目没建成」。
+    if (typeof payload.categoryId === 'string') {
+      payload.categoryName = payload.categoryId
+      payload.categoryId = null
+    }
+    await saveQuestion(payload)
     ElMessage.success('保存成功')
     emit('saved')
     emit('update:visible', false)
@@ -219,4 +267,5 @@ async function onSave() {
 .options { width: 100%; }
 .option-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .label { width: 20px; font-weight: 600; }
+.rename-hint { margin-left: 10px; }
 </style>
