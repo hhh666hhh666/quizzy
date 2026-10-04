@@ -24,9 +24,7 @@
 
 ---
 
-## [Unreleased]
-
-新变更先堆在这里；打 tag 时整段移入新版本段并改名。
+## [1.3.0] - 2026-10-04
 
 ### Added
 
@@ -110,6 +108,15 @@
   见 [ADR 0021](./docs/adr/0021-test-sync-discipline.md)。
 
 ### Fixed
+
+- **清掉 npm 侧能清的存量漏洞（10 个包）**：`adm-zip` / `qs` / `cookie` / `send` / `postcss` /
+  `esbuild` / `postcss-selector-parser` / `@babel/core` / `@intlify/*`，以及 web 侧的 `vite` 6.4.3。
+  直接依赖改版本号、传递依赖用 `overrides`；锁文件在**干净临时目录**里重新生成
+  （在有 `node_modules` 的目录里 npm 只写当前平台的原生可选依赖，换到 Linux CI 上装不到）。
+  仓库的 open 告警 **39 → 21**。剩下两类**清不掉**，已写明原因记在
+  [`docs/todo/2026-10-04-TODO-依赖存量漏洞清理.md`](./docs/todo/2026-10-04-TODO-依赖存量漏洞清理.md)：
+  ① mobile 的 `vite` 被 `@dcloudio/vite-plugin-uni` 的 peer **钉死在精确的 5.2.8**（要升得先升 uni-app）；
+  ② `braces` 的公告范围是 `<= 3.0.3` 而**上游最新就是 3.0.3**（还没有修复版本）。
 
 - **改正一处由荧自己造成的错误结论，并补上此前完全缺失的断言**：接口测试的注释与 todo 里曾写
   「抽题规则里没有题量」——**那是错的**。`PaperRuleDTO` 有 `count`（默认 20、夹在 1–200），
@@ -237,7 +244,8 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/hhh666hhh666/quizzy/compare/ae273cb...v1.0.0
