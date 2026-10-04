@@ -34,7 +34,10 @@
 | [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/server-deploy.sh` 与 [../.github/workflows/release.yml](../.github/workflows/release.yml) |
 | [operations/configuration.md](./operations/configuration.md) | 配置从哪来、改了要重启什么 | 换机器 / 改配置的人 | `.env.example` |
 | [operations/backup.md](./operations/backup.md) | 备份现状、手动跑一次、恢复（未演练） | 担心数据丢的人 | `scripts/backup-mysql.sh` |
-| [testing.md](./testing.md) | 测了什么、故意不测什么、新测试放哪 | 改代码前想确认安全网的人 | `src/test`、`package.json` |
+| [testing/README.md](./testing/README.md) | 现在有哪些测试、怎么跑、盲区在哪、新测试放哪 | 改代码前想确认安全网的人 | `src/test`、`.github/workflows/`、`package.json` |
+| [testing/系统说明.md](./testing/系统说明.md) | 测试系统为什么分层、每层保证什么、加功能时怎么同步 | 想知道「这次改动要补哪层测试」的人 | 本文件 |
+| [testing/agent-exploration.md](./testing/agent-exploration.md) | AI 探索测试的任务书（手动触发、产出报告） | 要跑一次探索测试的那次会话 | 本文件 |
+| [../e2e/README.md](../e2e/README.md) | 端到端测试怎么跑、有哪些约定、新用例放哪 | 要跑端到端或加用例的人 | 该工程自身与 `.github/workflows/ci.yml` |
 | [目录结构.md](./目录结构.md) | `docs/` 的带注释目录树（看形状；用途与真相源仍看本表） | 新人 / 冷启动的 AI，想一眼看清文档都在哪 | 文件系统 |
 | [development/contributing.md](./development/contributing.md) | 分支 / 提交 / PR 约定与文档纪律 | 要提交代码的人 | `git log` |
 | [todo/](./todo/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |

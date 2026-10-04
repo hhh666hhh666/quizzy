@@ -35,6 +35,24 @@
   架构见 [ADR 0019](./docs/adr/0019-mobile-clients-with-uniapp.md)（PC 端不动、移动端只做「消费」）。
   小程序编译目标、`/m/` 部署产物与错题本/记录页留待后续。
 - **CI 新增 `mobile` job**：类型检查 + `build:h5` + 一条 `diff` 守卫（移动端的 `types` 必须与 PC 端逐字一致）。
+- **建立分层测试系统**：三层——单元（已有）、接口与服务集成（真 Spring + 真 MySQL，Testcontainers）、
+  端到端（Playwright，**只在 CI 的一次性环境**跑）。两个前端工程的依赖树**不动**，端到端隔离在独立工程 `e2e/` 里。
+  排版分三类：**几何事实**（溢出 / 越界 / 裁切）由端到端层的断言覆盖并进 CI，
+  **审美与层级**靠 AI 探索粗筛 + 人眼，**视觉回归截图比对不做**。
+  见 [ADR 0020](./docs/adr/0020-layered-test-system.md)（含 Amendment 1）与 [《测试系统说明》](./docs/testing/系统说明.md)，
+  落地的分阶段计划见 [docs/todo/2026-10-04-TODO-测试系统落地.md](./docs/todo/2026-10-04-TODO-测试系统落地.md)。
+- **端到端层已落地（P0）**：新增工程 [e2e/](./e2e/README.md)（Playwright，独立 `package.json`），
+  并给 `ci.yml` 加了 `e2e` job——**这是后端第一次在流水线里被真正启动**（此前 `mvn test` 不拉 Spring、
+  镜像 job 只 `docker build`）。一次性环境是 `mysql:8` service + 后端进程 + 前端 preview，跑完随 runner 销毁；
+  测试配置**直接注入 job 的 env、不建 `.env` 文件**，顺带解开了「不敢 `compose up`」那个结。
+- **登录页的输入框与注册按钮加了 `data-testid`**：登录与注册两个 Tab 同时挂在 DOM 上，
+  「用户名」「密码」这类文案各重复一次，按文案定位会撞名——只给这类元素加，其余仍用语义定位。
+- **新增 AI 探索测试任务书** `docs/testing/agent-exploration.md`：由人手动触发、**产出报告而非断言**，
+  不进 CI（探索测试不可重复，不是测试）。任务书**自包含、平台无关**（写入能力自检，缺能力必须声明），
+  报告写到 `.workbuddy/exploration/`（已被 gitignore，**不入库**）。
+- **新增测试同步纪律**：改动 → 补哪层测试由一张映射表决定，测试与功能进**同一个 PR**；
+  另计划一条 CI 机械守卫（每个 `module/*/controller` 至少有一个测试类，**尚未落地**，见 P1），
+  见 [ADR 0021](./docs/adr/0021-test-sync-discipline.md)。
 
 ### Fixed
 
@@ -45,6 +63,8 @@
 
 ### Changed
 
+- **`docs/testing.md` 迁为 `docs/testing/README.md`**：`docs/` 下新增 `testing/` 主题目录，
+  按「现状 / 设计意图 / 探索任务书」拆成三份文件，全仓引用同步修正。
 - **MySQL 从「不发布任何端口」改为**只绑宿主回环（`127.0.0.1:3306:3306`），
   好让本机能经 SSH 隧道直连——IDEA 的数据库工具与临时排障都靠这个稳定落点。
   **公网仍然够不着**：已实测宿主 `ss` 只显示回环地址、从公网探 3306 拒连。

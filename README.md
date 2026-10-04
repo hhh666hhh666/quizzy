@@ -34,6 +34,7 @@
 | 前端（PC） | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
 | 移动端 | uni-app · Vue 3 · TypeScript · Pinia · wot-design-uni（**当前只出 H5**，小程序待备案与 AppID） |
 | 运行 | Docker Compose：**本机只跑 dev**（只起数据库，前后端在宿主机跑）；prod 在阿里云轻量服务器上，由 CI 构建镜像推 ACR 后自动部署 |
+| 测试 | 后端单元测试（纯 JUnit，不碰库）· 端到端（Playwright，跑在 CI 的一次性全栈上，见 [e2e/](./e2e/README.md)） |
 
 各依赖的确切版本以 `pom.xml`、两个 `package.json` 与两个 `Dockerfile` 为准（这是依赖版本，与上面说的发布版本号无关）。
 
@@ -88,9 +89,9 @@ git tag v1.2.0 && git push origin v1.2.0   # 触发 release.yml：门禁 → 迁
 
 两条流水线各管一段：
 
-- [ci.yml](./.github/workflows/ci.yml) —— push 到 master / PR 时的质量门禁：后端单测、前端类型检查与构建、两个镜像在干净 Linux 上冒烟构建、文档链接自检。**不改动任何运行中的服务。**
+- [ci.yml](./.github/workflows/ci.yml) —— push 到 master / PR 时的质量门禁：文档链接自检、后端单测、前端类型检查与构建、移动端类型检查与构建、**端到端（真浏览器跑通全栈）**、两个镜像在干净 Linux 上冒烟构建。各 job 的清单看文件本身，这里只列个大概。**不改动任何运行中的服务。**
 - [release.yml](./.github/workflows/release.yml) —— 推 `v*` tag 时上线：版本门禁 → 迁移重放验证 → 构建推 ACR → SSH 部署。
 
-理由与取舍见 [ADR 0016](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)（取代 [ADR 0013](./docs/adr/0013-github-actions-gate-no-auto-deploy.md)），测试范围与盲区见 [测试说明](./docs/testing.md)。
+理由与取舍见 [ADR 0016](./docs/adr/0016-cloud-deploy-with-release-pipeline.md)（取代 [ADR 0013](./docs/adr/0013-github-actions-gate-no-auto-deploy.md)），测试范围与盲区见 [测试说明](./docs/testing/README.md)。
 
 本项目采用 [MIT](./LICENSE) 许可证。

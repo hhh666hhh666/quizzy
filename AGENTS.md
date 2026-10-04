@@ -4,6 +4,8 @@
 
 Spring Boot + Vue 的自用刷题工具，围绕「一道题反复练到会」。领域词看 `CONTEXT.md`，文档总索引看 `docs/README.md`。
 
+**测试相关的三处入口**（不属于下面那几条纪律，是文档入口）：现状与盲区看 `docs/testing/README.md`；「改了代码要补哪层测试」看 `docs/testing/系统说明.md`；要让 AI 像真实用户跑一次探索测试 → 任务书在 `docs/testing/agent-exploration.md`（**手动触发**，报告写到 `.workbuddy/exploration/`，不进仓库）。
+
 ## 1. 未决事项必须落盘 `docs/todo/`
 
 出现「以后 / 回头 / 暂缓 / 先不 / 还没定 / 看情况 / 再说」任一词，或有选项没给推荐，就在本次回复结束前：
