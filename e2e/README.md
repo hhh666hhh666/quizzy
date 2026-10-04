@@ -20,6 +20,8 @@ npm run test:list     # 只列用例，不执行（验配置用）
 
 `npx playwright install --with-deps chromium` 装浏览器，然后 `npm test`。一次性环境（`mysql:8` service + 后端进程 + 前端 preview）由 job 的步骤拉起，**不建 `.env` 文件**——测试配置直接注入 job 的 env。
 
+⚠️ **前端 preview 必须显式 `--host 127.0.0.1`**：Vite 的 preview 默认 host 是 `localhost`，而 Linux runner 上 `localhost` 会解析到 IPv6 的 `::1` → 只监听 `::1`，于是 `curl 127.0.0.1` 每次「0 毫秒直接拒绝」，看起来像服务根本没起。本机 Windows 上 `localhost` 就是 `127.0.0.1`，**所以这个坑本机测不出来**——首次 CI 就这么红过一次。
+
 ### 本机
 
 ⚠️ 两条本机特有的限制：
@@ -32,6 +34,18 @@ E2E_CHANNEL=chrome npm test
 ```
 
 CI 上留空即可（用 `npx playwright install` 装的那份 Chromium）。
+
+**本机怎么一次把全栈起起来**（不要用 dev 库，另起一个一次性容器）：
+
+```bash
+docker run -d --name quizzy-e2e-mysql -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=quizzy -p 127.0.0.1:3307:3306 mysql:8
+# 后端指向它（QUIZZY_JWT_SECRET 需 ≥32 字节）：
+SPRING_DATASOURCE_URL='jdbc:mysql://127.0.0.1:3307/quizzy?...' \
+SPRING_DATASOURCE_USERNAME=root SPRING_DATASOURCE_PASSWORD=root \
+QUIZZY_JWT_SECRET='<32 字节以上的随机串>' mvn spring-boot:run
+# 前端：npm run build && node node_modules/vite/bin/vite.js preview --port 5173 --host 127.0.0.1
+```
 
 ## 约定
 

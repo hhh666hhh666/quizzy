@@ -185,7 +185,11 @@ jobs:
           set -euo pipefail
           npm ci
           npm run build
-          nohup node node_modules/vite/bin/vite.js preview --port 5173 --strictPort > /tmp/web.log 2>&1 &
+          # ⚠️ `--host 127.0.0.1` 不能省。Vite 的 preview 默认 host 是 `localhost`，
+          #    而 ubuntu runner 上 `localhost` 会解析到 IPv6 的 `::1` → 只监听 `::1`，
+          #    于是 curl 127.0.0.1 每次都「0ms 直接拒绝」，看起来像服务没起来。
+          #    本机 Windows 上 localhost 就是 127.0.0.1，所以本机测不出这个坑（首次 CI 就这样红过）。
+          nohup node node_modules/vite/bin/vite.js preview --port 5173 --strictPort --host 127.0.0.1 > /tmp/web.log 2>&1 &
           for i in $(seq 1 30); do
             if curl -fsS -o /dev/null http://127.0.0.1:5173/; then
               echo "==> 前端就绪"; exit 0
@@ -194,6 +198,8 @@ jobs:
           done
           echo "::error::前端 60s 内没有就绪"
           cat /tmp/web.log
+          # 顺带把「到底绑到哪了」打出来——上次只有一句「连不上」，看不出是端口没监听还是绑错地址。
+          ss -tlnp 2>/dev/null | grep -F 5173 || echo "（5173 上没有任何监听）"
           exit 1
 
       - uses: actions/setup-node@v7
