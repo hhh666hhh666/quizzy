@@ -34,12 +34,17 @@
                GHSA-gcx9-497g-6cp6（访问控制 / 授权不正确）
                GHSA-9xv2-5v5q-p794（DIGEST 认证器可重放绕过）
                GHSA-h3x4-894j-xpx5（FORM 认证授权不正确）
-             三条的修复版本都是 10.1.58。
+             三条公告写的修复版本都是 **10.1.58**，但 ⚠️ **10.1.58 已被撤版**——
+             Maven Central 上 10.1.x 直接从 10.1.57 跳到 10.1.59（没有 .58），
+             照抄公告写 10.1.58 会 `Could not find artifact` 把整个构建搞挂
+             （2026-10-04 实测红过一次，后端 / 接口 / 端到端 / 镜像四个 job 一起红）。
+             ⇒ **照抄 advisory 的「修复版本」前先查一次 maven-metadata.xml**。
+             所以这里取 10.1.x 线上当前最新的 **10.1.60**，补丁号升级、含那三条修复。
              后两条 quizzy 用 JWT、不走 Tomcat 的 FORM / DIGEST 认证，**大概率不可达**；
-             但第一条是宽泛的访问控制问题，赌不起——而修法只是同 minor 内的补丁号升级。
+             但第一条是宽泛的访问控制问题，赌不起。
              刻意**只提这一个属性**而不是整个升 Spring Boot：改动面小、不牵动框架版本。
              这条是被 CI 的 `deps` job（依赖安全扫描）抓出来的，不是凭感觉升的。 -->
-        <tomcat.version>10.1.58</tomcat.version>
+        <tomcat.version>10.1.60</tomcat.version>
     </properties>
 
     <dependencies>
