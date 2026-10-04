@@ -28,6 +28,18 @@
         <jjwt.version>0.12.7</jjwt.version>
         <easyexcel.version>4.0.3</easyexcel.version>
         <springdoc.version>2.9.1</springdoc.version>
+
+        <!-- ⚠️ 覆盖 Spring Boot 3.5.16 管着的 Tomcat 版本：它带的是 10.1.55，
+             而 10.1.55 上挂着三条 **critical**（网络可达、无需权限）的公告：
+               GHSA-gcx9-497g-6cp6（访问控制 / 授权不正确）
+               GHSA-9xv2-5v5q-p794（DIGEST 认证器可重放绕过）
+               GHSA-h3x4-894j-xpx5（FORM 认证授权不正确）
+             三条的修复版本都是 10.1.58。
+             后两条 quizzy 用 JWT、不走 Tomcat 的 FORM / DIGEST 认证，**大概率不可达**；
+             但第一条是宽泛的访问控制问题，赌不起——而修法只是同 minor 内的补丁号升级。
+             刻意**只提这一个属性**而不是整个升 Spring Boot：改动面小、不牵动框架版本。
+             这条是被 CI 的 `deps` job（依赖安全扫描）抓出来的，不是凭感觉升的。 -->
+        <tomcat.version>10.1.58</tomcat.version>
     </properties>
 
     <dependencies>
