@@ -12,11 +12,11 @@
 
 ## 一句话现状
 
-**三层都在了：单元（已有）、接口与服务集成（机制就位、模块未铺满）、端到端（已落地）。**
+**三层都在了：单元、接口与服务集成、端到端。**
 
 端到端跑在 **CI 的一次性环境**里（MySQL + 后端进程 + 前端 preview，跑完随 runner 销毁），工程在 [e2e/](../../e2e/README.md)。
 
-接口与服务集成层的**机制**已经跑通——真 Spring 上下文 + 真 MySQL（Testcontainers），基类在 `quizzy-server/src/test/java/com/quizzy/support/ApiTestBase.java`；但**模块还没铺满**，覆盖到哪几个看 [todo](../todo/2026-10-04-TODO-测试系统落地.md)。设计见 [系统说明](./系统说明.md) 与 [ADR 0020](../adr/0020-layered-test-system.md)。
+接口与服务集成层用**真 Spring 上下文 + 真 MySQL**（Testcontainers），基类在 `quizzy-server/src/test/java/com/quizzy/support/ApiTestBase.java`。**每个带 Controller 的模块都配了测试**——这条有机械守卫盯着（[../scripts/check-module-tests.sh](../../scripts/check-module-tests.sh)，CI 上跑）。设计见 [系统说明](./系统说明.md) 与 [ADR 0020](../adr/0020-layered-test-system.md)。
 
 两个前端工程（PC 与移动端）仍然**没有单测、没有 lint**——端到端的依赖被隔离在独立工程里，前端工程的依赖树一个字都没动。
 
@@ -59,7 +59,7 @@
 
 只描述，不成清单——要转化为行动去 [todo/](../todo/)。
 
-- 接口与服务集成层**只覆盖了部分模块**（机制已就位），进度见 [todo](../todo/)；
+- 接口层覆盖的是**契约与数据边界**，不是全部业务分支——穷尽分支仍是单元层的活；
 - 前端无单测、无 lint（暂缓，理由见 [系统说明](./系统说明.md)）；
 - **排版的审美与层级零自动化**——不做视觉回归，也只有人眼能判断「协调 / 主次」；几何事实（溢出、越界、裁切）待端到端层落地后由断言覆盖；
 - 历史作答不做题目快照（题目被改后，历史记录里显示的解析会跟着变）；

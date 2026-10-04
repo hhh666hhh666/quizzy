@@ -26,3 +26,20 @@ Status: accepted
 - AI 探索测试撞到的 bug，必须**回写成一条 spec** 才算收尾——否则下次不一定还能撞到，坑会反复踩。探索测试的定位见 [《测试系统说明》](../testing/系统说明.md)。
 
 相关：[ADR 0020](0020-layered-test-system.md)（分层与各层边界）、[ADR 0006](0006-bare-array-import-contract.md)（文档不复制会漂的事实）、[ADR 0014](0014-ai-discipline-in-repo.md)（把纪律写进仓库并自动加载）。
+
+## Amendment 1（2026-10-04）：守卫已打开，并正反向验过
+
+正文 Consequences 预告的两件事都落地了：
+
+- 脚本是 `scripts/check-module-tests.sh`，挂在 `ci.yml` 的 `docs` job 上（那个 job 只需要
+  bash + git + grep + find，不需要任何 toolchain，几秒跑完）。
+- **现有 6 个模块（auth / category / paper / question / quiz / wrongbook）全部铺上了测试**，
+  所以守卫现在就是绿的——正文里「它会先红」那句只适用于刚落地的那一刻。
+
+⚠️ 补一条正文没写的**验收要求**：这类检查脚本必须**正反两向**打过。落地时的做法是——
+正向：6 个模块全 ok、退出码 0；反向：临时造一个「只有 Controller、没有测试类」的模块 `zzprobe`，
+守卫必须报 `MISSING` 并退出码 1（验完即删）。**只跑正向的守卫等于没验**——
+它可能只是永远返回成功而已。
+
+已知局限不变：**只验「有没有」，验不了「断言到没到点子上」**。
+
