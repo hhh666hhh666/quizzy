@@ -1,0 +1,14 @@
+{
+  "name": "quizzy-e2e",
+  "private": true,
+  "version": "1.2.0",
+  "type": "module",
+  "description": "quizzy 的端到端测试：真浏览器 + 真后端 + 真库（设计见 docs/testing/系统说明.md）",
+  "scripts": {
+    "test": "playwright test",
+    "test:list": "playwright test --list"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

@@ -25,12 +25,12 @@
 
 ## 提 PR 前本地要做什么
 
-1. 跑一遍 [../testing.md](../testing.md) 里列的本地命令（后端 `mvn test`、前端 `typecheck` + `build`）。
+1. 跑一遍 [../testing/README.md](../testing/README.md) 里列的本地命令（后端 `mvn test`、前端 `typecheck` + `build`）。
 2. 可选：在本机构建两个镜像做冒烟——但本机命中缓存会掩盖问题，真正的验证是 CI 那两个 job。
 
 ## CI 会拦什么
 
-见 [../testing.md](../testing.md) 的 CI 一节与 [../adr/0013](../adr/0013-github-actions-gate-no-auto-deploy.md)。
+见 [../testing/README.md](../testing/README.md) 的 CI 一节与 [../adr/0013](../adr/0013-github-actions-gate-no-auto-deploy.md)。
 
 ⚠️ **CI 绿了不等于线上已更新。** 上线是推 `v*` tag 触发 [release.yml](../../.github/workflows/release.yml)（构建推 ACR → SSH 部署），见 [../operations/deployment.md](../operations/deployment.md)。
 

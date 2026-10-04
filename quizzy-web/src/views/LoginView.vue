@@ -6,10 +6,10 @@
         <el-tab-pane label="登录" name="login">
           <el-form :model="form" label-position="top">
             <el-form-item label="用户名">
-              <el-input v-model="form.username" autocomplete="username" />
+              <el-input v-model="form.username" data-testid="login-username" autocomplete="username" />
             </el-form-item>
             <el-form-item label="密码">
-              <el-input v-model="form.password" type="password" show-password autocomplete="current-password" />
+              <el-input v-model="form.password" data-testid="login-password" type="password" show-password autocomplete="current-password" />
             </el-form-item>
             <el-button type="primary" class="submit" :loading="loading" @click="onLogin">登录</el-button>
           </el-form>
@@ -17,15 +17,15 @@
         <el-tab-pane label="注册" name="register">
           <el-form :model="form" label-position="top">
             <el-form-item label="用户名">
-              <el-input v-model="form.username" />
+              <el-input v-model="form.username" data-testid="register-username" />
             </el-form-item>
             <el-form-item label="密码">
-              <el-input v-model="form.password" type="password" show-password />
+              <el-input v-model="form.password" data-testid="register-password" type="password" show-password />
             </el-form-item>
             <el-form-item label="昵称（可留空）">
-              <el-input v-model="form.nickname" />
+              <el-input v-model="form.nickname" data-testid="register-nickname" />
             </el-form-item>
-            <el-button type="primary" class="submit" :loading="loading" @click="onRegister">注册并登录</el-button>
+            <el-button type="primary" class="submit" data-testid="register-submit" :loading="loading" @click="onRegister">注册并登录</el-button>
           </el-form>
         </el-tab-pane>
       </el-tabs>

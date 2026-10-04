@@ -23,7 +23,7 @@ alwaysApply: true
 | 前端结构 / 路由 / 状态 | `docs/design/前端.md` |
 | 部署、compose、`scripts/` | `docs/operations/deployment.md`、`runbook.md` |
 | 配置、密钥、`.env` | `docs/operations/configuration.md`（ADR 0011） |
-| 测试策略 | `docs/testing.md` |
+| 测试策略 | `docs/testing/`（现状看 README，设计看系统说明） |
 | CI / 镜像构建 | `.github/workflows/` + ADR 0010 / 0016 |
 | 领域词汇 | `CONTEXT.md` |
 | 本次迭代交付项 | `CHANGELOG.md` |

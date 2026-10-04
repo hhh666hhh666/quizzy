@@ -40,7 +40,7 @@ git tag v1.2.0 && git push origin v1.2.0
 
 ## 上线前检查清单
 
-1. CI 在 master 上是绿的（跑什么见 [../testing.md](../testing.md) 的 CI 一节）。
+1. CI 在 master 上是绿的（跑什么见 [../testing/README.md](../testing/README.md) 的 CI 一节）。
 2. 本次改动涉及数据库结构 → 确认迁移是**向后兼容**的（加表 / 加可空列）。破坏性变更不能靠回滚兜底。
 3. 迁移脚本已随本次改动进了 `db/migration`，且版本号严格递增——`release.yml` 的第二个 job 会验，但别指望它替人想清楚语义。
 4. `CHANGELOG.md` 已把 `[Unreleased]` 固化成该版本段——版本门禁会验这一段的存在。

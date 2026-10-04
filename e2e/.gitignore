@@ -1,0 +1,4 @@
+# 测试产物：失败时的 trace / 截图与 HTML 报告。一次性、不入库。
+test-results/
+playwright-report/
+.cache/
