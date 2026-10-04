@@ -45,6 +45,32 @@ jobs:
       - name: 跑 scripts/check-module-tests.sh
         run: bash scripts/check-module-tests.sh
 
+  # 依赖安全扫描：把 PR 里**新增或变动**的依赖拿去比已知漏洞库（CVE / GHSA）。
+  # 它验的是「我引入的**别人的**代码有没有已知毛病」——与三层测试（验自有逻辑）互补，不重叠。
+  #
+  # ⚠️ **只在 PR 上跑**：这个 action 要拿 base 与 head 两份清单做 diff，push 事件没有可比的一侧。
+  # ⚠️ **覆盖不到后端，这条边界必须写在明处**：Maven 不会自动进 GitHub 的 dependency graph
+  #    （要靠 dependency submission 才行），所以这条**只覆盖三份 npm 的 package-lock.json**；
+  #    后端那边的 jjwt（JWT 签名）、mysql-connector-j、spring-security-crypto 仍是盲区。
+  #    一个「看着在扫、其实没扫到后端」的门禁比没有更危险——它会给人虚假的安全感。
+  #    要补后端需另加 maven-dependency-submission-action（要 contents: write，且跑一次完整 mvn），
+  #    本次没做。
+  #
+  # 只卡 high 及以上、且只看 PR 新引入的：存量依赖的噪音不进门禁。
+  # 理由与 check-doc-links.sh 头部一致——误报会让人养成「红了也照合」的习惯，那比不检查更糟。
+  deps:
+    name: 依赖 · 已知漏洞（PR 增量）
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 与已知漏洞库比对
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
   backend:
     name: 后端 · Maven 单测
     runs-on: ubuntu-latest

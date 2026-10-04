@@ -40,6 +40,10 @@
   各自有了接口测试（契约 + **数据边界**），并加了 `scripts/check-module-tests.sh`
   挂在 CI 上断言「每个带 Controller 的模块都配了测试类」（[ADR 0021](./docs/adr/0021-test-sync-discipline.md) 及其 Amendment 1）。
   守卫本身**正反两向**验过：正向 6 个模块全 ok，反向临时造一个无测试的模块必须报 MISSING。
+- **CI 加依赖安全扫描**（`deps` job，`dependency-review-action`）：把 PR 里**新增或变动**的
+  依赖拿去比已知漏洞库，只卡 high 及以上、且只看新引入的——存量噪音不进门禁。
+  ⚠️ **只覆盖 npm**（三份 `package-lock.json`）：Maven 不会自动进 GitHub 的 dependency graph，
+  **后端仍是盲区**；这条边界写在 ci.yml 的注释与决策日志里，免得误以为「扫过了」。
 - **端到端补完《覆盖清单》最后三块**：**导入**（JSON 粘贴入库 + 逐行报告）、
   **导出**（真的下载到文件，且内容里有刚建的那道题——不只验文件名）、
   **答题记录**（列表 / 按状态筛 / 跳回结果页）。端到端 11 → **14 条**，本机全过。

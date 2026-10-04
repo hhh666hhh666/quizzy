@@ -240,3 +240,37 @@
 - **部署（本项目）** = 用新镜像 recreate `web` / `server` 两个容器；**不是**把代码搬到另一台机器。
 - **持续可交付 vs 持续部署** = 前者是「代码随时能上线、触发由人」，后者是「连发布也自动」。
   本项目属于前者，因为根本没有第二台机器可以自动发布过去。
+
+---
+
+## 2026-10-04 22:20 · 追加：依赖安全扫描（先只做 npm 那一半）
+
+起因是「测试系统还差什么」那次盘点：三层测试验的是**自有逻辑**，而「我引入的**别人的**代码
+有没有已知漏洞」一直是**零覆盖**。服务已按 [ADR 0017](../adr/0017-public-signup-service.md)
+对公网开放，这个盲区不再能当「个人项目的小事」处理。
+
+### D11 · CI 加一个 `dependency-review-action`，只卡 PR 新引入的 high 及以上
+
+- **决策**：新增 `deps` job，用 `actions/dependency-review-action@v4`，
+  `if: github.event_name == 'pull_request'`（它要拿 base / head 两份清单做 diff，
+  push 事件没有可比的一侧），`fail-on-severity: high`。
+- **因为**：① 与三层测试**互补而不重叠**——测试验自有逻辑，它验引入的第三方包；
+  ② 只卡「PR 新引入的」、只卡 high，**存量噪音不进门禁**——误报会让人养成「红了也照合」的习惯，
+  那比不检查更糟（与 `check-doc-links.sh` 头部同一个取向）。
+- **放弃**：① `npm audit` 进 CI（devDeps 噪音太多）；② OWASP `dependency-check`
+  （首次下 NVD 库很慢、误报出名，会拖慢每次 CI）；③ 自动升级 PR（单人项目每天几张 PR 的噪音）；
+  ④ 顺手加 `maven-dependency-submission-action` 把后端一并纳入——要 `contents: write`
+  且要跑一次完整 mvn，成本与风险都高一档，**本次没做**。
+- ⚠️ **已知边界，写在明处**：Maven **不会**自动进 GitHub 的 dependency graph，
+  所以这条**只覆盖三份 `package-lock.json`**（web / mobile / e2e）；
+  后端的 `jjwt`（JWT 签名）、`mysql-connector-j`、`spring-security-crypto` **仍是盲区**。
+  **一个「看着在扫、其实没扫到后端」的门禁比没有更危险——它会给人虚假的安全感。**
+- **来源**：主人问「依赖安全扫描是什么」后选 B
+- 相关：[ADR 0017](../adr/0017-public-signup-service.md)（公网开放）、
+  [ADR 0021](../adr/0021-test-sync-discipline.md)（新增门禁属 CI 侧，按「改动 → 补哪层」表不补测试）
+
+### 本次新增的未决问题
+
+- **后端依赖怎么纳入扫描**：加 `advanced-security/maven-dependency-submission-action`
+  把 pom 提交进 dependency graph（要 `contents: write`，且要跑一次完整 mvn）——
+  做不做、放哪个 job，**未定**。
