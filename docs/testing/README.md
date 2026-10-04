@@ -12,9 +12,13 @@
 
 ## 一句话现状
 
-**后端有单元测试，只覆盖两处最容易出静默错误的逻辑；端到端层已落地；接口与服务集成层还没做。**
+**三层都在了：单元（已有）、接口与服务集成（机制就位、模块未铺满）、端到端（已落地）。**
 
-端到端跑在 **CI 的一次性环境**里（MySQL + 后端进程 + 前端 preview，跑完随 runner 销毁），工程在 [e2e/](../../e2e/README.md)。接口与服务集成层**设计已定、尚未落地**（设计见 [系统说明](./系统说明.md) 与 [ADR 0020](../adr/0020-layered-test-system.md)，落地顺序见 [todo](../todo/2026-10-04-TODO-测试系统落地.md)）。两个前端工程（PC 与移动端）仍然**没有单测、没有 lint**——端到端的依赖被隔离在独立工程里，前端工程的依赖树一个字都没动。
+端到端跑在 **CI 的一次性环境**里（MySQL + 后端进程 + 前端 preview，跑完随 runner 销毁），工程在 [e2e/](../../e2e/README.md)。
+
+接口与服务集成层的**机制**已经跑通——真 Spring 上下文 + 真 MySQL（Testcontainers），基类在 `quizzy-server/src/test/java/com/quizzy/support/ApiTestBase.java`；但**模块还没铺满**，覆盖到哪几个看 [todo](../todo/2026-10-04-TODO-测试系统落地.md)。设计见 [系统说明](./系统说明.md) 与 [ADR 0020](../adr/0020-layered-test-system.md)。
+
+两个前端工程（PC 与移动端）仍然**没有单测、没有 lint**——端到端的依赖被隔离在独立工程里，前端工程的依赖树一个字都没动。
 
 具体有哪些测试类，看目录本身（数量会变，文档不写数字）。
 
@@ -30,7 +34,12 @@
 
 ## 本地怎么跑
 
-后端：在 `quizzy-server` 下 `mvn -B -ntp test`（与 CI 同一条命令）。加了数据库与 Spring 的那两层**怎么在本机跑**，以 `quizzy-server/pom.xml` 的 profile 定义为准——本文件不复制那份清单。
+后端分两档命令，**这一条是要守住的约束**：
+
+- `mvn -B -ntp test` —— 与 CI 同一条命令，只跑纯单元测试，**不需要 Docker**；
+- `mvn -B -ntp verify` —— 多跑接口与集成层，**需要 Docker**（Testcontainers 自己起 MySQL）。
+
+两者的分界靠**文件名**（`*Test` 归 surefire、`*IT` 归 failsafe），具体配置以 `quizzy-server/pom.xml` 为准——本文件不复制。
 
 前端：`quizzy-web` 与 `quizzy-mobile` 各自可用 `npm run typecheck` 与构建脚本（移动端是 `build:h5`）——**以各自 `package.json` 的 `scripts` 为准**，本文件不复制。
 
@@ -50,7 +59,7 @@
 
 只描述，不成清单——要转化为行动去 [todo/](../todo/)。
 
-- 接口层与服务集成层**尚未落地**（方案已定）；
+- 接口与服务集成层**只覆盖了部分模块**（机制已就位），进度见 [todo](../todo/)；
 - 前端无单测、无 lint（暂缓，理由见 [系统说明](./系统说明.md)）；
 - **排版的审美与层级零自动化**——不做视觉回归，也只有人眼能判断「协调 / 主次」；几何事实（溢出、越界、裁切）待端到端层落地后由断言覆盖；
 - 历史作答不做题目快照（题目被改后，历史记录里显示的解析会跟着变）；
@@ -60,10 +69,10 @@
 
 三层各有落点，**别混放**：
 
-- **单元测试**：`quizzy-server/src/test/java/com/quizzy/module/<模块>/service/`
-- **接口与服务集成测试**：同一棵 `src/test` 树，靠标签与 Maven profile 与单元测试分开（**默认 `mvn test` 仍只跑单元**）
+- **单元测试**：`quizzy-server/src/test/java/com/quizzy/module/<模块>/service/`，类名以 `Test` 结尾
+- **接口与服务集成测试**：同一棵 `src/test` 树，**类名以 `IT` 结尾**——靠这个名字与单元测试分开，`mvn test` 因此仍只跑单元
 - **端到端测试**：独立工程 [e2e/](../../e2e/README.md) 的 `specs/`
 
-路径与标签的**权威定义在 `pom.xml` 与 `e2e/` 自身**，本文件只给形状。
+路径与命名的**权威定义在 `pom.xml` 与 `e2e/` 自身**，本文件只给形状。
 
 ⚠️ 保持「纯 JUnit 测试不引 Spring 上下文」这条约束。某个逻辑确实需要数据库才能测时，**按「改动 → 补哪层」的表**（在 [系统说明](./系统说明.md)）决定进哪一层，别顺手让 `mvn test` 背上起服务的成本——那是一次真正的取舍。

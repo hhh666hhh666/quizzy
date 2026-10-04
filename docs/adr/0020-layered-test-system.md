@@ -63,3 +63,20 @@ quizzy 原来只有「纯 JUnit、不拉 Spring、不碰数据库」的单元测
 
 相关：[ADR 0021](0021-test-sync-discipline.md)（改动 → 补哪层的映射表里，「只改样式 / 文案 / 排版」那一行应按本 Amendment 理解为「**不补断言**，但几何断言若覆盖到该页面则自动生效」）。
 
+## Amendment 2（2026-10-04）：两层怎么分开——用 failsafe 的命名约定，不用 JUnit 标签
+
+正文 Consequences 写的是「两层共用 `src/test` 树，靠 JUnit 标签区分」。落地时换成了**命名约定**：单元测试继续叫 `*Test`（surefire 管），接口与集成测试叫 `*IT`（failsafe 管），pom 里声明 `maven-failsafe-plugin` 把两者分开。
+
+**为什么换**：
+
+- **surefire 默认不认得 `*IT` 这个名字**，于是 `mvn test` 天然只跑单元测试，**一行排除配置都不用写**。标签方案要正反两处配置（默认 `excludedGroups` + profile 里的 `groups`），多一处能写错的地方。
+- `mvn verify` 是 Maven 的标准语义，不必为本项目记一个私有的 profile 名。
+
+**正文那条真正要守的性质没有变**：`mvn test` 依旧不需要起任何服务。已**正反两向**验过——`mvn test` 跑 7 个单元用例、5.1 秒、日志里没有任何容器；`mvn verify` 另外跑 7 个接口用例（真 MySQL + Flyway 迁移）。
+
+**顺带记一条本机专属的坑**（不是 CI 需要的）：接口层要起 Spring 上下文，而 Spring Boot 的测试上下文一定会触碰 Mockito 的插件加载（MockMaker），Mockito 又要求 JVM 能自我附加 agent。本机策略不允许自我附加，于是七个用例**全部**报
+`Could not initialize plugin: interface org.mockito.plugins.MockMaker`——**报错看着像依赖坏了，其实与环境有关**。已在 failsafe 配置里加 JDK 官方开关 `-Djdk.attach.allowAttachSelf=true`（对别的环境无副作用）。
+
+**顺带把正文一处措辞读准**：「新增 Maven profile」应读作「新增 failsafe 插件配置」——没有引入 profile，`mvn test` 的行为一个字没变。
+
+
