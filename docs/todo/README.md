@@ -55,3 +55,4 @@ YYYY-MM-DD-TODO-<主题>.md
 | 版本号以 `git tag` 为唯一真相源；**两处**手写点（`package.json` / `pom.xml`）靠 `check-version.sh` 在推 tag 时校验，compose 那一处改成断言用的是 `${APP_VERSION}` 变量 | ADR 0015 / Amendment 1 |
 | **移动端用 uni-app 单工程覆盖 H5 + 微信小程序，PC 端 `quizzy-web` 不动；移动端只做「消费」**（建设类功能留在 PC） | ADR 0019 |
 | **一题一答**：已作答的题只能回看、不能再改答案（「跳过题回头再答」不受影响） | ADR 0022 |
+| **发版频率按改动性质分三档**：无迁移随时发 / 带迁移攒到一周 1～2 次 / 破坏性变更单独发；迁移与代码拆开发、tag 不当存档点 | ADR 0023 |
