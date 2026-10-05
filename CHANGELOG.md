@@ -26,6 +26,18 @@
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-05
+
+「题库页筛选」这一版：题目可以按分类（多选，含「未分类」）与标签筛，筛选条件写进网址、刷新与后退都不丢，
+导出也跟着筛选走；顺带把题库页的默认范围收成「我的题库」，并把「改分类名」那句又长又绕的提示语改直白。
+
+⚠️ **本版与当天上午那批「一题一答」的改动一起发出，没有为破坏性变更单独发一版**——这是对
+[ADR 0023](./docs/adr/0023-release-cadence-by-risk.md) 第 3 档的一次**有意例外**：本版唯一的破坏性变更
+（分类筛选参数改成多选）只影响本仓库的前端，而前后端在**同一次 release** 里一起部署
+（compose 用同一个 `${APP_VERSION}`），不存在「旧前端打新后端」的窗口；且 `[Unreleased]` 里还压着
+当天上午那批修复，为一次参数改名再多走一轮部署，换来的是接近于零的可定位性收益。
+理由与例外条件记在[决策过程](./docs/decisions/release-cadence.md)。
+
 ### Changed
 
 - **答题改成「一题一答」：已作答的题只能回看，不能再改答案**（[ADR 0022](./docs/adr/0022-answer-is-final.md)）。
@@ -339,7 +351,8 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...v1.3.0
