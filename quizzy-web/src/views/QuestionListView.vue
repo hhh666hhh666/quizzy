@@ -156,12 +156,25 @@ async function onDelete(row: QuestionListItemVO) {
   load()
 }
 
+/**
+ * 导出文件名里的时间戳，**用北京时间**。
+ *
+ * 此前是 `new Date().toISOString()` —— 那是 **UTC**，比北京时间早 8 小时，
+ * 于是 11:36 导出的文件叫 `...033653`，看着像坏的。
+ * 这里固定 `Asia/Shanghai` 而不是用本机时区：「导出出来的文件叫什么」不该随设备时区变。
+ */
+function beijingStamp() {
+  // sv-SE 的本地化格式恰好是 ISO 风格（YYYY-MM-DD HH:mm:ss），去掉分隔符即 14 位
+  return new Date()
+    .toLocaleString('sv-SE', { timeZone: 'Asia/Shanghai' })
+    .replace(/[-: ]/g, '')
+}
+
 function onExport(format: string) {
-  const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)
   // ⚠️ format 是「语义格式」（excel / json），**不是**文件扩展名：
   // 直接拿它拼后缀会得到 .excel（Excel 打不开）。Excel 的真实扩展名是 xlsx。
   const ext = format === 'json' ? 'json' : 'xlsx'
-  download(exportPath(format), `quizzy-questions-${stamp}.${ext}`)
+  download(exportPath(format), `quizzy-questions-${beijingStamp()}.${ext}`)
 }
 
 async function download(path: string, filename: string) {

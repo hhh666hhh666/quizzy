@@ -56,7 +56,7 @@ test('导出 JSON：真的下载到文件，且内容里带得刚才那道题', 
     page.getByRole('button', { name: '导出 JSON' }).click()
   ])
 
-  expect(download.suggestedFilename()).toMatch(/^quizzy-questions-.*\.json$/)
+  expect(download.suggestedFilename()).toMatch(/^quizzy-questions-\d{14}\.json$/)
 
   // 光有文件名不够——内容里得有刚才那道题，才算真的导出来了
   const file = await download.path()
@@ -77,9 +77,9 @@ test('导出 Excel：真的下载到 .xlsx 文件，且是一个合法的 xlsx',
     page.getByRole('button', { name: '导出 Excel' }).click()
   ])
 
-  // 后缀必须是 .xlsx。这里曾经把「格式选择器的值」（'excel'）直接当扩展名，
-  // 于是下来的是 .excel——Excel 双击打不开。这条用例此前并不存在，所以一直没人发现。
-  expect(download.suggestedFilename()).toMatch(/^quizzy-questions-.*\.xlsx$/)
+  // 文件名形如 quizzy-questions-<14 位时间戳>.xlsx。此前这里曾经是 .excel
+  // （把「格式选择器的值」直接当扩展名），且时间戳是 UTC（比北京时间早 8 小时）。
+  expect(download.suggestedFilename()).toMatch(/^quizzy-questions-\d{14}\.xlsx$/)
 
   // 后缀对了还不够：内容得是个真 zip（xlsx 就是 zip，头两字节是 PK），
   // 证明服务端真的走了 easyexcel 那条写路径，而不是回了一坨错误 JSON。
