@@ -100,8 +100,9 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
   await searchButton(page).click()
   await expect(page.locator('.el-table__row', { hasText: stemNoCategory })).toHaveCount(1)
   await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(0)
-  // 界面上的「未分类」在网址/接口上是一个独立开关，不是某个分类的 id
-  await expect(page).toHaveURL(/uncategorized=true/)
+  // ⚠️ 网址里是**界面态**的写法：`categoryIds=none`（哨兵值），不是 `uncategorized=true`。
+  //    后者是**接口**上的参数，只在 apiQuery() 那一处翻译出来——两者别混，第一版就混错了。
+  await expect(page).toHaveURL(/categoryIds=none/)
 
   // ---------- 重置 ----------
   await resetButton(page).click()
