@@ -85,12 +85,23 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
   await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
   await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(0)
 
-  // ---------- 换成「未分类」 ----------
+  // ---------- 点「全部分类（点此清空）」，把勾上的分类清掉 ----------
+  // ⚠️ 这一步之后**必须**在下拉外面点一下（下面点的「查询」）才能再动别的下拉，
+  //    理由见 pickOption 的注释——这是本次在 CI 上真实踩过的坑。
   await clearCategories(page)
+  await searchButton(page).click()
+  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
+  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(1)
+  // 清空后网址也回到了干净状态
+  await expect(page).toHaveURL(/\/questions$/)
+
+  // ---------- 换成「未分类」 ----------
   await pickCategory(page, '未分类')
   await searchButton(page).click()
   await expect(page.locator('.el-table__row', { hasText: stemNoCategory })).toHaveCount(1)
   await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(0)
+  // 界面上的「未分类」在网址/接口上是一个独立开关，不是某个分类的 id
+  await expect(page).toHaveURL(/uncategorized=true/)
 
   // ---------- 重置 ----------
   await resetButton(page).click()
@@ -129,13 +140,26 @@ async function createQuestionInCategory(page: Page, stem: string, category: stri
   await expect(dialog).toBeHidden()
 }
 
-/** 在查询区某个下拉里选中一项（按显示文字找）。 */
+/**
+ * 在查询区某个下拉里选中一项（按显示文字找）。
+ *
+ * ⚠️ **进来时那个下拉必须是关着的。** 下拉若已经开着，这一下点击会把它**关掉**，
+ * 紧接着找选项就一直找不到——报的是「element is not visible」，看着像元素凭空消失，
+ * 其实是被自己上一步关掉的。所以**两次下拉操作之间必须先在下拉外面点一下**（点「查询」最自然）。
+ *
+ * ⚠️ **收尾不要用 Esc。** 点过下拉内部那几行（比如「全部分类（点此清空）」）之后焦点不在输入框上，
+ * Escape 不一定会被 select 收到——这条在 CI 上实测踩过：下拉一直开着，于是下一次点击把它关掉。
+ */
 async function pickOption(page: Page, formItemLabel: string, optionText: string): Promise<void> {
   const select = page.locator('.el-form-item', { hasText: formItemLabel }).locator('.el-select')
   await select.click()
-  await page.locator('.el-select-dropdown:visible .el-select-dropdown__item', { hasText: optionText }).first().click()
-  // 多选下拉选完不会自己收起；按一次 Esc 关掉它，免得挡住后面要点的东西
-  await page.keyboard.press('Escape')
+
+  const option = page
+    .locator('.el-select-dropdown:visible .el-select-dropdown__item', { hasText: optionText })
+    .first()
+  // 先等它可见再点：等不到的报错比 30 秒超时清楚得多
+  await expect(option).toBeVisible()
+  await option.click()
 }
 
 /** 在「分类」多选里勾一个分类（可以是「未分类」）。 */
@@ -143,11 +167,10 @@ async function pickCategory(page: Page, optionText: string): Promise<void> {
   await pickOption(page, '分类', optionText)
 }
 
-/** 点「分类」下拉顶部那行「全部分类（点此清空）」，把已勾的分类清掉。 */
+/** 点「分类」下拉顶部那行「全部分类（点此清空）」，把已勾的分类清掉。下拉会保持开着。 */
 async function clearCategories(page: Page): Promise<void> {
   const select = page.locator('.el-form-item', { hasText: '分类' }).locator('.el-select')
   await select.click()
   // 点是那一行自己，不是它的外层容器——外层容器上没有点击处理
   await page.locator('.el-select-dropdown:visible .select-header').click()
-  await page.keyboard.press('Escape')
 }
