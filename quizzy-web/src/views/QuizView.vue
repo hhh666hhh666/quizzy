@@ -186,8 +186,52 @@ onMounted(load)
 .stem :deep(.el-tag) { margin-right: 6px; }
 .locked-tip { margin-bottom: 12px; }
 .options { margin: 16px 0; }
+
+/* 选项一律逐行纵排：Element Plus 的 radio-group 出厂是 inline-flex + flex-wrap，
+   宽屏下会把选项横排成一行（多选题的 checkbox-group 本身没有 flex，所以一直是纵排）。
+   两个 group 统一改回块级，选项自然上下堆叠。 */
+.options :deep(.el-radio-group),
+.options :deep(.el-checkbox-group) { display: block; }
+
 .option { display: flex; align-items: flex-start; margin: 10px 0; }
-.label { font-weight: 600; margin-right: 4px; }
+
+/* 控件自身撑满整行、高度自适应、允许长文本换行
+   （Element Plus 出厂是 inline-flex + height:32px + white-space:nowrap）。 */
+.options :deep(.el-radio),
+.options :deep(.el-checkbox) {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  height: auto;
+  margin-right: 0;
+  white-space: normal;
+}
+
+/* 圈 / 勾选框与首行文字视觉居中对齐（首行行高 1.7×14px≈23.8px，(23.8-14)/2≈5px）。 */
+.options :deep(.el-radio__input),
+.options :deep(.el-checkbox__input) { flex-shrink: 0; margin-top: 5px; }
+
+/* 标号与文字同行：选项文字由 MarkdownRenderer 渲染，其根节点是块级 div，会把行内标号挤到上一行；
+   把承接插槽的 label 容器改成横向 flex，标号与正文就成了同一行的两个弹性项。
+   结构与题目详情弹窗的 .option-row、移动 H5 的 .option-body 一致。 */
+.options :deep(.el-radio__label),
+.options :deep(.el-checkbox__label) {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  padding-left: 8px;
+  line-height: 1.7;
+}
+.label { font-weight: 600; flex-shrink: 0; }
+.options :deep(.markdown-body) { flex: 1; min-width: 0; }
+
+/* MarkdownRenderer 给段落加了 6px 上下外边距，选项里首段的上外边距会把正文顶下去，
+   与标号「A.」错开一截（实测低 6px）。去掉首尾段的外边距，标号与正文首行才真正齐平。 */
+.options :deep(.markdown-body > :first-child) { margin-top: 0; }
+.options :deep(.markdown-body > :last-child) { margin-bottom: 0; }
+
 .actions { display: flex; gap: 10px; }
 .feedback { margin-top: 16px; }
 </style>

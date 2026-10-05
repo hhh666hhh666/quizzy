@@ -100,10 +100,16 @@ onMounted(async () => {
 .index { font-weight: 600; }
 .score { color: #909399; font-size: 12px; }
 .option-list { list-style: none; padding: 0; margin: 8px 0; }
-.option { padding: 4px 8px; border-radius: 4px; }
+/* 标号与文字同行：选项文字由 MarkdownRenderer 渲染，其根节点是块级 div，会把行内标号挤到上一行；
+   改成横向 flex 后两者成为同一行的弹性项（与题目详情弹窗 .option-row 同构）。 */
+.option { display: flex; align-items: flex-start; padding: 4px 8px; border-radius: 4px; line-height: 1.7; }
 .option.correct { background: #f0f9eb; color: #67c23a; }
 .option.wrong { background: #fef0f0; color: #f56c6c; }
-.label { font-weight: 600; margin-right: 4px; }
+.label { font-weight: 600; margin-right: 4px; flex-shrink: 0; }
+.option :deep(.markdown-body) { flex: 1; min-width: 0; }
+/* 同上：去掉首尾段外边距，标号「A.」与正文首行齐平（段落默认 margin-top 6px 会把正文顶下去）。 */
+.option :deep(.markdown-body > :first-child) { margin-top: 0; }
+.option :deep(.markdown-body > :last-child) { margin-bottom: 0; }
 .answers { font-size: 13px; color: #606266; }
 .footer-actions { margin-top: 16px; display: flex; gap: 10px; }
 </style>
