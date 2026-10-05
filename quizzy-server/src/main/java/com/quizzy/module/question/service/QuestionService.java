@@ -63,34 +63,10 @@ public class QuestionService {
         long pageNo = query.getPage() == null || query.getPage() < 1 ? 1 : query.getPage();
         long pageSize = query.getSize() == null || query.getSize() < 1 ? 10 : Math.min(query.getSize(), 100);
 
-        LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<>();
-        applyScope(wrapper, query.getScope(), userId);
-
-        if (StringUtils.hasText(query.getKeyword())) {
-            wrapper.like(Question::getStem, query.getKeyword().trim());
-        }
-        if (query.getType() != null) {
-            wrapper.eq(Question::getType, query.getType());
-        }
-        if (query.getDifficulty() != null) {
-            wrapper.eq(Question::getDifficulty, query.getDifficulty());
-        }
-        if (query.getCategoryId() != null) {
-            wrapper.eq(Question::getCategoryId, query.getCategoryId());
-        }
-        if (!CollectionUtils.isEmpty(query.getTagIds())) {
-            List<Long> ids = questionMapper.selectQuestionIdsByTagIds(query.getTagIds());
-            if (ids.isEmpty()) {
-                return PageResult.of(Collections.emptyList(), 0, pageNo, pageSize);
-            }
-            wrapper.in(Question::getId, ids);
-        }
-        if (Boolean.TRUE.equals(query.getOnlyWrong())) {
-            List<Long> wrongIds = selectWrongQuestionIds(userId);
-            if (wrongIds.isEmpty()) {
-                return PageResult.of(Collections.emptyList(), 0, pageNo, pageSize);
-            }
-            wrapper.in(Question::getId, wrongIds);
+        LambdaQueryWrapper<Question> wrapper = buildFilters(query, userId);
+        if (wrapper == null) {
+            // 条件本身指向空集（例如勾的标签一道题都没打过），不必再查库
+            return PageResult.of(Collections.emptyList(), 0, pageNo, pageSize);
         }
         wrapper.orderByDesc(Question::getId);
 
@@ -192,15 +168,30 @@ public class QuestionService {
     }
 
     /**
-     * 导出用：按 id 列表或全部可见题目加载完整题目信息。
+     * 导出用：加载完整题目信息，**不分页**。
+     *
+     * <p>两个入口是**互斥**的：
+     *
+     * <ul>
+     *   <li>传了 {@code ids} —— 只导出这些题（仍受范围限制）。此时筛选条件**不参与**，
+     *       否则会出现「明明指定了 id 却导不出来」这种排查起来很费解的局面；
+     *   <li>没传 {@code ids} —— 按与列表页**同一套**筛选条件导出全部匹配的题目。
+     * </ul>
+     *
+     * <p>可见性始终由 {@code scope} 兜底（默认「公开题或自己的题」），所以接口无法被用来
+     * 导出别人的私有题——这一点与列表页共用 {@link #buildFilters}，不是巧合。
      */
-    public List<QuestionVO> findForExport(Long userId, List<Long> ids) {
-        LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<>();
+    public List<QuestionVO> findForExport(QuestionQueryDTO query, Long userId, List<Long> ids) {
+        LambdaQueryWrapper<Question> wrapper;
         if (!CollectionUtils.isEmpty(ids)) {
+            wrapper = new LambdaQueryWrapper<>();
+            applyScope(wrapper, query.getScope(), userId);
             wrapper.in(Question::getId, ids);
-            wrapper.and(w -> w.isNull(Question::getOwnerId).or().eq(Question::getOwnerId, userId));
         } else {
-            wrapper.and(w -> w.isNull(Question::getOwnerId).or().eq(Question::getOwnerId, userId));
+            wrapper = buildFilters(query, userId);
+            if (wrapper == null) {
+                return List.of();
+            }
         }
         wrapper.orderByAsc(Question::getId);
         List<Question> questions = questionMapper.selectList(wrapper);
@@ -253,6 +244,69 @@ public class QuestionService {
             return categoryService.resolveByName(dto.getCategoryName()).getId();
         }
         return null;
+    }
+
+    /**
+     * 把「范围 + 筛选条件」拼成查询条件。**列表与导出共用这一份**，两处口径才不可能漂。
+     *
+     * @return 条件本身指向空集时返回 {@code null}——调用方据此直接返回空结果，
+     *         而不是去查一个必然为空的库
+     */
+    private LambdaQueryWrapper<Question> buildFilters(QuestionQueryDTO query, Long userId) {
+        LambdaQueryWrapper<Question> wrapper = new LambdaQueryWrapper<>();
+        applyScope(wrapper, query.getScope(), userId);
+
+        if (StringUtils.hasText(query.getKeyword())) {
+            wrapper.like(Question::getStem, query.getKeyword().trim());
+        }
+        if (query.getType() != null) {
+            wrapper.eq(Question::getType, query.getType());
+        }
+        if (query.getDifficulty() != null) {
+            wrapper.eq(Question::getDifficulty, query.getDifficulty());
+        }
+        applyCategoryFilter(wrapper, query);
+        if (!CollectionUtils.isEmpty(query.getTagIds())) {
+            List<Long> ids = questionMapper.selectQuestionIdsByTagIds(query.getTagIds());
+            if (ids.isEmpty()) {
+                return null;
+            }
+            wrapper.in(Question::getId, ids);
+        }
+        if (Boolean.TRUE.equals(query.getOnlyWrong())) {
+            List<Long> wrongIds = selectWrongQuestionIds(userId);
+            if (wrongIds.isEmpty()) {
+                return null;
+            }
+            wrapper.in(Question::getId, wrongIds);
+        }
+        return wrapper;
+    }
+
+    /**
+     * 分类筛选：多选，且「未分类」是一个独立的可选项，它和具体分类之间是**或**的关系。
+     *
+     * <p>⚠️ 必须整体包在 {@code and(...)} 里。直接写成 {@code in(...).or().isNull(...)} 的话，
+     * 那个 {@code or} 会和**外面所有 AND 条件平级**，于是
+     * 「范围=我的 AND 关键词=xx AND 分类 IN (...) OR 未分类」——最后一项会把前两项全部绕过去，
+     * 变成「只要没分类就命中」。这类括号错误不会报错，只会静默多返回数据。
+     *
+     * <p>一个都不勾 = 不按分类筛（等于「全部分类」），此时不产生任何条件。
+     */
+    private void applyCategoryFilter(LambdaQueryWrapper<Question> wrapper, QuestionQueryDTO query) {
+        List<Long> categoryIds = query.getCategoryIds();
+        boolean hasCategories = !CollectionUtils.isEmpty(categoryIds);
+        boolean includeUncategorized = Boolean.TRUE.equals(query.getUncategorized());
+        if (!hasCategories && !includeUncategorized) {
+            return;
+        }
+        if (hasCategories && includeUncategorized) {
+            wrapper.and(w -> w.in(Question::getCategoryId, categoryIds).or().isNull(Question::getCategoryId));
+        } else if (hasCategories) {
+            wrapper.in(Question::getCategoryId, categoryIds);
+        } else {
+            wrapper.isNull(Question::getCategoryId);
+        }
     }
 
     private void applyScope(LambdaQueryWrapper<Question> wrapper, String scope, Long userId) {

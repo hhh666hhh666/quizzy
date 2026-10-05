@@ -3,6 +3,7 @@ package com.quizzy.module.question.controller;
 import com.quizzy.common.BusinessException;
 import com.quizzy.common.Result;
 import com.quizzy.module.question.dto.QuestionImportDTO;
+import com.quizzy.module.question.dto.QuestionQueryDTO;
 import com.quizzy.module.question.service.QuestionImportService;
 import com.quizzy.module.question.vo.ImportResultVO;
 import com.quizzy.security.UserContext;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,9 +59,19 @@ public class QuestionImportExportController {
         importService.writeTemplate(response.getOutputStream());
     }
 
-    @Operation(summary = "导出题目（ids 为空表示导出全部可见题目）")
+    /**
+     * 导出题目。
+     *
+     * <p>与列表页**共用同一套筛选参数**（{@code QuestionQueryDTO}），所以界面上筛完再导出，
+     * 拿到的就是筛出来的那一批。⚠️ 只跟随**筛选条件**，不跟随**分页**——导出全部匹配的题目。
+     *
+     * <p>传了 {@code ids} 则只导出这些题，此时筛选条件不参与（两个入口互斥，理由见
+     * {@code QuestionService#findForExport}）。
+     */
+    @Operation(summary = "导出题目（跟随筛选条件；传 ids 则按 id 精确导出）")
     @GetMapping("/export")
-    public void export(@RequestParam(defaultValue = "excel") String format,
+    public void export(@Valid @ModelAttribute QuestionQueryDTO query,
+                       @RequestParam(defaultValue = "excel") String format,
                        @RequestParam(required = false) List<Long> ids,
                        HttpServletResponse response) throws IOException {
         Long userId = UserContext.requireUserId();
@@ -68,10 +80,10 @@ public class QuestionImportExportController {
             prepareJsonResponse(response, "quizzy-questions-" + stamp + ".json");
             response.getWriter().write(new com.fasterxml.jackson.databind.ObjectMapper()
                     .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(importService.exportJson(ids, userId)));
+                    .writeValueAsString(importService.exportJson(query, userId, ids)));
         } else {
             prepareExcelResponse(response, "quizzy-questions-" + stamp + ".xlsx");
-            importService.exportExcel(ids, userId, response.getOutputStream());
+            importService.exportExcel(query, userId, ids, response.getOutputStream());
         }
     }
 

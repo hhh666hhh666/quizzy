@@ -8,6 +8,7 @@ import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.question.dto.OptionDTO;
 import com.quizzy.module.question.dto.QuestionExcelRow;
 import com.quizzy.module.question.dto.QuestionImportDTO;
+import com.quizzy.module.question.dto.QuestionQueryDTO;
 import com.quizzy.module.question.dto.QuestionSaveDTO;
 import com.quizzy.module.question.enums.Difficulty;
 import com.quizzy.module.question.enums.QuestionType;
@@ -91,8 +92,12 @@ public class QuestionImportService {
                 .doWrite(Collections.emptyList());
     }
 
-    public void exportExcel(List<Long> ids, Long userId, OutputStream outputStream) {
-        List<List<String>> data = questionService.findForExport(userId, ids).stream()
+    /**
+     * 导出为 Excel。{@code query} 就是列表页那套筛选条件——**导出跟随筛选**，
+     * 但**不跟随分页**：导出的是全部匹配的题目。
+     */
+    public void exportExcel(QuestionQueryDTO query, Long userId, List<Long> ids, OutputStream outputStream) {
+        List<List<String>> data = questionService.findForExport(query, userId, ids).stream()
                 .map(this::toRow)
                 .toList();
         EasyExcel.write(outputStream)
@@ -101,8 +106,9 @@ public class QuestionImportService {
                 .doWrite(data);
     }
 
-    public List<QuestionImportDTO> exportJson(List<Long> ids, Long userId) {
-        return questionService.findForExport(userId, ids).stream()
+    /** 导出为 JSON。筛选语义同 {@link #exportExcel}。 */
+    public List<QuestionImportDTO> exportJson(QuestionQueryDTO query, Long userId, List<Long> ids) {
+        return questionService.findForExport(query, userId, ids).stream()
                 .map(this::toJsonDTO)
                 .collect(Collectors.toList());
     }
