@@ -55,6 +55,60 @@
         <jackson-bom.version>2.21.7</jackson-bom.version>
     </properties>
 
+    <!-- 用 dependencyManagement 钉住**传递依赖**的版本——它们不是本项目的直接依赖，
+         所以不写进 <dependencies>（那会让它们看起来像我们自己要用）。
+         ⚠️ 每一条都必须写下「为什么钉」，否则下一个人既不敢动也不敢删。 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- ⚠️ 这一条**修的是一个已经存在的真 bug**，不只是安全告警：
+                 POI 5.2.5 会调 ZipArchiveOutputStream.putArchiveEntry(ZipArchiveEntry)，
+                 而 easyexcel 4.0.3 传递进来的 commons-compress 是 1.24.0，没有这个方法，
+                 实际写 xlsx 时抛 NoSuchMethodError —— 也就是说 **Excel 导出一直是坏的**。
+                 1.26.0 既有这个方法，也是两条告警（解压死循环 / Pack200 OOM）的修复版本。
+                 这个 bug 之前没人发现，是因为**没有任何测试会真的解析 Excel**；
+                 现在由 ExcelRoundTripTest 钉住这条路径。 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.26.0</version>
+            </dependency>
+
+            <!-- POI 三个构件要**一起钉**：poi-ooxml 与 poi / poi-ooxml-lite 必须同版本，
+                 只钉其中一个会造成版本错配（正是上面那个 NoSuchMethodError 的同类错误）。
+                 5.4.0 修的是 OOXML 文件**输入校验**不当——可达：xlsx 上传是公开注册后
+                 任何人可用的入口（ADR 0017）。升它之前先有 ExcelRoundTripTest 兜底。 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>5.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>5.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-lite</artifactId>
+                <version>5.4.0</version>
+            </dependency>
+
+            <!-- commons-lang3：Uncontrolled Recursion（medium）。 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.18.0</version>
+            </dependency>
+
+            <!-- log4j-api：非有限浮点值编码不当（medium）。 -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.25.5</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
