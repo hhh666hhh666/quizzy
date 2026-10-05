@@ -81,7 +81,10 @@ export interface QuestionQuery {
   keyword?: string
   type?: QuestionType
   difficulty?: Difficulty
-  categoryId?: number
+  /** 分类多选；与 uncategorized 是「或」的关系。空数组＝不按分类筛（即「全部分类」） */
+  categoryIds?: number[]
+  /** 是否包含「未分类」的题目 */
+  uncategorized?: boolean
   tagIds?: number[]
   scope?: string
   onlyWrong?: boolean

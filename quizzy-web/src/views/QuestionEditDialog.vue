@@ -209,12 +209,16 @@ function toggleAnswer(label: string, checked: any) {
  *
  * ⚠️ 语义不是「原地改名」——分类是共享的，原地改会把**所有人**的题目都换名字。
  * 后端做的是「只把我的题迁到目标分类；旧分类若因此无人引用则自动删」。
+ *
+ * ⚠️ 下面的提示文案必须和后端行为**说同一件事**。曾经想把它改成「该选项会修改该分类下
+ * 所有题目的分类」——那句话描述的是「连别人的题一起迁」，与后端不符，等于在界面上写假话；
+ * 2026-10-05 的结论是**只改文案、不改行为**，于是写成直白版的「全部题目（我的）」。
  */
 async function onRenameCategory() {
   const current = categories.value.find((c: any) => c.id === form.value.categoryId)
   try {
     const { value } = await ElMessageBox.prompt(
-      '只把你自己的题目迁到新名字下。别人的题目仍留在原分类，原分类也不会因此消失。',
+      '会把你在这个分类下的全部题目迁到新分类；别人的题目不受影响。',
       '改分类名',
       {
         inputValue: current?.name ?? '',

@@ -38,14 +38,15 @@ export function importJson(items: any[]) {
 
 /**
  * 导出与模板下载走 axios（带 Authorization 头），所以这里返回不含 /api 前缀的路径。
+ *
+ * ⚠️ 导出**跟随筛选条件**（跟列表页共用 `toQueryParams` 那一份参数），但**不跟随分页**：
+ * 界面筛完再导出，拿到的是「筛出来的那一批全部」，不是当前这一页。所以调用方传进来的
+ * 参数里通常会**不含** page / size。
  */
-export function exportPath(format: string, ids?: number[]) {
-  const params = new URLSearchParams()
-  params.set('format', format)
-  if (ids && ids.length) {
-    params.set('ids', ids.join(','))
-  }
-  return `/questions/export?${params.toString()}`
+export function exportPath(format: string, params?: URLSearchParams) {
+  const search = new URLSearchParams(params)
+  search.set('format', format)
+  return `/questions/export?${search.toString()}`
 }
 
 export function templatePath() {
