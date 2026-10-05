@@ -26,6 +26,25 @@
 
 ## [Unreleased]
 
+## [1.3.2] - 2026-10-05
+
+> 补丁版：修 v1.3.1 里「导出 Excel」的两个文件名问题（后缀、时区）。字节流一直是好的。
+
+### Fixed
+
+- **导出 Excel 下载下来的后缀是 `.excel`，Excel 双击打不开**：前端自己拼文件名时，
+  把「格式选择器的值」（`excel`）直接当成扩展名用了——真实扩展名是 `xlsx`。
+  **导出的字节流一直是对的**（服务端 `Content-Disposition` 写的也是 `.xlsx`），坏的只是文件名；
+  「导出 JSON」那条因为 `format` 与真扩展名恰好一致（`json`），才一直没露馅。
+- **导出文件名里的时间戳是 UTC**：`new Date().toISOString()` 比北京时间早 8 小时
+  （11:36 导出的文件叫 `...033653`，看着像坏的）。改成固定按 `Asia/Shanghai` 生成。
+
+### Added
+
+- **端到端补一条「下载 Excel 导出」的守卫**（`07-import-export.spec.ts`）：断言文件名形如
+  `quizzy-questions-<14 位时间戳>.xlsx`，且下载到的文件头两字节是 `PK`（真 zip）。
+  这条路径此前**没有任何用例下载过**，正是上面那个后缀 bug 能长期漏网的原因。
+
 ## [1.3.1] - 2026-10-05
 
 > 补丁版：`v1.3.0` **发出去的 Excel 导出是坏的**（下面第一条），这一版把它修好并把漏掉的测试补上。
@@ -269,7 +288,8 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...v1.2.0
