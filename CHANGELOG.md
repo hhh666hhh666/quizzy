@@ -24,6 +24,27 @@
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- 🐛 **修好 Excel 导出（此前一直是坏的）**：POI 5.2.5 会调
+  `ZipArchiveOutputStream.putArchiveEntry(ZipArchiveEntry)`，而 easyexcel 4.0.3 传递进来的
+  commons-compress 是 1.24.0、没有这个方法 → 实际写 xlsx 时抛 `NoSuchMethodError`。
+  把 commons-compress 钉到 1.26.0 后恢复正常。
+  这个 bug 一直没被发现，是因为**没有任何测试会真的解析 Excel**——本轮先补了烟测才暴露出来。
+- **清掉 4 条 Maven 的 medium**：`commons-compress` 1.26.0、`commons-lang3` 3.18.0、
+  `log4j-api` 2.25.5、`poi` / `poi-ooxml` / `poi-ooxml-lite` 5.4.0（POI 三个构件必须一起钉，
+  否则版本错配）。前两个**可达**——xlsx 上传是公开注册后任何人可用的入口（ADR 0017）。
+  至此仓库的 open 告警只剩「清不掉」的两类（`vite` 被 uni-app 钉死、`braces` 上游无修复版本）。
+
+### Added
+
+- **Excel 烟测 `ExcelRoundTripTest`**：写一个小 xlsx 再读回来，走的是生产代码**同一条**
+  easyexcel 路径，不碰数据库、留在单元层（`mvn test` 仍不需要 Docker）。
+  它钉住的是「POI / commons-compress 这条链还能不能用」——此前**完全没覆盖**的一条路径，
+  也是这次能抓出上面那个导出 bug 的原因。
+
 ## [1.3.0] - 2026-10-04
 
 ### Added
