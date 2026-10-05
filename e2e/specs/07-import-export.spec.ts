@@ -63,3 +63,27 @@ test('导出 JSON：真的下载到文件，且内容里带得刚才那道题', 
   expect(file).toBeTruthy()
   expect(readFileSync(file!, 'utf8')).toContain(stem)
 })
+
+test('导出 Excel：真的下载到 .xlsx 文件，且是一个合法的 xlsx', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await registerNewUser(page)
+
+  const stem = `IT 待导出的题（Excel） ${Date.now()}`
+  await createQuestion(page, { stem, options: ['甲', '乙'], correct: ['A'] })
+
+  await page.goto('/questions')
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: '导出 Excel' }).click()
+  ])
+
+  // 后缀必须是 .xlsx。这里曾经把「格式选择器的值」（'excel'）直接当扩展名，
+  // 于是下来的是 .excel——Excel 双击打不开。这条用例此前并不存在，所以一直没人发现。
+  expect(download.suggestedFilename()).toMatch(/^quizzy-questions-.*\.xlsx$/)
+
+  // 后缀对了还不够：内容得是个真 zip（xlsx 就是 zip，头两字节是 PK），
+  // 证明服务端真的走了 easyexcel 那条写路径，而不是回了一坨错误 JSON。
+  const file = await download.path()
+  expect(file).toBeTruthy()
+  expect(readFileSync(file!).subarray(0, 2).toString('latin1')).toBe('PK')
+})

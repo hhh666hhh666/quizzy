@@ -158,7 +158,10 @@ async function onDelete(row: QuestionListItemVO) {
 
 function onExport(format: string) {
   const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14)
-  download(exportPath(format), `quizzy-questions-${stamp}.${format}`)
+  // ⚠️ format 是「语义格式」（excel / json），**不是**文件扩展名：
+  // 直接拿它拼后缀会得到 .excel（Excel 打不开）。Excel 的真实扩展名是 xlsx。
+  const ext = format === 'json' ? 'json' : 'xlsx'
+  download(exportPath(format), `quizzy-questions-${stamp}.${ext}`)
 }
 
 async function download(path: string, filename: string) {
