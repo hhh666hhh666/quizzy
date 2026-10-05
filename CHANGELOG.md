@@ -26,6 +26,10 @@
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-10-05
+
+> 补丁版：`v1.3.0` **发出去的 Excel 导出是坏的**（下面第一条），这一版把它修好并把漏掉的测试补上。
+
 ### Fixed
 
 - 🐛 **修好 Excel 导出（此前一直是坏的）**：POI 5.2.5 会调
@@ -265,7 +269,8 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.0.0...v1.1.0
