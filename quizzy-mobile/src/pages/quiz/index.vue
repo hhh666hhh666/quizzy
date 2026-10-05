@@ -22,6 +22,10 @@
         <!-- 选项自己排：整行可点、内容多行自适应。
              组件库的 radio / checkbox 会把块级内容排成居中文本（选项一多就参差不齐），
              而且点击落在行内元素上不一定触发选中。 -->
+        <view class="locked-tip" v-if="reviewing">
+          本题已作答，答案不可修改；想重做可以另开一次练习。
+        </view>
+
         <view class="options">
           <view
             v-for="option in currentQuestion.options"
@@ -41,13 +45,13 @@
           </view>
         </view>
 
-        <view class="feedback" v-if="feedback">
-          <view :class="['fb-title', feedback.isCorrect ? 'ok' : 'bad']">
-            {{ feedback.isCorrect ? '回答正确' : '回答错误' }}
+        <view class="feedback" v-if="showVerdict">
+          <view :class="['fb-title', verdictCorrect ? 'ok' : 'bad']">
+            {{ verdictCorrect ? '回答正确' : '回答错误' }}
           </view>
-          <view class="fb-answer">正确答案：{{ feedback.correctAnswers.join(', ') }}</view>
-          <view class="fb-analysis" v-if="feedback.analysis">
-            <MarkdownRenderer :source="feedback.analysis" />
+          <view class="fb-answer">正确答案：{{ verdictAnswers.join(', ') }}</view>
+          <view class="fb-analysis" v-if="verdictAnalysis">
+            <MarkdownRenderer :source="verdictAnalysis" />
           </view>
         </view>
       </view>
@@ -96,6 +100,20 @@ const answeredPercent = computed(() => {
   if (!questions.value.length) return 0
   return Math.round((questions.value.filter((q) => q.answered).length * 100) / questions.value.length)
 })
+
+// 「刚提交那一刻」的反馈来自接口的返回体；「回看一道已作答的题」时则要读题目本身——
+// detail 接口在已作答时才会下发 correctAnswers / analysis（未作答时不下发，
+// 见后端 QuizService#detail 与 QuizApiIT#unansweredQuestionsDoNotLeakAnswers）。
+// 两个来源在这里合流，模板只认下面这几个名字，免得同一块反馈分两处渲染。
+const reviewing = computed(() => currentQuestion.value?.answered === true && feedback.value === null)
+const verdictAnswers = computed<string[]>(() =>
+  feedback.value ? feedback.value.correctAnswers : currentQuestion.value?.correctAnswers || [])
+const verdictAnalysis = computed(() =>
+  (feedback.value ? feedback.value.analysis : currentQuestion.value?.analysis) || '')
+const verdictCorrect = computed(() =>
+  feedback.value ? feedback.value.isCorrect : currentQuestion.value?.isCorrect === true)
+// 有答案就显示：未作答时两者皆空，于是自然不显示
+const showVerdict = computed(() => verdictAnswers.value.length > 0 || verdictAnalysis.value !== '')
 
 onShow(() => {
   ensureLogin()
@@ -240,6 +258,15 @@ function typeLabel(type: string) {
 }
 .stem {
   margin-bottom: 16rpx;
+}
+.locked-tip {
+  margin-top: 8rpx;
+  padding: 16rpx 20rpx;
+  border-radius: 12rpx;
+  background: #f4f4f5;
+  color: $app-text-secondary;
+  font-size: 24rpx;
+  line-height: 1.5;
 }
 .options {
   margin-top: 8rpx;

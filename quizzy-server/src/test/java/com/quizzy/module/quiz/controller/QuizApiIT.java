@@ -1,22 +1,34 @@
 package com.quizzy.module.quiz.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.quizzy.module.question.entity.Question;
+import com.quizzy.module.question.mapper.QuestionMapper;
 import com.quizzy.support.ApiTestBase;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 /**
- * 答题会话模块的接口测试：判分落库、结算自洽、**会话归属**。
+ * 答题会话模块的接口测试：判分落库、结算自洽、**会话归属**、以及**一题一答**。
  *
- * <p>沿用项目「可回退改答案」的语义：同一题重复提交以最后一次为准——这条也写成断言，
- * 因为它是「练习语义」而不是「考试语义」的直接体现（ADR 0001）。
+ * <p>「一题一答」是这里的硬语义：每题在本次会话里只能提交一次，**已作答的题只能回看
+ * （题干 / 自己的答案 / 正确答案 / 解析），不能再改**——理由见 ADR 0022。
+ * 它与「跳过某题、回头再答」不冲突：被管住的是「改」，不是「还没答」。
  */
 @DisplayName("接口 · 答题会话")
 class QuizApiIT extends ApiTestBase {
+
+    /**
+     * 只用来读「正确答案」——未作答的题不下发答案（见 {@code unansweredQuestionsDoNotLeakAnswers}），
+     * 而「答对一道」这件事没法靠响应拼出来，只能绕到库里取。
+     */
+    @Autowired
+    QuestionMapper questionMapper;
 
     /**
      * 发起一次快速练习（不带题量，走默认值）。
@@ -32,9 +44,20 @@ class QuizApiIT extends ApiTestBase {
      * 快速练习根本不看它。两个同名字段是两回事。
      */
     private long startQuick(String token) throws Exception {
-        JsonNode res = apiPost("/api/quiz/start", token, payload(
-                "sourceType", "QUICK",
-                "rule", payload("types", List.of("SINGLE"))));
+        return startQuick(token, null);
+    }
+
+    /**
+     * 同上，但可以显式指定题量；传 {@code null} 表示不传 count。
+     *
+     * <p>要「恰好几道题」的用例用它——例如结算用例需要两道已答 + 一道留着不答，
+     * 靠默认上限去碰运气既不稳定、也说不清前提。
+     */
+    private long startQuick(String token, Integer count) throws Exception {
+        Map<String, Object> rule = count == null
+                ? payload("types", List.of("SINGLE"))
+                : payload("types", List.of("SINGLE"), "count", count);
+        JsonNode res = apiPost("/api/quiz/start", token, payload("sourceType", "QUICK", "rule", rule));
         assertThat(res.path("code").asInt()).as("发起快速练习失败，实际响应：%s", res).isZero();
         return res.path("data").asLong();
     }
@@ -140,13 +163,12 @@ class QuizApiIT extends ApiTestBase {
     }
 
     @Test
-    @DisplayName("提交错答得 0 分并给出正确答案与解析；改答成正确后拿到该题分值")
-    void submitThenCorrect() throws Exception {
+    @DisplayName("提交错答得 0 分并给出正确答案与解析；已作答的题不能再改（一题一答）")
+    void answerIsFinal() throws Exception {
         String token = newUserToken();
         long sessionId = startQuick(token);
         JsonNode question = firstQuestion(session(token, sessionId));
         long questionId = question.path("questionId").asLong();
-        int score = question.path("score").asInt();
 
         // 故意提交一个不在选项里的作答——不依赖「正确答案是什么」就能保证判错。
         JsonNode wrong = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
@@ -164,15 +186,22 @@ class QuizApiIT extends ApiTestBase {
         assertThat(afterWrong.path("data").path("questions").get(0).path("answered").asBoolean()).isTrue();
         assertThat(afterWrong.path("data").path("obtainedScore").asInt()).isZero();
 
-        // 可回退改答案：同一题再提交正确答案，以最后一次为准
+        // 一题一答（ADR 0022）：判完就把正确答案给了，再提交一次等于「看了答案再改」，
+        // 分数与正确率都会失真。这里提交的**正是正确答案**，就要验它照样被拒。
         String correct = joinAnswers(wrong.path("data").path("correctAnswers"));
-        JsonNode fixed = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
+        JsonNode refused = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
                 payload("questionId", questionId, "answer", correct));
-        assertThat(fixed.path("code").asInt()).isZero();
-        assertThat(fixed.path("data").path("isCorrect").asBoolean()).isTrue();
-        assertThat(fixed.path("data").path("obtainedScore").asInt()).isEqualTo(score);
+        assertThat(refused.path("code").asInt()).as("已作答的题不该还能改").isNotZero();
+        assertThat(refused.path("code").asInt()).isNotEqualTo(500);
 
-        assertThat(session(token, sessionId).path("data").path("obtainedScore").asInt()).isEqualTo(score);
+        // ⚠️ 只断言「响应码非 0」是不够的——「先改库、再抛异常」同样能过那条断言。
+        //    必须回查：分数仍是 0，用户答案仍是那个错答 "Z"，一个字都没被覆盖。
+        JsonNode unchanged = session(token, sessionId);
+        assertThat(unchanged.path("data").path("obtainedScore").asInt()).isZero();
+        JsonNode stillWrong = unchanged.path("data").path("questions").get(0);
+        assertThat(stillWrong.path("userAnswers").size()).isEqualTo(1);
+        assertThat(stillWrong.path("userAnswers").get(0).asText()).isEqualTo("Z");
+        assertThat(stillWrong.path("isCorrect").asBoolean()).isFalse();
     }
 
     @Test
@@ -207,24 +236,36 @@ class QuizApiIT extends ApiTestBase {
     @DisplayName("结算：已答 + 未答 = 总题数，正确率按已答算，且结算后不能再提交")
     void finishIsConsistent() throws Exception {
         String token = newUserToken();
-        long sessionId = startQuick(token);
+        // 固定 3 道：两题作答（一正一误）、留一题不答。题量是上限，而种子题库里的单选题多于 3 道
+        // （ruleCountIsAnUpperBound 断言了这点），所以这里稳定拿到 3 道。
+        long sessionId = startQuick(token, 3);
         JsonNode opened = session(token, sessionId);
-        int totalQuestions = opened.path("data").path("questionCount").asInt();
-        long questionId = firstQuestion(opened).path("questionId").asLong();
+        JsonNode questions = opened.path("data").path("questions");
+        assertThat(questions.size()).as("这条用例需要 3 道题才造得出「一对一错一未答」")
+                .isEqualTo(3);
 
-        JsonNode wrong = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
-                payload("questionId", questionId, "answer", "Z"));
-        String correct = joinAnswers(wrong.path("data").path("correctAnswers"));
-        apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
-                payload("questionId", questionId, "answer", correct));
+        long rightId = questions.get(0).path("questionId").asLong();
+        long wrongId = questions.get(1).path("questionId").asLong();
+        long unansweredId = questions.get(2).path("questionId").asLong();
+
+        // ⚠️ 未作答的题**不下发**正确答案，所以「答对一道」只能绕到库里取答案。
+        //    也正因为改成一题一答，以前那种「先答错、再把同一题改成对的」造数手法已经走不通了。
+        Question right = questionMapper.selectById(rightId);
+        JsonNode rightRes = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
+                payload("questionId", rightId, "answer", right.getAnswer()));
+        assertThat(rightRes.path("data").path("isCorrect").asBoolean()).isTrue();
+
+        JsonNode wrongRes = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
+                payload("questionId", wrongId, "answer", "Z"));
+        assertThat(wrongRes.path("data").path("isCorrect").asBoolean()).isFalse();
 
         JsonNode res = apiPost("/api/quiz/sessions/" + sessionId + "/finish", token, null);
         assertThat(res.path("code").asInt()).isZero();
         JsonNode data = res.path("data");
         assertThat(data.path("status").asText()).isEqualTo("COMPLETED");
-        assertThat(data.path("questionCount").asInt()).isEqualTo(totalQuestions);
-        assertThat(data.path("answeredCount").asInt()).isEqualTo(1);
-        assertThat(data.path("unansweredCount").asInt()).isEqualTo(totalQuestions - 1);
+        assertThat(data.path("questionCount").asInt()).isEqualTo(3);
+        assertThat(data.path("answeredCount").asInt()).isEqualTo(2);
+        assertThat(data.path("unansweredCount").asInt()).isEqualTo(1);
         assertThat(data.path("answeredCount").asInt() + data.path("unansweredCount").asInt())
                 .as("已答 + 未答必须等于总题数")
                 .isEqualTo(data.path("questionCount").asInt());
@@ -233,14 +274,21 @@ class QuizApiIT extends ApiTestBase {
         // ① 分母是「已作答」而不是总题数（《判分与业务规则》里写着）；
         // ② **单位是百分数（0–100），不是 0–1 的比例**——写成比例会得到 100.0 而不是 1.0。
         // 按公式断言，不写死数字：条件变了这条断言仍然说得通。
+        // ⚠️ 分子分母都得非 0（这里是 1 / 2）——若全是 0，"单位写错"也会算出同一个答案，这条就白写了。
         double expectedAccuracy = data.path("correctCount").asInt() * 100.0
                 / data.path("answeredCount").asInt();
         assertThat(data.path("accuracy").asDouble()).isCloseTo(expectedAccuracy, within(1e-9));
 
-        // 已经结算的会话不能再提交
+        // 已经结算的会话不能再提交。
+        // ⚠️ 这里**故意挑那道没答过的题**：拿已答的题去试，会先被「一题一答」拦下，
+        //    断言就分不清拦它的是哪条规则，等于没验「结算即封盘」。
         JsonNode late = apiPost("/api/quiz/sessions/" + sessionId + "/answer", token,
-                payload("questionId", questionId, "answer", correct));
-        assertThat(late.path("code").asInt()).isNotZero();
+                payload("questionId", unansweredId, "answer", "A"));
+        assertThat(late.path("code").asInt()).as("结算后不该还能提交").isNotZero();
+        // 被拒的提交不能落库：那道题仍是未作答
+        assertThat(session(token, sessionId).path("data").path("questions").get(2).path("answered").asBoolean())
+                .as("被拒绝的提交不该写进库")
+                .isFalse();
     }
 
     @Test

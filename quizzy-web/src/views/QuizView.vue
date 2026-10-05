@@ -16,6 +16,14 @@
         <MarkdownRenderer :source="currentQuestion.stem" />
       </div>
 
+      <el-alert
+        v-if="reviewing"
+        class="locked-tip"
+        type="info"
+        :closable="false"
+        title="本题已作答，答案不可修改；想重做可以另开一次练习。"
+      />
+
       <div class="options">
         <el-checkbox-group v-if="currentQuestion.type === 'MULTI'" v-model="picked" :disabled="submitted">
           <div v-for="option in currentQuestion.options" :key="option.label" class="option">
@@ -43,15 +51,15 @@
       </div>
 
       <el-alert
-        v-if="feedback"
+        v-if="showVerdict"
         class="feedback"
-        :type="feedback.isCorrect ? 'success' : 'error'"
-        :title="feedback.isCorrect ? '回答正确' : '回答错误'"
+        :type="verdictCorrect ? 'success' : 'error'"
+        :title="verdictCorrect ? '回答正确' : '回答错误'"
         :closable="false"
       >
-        <div>正确答案：{{ feedback.correctAnswers.join(', ') }}</div>
-        <div v-if="feedback.analysis">
-          <MarkdownRenderer :source="feedback.analysis" />
+        <div>正确答案：{{ verdictAnswers.join(', ') }}</div>
+        <div v-if="verdictAnalysis">
+          <MarkdownRenderer :source="verdictAnalysis" />
         </div>
       </el-alert>
     </div>
@@ -85,6 +93,20 @@ const answeredPercent = computed(() => {
   if (!questions.value.length) return 0
   return Math.round((questions.value.filter((q) => q.answered).length * 100) / questions.value.length)
 })
+
+// 「刚提交那一刻」的反馈来自接口的返回体；「回看一道已作答的题」时则要读题目本身——
+// detail 接口在已作答时才会下发 correctAnswers / analysis（未作答时不下发，
+// 见后端 QuizService#detail 与 QuizApiIT#unansweredQuestionsDoNotLeakAnswers）。
+// 两个来源在这里合流，模板只认下面这几个名字，免得同一块反馈分两处渲染。
+const reviewing = computed(() => currentQuestion.value?.answered === true && feedback.value === null)
+const verdictAnswers = computed<string[]>(() =>
+  feedback.value ? feedback.value.correctAnswers : currentQuestion.value?.correctAnswers || [])
+const verdictAnalysis = computed(() =>
+  (feedback.value ? feedback.value.analysis : currentQuestion.value?.analysis) || '')
+const verdictCorrect = computed(() =>
+  feedback.value ? feedback.value.isCorrect : currentQuestion.value?.isCorrect === true)
+// 有答案就显示：未作答时两者皆空，于是自然不显示
+const showVerdict = computed(() => verdictAnswers.value.length > 0 || verdictAnalysis.value !== '')
 
 async function load() {
   loading.value = true
@@ -162,6 +184,7 @@ onMounted(load)
 .header { display: flex; align-items: center; justify-content: space-between; }
 .stem { font-size: 15px; margin: 12px 0; }
 .stem :deep(.el-tag) { margin-right: 6px; }
+.locked-tip { margin-bottom: 12px; }
 .options { margin: 16px 0; }
 .option { display: flex; align-items: flex-start; margin: 10px 0; }
 .label { font-weight: 600; margin-right: 4px; }

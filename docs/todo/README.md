@@ -32,6 +32,7 @@ YYYY-MM-DD-TODO-<主题>.md
 | [2026-10-04-TODO-测试系统落地.md](./2026-10-04-TODO-测试系统落地.md) | 分层测试系统的落地顺序 + 探索数据清理 / 守卫基线等未定项 | 待办 | 高 |
 | [2026-10-04-TODO-依赖存量漏洞清理.md](./2026-10-04-TODO-依赖存量漏洞清理.md) | 存量漏洞：npm 已清 39→21，剩 vite/braces 清不掉；4 条 Maven medium 等 Excel 烟测 | 待办 | 中 |
 | [2026-10-04-TODO-Flyway与MySQL版本.md](./2026-10-04-TODO-Flyway与MySQL版本.md) | Flyway 跑在它「已测试支持」之外的 MySQL 8.4 上（每次迁移都打警告） | 待办 | 低 |
+| [2026-10-05-TODO-历史作答统计重复计数.md](./2026-10-05-TODO-历史作答统计重复计数.md) | 改动前被回改过的题，`question_stat` 计数偏高且无法回溯修正 | 待办 | 低 |
 
 ## 已定，不用再想
 
@@ -53,3 +54,4 @@ YYYY-MM-DD-TODO-<主题>.md
 | 镜像推阿里云 ACR 个人版（不支持 AccessKey 推送，用账号全名 + 固定密码），不加浮动 tag | 见镜像分发那条 |
 | 版本号以 `git tag` 为唯一真相源；**两处**手写点（`package.json` / `pom.xml`）靠 `check-version.sh` 在推 tag 时校验，compose 那一处改成断言用的是 `${APP_VERSION}` 变量 | ADR 0015 / Amendment 1 |
 | **移动端用 uni-app 单工程覆盖 H5 + 微信小程序，PC 端 `quizzy-web` 不动；移动端只做「消费」**（建设类功能留在 PC） | ADR 0019 |
+| **一题一答**：已作答的题只能回看、不能再改答案（「跳过题回头再答」不受影响） | ADR 0022 |

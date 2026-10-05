@@ -108,6 +108,40 @@ class QuizServiceIT extends ApiTestBase {
     }
 
     @Test
+    @DisplayName("一题一答：重复提交被拒，question_stat 不被重复累加（ADR 0022）")
+    void repeatSubmissionIsRefusedAndStatIsNotDoubleCounted() throws Exception {
+        JsonNode me = newAccount();
+        long userId = me.path("user").path("id").asLong();
+
+        long sessionId = startOneQuestionQuiz(userId);
+        SessionVO detail = quizService.detail(sessionId, userId);
+        long questionId = detail.getQuestions().get(0).getQuestionId();
+
+        // 第一次提交：答错
+        AnswerDTO first = new AnswerDTO();
+        first.setQuestionId(questionId);
+        first.setAnswer("Z");
+        quizService.answer(sessionId, first, userId);
+        assertThat(statOf(userId, questionId).getAnswerCount()).isEqualTo(1);
+
+        // 第二次提交同一题：必须被拒
+        AnswerDTO again = new AnswerDTO();
+        again.setQuestionId(questionId);
+        again.setAnswer("Z");
+        assertThatThrownBy(() -> quizService.answer(sessionId, again, userId))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("已作答");
+
+        // ⚠️ 这两条才是改这条规则的**实质收益**：允许回改时 answer_count 会变成 2，
+        //    同一道题把正确率与错题本一起污染——答错点亮错题本、再改成正确又把它抹掉，
+        //    「哪道题没掌握」这个信号就这么丢了。拒绝之后它必须停在 1。
+        QuestionStat stat = statOf(userId, questionId);
+        assertThat(stat.getAnswerCount()).as("被拒绝的提交不该计数").isEqualTo(1);
+        assertThat(stat.getCorrectCount()).isZero();
+        assertThat(stat.getInWrongBook()).as("错题本标记不该被重复提交改写").isEqualTo(1);
+    }
+
+    @Test
     @DisplayName("结算：会话进终态并落下结束时间")
     void finishMarksSessionCompleted() throws Exception {
         JsonNode me = newAccount();

@@ -176,6 +176,14 @@ public class QuizService {
         if (answer == null) {
             throw new BusinessException("题目不属于本次答题");
         }
+        // **一题一答**：已作答的题只能回看，不能再改（ADR 0022）。
+        // ⚠️ 判据必须与 detail() 里算 answered 的那句完全一致（user_answer 非空）——两处一旦分家，
+        //    就会出现「界面显示未作答、接口却拒绝提交」这类自相矛盾的状态。
+        // ⚠️ 也不能因为「前端已经把选项禁用了」就省掉这道检查：接口是公开的，
+        //    直接调、双开页面、或者旧版缓存的前端都能绕过去。
+        if (StringUtils.hasText(answer.getUserAnswer())) {
+            throw new BusinessException("本题已作答，答案不可修改");
+        }
         Question question = questionMapper.selectById(dto.getQuestionId());
         if (question == null) {
             throw new BusinessException(ResultCode.NOT_FOUND, "题目不存在");
