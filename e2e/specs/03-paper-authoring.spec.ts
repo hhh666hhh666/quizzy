@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createFixedPaper, createQuestion, registerNewUser, startPaperQuiz } from './support/helpers'
+import { createFixedPaper, createQuestion, lastMessage, registerNewUser, startPaperQuiz } from './support/helpers'
 
 // 建题 → 组固定卷 → 用这张卷发起作答 → 答题 → 结算 → 结果页。
 //
@@ -48,7 +48,7 @@ test('空固定卷能保存，但「开始作答」是灰的', async ({ page }) 
   // 一道题都没选也该能保存——拦在保存这一步就会让「先建卷、后加题」这条动线走不通
   await expect(dialog).toContainText('空卷可以先保存')
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
   const row = page.locator('.el-table__row', { hasText: title })
   await expect(row).toHaveCount(1)
@@ -80,11 +80,11 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
   await optionRows.nth(0).locator('.el-radio').click()
   await questionDialog.getByRole('button', { name: '保存' }).click()
 
-  await expect(page.locator('.el-message--success')).toContainText('已新建并加入试卷')
+  await expect(lastMessage(page, 'success')).toContainText('已新建并加入试卷')
   await expect(paperDialog).toContainText('共 1 道')
 
   await paperDialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
   await expect(page.locator('.el-table__row', { hasText: title })).toHaveCount(1)
 })
 

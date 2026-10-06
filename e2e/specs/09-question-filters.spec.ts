@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { createQuestion, registerNewUser } from './support/helpers'
+import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
 
 /**
  * 题库页的**筛选条件与网址同步**。
@@ -137,7 +137,7 @@ async function createQuestionInCategory(page: Page, stem: string, category: stri
   await page.keyboard.press('Enter')
 
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
   await expect(dialog).toBeHidden()
 }
 

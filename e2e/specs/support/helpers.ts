@@ -121,7 +121,7 @@ export async function createQuestion(
   }
 
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
   await expect(dialog).toBeHidden()
 }
 
@@ -149,8 +149,23 @@ export async function createFixedPaper(page: Page, title: string, pickStems: str
   await selector.getByRole('button', { name: '加入试卷' }).click()
 
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
   await expect(dialog).toBeHidden()
+}
+
+/**
+ * 断言「最近一条」消息提示，取 `.last()`。
+ *
+ * <p>⚠️ 这个 `.last()` 不是洁癖，是**必需**：`el-message` 是**堆叠**的——上一步的提示
+ * 3 秒后才消失；而 Playwright 的 `toContainText` 在定位到**多个元素**时是**严格模式报错**
+ * （不是「任一匹配」）。2026-10-06 就栽在这上面：选题器「加入试卷」多了一条成功提示，
+ * 于是 `createFixedPaper` 里那句「点保存后断言保存成功」撞上两条堆叠消息，
+ * **4 条本来无关的用例一起红了**。
+ *
+ * <p>所以**所有**消息断言都走这个函数，别再手写 `.locator('.el-message--x')`。
+ */
+export function lastMessage(page: Page, type: 'success' | 'info' | 'warning' | 'error') {
+  return page.locator(`.el-message--${type}`).last()
 }
 
 /** 从试卷列表里找到这张卷，点「开始作答」，并等到答题页。 */

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { registerNewUser } from './support/helpers'
+import { lastMessage, registerNewUser } from './support/helpers'
 
 /**
  * 分类在**界面上**的完整生命周期：随题目诞生 → 无人引用时自动消失。
@@ -37,7 +37,7 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   await page.keyboard.press('Enter')
 
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success')).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
   // **诞生的证据**：再打开对话框，分类下拉里能看到这个新名字
   await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)

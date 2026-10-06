@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createQuestion, registerNewUser } from './support/helpers'
+import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
 
 /**
  * 题库页的批量操作：多选 → 「加入已有试卷」/「用所选新建试卷」。
@@ -8,8 +8,8 @@ import { createQuestion, registerNewUser } from './support/helpers'
  * 接口层能验 `POST /api/papers/{id}/questions` 的去重与越权，验不到
  * 「勾了两道题、点一下，卷里真的多了这两道」。
  *
- * <p>⚠️ 断言消息一律用 `.last()`：`el-message` 是**堆叠**的，前一步的「保存成功」可能还没消失，
- * 直接拿 `.el-message--success` 会撞上好几条。
+ * <p>⚠️ 断言消息一律走 `lastMessage()`：`el-message` 是**堆叠**的，前一步的「保存成功」可能还没消失，
+ * 而多元素下 `toContainText` 是**严格模式报错**（不是「任一匹配」）——第一版就是因此红了 4 条。
  */
 
 test('题库页多选 → 用所选题目新建试卷', async ({ page }) => {
@@ -38,7 +38,7 @@ test('题库页多选 → 用所选题目新建试卷', async ({ page }) => {
   // ⚠️ 不按文案点「确定」：两个中文字的按钮可能被插空格。直接点主按钮。
   await box.locator('.el-message-box__btns .el-button--primary').click()
 
-  await expect(page.locator('.el-message--success').last()).toContainText('已新建试卷')
+  await expect(lastMessage(page, 'success')).toContainText('已新建试卷')
   // 批量条该收起来：选中的题已经用完，留着会让人以为还得再来一次
   await expect(page.locator('.batch-bar')).toHaveCount(0)
 
@@ -64,7 +64,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   const dialog = page.locator('.el-dialog:visible').first()
   await dialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
   await dialog.getByRole('button', { name: '保存' }).click()
-  await expect(page.locator('.el-message--success').last()).toContainText('保存成功')
+  await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
   await page.goto('/questions')
   await page.locator('.el-table__row', { hasText: stem }).locator('.el-checkbox').first().click()
@@ -72,7 +72,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await page.getByTestId('batch-paper-select').click()
   await page.locator('.el-select-dropdown__item', { hasText: title }).click()
   await page.getByTestId('batch-add-confirm').click()
-  await expect(page.locator('.el-message--success').last()).toContainText('已加入 1 道')
+  await expect(lastMessage(page, 'success')).toContainText('已加入 1 道')
 
   // 再把**同一道题**加一次：应当被忽略，而不是把卷变成两条重复关系
   await page.locator('.el-table__row', { hasText: stem }).locator('.el-checkbox').first().click()
@@ -80,7 +80,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await page.getByTestId('batch-paper-select').click()
   await page.locator('.el-select-dropdown__item', { hasText: title }).click()
   await page.getByTestId('batch-add-confirm').click()
-  await expect(page.locator('.el-message--info').last()).toContainText('都已在卷中')
+  await expect(lastMessage(page, 'info')).toContainText('都已在卷中')
 
   await page.goto('/papers')
   await page.locator('.el-table__row', { hasText: title }).getByRole('button', { name: '编辑' }).click()
