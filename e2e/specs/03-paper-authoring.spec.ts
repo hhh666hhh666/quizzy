@@ -81,6 +81,10 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
   await questionDialog.getByRole('button', { name: '保存' }).click()
 
   await expect(lastMessage(page, 'success')).toContainText('已新建并加入试卷')
+  // ⚠️ 建题对话框是**嵌在试卷抽屉里**的（Element 的 `el-dialog` 默认不 teleport），
+  //    它关干净之前，`getByRole('button', { name: '保存' })` 会同时命中它的「保存」与试卷的「保存」
+  //    → 严格模式报错。所以先等它真的隐藏，再点试卷那颗。
+  await expect(page.getByRole('dialog', { name: '新建题目' })).toBeHidden()
   await expect(paperDialog).toContainText('共 1 道')
 
   await paperDialog.getByRole('button', { name: '保存' }).click()
