@@ -22,4 +22,6 @@ Status: accepted
 - **其他会话默认不读 `docs/worklog/`**。唯一例外是惰性归档，且只读每个文件前 10 行、只改状态那一行。
 - **`docs/目录结构.md` 里 ADR 那一条不再写条数**。原来写"17 条"，而每加一条 ADR 就要回头改它——那是派生事实，正是 ADR 0006 禁止复制的东西。改成只写形态（`NNNN-*.md`）。
 
+> ⚠️ **后续（2026-10-06）**：本文里作为「结论类」与 `docs/adr/` 并列的 `docs/decisions/` 已整类取消（[ADR 0024](0024-drop-decisions-doc-class.md)）——现在决策只归 `docs/adr/`，过程只归 `docs/worklog/`。正文按「只追加不改」保留原文。
+
 相关：[ADR 0006](0006-bare-array-import-contract.md)（单一信息源，本次两条硬约束都由它推出）、[ADR 0014](0014-ai-discipline-in-repo.md)（AI 纪律入仓、规则的体积硬约束与静默失效）。

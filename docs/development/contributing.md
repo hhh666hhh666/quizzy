@@ -10,7 +10,7 @@
 
 `master` 是唯一常驻分支。改动走**短命分支 → PR → squash 合并 → 删分支**。
 
-先例：CI 那轮用的是 `ci/gate` 分支，验绿后再 squash 进 master 并删除（该分支已不存在，过程见 [../decisions/ci-gate-setup.md](../decisions/ci-gate-setup.md)）。
+先例：CI 那轮用的是 `ci/gate` 分支，验绿后再 squash 进 master 并删除（该分支已不存在）。
 
 直接 push master 也可以，但走 PR 有两个实际好处：能在合并前看到整体 diff，以及留一份可回看的记录。
 
@@ -41,9 +41,9 @@
 - **能从代码、脚本、`.env.example`、Flyway 或 springdoc 运行时得到的事实，文档只写「去哪看」，不复制一份。**
 - 新决策怎么落：
   - **结论**进 `docs/adr/`，格式照 [0006](../adr/0006-bare-array-import-contract.md) 抄（Status / Considered Options / Consequences），编号递增，**只追加不改**；
-  - **过程**（问答、被否选项、当时为什么纠结）留在 `docs/decisions/`；
+  - **被否的选项**写进同一张卡的 **Considered Options**——2026-10-06 起不再单设「决策过程」文档类别（原 `docs/decisions/` 已取消，见 [ADR 0024](../adr/0024-drop-decisions-doc-class.md)）；
   - **未决事项**进 `docs/todo/`，命名规则见 [../todo/README.md](../todo/README.md)。
-- 两者区别见 [../README.md](../README.md)。
+- 各类文档的分工见 [../README.md](../README.md)。
 - **提交前跑一次 `bash scripts/check-doc-links.sh`**——它检查 md 相对链接、以及脚本与注释里提到的 `docs/ scripts/ .github/` 路径是否还存在。CI 里有同名 job 会再验一次，红了就合不进去。
 - **AI 会话的过程记录**进 `docs/worklog/`——一次会话一份，动手之前先建、随进度更新。它只对创建它的那次会话有意义，**其他会话不必读**；它入库，所以内部**不写相对链接**（路径用行内代码）。规范见 [../../.codebuddy/rules/session-worklog.md](../../.codebuddy/rules/session-worklog.md)。
 - 上面这些对 AI 也生效：三条规则放在 [.codebuddy/rules/](../../.codebuddy/rules/)（每次会话自动加载），收尾自检用 `/wrap-up`。跨工具摘要见根目录 [`AGENTS.md`](../../AGENTS.md)。取舍见 [ADR 0014](../adr/0014-ai-discipline-in-repo.md)。

@@ -34,6 +34,7 @@ YYYY-MM-DD-TODO-<主题>.md
 | [2026-10-04-TODO-Flyway与MySQL版本.md](./2026-10-04-TODO-Flyway与MySQL版本.md) | Flyway 跑在它「已测试支持」之外的 MySQL 8.4 上（每次迁移都打警告） | 待办 | 低 |
 | [2026-10-05-TODO-历史作答统计重复计数.md](./2026-10-05-TODO-历史作答统计重复计数.md) | 改动前被回改过的题，`question_stat` 计数偏高（已定：**不动，只留档**） | 已解决 | 低 |
 | [2026-10-05-TODO-筛选能力延伸.md](./2026-10-05-TODO-筛选能力延伸.md) | 其它列表页的网址同步 / 组卷规则的多分类 / 「未分类」被技能与界面用得不一样 | 待办 | 低 |
+| [2026-10-06-TODO-文档体系.md](./2026-10-06-TODO-文档体系.md) | decisions 删除后、没被任何 ADR 覆盖的内容要不要回捞（已定：只回捞 D5 收录标准） | 已解决 | 低 |
 
 ## 已定，不用再想
 
@@ -51,6 +52,7 @@ YYYY-MM-DD-TODO-<主题>.md
 | **对公网开放，任何人注册即可使用**；带图形验证码 + IP 限流 + 封禁开关 | ADR 0017 |
 | 对外入口交给宿主既有的 nginx（web 容器只绑 `127.0.0.1:8081`）；证书由宝塔申请与续期，不自建 acme.sh | ADR 0016 Amendment 1 |
 | AI 会话的**过程**记录独立成 `docs/worklog/`（一次会话一份、入库、其他会话默认不读、不写派生事实） | ADR 0018 |
+| **决策只归 `docs/adr/`**（被否选项写进同一张卡的 Considered Options），**过程只归 `docs/worklog/`**；原 `docs/decisions/` 文档类别已整类取消 | ADR 0024 |
 | 两个 Dockerfile 的依赖源用 build-arg 参数化，默认值保持国内源 | ADR 0010 / ADR 0013 |
 | 镜像推阿里云 ACR 个人版（不支持 AccessKey 推送，用账号全名 + 固定密码），不加浮动 tag | 见镜像分发那条 |
 | 版本号以 `git tag` 为唯一真相源；**两处**手写点（`package.json` / `pom.xml`）靠 `check-version.sh` 在推 tag 时校验，compose 那一处改成断言用的是 `${APP_VERSION}` 变量 | ADR 0015 / Amendment 1 |

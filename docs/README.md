@@ -30,7 +30,6 @@
 | [design/前端.md](./design/前端.md) | **PC 端**（`quizzy-web`）页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
 | [design/移动端.md](./design/移动端.md) | 移动端 / 小程序的页面流、编译目标与后端边界 | 改移动端的人 | `quizzy-mobile/src/` |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
-| [decisions/](./decisions/) | **决策过程**日志（grill 问答原文、被否选项、未决问题） | 查「当时考虑过 X 吗」的人 | 日志自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
 | [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/server-deploy.sh` 与 [../.github/workflows/release.yml](../.github/workflows/release.yml) |
 | [operations/configuration.md](./operations/configuration.md) | 配置从哪来、改了要重启什么 | 换机器 / 改配置的人 | `.env.example` |
@@ -44,16 +43,17 @@
 | [todo/](./todo/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |
 | [worklog/](./worklog/) | AI **会话**的实时进度（正在做什么 / 接下来 / 已做完） | 只对创建它的那次会话与当时的用户有意义，**其他会话不必读** | 各文件自身 |
 
-## ADR 与 decisions 的区别
-
-这两个目录都在 `docs/` 下，但不是一回事：
+## 决策只有 adr 记
 
 - **`adr/`** 是**结论**。一条决策一张卡，写完不再改；要推翻就新增一条并标注取代了谁。
   查「**为什么**这么定」看这里。
-- **`decisions/`** 是**过程**。保留 grill 问答原文，包括被放弃的选项和当时的纠结。
-  查「当时**有没有考虑过**某个方案」看这里。
+- **被否的选项写在同一张卡的 Considered Options 里**——所以查「当时**有没有考虑过**某个方案」，也是看这里。
+- **哪条决策够格写成 ADR**、格式与编号规则，见 [adr/README.md](./adr/README.md)。
+- **`worklog/`** 是**过程**（一次会话一份），但它只对创建它的那次会话有意义，**不是事实源**。
 
-ADR 是 decisions 的沉淀：过程记完，够格的结论升级成 ADR（收录标准见 `decisions/records-and-glossary.md` 的 D5）。
+> 2026-10-06 之前还有一类 `docs/decisions/`（**决策过程**日志，保留 grill 问答原文、被否选项与当时的纠结）：
+> 它与 `worklog/` 职责重叠，而 ADR 卡的 Considered Options 已承载「被否选项」，于是整类取消
+> （见 [ADR 0024](./adr/0024-drop-decisions-doc-class.md)）。
 
 ## 未决事项只有一个入口：`docs/todo/`
 

@@ -42,6 +42,6 @@ alwaysApply: true
 
 ## 收尾
 
-- 结构性决策：结论进 `docs/adr/00NN-*.md`，过程进 `docs/decisions/`。
+- 结构性决策：结论进 `docs/adr/00NN-*.md`，**被否的选项写进同一张卡的 Considered Options**。不另设「决策过程」文档类别（原 `docs/decisions/` 已于 2026-10-06 取消，见 ADR 0024）；没结论的过程记录留在 `docs/worklog/`。
 - 新的未决事项**不许**写在任何文档正文里 → `docs/todo/`（见 `todo-discipline` 规则）。
 - 提交前跑 `bash scripts/check-doc-links.sh`，全绿再 commit。

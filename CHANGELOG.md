@@ -26,6 +26,13 @@
 
 ## [Unreleased]
 
+### Removed
+
+- **取消 `docs/decisions/`（决策过程日志）这一文档类别**（[ADR 0024](./docs/adr/0024-drop-decisions-doc-class.md)）：
+  它与 `docs/worklog/` 都是「过程」记录、职责重叠，而 ADR 卡里的 Considered Options 已经承载「被否选项」，
+  于是整类删掉——今后**结论只归 `docs/adr/`、过程只归 `docs/worklog/`**。原有 10 份日志下线（正文留在 git 历史里），
+  文档地图、目录树、3 条规则、`AGENTS.md`、贡献指南里的引用，以及往该目录写东西的本机 skill `grill-decisions`，一并清理。
+
 ### Fixed
 
 - **v1.4.0 里新加的那条端到端用例在 CI 上是红的，已修**（红的是**用例自己**，不是产品；修了两轮）：
@@ -51,7 +58,7 @@
 （分类筛选参数改成多选）只影响本仓库的前端，而前后端在**同一次 release** 里一起部署
 （compose 用同一个 `${APP_VERSION}`），不存在「旧前端打新后端」的窗口；且 `[Unreleased]` 里还压着
 当天上午那批修复，为一次参数改名再多走一轮部署，换来的是接近于零的可定位性收益。
-理由与例外条件记在[决策过程](./docs/decisions/release-cadence.md)。
+理由与例外条件原记在决策过程日志（该文档类别已于 2026-10-06 取消，见 [ADR 0024](./docs/adr/0024-drop-decisions-doc-class.md)）。
 
 ### Changed
 

@@ -25,4 +25,6 @@ push 或 PR 到 master 时，GitHub 托管 runner 上跑四条并行门禁：后
 - **`npm run typecheck` 此前从未被任何流程执行过**，首次纳入门禁时暴露出 7 个类型错误（`vite build` 走 esbuild 只剥离类型不做检查，一直是绿的）。这是存量债，已在本次一并修掉；其中 `QuickQuizView` 那个是真隐患——`types: string[]` 允许把任意字符串塞进抽题规则发给后端。**typecheck 现在是硬门禁，前端 `strict: true` 真正开始生效。**
 - **`scripts/deploy.sh` 永不重建 mysql。** 用 `--no-deps` 确保 `depends_on` 不会把数据库拉进这次操作，且 mysql 只在「没跑起来」时被拉起一次。数据在宿主机 `MYSQL_DATA_DIR`，不在容器里（见 0007）。
 
+> ⚠️ **后续（2026-10-06）**：正文引用的决策过程日志已随 `docs/decisions/` 这一文档类别取消，见 [ADR 0024](0024-drop-decisions-doc-class.md)。正文按「只追加不改」保留原文。
+
 相关：0010（构建期依赖源）、0011（`.env` 与 `:?` 必填）、0007（数据绑定挂载）、0009（构建镜像与 .dockerignore）。

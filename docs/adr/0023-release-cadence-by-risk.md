@@ -40,4 +40,6 @@ Status: accepted
 - 操作步骤不在本文复制：上线动作仍以 [《部署》](../operations/deployment.md) 与其上线前检查清单为准——其中已新增一条「节奏自检」，把上面三档压成发版前的一句自问。
 - 过程记录见 `docs/decisions/release-cadence.md`。
 
+> ⚠️ **后续（2026-10-06）**：正文末条「过程记录见 `docs/decisions/release-cadence.md`」已随该文档类别取消而失效，见 [ADR 0024](0024-drop-decisions-doc-class.md)。正文按「只追加不改」保留原文。
+
 相关：[ADR 0015](0015-version-number-governance.md)（tag 是唯一真相源、三板斧门禁）、[ADR 0016](0016-cloud-deploy-with-release-pipeline.md)（推 tag 即发布、回滚只换镜像）、[ADR 0021](0021-test-sync-discipline.md)（改动 → 补哪层测试）。
