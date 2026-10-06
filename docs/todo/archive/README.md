@@ -12,4 +12,4 @@
    - 文件内所有 `../` 相对链接**多退一级**：`../adr/…` → `../../adr/…`、`./README.md` → `../README.md`、`../README.md`（docs 根）→ `../../README.md`；
    - 把主干 `docs/todo/README.md` 索引表里那一行，从主表移到「已归档」区，链接换成 `./archive/<文件>`。
 
-> 第 3 步最容易漏——漏了 `scripts/check-doc-links.sh` 会在提交前报红，那是唯一能机械兜住它的守卫。
+> 第 3 步最容易漏，有两道机械守卫兜着：`scripts/check-todo-archive.sh` 专查「该归档没归档」——主索引表里还留着「已解决」行、或 `docs/todo/` 下还有状态是「已解决」的待办，它都会报红（CI 的「文档 · 链接与引用自检」job 上跑）；`scripts/check-doc-links.sh` 则会在相对链接因下移一层而断掉时报红。

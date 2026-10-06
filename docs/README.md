@@ -18,6 +18,7 @@
 | [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
 | [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
 | [../scripts/check-module-tests.sh](../scripts/check-module-tests.sh) | 断言每个带 Controller 的模块都配了测试类（ADR 0021 的机械守卫，CI 上跑） | 加新模块的人 / CI | 文件系统 |
+| [../scripts/check-todo-archive.sh](../scripts/check-todo-archive.sh) | 断言已结案的待办都已移入 `docs/todo/archive/`（ADR 0025 的机械守卫，CI 上跑） | 结案待办的人 / CI | 文件系统 |
 | [../scripts/check-version.sh](../scripts/check-version.sh) | 版本号与 `git tag` 对齐自检；非 tag 提交上自动跳过 | 要打 tag 的人 / CI | `git tag` |
 | [../scripts/server-deploy.sh](../scripts/server-deploy.sh) | 服务器上的部署与回滚脚本（CI 经 SSH 调用） | 要上线或回滚的人 | 脚本自身 |
 | [../deploy/](../deploy/) | 要放到服务器上的部署侧配置模板（宿主 nginx 站点、云端 `.env`） | 传部署的人 | 各文件自身 |

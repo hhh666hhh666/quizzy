@@ -32,7 +32,7 @@ alwaysApply: true
 
 4. **必须回 `docs/todo/README.md` 索引表补一行**：`| [文件名](./文件名) | 主题 | 待办 | 优先级 |`。状态变了也要回来改。
 5. **反向处理一次**：本次真正拍板的结论 → 结论卡片进 `docs/adr/00NN-*.md`（编号递增，Status / Considered Options / Consequences，**只追加不改**；被否的选项写进 Considered Options，不另立「决策过程」文档），并在索引页的「已定，不用再想」表加一行，防止以后重新纠结。
-6. **结案即归档**：一条待办的 `状态` 改成 `已解决` 后，`git mv` 进 `docs/todo/archive/`（**文件名不改**），把它从主索引表移到「已归档」区，并修文件内部 `../` 相对链接**退一级**（`../adr/…` → `../../adr/…` 等）。三步清单见 `docs/todo/archive/README.md`，理由见 ADR 0025。
+6. **结案即归档**：一条待办的 `状态` 改成 `已解决` 后，`git mv` 进 `docs/todo/archive/`（**文件名不改**），把它从主索引表移到「已归档」区，并修文件内部 `../` 相对链接**退一级**（`../adr/…` → `../../adr/…` 等）。三步清单见 `docs/todo/archive/README.md`，理由见 ADR 0025，CI 上 `scripts/check-todo-archive.sh` 会兜底。
 
 ## 每次回复结束前自检
 

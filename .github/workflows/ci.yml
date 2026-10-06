@@ -23,7 +23,7 @@ jobs:
   # 放最前面：只靠 runner 自带的 bash + git + grep + find，不需要任何 toolchain，几秒就跑完；
   # 而「文档或注释指向了不存在的文件」「新模块忘了配测试」是最容易混进主干的人为失误，
   # 让它们在另外几个重 job 还在装依赖、拉镜像时就先给出信号。同样不设 needs，与 docker 两个 job 一致。
-  # 它现在承载两条约定自检：文档链接（下）与模块测试守卫（再下）。
+  # 它现在承载三条约定自检：文档链接（下）、模块测试守卫（再下）、待办归档守卫（最后）。
   # 这套 AI 协作纪律本身的取舍记在 docs/adr/0014-ai-discipline-in-repo.md。
   docs:
     name: 文档 · 链接与引用自检
@@ -44,6 +44,11 @@ jobs:
       #    （见 ADR 0021 的 Consequences 与 scripts/check-module-tests.sh 的头部）。
       - name: 跑 scripts/check-module-tests.sh
         run: bash scripts/check-module-tests.sh
+
+      # 第三类沉默的失效：待办结案了却忘了归档（规则见 docs/todo/archive/README.md 与 ADR 0025）。
+      # 与上面两条同理——规则只写在文档里没人执行，等于没有（worklog 的「惰性归档」就是这么烂掉的）。
+      - name: 跑 scripts/check-todo-archive.sh
+        run: bash scripts/check-todo-archive.sh
 
   # 依赖安全扫描：把 PR 里**新增或变动**的依赖拿去比已知漏洞库（CVE / GHSA）。
   # 它验的是「我引入的**别人的**代码有没有已知毛病」——与三层测试（验自有逻辑）互补，不重叠。

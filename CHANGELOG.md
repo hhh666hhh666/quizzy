@@ -26,6 +26,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- **新增 CI 守卫 `scripts/check-todo-archive.sh`**（[ADR 0025](./docs/adr/0025-archive-resolved-todos.md)）：
+  断言已结案的待办都已移入 `docs/todo/archive/`——主索引表里不得还有「已解决」行、`docs/todo/` 下不得还有
+  状态为「已解决」的待办。挂进「文档 · 链接与引用自检」job，与 `check-doc-links.sh`、`check-module-tests.sh` 同列。
+
 ### Changed
 
 - **已结案的待办移入 `docs/todo/archive/`**（[ADR 0025](./docs/adr/0025-archive-resolved-todos.md)）：
