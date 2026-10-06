@@ -53,10 +53,10 @@ const buildTimeText = computed(() =>
 
 <style scoped>
 .about { text-align: center; }
-.product { font-size: 22px; font-weight: 600; color: #409eff; }
-.tagline { margin: 6px 0 0; color: #909399; font-size: 13px; }
+.product { font-size: 22px; font-weight: 600; color: var(--el-color-primary); }
+.tagline { margin: 6px 0 0; color: var(--el-text-color-secondary); font-size: 13px; }
 .version { margin: 16px 0 18px; }
-.version-main { font-size: 20px; font-weight: 600; color: #303133; }
-.version-sub { display: block; margin-top: 4px; color: #909399; font-size: 12px; }
+.version-main { font-size: 20px; font-weight: 600; color: var(--el-text-color-primary); }
+.version-sub { display: block; margin-top: 4px; color: var(--el-text-color-secondary); font-size: 12px; }
 .meta { text-align: left; }
 </style>

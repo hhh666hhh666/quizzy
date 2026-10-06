@@ -46,7 +46,53 @@ const rendered = computed(() => md.render(props.source || ''))
 
 <style scoped>
 .markdown-body { line-height: 1.7; word-break: break-word; }
-.markdown-body :deep(code) { background: #f5f7fa; padding: 2px 4px; border-radius: 3px; font-size: 13px; }
-.markdown-body :deep(pre) { background: #f5f7fa; padding: 12px; border-radius: 6px; overflow-x: auto; }
+.markdown-body :deep(code) { background: var(--el-fill-color-light); padding: 2px 4px; border-radius: 3px; font-size: 13px; }
+.markdown-body :deep(pre) { background: var(--el-fill-color-light); padding: 12px; border-radius: 6px; overflow-x: auto; }
 .markdown-body :deep(p) { margin: 6px 0; }
+</style>
+
+<style>
+/* 代码高亮的深色配色。
+   为什么不直接 import 一份 github-dark.css：那份与 github.css 的选择器完全同名（都是
+   顶层的 .hljs / .hljs-keyword），谁后加载谁生效，于是浅色下也会变成深色配色。
+   所以这里只在 html.dark 下覆盖同一批 token 类，色值取 GitHub 官方暗色方案。
+   ⚠️ 必须是全局样式（不能 scoped）：否则选择器会带上组件属性选择器，够不到 .dark 前缀。 */
+html.dark .markdown-body .hljs { background: #0d1117; color: #c9d1d9; }
+html.dark .markdown-body .hljs-doctag,
+html.dark .markdown-body .hljs-keyword,
+html.dark .markdown-body .hljs-template-tag,
+html.dark .markdown-body .hljs-template-variable,
+html.dark .markdown-body .hljs-type,
+html.dark .markdown-body .hljs-variable.language_ { color: #ff7b72; }
+html.dark .markdown-body .hljs-title,
+html.dark .markdown-body .hljs-title.class_,
+html.dark .markdown-body .hljs-title.function_ { color: #d2a8ff; }
+html.dark .markdown-body .hljs-attr,
+html.dark .markdown-body .hljs-attribute,
+html.dark .markdown-body .hljs-literal,
+html.dark .markdown-body .hljs-meta,
+html.dark .markdown-body .hljs-number,
+html.dark .markdown-body .hljs-operator,
+html.dark .markdown-body .hljs-selector-attr,
+html.dark .markdown-body .hljs-selector-class,
+html.dark .markdown-body .hljs-selector-id,
+html.dark .markdown-body .hljs-variable { color: #79c0ff; }
+html.dark .markdown-body .hljs-regexp,
+html.dark .markdown-body .hljs-string,
+html.dark .markdown-body .hljs-meta .hljs-string { color: #a5d6ff; }
+html.dark .markdown-body .hljs-built_in,
+html.dark .markdown-body .hljs-symbol { color: #ffa657; }
+html.dark .markdown-body .hljs-code,
+html.dark .markdown-body .hljs-comment,
+html.dark .markdown-body .hljs-formula { color: #8b949e; }
+html.dark .markdown-body .hljs-name,
+html.dark .markdown-body .hljs-quote,
+html.dark .markdown-body .hljs-selector-pseudo,
+html.dark .markdown-body .hljs-selector-tag { color: #7ee787; }
+html.dark .markdown-body .hljs-bullet { color: #f2cc60; }
+html.dark .markdown-body .hljs-section { color: #1f6feb; font-weight: bold; }
+html.dark .markdown-body .hljs-strong { font-weight: bold; }
+html.dark .markdown-body .hljs-emphasis { font-style: italic; }
+html.dark .markdown-body .hljs-addition { color: #aff5b4; background-color: #033a16; }
+html.dark .markdown-body .hljs-deletion { color: #ffdcd7; background-color: #67060c; }
 </style>

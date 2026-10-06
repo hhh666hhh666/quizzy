@@ -95,21 +95,21 @@ onMounted(async () => {
 <style scoped>
 .summary { margin-bottom: 16px; }
 .tip { margin-bottom: 12px; }
-.item { padding: 14px 0; border-top: 1px solid #ebeef5; }
+.item { padding: 14px 0; border-top: 1px solid var(--el-border-color-lighter); }
 .item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
 .index { font-weight: 600; }
-.score { color: #909399; font-size: 12px; }
+.score { color: var(--el-text-color-secondary); font-size: 12px; }
 .option-list { list-style: none; padding: 0; margin: 8px 0; }
 /* 标号与文字同行：选项文字由 MarkdownRenderer 渲染，其根节点是块级 div，会把行内标号挤到上一行；
    改成横向 flex 后两者成为同一行的弹性项（与题目详情弹窗 .option-row 同构）。 */
 .option { display: flex; align-items: flex-start; padding: 4px 8px; border-radius: 4px; line-height: 1.7; }
-.option.correct { background: #f0f9eb; color: #67c23a; }
-.option.wrong { background: #fef0f0; color: #f56c6c; }
+.option.correct { background: var(--el-color-success-light-9); color: var(--el-color-success); }
+.option.wrong { background: var(--el-color-danger-light-9); color: var(--el-color-danger); }
 .label { font-weight: 600; margin-right: 4px; flex-shrink: 0; }
 .option :deep(.markdown-body) { flex: 1; min-width: 0; }
 /* 同上：去掉首尾段外边距，标号「A.」与正文首行齐平（段落默认 margin-top 6px 会把正文顶下去）。 */
 .option :deep(.markdown-body > :first-child) { margin-top: 0; }
 .option :deep(.markdown-body > :last-child) { margin-bottom: 0; }
-.answers { font-size: 13px; color: #606266; }
+.answers { font-size: 13px; color: var(--el-text-color-regular); }
 .footer-actions { margin-top: 16px; display: flex; gap: 10px; }
 </style>

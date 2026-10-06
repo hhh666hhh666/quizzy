@@ -68,6 +68,6 @@ async function onRegister() {
 <style scoped>
 .login-page { display: flex; align-items: center; justify-content: center; height: 100%; }
 .login-card { width: 380px; }
-h2 { text-align: center; margin: 0 0 20px; color: #409eff; }
+h2 { text-align: center; margin: 0 0 20px; color: var(--el-color-primary); }
 .submit { width: 100%; }
 </style>

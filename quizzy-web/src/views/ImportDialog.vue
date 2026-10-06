@@ -88,6 +88,6 @@ async function onImport() {
 
 <style scoped>
 .upload { margin-top: 12px; }
-.upload-tip { padding: 20px; color: #909399; }
+.upload-tip { padding: 20px; color: var(--el-text-color-secondary); }
 .report { margin-top: 14px; }
 </style>

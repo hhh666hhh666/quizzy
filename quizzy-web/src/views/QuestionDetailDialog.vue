@@ -130,7 +130,7 @@ function difficultyTag(level: string) {
 .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .block { margin-bottom: 16px; }
 .block-title { font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-.answer { color: #67c23a; font-weight: 700; margin-left: 4px; }
+.answer { color: var(--el-color-success); font-weight: 700; margin-left: 4px; }
 .option-row {
   display: flex;
   align-items: flex-start;
@@ -139,12 +139,12 @@ function difficultyTag(level: string) {
   border-radius: 4px;
   margin-bottom: 4px;
 }
-.option-row.correct { background: #f0f9eb; }
+.option-row.correct { background: var(--el-color-success-light-9); }
 .option-row .label { width: 18px; font-weight: 600; flex-shrink: 0; line-height: 1.7; }
 .option-row .content { flex: 1; min-width: 0; }
-.option-row .flag { color: #67c23a; font-size: 12px; flex-shrink: 0; line-height: 1.7; }
-.empty { color: #909399; font-size: 13px; }
-.stat { display: flex; gap: 20px; font-size: 13px; color: #606266; }
-.rate-high { color: #67c23a; }
-.rate-low { color: #f56c6c; }
+.option-row .flag { color: var(--el-color-success); font-size: 12px; flex-shrink: 0; line-height: 1.7; }
+.empty { color: var(--el-text-color-secondary); font-size: 13px; }
+.stat { display: flex; gap: 20px; font-size: 13px; color: var(--el-text-color-regular); }
+.rate-high { color: var(--el-color-success); }
+.rate-low { color: var(--el-color-danger); }
 </style>

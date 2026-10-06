@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quizzy 答题</title>
+    <script>
+      // 首屏防闪烁：深色类必须在样式生效前挂到 <html> 上，否则会先渲染一帧浅色再翻深色。
+      // ⚠️ 这里的 key 与 src/stores/theme.ts 的 THEME_STORAGE_KEY 必须一致。
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('quizzy_theme')
+          var dark =
+            stored === 'dark' ||
+            (stored !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {
+          // 隐私模式下 localStorage 可能抛错，忽略即可，走浅色
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>
