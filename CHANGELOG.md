@@ -26,6 +26,8 @@
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-06
+
 ### Added
 
 - **新增 CI 守卫 `scripts/check-todo-archive.sh`**（[ADR 0025](./docs/adr/0025-archive-resolved-todos.md)）：
@@ -418,7 +420,8 @@
 - 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.0...v1.3.1
