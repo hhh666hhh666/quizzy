@@ -23,6 +23,7 @@
 | [../deploy/](../deploy/) | 要放到服务器上的部署侧配置模板（宿主 nginx 站点、云端 `.env`） | 传部署的人 | 各文件自身 |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
 | [requirements/scope.md](./requirements/scope.md) | 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
+| [requirements/功能展望.md](./requirements/功能展望.md) | 面向用户的功能**方向素材**（新增 / 改进 / 深化），非待办、不排期 | 主人自己 | 本文件 |
 | [design/数据模型.md](./design/数据模型.md) | 实体关系、可见性、生命周期、历史一致性 | 改数据结构或写查询的人 | Flyway 迁移脚本 |
 | [design/判分与业务规则.md](./design/判分与业务规则.md) | 判分、会话、错题本、规则卷抽题 | 前后端开发者 | `ScoreStrategy` / `QuizService` / `PaperService` |
 | [design/导入导出.md](./design/导入导出.md) | Excel / JSON 契约入口、校验与容错语义 | 改导入导出、或给题库工具对齐格式的人 | DTO 与 `QuestionImportService`、ADR 0005/0006 |

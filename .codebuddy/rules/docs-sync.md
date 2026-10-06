@@ -27,6 +27,7 @@ alwaysApply: true
 | CI / 镜像构建 | `.github/workflows/` + ADR 0010 / 0016 |
 | 领域词汇 | `CONTEXT.md` |
 | 本次迭代交付项 | `CHANGELOG.md` |
+| 面向用户的功能、页面流、可用操作 | `docs/requirements/功能展望.md`——只**核对并修正**「现状缺口」列，**别新增条目当待办**（那些归 `docs/todo/`） |
 
 ## 移动 / 删除 / 重命名文件（最容易漏，必须做）
 
