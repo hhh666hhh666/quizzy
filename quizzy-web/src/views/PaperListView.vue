@@ -10,9 +10,13 @@
         <template #default="{ row }">{{ row.mode === 'FIXED' ? '固定卷' : '规则卷' }}</template>
       </el-table-column>
       <el-table-column prop="questionCount" label="题量" width="80" />
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="210">
         <template #default="{ row }">
-          <el-button link type="primary" @click="onStart(row.id)">开始作答</el-button>
+          <el-tooltip :disabled="!isEmptyPaper(row)" content="这张试卷还没有题目" placement="top">
+            <span>
+              <el-button link type="primary" :disabled="isEmptyPaper(row)" @click="onStart(row.id)">开始作答</el-button>
+            </span>
+          </el-tooltip>
           <el-button link @click="onEdit(row)">编辑</el-button>
           <el-button link type="danger" @click="onDelete(row)">删除</el-button>
         </template>
@@ -67,6 +71,14 @@ function onCreate() {
 function onEdit(row: PaperVO) {
   editingId.value = row.id
   editVisible.value = true
+}
+
+/**
+ * 空卷：固定卷且一道题都没有。只有固定卷会「真的为空」——
+ * 规则卷的 questionCount 是规则里写的题量，能不能抽到题要运行时才知道，不能拿它置灰。
+ */
+function isEmptyPaper(row: PaperVO) {
+  return row.mode === 'FIXED' && !row.questionCount
 }
 
 async function onStart(paperId: number) {

@@ -257,9 +257,10 @@ async function onSave() {
       payload.categoryName = payload.categoryId
       payload.categoryId = null
     }
-    await saveQuestion(payload)
+    // 回传新题的 id：从试卷编辑抽屉里内联建题时，父组件要靠它把题加进卷
+    const savedId = await saveQuestion(payload)
     ElMessage.success('保存成功')
-    emit('saved')
+    emit('saved', savedId)
     emit('update:visible', false)
   } finally {
     saving.value = false
