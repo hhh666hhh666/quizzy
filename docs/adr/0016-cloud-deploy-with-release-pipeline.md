@@ -47,7 +47,7 @@ Status: accepted · 取代 [ADR 0013](0013-github-actions-gate-no-auto-deploy.md
   上面 Considered Options 里「DNS-01 唯一的代价是服务器上要存一个 DNS AccessKey」这句随之作废——
   这是换成宿主 nginx 之后顺带拿到的净收益，不是额外开销。
 
-**决策过程**：`docs/todo/2026-10-02-TODO-云上入口与宝塔共存.md`（已解决）记录了三个选项与取舍依据。
+**决策过程**：`docs/todo/archive/2026-10-02-TODO-云上入口与宝塔共存.md`（已解决）记录了三个选项与取舍依据。
 
 ## Amendment 2（2026-10-03）：MySQL 从「不发布任何端口」改为「只绑宿主回环」
 

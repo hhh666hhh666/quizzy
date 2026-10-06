@@ -103,7 +103,7 @@ jobs:
           echo "==> 全部迁移在 MySQL 8 上重放成功"
 
   # 3. 构建两个镜像推 ACR。tag = 去 v 的版本号；**不推 latest**——浮动 tag 会让
-  #    「线上跑的是哪个版本」说不清，回滚落点就是版本 tag（见 docs/todo/2026-09-20-TODO-镜像分发.md）。
+  #    「线上跑的是哪个版本」说不清，回滚落点就是版本 tag（见 docs/todo/archive/2026-09-20-TODO-镜像分发.md）。
   build-push:
     name: 镜像 · 构建并推 ACR
     runs-on: ubuntu-latest

@@ -37,6 +37,7 @@ git status --porcelain
 对着第 1 步的文件清单，逐项走 `docs-sync` 规则的「改动 → 该去哪儿改」表。特别检查：
 
 - 有没有**移动/删除/重命名**过的文件 → `git grep -n '<旧名>'`，注释和脚本里的引用也要改
+- 本次有没有把某条待办改成「已解决」→ 按 `todo-discipline` 规则归档进 `docs/todo/archive/`，并把它从 `docs/todo/README.md` 主表移到「已归档」区
 - 有没有新加/改了 `scripts/*.sh`、`.github/workflows/*.yml`、环境变量 → `docs/operations/` 下三份要不要动
 - 有没有新的结构性决策 → 需要补 ADR 吗
 
