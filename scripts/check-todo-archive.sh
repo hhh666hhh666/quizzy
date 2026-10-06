@@ -1,25 +1,29 @@
 #!/usr/bin/env bash
-# 断言「已结案的待办都已归档」，用作 CI 门禁与本地提交前自检。
+# 断言「已结案的待办都已归档，且每条待办都在索引里登记」，用作 CI 门禁与本地提交前自检。
 #
 #   bash scripts/check-todo-archive.sh
 #
 # 规则（见 docs/todo/archive/README.md 与 docs/adr/0025-archive-resolved-todos.md）：
-# 一条待办的 `状态` 变成 `已解决` 之后，必须 git mv 进 docs/todo/archive/，
-# 并从 docs/todo/README.md 的主索引表移到「已归档」区。
-# 这条规则此前只靠人记——而「规则写了却没人执行」正是本项目反复踩的坑
-# （worklog 的「惰性归档」就是一例：上线后一次都没跑过），所以把它变成机械守卫。
+#   1) 一条待办的 `状态` 变成已结案，就必须 git mv 进 docs/todo/archive/，
+#      并从 docs/todo/README.md 的主索引表移到「已归档」区；
+#   2) 每个待办文件都必须在 docs/todo/README.md 里登记：未决的进主表、已归档的进「已归档」区。
 #
-# 查两类：
-#   1. 主索引表（「## 索引」到下一个「## 」标题之间）里不得还留着「已解决」的行；
-#   2. docs/todo/ 下（不含 archive/）的待办文件头不得仍是「已解决」。
+# 查四类。**一律「认位置、不认词」**——判的是「文件在哪 / 状态列是什么」，不匹配任何结案措辞：
+#   A. 主索引表每一行的「状态」列必须恰是 `待办`（出现别的值说明结案的没挪走）；
+#   B. `docs/todo/` 下（不含 `archive/`）每个文件头必须写明 `状态：待办`；
+#   C. `docs/todo/` 下每个文件都要落在**主索引表**里；
+#   D. `docs/todo/archive/` 下每个文件都要落在**「已归档」区**里。
 #
-# ⚠️ 本文件必须是 LF 换行，CRLF 会让 bash 报 bad interpreter（见 .gitattributes）。
+# ⚠️ 为什么不匹配「已解决」这个字面量：2026-10-06 有一个文件把状态写成 `已实现`，
+#    从「只查『已解决』」的旧版守卫底下溜了过去（既没归档也没登记）。认位置不认词，才不会再漏。
+# ⚠️ 本文件必须是 LF 换行（见 .gitattributes）。
 # ⚠️ 扫的是工作区路径，不依赖 git（与 check-doc-links.sh 不同，那个要 git ls-files）。
 set -euo pipefail
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.."
 
 TODO_DIR='docs/todo'
+ARCHIVE_DIR="$TODO_DIR/archive"
 INDEX="$TODO_DIR/README.md"
 BROKEN=0
 
@@ -28,42 +32,69 @@ report() {
   BROKEN=$((BROKEN + 1))
 }
 
-# ---- 1. 主索引表里不得还留着「已解决」的行 ----
-echo "==> 检查主索引表里有没有漏归档的「已解决」行"
-if [ -f "$INDEX" ]; then
-  while IFS= read -r hit; do
-    if [ -n "$hit" ]; then
-      report "$INDEX 主索引表仍有「已解决」：第 ${hit%%:*} 行 → ${hit#*: }"
-    fi
-  done < <(
-    awk '
-      /^## / { in_index = ($0 ~ /^##[[:space:]]*索引/) }
-      in_index && /已解决/ { printf "%d: %s\n", FNR, $0 }
-    ' "$INDEX"
-  )
-else
-  report "找不到 $INDEX"
-fi
+[ -f "$INDEX" ] || { printf 'BROKEN: 找不到 %s\n' "$INDEX" >&2; exit 1; }
 
-# ---- 2. docs/todo/ 下的待办文件（不含 archive/）头部不得仍是「已解决」 ----
-echo "==> 检查 $TODO_DIR/ 下有没有状态仍为「已解决」的待办"
+# 取出索引文件里两个区段的文本，用来判断某条待办登记在哪一半。
+SECTION_INDEX="$(awk '/^## /{ s = ($0 ~ /^##[[:space:]]*索引/) } s' "$INDEX")"
+SECTION_ARCHIVE="$(awk '/^## /{ s = ($0 ~ /^##[[:space:]]*已归档/) } s' "$INDEX")"
+
+# ---- A. 主索引表每一行的「状态」列必须恰是「待办」 ----
+echo "==> A. 主索引表每行的「状态」列必须是「待办」"
+while IFS= read -r row; do
+  [ -n "$row" ] || continue
+  case "$row" in
+    *']('*) ;;        # 只处理带链接的数据行，自动跳过表头与分隔行
+    *) continue ;;
+  esac
+  # 行以 `|` 开头，故第 1 段为空、第 4 段就是「状态」列。
+  status="$(printf '%s\n' "$row" | awk -F'|' '{ gsub(/^[ \t]+|[ \t]+$/, "", $4); print $4 }')"
+  if [ "$status" != '待办' ]; then
+    report "$INDEX 主索引表的「状态」列出现了「${status}」——结案的必须 git mv 进 $ARCHIVE_DIR/ 并移到「已归档」区"
+  fi
+done < <(printf '%s\n' "$SECTION_INDEX" | grep '^|' || true)
+
+# ---- B. docs/todo/ 下每个文件头都必须写明「状态：待办」 ----
+echo "==> B. $TODO_DIR/ 下每个文件头必须写明「状态：待办」"
 for f in "$TODO_DIR"/*.md; do
   [ -e "$f" ] || continue
-  if [ "$f" = "$INDEX" ]; then continue; fi
-  # 只看头 5 行：状态写在文件头那一行，正文里引用「已解决」三个字不该被误伤。
-  header="$(sed -n '1,5p' "$f")"
-  case "$header" in
-    *"状态：已解决"*)
-      report "$f 状态是「已解决」——应 git mv 进 $TODO_DIR/archive/（见 $TODO_DIR/archive/README.md）"
-      ;;
+  name="$(basename "$f")"
+  if [ "$name" = 'README.md' ]; then continue; fi
+  if ! sed -n '1,6p' "$f" | grep -q '状态：待办'; then
+    report "$f 头部没有「状态：待办」——要么它已结案（应 git mv 进 $ARCHIVE_DIR/），要么没照模板写（见 $ARCHIVE_DIR/README.md）"
+  fi
+done
+
+# ---- C. docs/todo/ 下每个文件都要落在主索引表里 ----
+echo "==> C. $TODO_DIR/ 下每个文件都在主索引表里登记"
+for f in "$TODO_DIR"/*.md; do
+  [ -e "$f" ] || continue
+  name="$(basename "$f")"
+  if [ "$name" = 'README.md' ]; then continue; fi
+  case "$SECTION_INDEX" in
+    *"$name"*) ;;
+    *) report "$f 没出现在主索引表里（未决事项必须登记，见 .codebuddy/rules/todo-discipline.md）" ;;
   esac
 done
 
-# ---- 3. 结论 ----
+# ---- D. archive/ 下每个文件都要落在「已归档」区里 ----
+echo "==> D. $ARCHIVE_DIR/ 下每个文件都在「已归档」区里登记"
+if [ -d "$ARCHIVE_DIR" ]; then
+  for f in "$ARCHIVE_DIR"/*.md; do
+    [ -e "$f" ] || continue
+    name="$(basename "$f")"
+    if [ "$name" = 'README.md' ]; then continue; fi
+    case "$SECTION_ARCHIVE" in
+      *"$name"*) ;;
+      *) report "$f 没出现在「已归档」区里（归档后要把它从主表移到「已归档」区）" ;;
+    esac
+  done
+fi
+
+# ---- 结论 ----
 if [ "$BROKEN" -gt 0 ]; then
   echo "" >&2
-  echo "==> 发现 ${BROKEN} 处「已结案却没归档」，按 $TODO_DIR/archive/README.md 归档后重试" >&2
+  echo "==> 发现 ${BROKEN} 处「已结案却没归档 / 没登记」，按 $ARCHIVE_DIR/README.md 处理后重试" >&2
   exit 1
 fi
 
-echo "==> 通过：已结案的待办都已归档"
+echo "==> 通过：主表只列未决项，已结案的全部已归档并登记"

@@ -30,7 +30,7 @@ import java.util.List;
  *       （{@code CategoryService#pruneIfOrphan}）。
  * </ul>
  *
- * <p>原因记在 {@code docs/todo/2026-10-04-TODO-共享分类缺少归属校验.md}：
+ * <p>原因记在 {@code docs/todo/archive/2026-10-04-TODO-共享分类缺少归属校验.md}：
  * 分类是全体共用的，而服务已对公网开放，任何注册用户都能「主动删除」共享分类是不可接受的。
  * 于是改成：**你只能动自己的归属，动不了别人的；没人用的分类由系统回收。**
  */

@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 分类与标签模块的接口测试。
  *
  * <p><b>分类的生命周期与题目绑在一起</b>（原因见
- * {@code docs/todo/2026-10-04-TODO-共享分类缺少归属校验.md}）：
+ * {@code docs/todo/archive/2026-10-04-TODO-共享分类缺少归属校验.md}）：
  *
  * <ul>
  *   <li>**没有独立的创建入口**——分类随「保存题目」按名字自动建（同名复用）；
