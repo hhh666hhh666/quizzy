@@ -1,0 +1,1518 @@
+{
+  "updated_at": "2026-10-06 16:17",
+  "similarity_threshold": 0.75,
+  "questions": {
+    "086f96c740100cd0": {
+      "stem": "「每次分页都返回当前最大 id、下次查询带上该 id 过滤」的分页优化方案，在任意跳页场景下都能生效。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "给你张表，发现查询速度很慢，你有哪些解决方案",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "146dafbf15c93285": {
+      "stem": "在 SQL 查询语句的执行顺序中，select 比 group by 先执行。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "SQL查询语句的执行顺序是怎么样的？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "168232faef3f78f6": {
+      "stem": "驱动表太大时，join_buffer 可能一次装不完，需要多次加载，效率会降低。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1bfd774cd395a799": {
+      "stem": "使用联合索引时，WHERE 子句中各字段的书写顺序必须与联合索引定义的顺序一致，否则索引会失效。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "最左前缀法则",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2767af4ca25f027d": {
+      "stem": "读已提交（RC）隔离级别下也存在间隙锁。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "可重复读解决了幻读问题吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "27a2d3c3e582e819": {
+      "stem": "排它锁与其他事务的读操作是兼容的。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "共享锁和排他锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2945134d3123aa46": {
+      "stem": "B树和B+树都属于平衡多路搜索树。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和B+树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4a4dbaac8d142808": {
+      "stem": "MVCC 中，普通的 SELECT 语句在不加锁情况下就是快照读，属于不加锁的非阻塞读。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MVCC是什么",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4db9e42eb9d92bd0": {
+      "stem": "`redo log` 可以用于数据库的备份恢复。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 与 redolog 的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "510a879dc095e398": {
+      "stem": "在可重复读隔离级别下，通过 `start transaction with consistent snapshot` 开",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的可重复读是怎么实现的？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "58c7a9d5a6b0309b": {
+      "stem": "MyISAM 支持表锁而不支持行锁，InnoDB 则表锁和行锁都支持。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "存储引擎",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "602fe3e807baae6a": {
+      "stem": "`binlog` 的 ROW 格式不会出现 STATEMENT 格式下的动态函数问题。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql 的 binlog 有几种日志格式",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "64dc8ab25f06f948": {
+      "stem": "深分页问题可能导致 SQL 执行变慢。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "sql调优",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "6f33ac6eafe0a5e4": {
+      "stem": "InnoDB 先写 redo log 再在合适时机把数据页刷盘，原因是写 redo log 是顺序写而直接写数据页是随机",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "undolog, redolog, binlog的作用",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "72f9318f5c999d61": {
+      "stem": "对二级索引页的更改，只有目标页当前不在内存中时才会先记录到 Change Buffer。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "change buffer",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8559f7f331981901": {
+      "stem": "redo log 采用循环写的方式，写满时 MySQL 会阻塞，并将 Buffer Pool 中的脏页刷新到磁盘以腾出空",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "ACID是怎么保证的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "90f4ded8daaaec5d": {
+      "stem": "脏读是指一个事务读到了其他事务还没有提交的数据。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "什么是脏读、幻读、不可重复读？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "954e5a3b09378bce": {
+      "stem": "当一个数据页从 Buffer Pool 中被移除时，对应的哈希表项也会被删除。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "如何判断一个页是否在buffer pool中缓存",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "960e45e63af13c10": {
+      "stem": "MySQL 默认开启死锁检测，检测到死锁后会回滚其中一个事务。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "死锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9b75da095a73c621": {
+      "stem": "脏写是指当前事务修改了另一个事务尚未提交的数据，若另一个事务回滚，当前事务的修改就会无效；读已提交隔离级别可以解决脏写。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "什么是脏读、幻读、不可重复读？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b2cbd9c5a3a7240f": {
+      "stem": "Hash 表适合做范围查询。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和其他树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b35ad288a0722b09": {
+      "stem": "用数字去匹配字符串类型的索引列（如 user_id = '123'）会造成隐式类型转换，等价于对索引使用了函数，从而导致",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引失效有哪些",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "bbd56469a441e779": {
+      "stem": "InnoDB 修改 Buffer Pool 中的数据后，会立即把对应的脏页写入磁盘。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "什么是buffer pool",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c8e72ed73b479f2f": {
+      "stem": "事务的持久性意味着事务提交后对数据的修改是永久的，即使系统故障也不会丢失。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的特性",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d625ad489a8abf34": {
+      "stem": "InnoDB 的后台线程每隔 1 秒会将 redolog buffer 持久化到磁盘。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 和 redolog 的刷盘时机",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e271f779865b5792": {
+      "stem": "B+树每层的 key 数量很多会导致检索效率下降，因为节点内部要逐个线性扫描。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么MySQL选择使用B+树作为索引结构？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e5ce8aca707d5b7b": {
+      "stem": "间隙锁可以共存，一个事务采用的间隙锁不会阻止另一个事务在同一间隙上采用间隙锁。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e8c95ff25ec0140b": {
+      "stem": "对于区分度不高但数据倾斜比较严重的字段，建立索引后查询占比少的数据时效率也可能提升。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "设计索引的时候有哪些原则？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ecc27b6a5c430d25": {
+      "stem": "MySQL 8.0 中查询缓存模块仍然存在，查询语句命中缓存时会直接返回结果。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql执行一条查询语句的内部执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f3a8fb508707d743": {
+      "stem": "在只考虑 nested loop join 且连接字段都没有索引时，大表驱动小表和小表驱动大表的执行次数不同。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f411f032091e9077": {
+      "stem": "如果“地址”字段可以继续拆分成省、市、区，那么该表就不符合第一范式。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的三范式？反范式？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f83bdba6c20ee44c": {
+      "stem": "Flush List（脏页链表）管理脏页，后台线程可以遍历它把脏页写入磁盘。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "innodb如何管理page页",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "fe5cb0c9ff77d0a3": {
+      "stem": "执行 UPDATE 时，如果更新前的记录和更新后的记录完全相同，InnoDB 仍会进入后续的更新流程。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "update语句的具体执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "feacc6e6b280eeff": {
+      "stem": "MySQL InnoDB 默认的可重复读隔离级别已经彻底解决了幻读问题。",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "可重复读解决了幻读问题吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "08bff0a48f71976f": {
+      "stem": "下列哪些属于 MySQL 的数值类型？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的数据类型有哪些?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "0a4b8c7618bdbba1": {
+      "stem": "下列哪些属于 MySQL 的表级锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "230d21267559b63a": {
+      "stem": "Change Buffer 会缓存对二级索引页的哪些操作？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "change buffer",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "32ac28b8fb08b779": {
+      "stem": "InnoDB 中 ACID 各特性与保证机制的对应关系，正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "ACID是怎么保证的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "457bbaaed3ddcbe2": {
+      "stem": "下列哪些属于 MySQL 的日期和时间类型？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的数据类型有哪些?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "457d91c7e67afb9d": {
+      "stem": "关于 InnoDB 对 LRU 链表的优化，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "innodb如何管理page页",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4e257a6e53598ec7": {
+      "stem": "联合索引 (a, b, c) 下，以下哪些查询条件能用上该联合索引？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "最左前缀法则",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "557a0edae199ccd2": {
+      "stem": "关于 B+树与 B树在节点存储上的区别，下列说法正确的有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和B+树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5ce7296b7882be1c": {
+      "stem": "关于各隔离级别可能发生的异常现象，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的隔离级别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "647d39bc7ca66336": {
+      "stem": "下列哪些操作会申请排它锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "共享锁和排他锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "68f61da3b220dce4": {
+      "stem": "按索引的存储形式分类，索引可以分为哪几种？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引有哪几种类型？使用索引一定可以提升效率吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "6e02948ae8377cbf": {
+      "stem": "设计索引时应遵循的原则有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "设计索引的时候有哪些原则？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "7077410dff6f954d": {
+      "stem": "关于 `redolog`，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "undolog, redolog, binlog的作用",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "730a99579b875203": {
+      "stem": "关于下列连接方式，说法正确的有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL表的连接方式 (七种)",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "822a6adf06da0d75": {
+      "stem": "创建或优化索引时，哪些字段是文中建议重点考虑的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "给你张表，发现查询速度很慢，你有哪些解决方案",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "96fc81e118033efc": {
+      "stem": "关于 `binlog` 的刷盘，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 和 redolog 的刷盘时机",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9ea267884b05bcd0": {
+      "stem": "关于不可重复读和幻读的区分，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "什么是脏读、幻读、不可重复读？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9eaf0ccb981b364d": {
+      "stem": "两阶段提交的 prepare（准备）阶段会完成哪些操作？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "两阶段提交",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "a36459cd20036093": {
+      "stem": "关于 `LIKE` 以 `%` 开头时的索引使用情况，下列说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么LIKE以%开头会失效（覆盖索引不会失效）",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b1a4f21e24c7a935": {
+      "stem": "下列对 `binlog` 与 `redo log` 的描述，正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 与 redolog 的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c2b97507af30699f": {
+      "stem": "MVCC 的实现原理依赖哪些部分？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MVCC是什么",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "caf5a5386d6099ed": {
+      "stem": "InnoDB 通过哪几种链表来管理 Buffer Pool 中的缓冲页？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "innodb如何管理page页",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "cbced28ce93cc42d": {
+      "stem": "以下哪些写法会导致 MySQL 索引失效？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引失效有哪些",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d4bcaa5c06c32bf1": {
+      "stem": "`explain` 的 Extra 列中，下列关于各标记含义的说法正确的有？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "explain",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e3253540bf2296d2": {
+      "stem": "关于 count(*) 和 count(1)，下列说法正确的有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "count(列名), count(1), count(*)有什么区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f0139bd1f320c873": {
+      "stem": "MySQL 中下列哪些语句属于当前读？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "可重复读解决了幻读问题吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f84cef67e1d5e38a": {
+      "stem": "MySQL 选择 B+树作为索引结构的原因有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么MySQL选择使用B+树作为索引结构？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f8ec5f1245859d85": {
+      "stem": "MySQL 中按锁的粒度（范围）可以分为哪几类？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "fae080a39faac8ec": {
+      "stem": "下列哪些情况会触发 InnoDB 将脏页刷入磁盘？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "innodb如何管理page页",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "fed70ddabf2a06dd": {
+      "stem": "关于 MyISAM 与 InnoDB 的差异，下列说法正确的有哪些？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "存储引擎",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "00215f703949747f": {
+      "stem": "一个表的聚簇索引最多可以有几个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引有哪几种类型？使用索引一定可以提升效率吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "08f6d89a15d91067": {
+      "stem": "直接写 JOIN 而不加任何提示时，由谁决定哪张表作为驱动表？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "098027ce0ffe907d": {
+      "stem": "故障恢复时为什么用 `redo log` 而不用 `binlog`？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 与 redolog 的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "09f538bfa604b0e5": {
+      "stem": "MVCC 的全称是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MVCC是什么",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "0bd59e3453f52ef8": {
+      "stem": "哪种连接会返回左表的所有记录，即使右表中没有匹配的记录？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL表的连接方式 (七种)",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "0dde1ee217570d11": {
+      "stem": "`explain` 输出的 type 列中，访问类型性能从好到差的排列顺序是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "explain",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "118c37e2f28100d2": {
+      "stem": "「串行化」隔离级别是依靠什么让事务串行执行的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的隔离级别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "11fc27629e3c8c0e": {
+      "stem": "在可重复读隔离级别下，针对快照读（普通 select 语句）的幻读问题是通过什么方式（部分）解决的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "可重复读解决了幻读问题吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1304f5d61f3712eb": {
+      "stem": "B+树的更新操作主要影响哪些节点？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和B+树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1336468795badb31": {
+      "stem": "当表既没有主键、也没有合适的唯一索引时，InnoDB 如何确定聚簇索引？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引有哪几种类型？使用索引一定可以提升效率吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "14006b13c4e0f594": {
+      "stem": "“A 给 B 转账，无论转账事务成功与否，两人的存款总额不变”体现的是哪个特性？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的特性",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "14cca621cd8e2faf": {
+      "stem": "`explain` 中 type 为 `const` 表示什么含义？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "explain",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "159700188db836e0": {
+      "stem": "读已提交（RC）和可重复读（RR）在 ReadView 生成时机上的区别是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "读已提交和可重复读的原理是什么?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "161c19337cd6c798": {
+      "stem": "索引下推优化的核心作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引下推",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1907e4c2c74154d0": {
+      "stem": "跟踪数据页缓存的哈希表中，键（key）由什么组成？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "如何判断一个页是否在buffer pool中缓存",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1a421a65a863ad23": {
+      "stem": "为什么经常更新的字段不适合建立索引？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引有哪几种类型？使用索引一定可以提升效率吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "1c168e0718b9a672": {
+      "stem": "以 bigint 作为主键索引时，一个 B+树节点大约可以存放多少个索引键？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL三层B+树能存多少数据？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2028b2ac55f4755d": {
+      "stem": "InnoDB 在更新记录前先记录 undo log，是为了什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "update语句的具体执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "20aa117a24954757": {
+      "stem": "MySQL 重启恢复时，扫描到处于 prepare 状态的 redo log，会拿其中的 XID 去 binlog 中如",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "两阶段提交",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "21cbde20a9d9a7bc": {
+      "stem": "MySQL 用什么数据结构跟踪哪些数据页已经在 Buffer Pool 中被缓存？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "如何判断一个页是否在buffer pool中缓存",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "24ffd479aba0eef6": {
+      "stem": "当事务 A、B 要插入的记录之间存在间隙锁时，事务 B 会加什么锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "insert是如何加锁的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2589edb2cfb51f1d": {
+      "stem": "`innodb_flush_log_at_trx_commit` 设置为 2 时，什么情况下不会丢失数据？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 和 redolog 的刷盘时机",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "26289382face05b9": {
+      "stem": "为身份证号这类较长的文本列建索引时，原文建议怎么处理？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "设计索引的时候有哪些原则？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "26fcfb448cdefead": {
+      "stem": "事务的原子性（Atomicity）是指什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的特性",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2763e242e0e97ba5": {
+      "stem": "`explain` 输出中，用于表示「实际用到的索引」的列是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "explain",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "27e2edda38979553": {
+      "stem": "MySQL 中的 STRAIGHT_JOIN 适用于哪种连接方式？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "29ca78eec33432f2": {
+      "stem": "`binlog` 使用 STATEMENT 格式存在什么问题？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql 的 binlog 有几种日志格式",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2b650e7662e0941d": {
+      "stem": "使用 left join 时，驱动表是哪张表？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2c3455996d96cf93": {
+      "stem": "count(字段名) 统计的是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "count(列名), count(1), count(*)有什么区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "2ed285b5a252f18c": {
+      "stem": "`redolog` 主要用于保证事务的哪个特性？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "undolog, redolog, binlog的作用",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "3051116793340cb5": {
+      "stem": "`binlog` 的主要用途是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "undolog, redolog, binlog的作用",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "308a5261222acde2": {
+      "stem": "`explain` 输出中 `id` 列的含义是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "explain",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "36e857548afdbe6b": {
+      "stem": "undo log 属于哪一类日志，其作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "ACID是怎么保证的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "40606312faeec6c8": {
+      "stem": "“反范式”这种设计策略的核心做法是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的三范式？反范式？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "458ad60c408d3a7d": {
+      "stem": "共享锁与共享锁、共享锁与排它锁之间的互斥关系分别是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "共享锁和排他锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4ac1b454e4f7bdb7": {
+      "stem": "B+Tree 索引比 Hash 索引适用场景更广的原因是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和其他树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4c8e2490bd02d719": {
+      "stem": "指定慢查询日志文件存放位置和名称的参数是哪个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的错误日志/慢查询日志/",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4e208e3d74d0bfcc": {
+      "stem": "执行 UPDATE 语句时，如果目标记录所在的数据页不在 buffer pool 中，InnoDB 会怎么处理？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "update语句的具体执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "4f7c7d4547ee7a91": {
+      "stem": "MyISAM 引擎执行不带条件的 count(*) 效率很高，原因是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "count(列名), count(1), count(*)有什么区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "547bde147e1173ae": {
+      "stem": "InnoDB 通过哪个参数调整 Buffer Pool 的大小，其默认值是多少？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "innodb如何管理page页",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "552f567f2d0c8482": {
+      "stem": "自适应哈希索引是由谁创建和维护的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "自适应哈希索引",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "562ac0032a9c8709": {
+      "stem": "开启 MySQL 慢查询日志的开关参数是哪个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的错误日志/慢查询日志/",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "56a051cf3d137aee": {
+      "stem": "为什么建议经常用执行计划分析索引使用情况？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "设计索引的时候有哪些原则？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5996a4822a75953f": {
+      "stem": "联合索引 (a, b) 在 B+Tree 中的数据是如何组织的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "最左前缀法则",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5b18095b56a88eb6": {
+      "stem": "`innodb_flush_log_at_trx_commit` 设置为哪个值时，事务提交时不主动刷盘、性能最好？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 和 redolog 的刷盘时机",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5dcb68c915dcf176": {
+      "stem": "MySQL 中只有哪两种隔离级别会使用快照读？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MVCC是什么",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5f192b285f75a2a8": {
+      "stem": "MySQL InnoDB 引擎默认的事务隔离级别是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的隔离级别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "5fdefcf9d1e21e02": {
+      "stem": "在「可重复读」隔离级别下，仍可能发生的并发异常现象是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的隔离级别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "610994081010697e": {
+      "stem": "为什么 B+树的范围查询和顺序遍历效率比 B树高？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和B+树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "6161e9b8d619895d": {
+      "stem": "引入缓存层时，文中建议写请求采用什么缓存更新策略？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "给你张表，发现查询速度很慢，你有哪些解决方案",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "62caee7e7ca18932": {
+      "stem": "遍历 undo log 版本链时，若某条记录的 trx_id 大于等于 ReadView 的 max_trx_id，说明",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "读已提交和可重复读的原理是什么?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "63452ffcb423a19d": {
+      "stem": "在 MySQL 的字符串类型中，属于定长字符串的是哪一个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的数据类型有哪些?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "648ab4c43ddc233d": {
+      "stem": "MySQL 的数据类型主要分为哪三大类？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的数据类型有哪些?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "654581a2610e3c28": {
+      "stem": "MySQL 默认使用的存储引擎是哪一个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "存储引擎",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "661f745093d8cd4f": {
+      "stem": "MySQL 不直接支持、需要用 UNION 来模拟的是哪种连接？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL表的连接方式 (七种)",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "66775b8e52cbb1f5": {
+      "stem": "InnoDB 在什么条件下会为 B+ 树索引建立自适应哈希索引？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "自适应哈希索引",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "67458ec99c0a2c76": {
+      "stem": "在可重复读隔离级别下，针对当前读（select ... for update / lock in share mode ",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "可重复读解决了幻读问题吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "68be5213b7559420": {
+      "stem": "当某字段的选择性很低（某值在表中占比很高）时，MySQL 查询优化器通常会怎么做？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引有哪几种类型？使用索引一定可以提升效率吗？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "6cf7658343b33830": {
+      "stem": "MySQL 中控制事务锁等待超时时间的参数是哪个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "死锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "717d9d6aa3503dae": {
+      "stem": "更新记录时 InnoDB 不立即把脏页写回磁盘、而是先写 redo log，这样做的主要目的是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "update语句的具体执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "72db409981115d45": {
+      "stem": "下列哪种做法有助于避免索引失效？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "给你张表，发现查询速度很慢，你有哪些解决方案",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "7828ce04f0490488": {
+      "stem": "SQL 查询语句实际执行时，下列子句中最早生效的是哪一个？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "SQL查询语句的执行顺序是怎么样的？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "813f782ff3bb2a82": {
+      "stem": "需要查两个 B+Tree 才能拿到完整行数据的过程叫什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "聚簇索引与非聚簇索引区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "82073f08ae9ab658": {
+      "stem": "当某个值出现在表中的百分比很高（惯用界线约 30%）时，MySQL 查询优化器通常会怎么做？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引跳跃",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8406880cf70bd008": {
+      "stem": "下列哪一项是文中列出的可能导致 SQL 变慢的原因？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "sql调优",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "85c93ead1b9e946e": {
+      "stem": "Hash 索引做等值查询时的搜索复杂度是多少？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和其他树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "88abbf01d4adf3ae": {
+      "stem": "`binlog` 有几种日志格式，默认是哪种？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql 的 binlog 有几种日志格式",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8a1ca42801a7d1e9": {
+      "stem": "第二范式（2NF）在第一范式基础上要消除的是哪种依赖？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的三范式？反范式？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8a4adc6ed5ddf4aa": {
+      "stem": "执行 SQL 的预处理阶段主要做什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql执行一条查询语句的内部执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8b3395f9c35a245a": {
+      "stem": "`binlog` 和 `redolog` 默认在什么时候刷盘？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 和 redolog 的刷盘时机",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8bc3d359d26e30f3": {
+      "stem": "建立联合索引时，字段顺序一般应遵循什么原则？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引跳跃",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "8c575917bd8ebba9": {
+      "stem": "`binlog` 与 `redo log` 的写入方式分别是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 与 redolog 的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "94813dd6b5b720f8": {
+      "stem": "在被连接字段都有索引的前提下，为什么小表驱动大表的整体复杂度更低？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "951ec5678488d26d": {
+      "stem": "聚簇索引的 B+Tree 叶子节点存放的是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "聚簇索引与非聚簇索引区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "955051b4ecbe778a": {
+      "stem": "执行计划的 Extra 中出现 `Using index condition`，说明使用了什么优化？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引下推",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9559f32e61e9e201": {
+      "stem": "InnoDB 的 Buffer Pool 以什么为单位缓冲数据？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "什么是buffer pool",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9a38f453a27c3ea0": {
+      "stem": "`redo log` 是由 MySQL 的哪一层实现的日志？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "binlog 与 redolog 的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "9cb5ba388845133c": {
+      "stem": "`binlog` 使用 ROW 格式的主要缺点是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql 的 binlog 有几种日志格式",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "a4e491d0975d4880": {
+      "stem": "Change Buffer 主要用来优化对哪类索引的 DML 操作性能？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "change buffer",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "a7f7bb8bbf17e315": {
+      "stem": "InnoDB 执行 count(*) 为什么比 MyISAM 慢？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "count(列名), count(1), count(*)有什么区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "abfc3caf047aa545": {
+      "stem": "一条 UPDATE 语句执行过程中产生的 binlog，是什么时候被刷新到硬盘上的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "update语句的具体执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b451de6ee872ac4e": {
+      "stem": "对于唯一主键索引，当事务 B 向已存在相同索引列值的记录插入时，会添加什么锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "insert是如何加锁的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b490a9eb87cfd76d": {
+      "stem": "下列 count 各种写法的效率从高到低排列，正确的是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "count(列名), count(1), count(*)有什么区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b4bc2967617245f9": {
+      "stem": "关于第二范式中的“部分依赖”，下列说法正确的是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的三范式？反范式？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b53999b9a8df7222": {
+      "stem": "在可重复读隔离级别下执行 `update`，如果 `where` 条件里的字段没有索引，会出现什么情况？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "b8cefe272ea23b18": {
+      "stem": "`binlog` 的 MIXED 格式有什么特点？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql 的 binlog 有几种日志格式",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "bacd2087a126abaf": {
+      "stem": "排查慢查询原因时，常用什么命令分析 SQL 的执行计划？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "给你张表，发现查询速度很慢，你有哪些解决方案",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "bc008e91125a78c3": {
+      "stem": "下列哪组特性是 InnoDB 支持而 MyISAM 不支持的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "存储引擎",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "bcca8c00398bccae": {
+      "stem": "有 N 个叶子节点的 B+Tree，其搜索复杂度是多少？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "B树和其他树的区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "bde37f962a992c65": {
+      "stem": "哪种连接返回两个表中匹配的记录（即两表的交集）？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL表的连接方式 (七种)",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c22fd5d449c6cad4": {
+      "stem": "只需要查一个 B+Tree 就能拿到全部所需数据的过程叫什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "聚簇索引与非聚簇索引区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c391e5b5be6700e5": {
+      "stem": "使用联合索引时，多个字段 `order by` 在什么情况下会导致索引失效？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引失效有哪些",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c3a1dfbbdd2ccc56": {
+      "stem": "`LIKE` 以 `%` 开头时索引失效的根本原因是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么LIKE以%开头会失效（覆盖索引不会失效）",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c7084d8915bf4e6e": {
+      "stem": "把慢查询时间阈值设置为 2 秒使用哪个参数？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的错误日志/慢查询日志/",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c71ded2595e6d063": {
+      "stem": "事务 b 执行 `select id from user where a = 1 lock in share mode`",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "隐式锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c7fb2bfff2af4d50": {
+      "stem": "最左前缀法则对联合索引查询的核心要求是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "最左前缀法则",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c97e57f3ca134e54": {
+      "stem": "哪个参数可以让 `update` 满足一定条件才能执行成功，从而降低误更新整表的风险？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "c9afdf3c0d6bd5b2": {
+      "stem": "B+树中的一个节点就是一个页，其大小默认是多少？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL三层B+树能存多少数据？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "cca7c50c90411368": {
+      "stem": "两个事务同时持有同一范围的间隙锁，又各自向该间隙插入记录，为什么会形成死锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "死锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "cda4255c18fea197": {
+      "stem": "非聚簇索引（二级索引）的 B+Tree 叶子节点存放的是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "聚簇索引与非聚簇索引区别",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "cf1b98435c40041a": {
+      "stem": "当记录的 trx_id 落在 ReadView 的 min_trx_id 与 max_trx_id 之间时，如何判断该版",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "读已提交和可重复读的原理是什么?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d281bd2913cc9233": {
+      "stem": "InnoDB 采用先写 redo log 的 WAL 策略，而不是直接把数据写回磁盘，主要原因是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "ACID是怎么保证的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d3cbf924709a4f66": {
+      "stem": "MySQL 的可重复读（RR）隔离级别是如何实现的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的可重复读是怎么实现的？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d43dfcc0cc2b381f": {
+      "stem": "事务的隔离性（Isolation）指的是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql中事务的特性",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "d5d74d33009c176a": {
+      "stem": "覆盖索引的含义是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "覆盖索引",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ddbd5a2efc977800": {
+      "stem": "`undolog` 主要用于保证事务的哪个特性？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "undolog, redolog, binlog的作用",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "dfc5e06696a66f28": {
+      "stem": "索引跳跃（Index Skip Scan）适用于什么场景？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "索引跳跃",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e0b7e72cd6829e4f": {
+      "stem": "慢查询日志的作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql的错误日志/慢查询日志/",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e22a3af7e1f808bc": {
+      "stem": "ReadView（读视图）在 MVCC 中的作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "Readview是什么",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e309049355fbcf60": {
+      "stem": "临键锁（Next-Key Lock）锁的范围是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e49101a3f56afd21": {
+      "stem": "为什么 UUID 不适合作为数据库主键？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "自增还是 UUID, 数据库主键的类型该如何选择",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e6f07fda81a9fe72": {
+      "stem": "事务 a 执行 `update user set a = 1 where c = 2`（c 列没有索引）时，为什么会几乎",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "隐式锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "e80bc1e2e8bc37bf": {
+      "stem": "InnoDB 在二级索引中修改某个索引键值时，采取的措施是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "隐式锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ebc1085724e9a35f": {
+      "stem": "ReadView 的字段 max_trx_id 表示什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "读已提交和可重复读的原理是什么?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ec2eba450ed33317": {
+      "stem": "MySQL 中连接器的主要职责是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "mysql执行一条查询语句的内部执行过程",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ed4570fe64bb7769": {
+      "stem": "在读已提交/可重复读隔离级别下，`select ... for update` 的读取方式及加锁行为是？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "读已提交和可重复读的原理是什么?",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f02875e2fe48a22c": {
+      "stem": "undo log 版本链是通过哪个字段（指针）把一条记录的多次更新串联起来的？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "ACID是怎么保证的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f06fab77c39dc01d": {
+      "stem": "第三范式（3NF）要消除的问题是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL的三范式？反范式？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f4284e3c2a780602": {
+      "stem": "作为数据库主键，作者更推荐使用哪种类型？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "自增还是 UUID, 数据库主键的类型该如何选择",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f68acd8c6b5ba9b3": {
+      "stem": "`select ... lock in share mode` 会申请什么锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "共享锁和排他锁",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f85ed81f64709ae6": {
+      "stem": "两阶段提交的主要作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "两阶段提交",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "f94f67d492853988": {
+      "stem": "按一条数据 1KB、每页 16KB 计算，三层 B+树大约可以存多少行数据？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "MySQL三层B+树能存多少数据？",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "fbabc51d9394053f": {
+      "stem": "当连接条件所用的字段没有索引时，MySQL 会借助什么机制来加载驱动表数据并完成匹配？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "为什么要小表驱动大表",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "fdcc93a70da966c3": {
+      "stem": "对于唯一二级索引，当事务 B 向已存在相同索引列值的记录插入时，会添加什么锁？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "insert是如何加锁的",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    },
+    "ffce11fc61a51072": {
+      "stem": "意向锁的作用是什么？",
+      "category": "mysql",
+      "source_file": "mysql/md/MySQL.md",
+      "source_section": "数据库锁的种类",
+      "added_at": "2026-10-06 16:17",
+      "locked": false
+    }
+  }
+}

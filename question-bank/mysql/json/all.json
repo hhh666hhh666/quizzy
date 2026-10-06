@@ -1,0 +1,6266 @@
+[
+  {
+    "type": "JUDGE",
+    "stem": "「每次分页都返回当前最大 id、下次查询带上该 id 过滤」的分页优化方案，在任意跳页场景下都能生效。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：这种查询仅适合连续查询的情况，如果跳页的话就不生效，因此「任意跳页场景都能生效」说法错误，选 B。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "深分页",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "在 SQL 查询语句的执行顺序中，select 比 group by 先执行。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "执行顺序中 group by 排在 select 之前（…group by -> having -> select…），因此「select 先于 group by」说反了，选 B。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "SQL执行顺序",
+      "执行流程",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "驱动表太大时，join_buffer 可能一次装不完，需要多次加载，效率会降低。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写明如果驱动表太大的话，join_buffer 一次性可能装不完，就要进行多次加载，效率比较低。这正是无索引连接时也要尽量让小表当驱动表的原因，故说法正确。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "使用联合索引时，WHERE 子句中各字段的书写顺序必须与联合索引定义的顺序一致，否则索引会失效。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文指出因为有查询优化器，联合索引里 a 字段在 where 子句中的顺序并不重要，例如 (a,b,c) 索引下写 where b=2 and a=1 同样能匹配。决定能否用上索引的是是否满足最左前缀，而不是书写先后；该说法把「最左匹配」误当成了「书写顺序匹配」。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "最左前缀",
+      "索引失效",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "读已提交（RC）隔离级别下也存在间隙锁。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文明确指出「需要注意的是「读已提交」隔离级别是没有间隙锁的」。若判「正确」，是把可重复读下为应对当前读幻读而引入的间隙锁误套到了读已提交级别上。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "间隙锁",
+      "隔离级别",
+      "幻读",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "排它锁与其他事务的读操作是兼容的。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。排它锁只允许持有锁的事务对相应数据进行修改，它与其他排它锁、共享锁都是互斥的，因此其他事务既不能直接读也不能通过加共享锁读取。兼容（不互斥）只适用于共享锁与共享锁之间。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "排他锁",
+      "共享锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "B树和B+树都属于平衡多路搜索树。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文开篇即说「B树和B+树都是平衡多路搜索树」，并补充说明平衡指叶子节点高度相同、多路指一个节点可以有多个子节点，判正确。二者都属于平衡多路搜索树，差别在于非叶子节点存不存数据、叶子节点是否用指针串成链表。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "B树",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "MVCC 中，普通的 SELECT 语句在不加锁情况下就是快照读，属于不加锁的非阻塞读。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说快照读读取数据的历史可见版本，版本访问权限由 ReadView 控制，「不加锁是非阻塞读」，像常用的普通 SELECT 语句在不加锁情况下就是快照读。若判错，可能是把快照读与当前读（如 select ... for update，加锁且读最新版本）混为一谈。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "快照读",
+      "MVCC",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "`redo log` 可以用于数据库的备份恢复。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文写明 redo log 用于掉电等故障恢复，不能用于备份恢复，因为它采用循环写、保存的是未被刷入磁盘的脏页日志，而不是全量日志；能用于备份恢复的是 binlog。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "binlog",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "在可重复读隔离级别下，通过 `start transaction with consistent snapshot` 开启事务会立即生成 ReadView，而不是等到第一次快照读时才生成。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文提示「需要注意的是如果是通过`start transaction with consistent snapshot`来开启事务会立即生成 ReadView」，这与普通开启事务要等第一次快照读才生成 ReadView 的行为不同。若判错，通常是把「RR 只在第一次快照读时生成 ReadView」这条一般规则无条件套用，忽略了该语法会提前生成。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "MVCC",
+      "快照读",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "MyISAM 支持表锁而不支持行锁，InnoDB 则表锁和行锁都支持。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文两处印证：一处直接写出“MyISAM支持表锁不支持行锁, 而InnoDB都支持”，另一处写明 MyISAM 不支持行级锁、只支持表锁，故说法正确。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "存储引擎",
+      "MyISAM",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "`binlog` 的 ROW 格式不会出现 STATEMENT 格式下的动态函数问题。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说明 ROW 记录的是行数据最终被修改成什么样，因此不会出现 STATEMENT 格式下 uuid、now 等动态函数导致的主从数据不一致问题。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "日志类型",
+      "主从复制",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "深分页问题可能导致 SQL 执行变慢。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文在罗列 SQL 变慢的原因时，把「深分页问题」列为其中一条，故该说法正确，选 A。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "深分页",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "InnoDB 先写 redo log 再在合适时机把数据页刷盘，原因是写 redo log 是顺序写而直接写数据页是随机写，顺序写效率更高。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说明 InnoDB 采用 WAL（日志先行）技术，先把更新记录到日志、再在合适时间写到磁盘；并解释这样做的原因是写入 redo log 是顺序写，而直接写磁盘是随机写，顺序写的效率大于随机写。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "对二级索引页的更改，只有目标页当前不在内存中时才会先记录到 Change Buffer。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「这些操作如果目标页当前不在内存中，就会被先记录在 Change Buffer 中，而不是立即去读取磁盘中的页并更新」，可见触发条件正是目标页不在内存中，判正确。若目标页已在内存中，则无需延迟，直接修改该页即可。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "change buffer",
+      "buffer pool",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "redo log 采用循环写的方式，写满时 MySQL 会阻塞，并将 Buffer Pool 中的脏页刷新到磁盘以腾出空间。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文写明 redo log 以循环写方式工作、是可以写满的，写满时 mysql 会阻塞住，把 buffer pool 中的脏页刷新到磁盘，为 redo log 腾出空间。若选「错误」，等于认为 redo log 可以无限增长或写满也不影响写入，与原文矛盾。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "持久性",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "脏读是指一个事务读到了其他事务还没有提交的数据。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文对脏读的定义就是「读到了其他事务还没有提交的数据」。若判错，通常是把它与不可重复读混淆——不可重复读读到的虽是已提交数据，但同一事务两次读取结果不同；脏读的关键在于读到的是尚未提交的数据。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "脏读",
+      "事务特性",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "当一个数据页从 Buffer Pool 中被移除时，对应的哈希表项也会被删除。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「当一个数据页从 Buffer Pool 中被移除时，对应的哈希表项也会被删除，以保持哈希表和 Buffer Pool 的一致性」，判正确。若不移除失效项，哈希表就会指向已淘汰的页，导致判断错误。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "低频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "MySQL 默认开启死锁检测，检测到死锁后会回滚其中一个事务。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说明 MySQL 还默认开启了死锁检测（由参数 innodb_deadlock_detect 控制），一旦检测到死锁就会回滚其中的一个事务，另一个事务得以继续执行。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "死锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "脏写是指当前事务修改了另一个事务尚未提交的数据，若另一个事务回滚，当前事务的修改就会无效；读已提交隔离级别可以解决脏写。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文对脏写的定义是「当前事务修改了另一个事务未提交的数据，如果另一个事务回滚了就会导致当前事务的修改无效」，并说明「在读已提交隔离级别下会解决这个问题」。若判错，通常是误以为脏写要到串行化才能解决，或把脏写（修改未提交数据）与脏读（读未提交数据）弄反。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "脏读",
+      "隔离级别",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "Hash 表适合做范围查询。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确「但是 Hash 表不适合做范围查询，它更适合做等值的查询」，故「适合做范围查询」判错误。Hash 通过哈希值定位，键之间没有有序关系，无法按区间连续扫描，这正是它不如 B+Tree 适用面广的根本原因。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "哈希索引",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "用数字去匹配字符串类型的索引列（如 user_id = '123'）会造成隐式类型转换，等价于对索引使用了函数，从而导致索引失效。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文指出对索引隐式类型转换时，MySQL 会尝试把字符串转为数字再匹配，这就相当于对索引使用了函数，因此索引失效。这类失效常被忽略，属于容易踩坑的边界；写法上应保持列与常量类型一致。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引失效",
+      "数据类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "InnoDB 修改 Buffer Pool 中的数据后，会立即把对应的脏页写入磁盘。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说「为了减少磁盘I/O，不会立即将脏页写入磁盘，后续由后台线程选择一个合适的时机将脏页写入到磁盘」，因此「立即写入磁盘」与原文相反，判错误。脏页只是被标记为与磁盘不一致，真正刷盘由后台线程择机完成。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "事务的持久性意味着事务提交后对数据的修改是永久的，即使系统故障也不会丢失。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文对持久性的定义正是“事务处理结束后，对数据的修改就是永久的，即使系统故障也不会丢失”，故该说法正确。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "事务特性",
+      "持久性",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "InnoDB 的后台线程每隔 1 秒会将 redolog buffer 持久化到磁盘。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文在总结段和 redolog 段两处都提到 InnoDB 的后台线程每隔 1 秒会把 redolog buffer 持久化到磁盘，这是事务提交刷盘之外的补充机制。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "B+树每层的 key 数量很多会导致检索效率下降，因为节点内部要逐个线性扫描。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文反驳了这种担忧：虽然每层 key 数量很多，「但查找并不会慢」，原因是「在每个节点内部查找 key 是通过二分查找（或更高效的算法）完成的，而不是线性扫描」。题干把「二分查找」错说成「线性扫描」，所以判错误。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "间隙锁可以共存，一个事务采用的间隙锁不会阻止另一个事务在同一间隙上采用间隙锁。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文明确间隙锁可以共存，一个事务采用的间隙锁不会阻止另一个事务在同一间隙上采用间隙锁——这与临键锁不同，两个范围相同的临键锁是互斥的。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "间隙锁",
+      "行锁",
+      "锁类型",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "对于区分度不高但数据倾斜比较严重的字段，建立索引后查询占比少的数据时效率也可能提升。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文指出区分度低一般不选作索引，但并不绝对；对数据倾斜严重的字段，查询占比少的那部分数据时，有索引反而能提升效率。这道题考的是「区分度低就绝不能建索引」这一常见误解的边界。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "索引失效",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "MySQL 8.0 中查询缓存模块仍然存在，查询语句命中缓存时会直接返回结果。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "查询缓存命中时直接返回，这半句描述本身没错；但原文同时指出「MySQL 8.0 已删除该模块」，8.0 中根本不存在查询缓存，所以整句话错误，选 B。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "执行流程",
+      "查询流程",
+      "低频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "在只考虑 nested loop join 且连接字段都没有索引时，大表驱动小表和小表驱动大表的执行次数不同。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文指出在只考虑 nested loop join 的情况下执行次数就是笛卡尔积，for(1000){for(10)} 与 for(10){for(1000)} 都是 1000×10，次数相同；只有当连接字段有索引、内层走 log(n) 查找时，两者复杂度才出现差异。因此“执行次数不同”的说法错误。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "如果“地址”字段可以继续拆分成省、市、区，那么该表就不符合第一范式。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文总结第一范式就是确保每个列的值都是原子值，并举例说明“地址这个字段如果可以拆成省、市、区的话那它就不符合第一范式”。能继续拆分说明该字段不是原子值，违反第一范式，故说法正确。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "范式",
+      "反范式",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "Flush List（脏页链表）管理脏页，后台线程可以遍历它把脏页写入磁盘。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文「Flush List（脏页链表），管理脏页，有了 Flush 链表后，后台线程就可以遍历 Flush 链表，将脏页写入到磁盘」。若判错，可能是把 Flush List 与 Free List（管理空闲页）、LRU List（管理脏页+干净页）的职责弄混了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "执行 UPDATE 时，如果更新前的记录和更新后的记录完全相同，InnoDB 仍会进入后续的更新流程。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文写明：执行器比较更新前后的记录，如果一样的话就不进行后续更新流程，因此「仍会进入后续更新流程」与原文相反，选 B。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "更新流程",
+      "执行流程",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "MySQL InnoDB 默认的可重复读隔离级别已经彻底解决了幻读问题。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文说可重复读「很大程度上避免幻读现象（并不是完全解决了）」，只是很大程度避免，并非彻底解决。若判「正确」，是把「很大程度避免」夸大成了「完全解决」；原文随后还专门举了快照读下仍会出现幻读的例子。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "幻读",
+      "隔离级别",
+      "MVCC",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些属于 MySQL 的数值类型？",
+    "options": [
+      {
+        "label": "A",
+        "content": "decimal"
+      },
+      {
+        "label": "B",
+        "content": "bigint"
+      },
+      {
+        "label": "C",
+        "content": "varchar"
+      },
+      {
+        "label": "D",
+        "content": "tinyint"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文列出数值类型有 tinyint、int、bigint、float、double、decimal 等，因此 tinyint、bigint、decimal 都属于数值类型，A、B、C 正确。varchar 属于字符串类型（与 char 同段并列），不是数值类型，故 D 错误。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "数据类型",
+      "类型分类",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些属于 MySQL 的表级锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "表锁"
+      },
+      {
+        "label": "B",
+        "content": "意向锁"
+      },
+      {
+        "label": "C",
+        "content": "间隙锁"
+      },
+      {
+        "label": "D",
+        "content": "元数据锁（MDL）"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文写明表级锁分为四类：表锁、元数据锁（MDL）、意向锁、AUTO-INC 锁。间隙锁属于行级锁（行级锁分为记录锁、间隙锁、临键锁），不是表级锁。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "表锁",
+      "意向锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "Change Buffer 会缓存对二级索引页的哪些操作？",
+    "options": [
+      {
+        "label": "A",
+        "content": "删除（Delete Buffering）"
+      },
+      {
+        "label": "B",
+        "content": "查询（Select Buffering）"
+      },
+      {
+        "label": "C",
+        "content": "更新（Purge Buffering）"
+      },
+      {
+        "label": "D",
+        "content": "插入（Insert Buffering）"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "原文列出 Change Buffer 缓存的是「插入（Insert Buffering）、删除（Delete Buffering）、更新（Purge Buffering）」三种操作，故选 A、B、C。D 查询不属于其中：Change Buffer 只针对写入类的 DML 变更做延迟，读操作本身不会带来索引页修改。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "change buffer",
+      "非聚簇索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "InnoDB 中 ACID 各特性与保证机制的对应关系，正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "隔离性 —— 锁 + MVCC（多版本并发控制）"
+      },
+      {
+        "label": "B",
+        "content": "持久性 —— redo log"
+      },
+      {
+        "label": "C",
+        "content": "原子性 —— undo log"
+      },
+      {
+        "label": "D",
+        "content": "一致性 —— redo log"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "A 正确，原文首行即「原子性-undo log」，undo log 用来回滚事务保证原子性。B 正确，原文「持久性-redolog」，redo log 用于崩溃恢复保证持久性。C 正确，原文「隔离性-锁+MVCC(多版本并发控制)」。D 错误，一致性是「通过其他三个性质共同保证」的，并不是由 redo log 单独保证；redo log 保证的是持久性，把持久性的机制安到一致性上属于对应关系错位。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "ACID",
+      "原子性",
+      "隔离性",
+      "持久性",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些属于 MySQL 的日期和时间类型？",
+    "options": [
+      {
+        "label": "A",
+        "content": "datetime"
+      },
+      {
+        "label": "B",
+        "content": "time"
+      },
+      {
+        "label": "C",
+        "content": "date"
+      },
+      {
+        "label": "D",
+        "content": "int"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文列出日期和时间类型有 date、time、datetime、timestamp、year，因此 date、time、datetime 都属于日期/时间类型，A、B、C 正确。int 属于数值类型（与 tinyint、bigint 等同列），不属于日期/时间类型，故 D 错误。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "数据类型",
+      "日期时间类型",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 InnoDB 对 LRU 链表的优化，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "新加载的页直接插入 young 区域头部，以便尽快被复用"
+      },
+      {
+        "label": "B",
+        "content": "页被访问且 old 区域停留时间超过 innodb_old_blocks_time（默认 1 秒）阈值时才移入 young，用于避免 Buffer Pool 污染"
+      },
+      {
+        "label": "C",
+        "content": "把 LRU 链表分为 young 和 old 两个区域，加入缓冲池的页优先插入 old 区域"
+      },
+      {
+        "label": "D",
+        "content": "页被访问时才进入 young 区域，目的是解决预读失效问题"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "A 正确，原文「将 LRU 链表分为 young 和 old 两个区域，加入缓冲池的页，优先插入 old 区域」。B 正确，「页被访问时，才进入young 区域，目的是为了解决预读失效的问题」。C 正确，「当「页被访问」且「old 区域停留时间超过 innodb_old_blocks_time 阈值（默认为1秒）」时，才会将页插入到 young 区域」，对应解决批量数据访问导致大量热数据被淘汰（Buffer Pool 污染）。D 错误，与「加入缓冲池的页优先插入 old 区域」的原文相反，正是优化要避免的做法。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "联合索引 (a, b, c) 下，以下哪些查询条件能用上该联合索引？",
+    "options": [
+      {
+        "label": "A",
+        "content": "where b=2 and c=3"
+      },
+      {
+        "label": "B",
+        "content": "where a=1"
+      },
+      {
+        "label": "C",
+        "content": "where a=1 and b=2"
+      },
+      {
+        "label": "D",
+        "content": "where c=3"
+      }
+    ],
+    "answer": [
+      "B",
+      "C"
+    ],
+    "analysis": "A、C 正确：二者都从最左列 a 开始且没有跳过中间列，符合最左匹配原则。B 错：从 b 开始跳过了最左列 a，不符合最左匹配原则，联合索引失效。D 错：只用 c，既未从最左列开始又跳过了 a、b，同样无法匹配。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "最左前缀",
+      "索引失效",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 B+树与 B树在节点存储上的区别，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "在相同的磁盘 I/O 次数下，B+树能查询更多的节点"
+      },
+      {
+        "label": "B",
+        "content": "B+树非叶子节点只存索引键，数据都存储在叶子节点"
+      },
+      {
+        "label": "C",
+        "content": "B树单个节点的数据量比 B+树更小"
+      },
+      {
+        "label": "D",
+        "content": "B树的每个节点既包含索引键又包含数据"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文指出「B+树的非叶子节点只存索引键, 将所有的数据都存储在叶子节点, 而B树的每个节点既包含索引键又包含数据」（对应 A、B），并由此得出「B+树 的单个节点的数据量更小，在相同的磁盘 I/O 次数下，就能查询更多的节点」（对应 C）。D 恰好反了：数据量更小的是 B+树的单个节点，不是 B树，B树因为非叶子节点还要存数据，单节点数据量更大。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "B树",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于各隔离级别可能发生的异常现象，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "「串行化」下仍可能发生不可重复读"
+      },
+      {
+        "label": "B",
+        "content": "「可重复读」下可能发生幻读，但不可能发生脏读和不可重复读"
+      },
+      {
+        "label": "C",
+        "content": "「读未提交」下可能发生脏读、不可重复读和幻读"
+      },
+      {
+        "label": "D",
+        "content": "「读已提交」下可能发生不可重复读和幻读，但不可能发生脏读"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "A 正确，原文「在「读未提交」隔离级别下，可能发生脏读、不可重复读和幻读现象」。B 正确，「在「读已提交」隔离级别下，可能发生不可重复读和幻读现象，但是不可能发生脏读现象」。C 正确，「在「可重复读」隔离级别下，可能发生幻读现象，但是不可能脏读和不可重复读现象」。D 错误，「串行化」下脏读、不可重复读和幻读现象都不可能会发生。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "脏读",
+      "不可重复读",
+      "幻读",
+      "隔离级别",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些操作会申请排它锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`select ... for update`"
+      },
+      {
+        "label": "B",
+        "content": "`select ... lock in share mode`"
+      },
+      {
+        "label": "C",
+        "content": "`insert`"
+      },
+      {
+        "label": "D",
+        "content": "`update`"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "原文写明 update、insert、delete 以及 select ... for update 都会申请排它锁。select ... lock in share mode 申请的是共享锁，不是排它锁。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "排他锁",
+      "共享锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "按索引的存储形式分类，索引可以分为哪几种？",
+    "options": [
+      {
+        "label": "A",
+        "content": "前缀索引"
+      },
+      {
+        "label": "B",
+        "content": "联合索引"
+      },
+      {
+        "label": "C",
+        "content": "二级索引（非聚簇索引或辅助索引）"
+      },
+      {
+        "label": "D",
+        "content": "聚簇索引（主键索引）"
+      }
+    ],
+    "answer": [
+      "C",
+      "D"
+    ],
+    "analysis": "原文「按索引的存储形式分类」只给出聚簇索引与二级索引两类，故选 A、B。C 联合索引属于「按字段个数」分类，D 前缀索引属于「按字段特性」分类，它们都是另外的分类维度，不属于存储形式这个维度。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引类型",
+      "聚簇索引",
+      "非聚簇索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "设计索引时应遵循的原则有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "控制索引数量，避免过多索引影响写入性能并占用磁盘空间"
+      },
+      {
+        "label": "B",
+        "content": "优先考虑能覆盖查询的联合索引，避免回表"
+      },
+      {
+        "label": "C",
+        "content": "优先对区分度低的字段（如性别）建立索引以便快速过滤"
+      },
+      {
+        "label": "D",
+        "content": "索引字段不宜过长，长文本列可使用前缀索引"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "A、C、D 正确，分别对应原文总结中的「避免冗余」「覆盖索引」「索引字段不宜过长」。B 错：原文强调不要选择区分度不高的字段（如性别）作为索引，因为过滤效果差。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "覆盖索引",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 `redolog`，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "用于保证事务的持久性"
+      },
+      {
+        "label": "B",
+        "content": "采用追加写方式，写满一个文件就新建一个文件继续写"
+      },
+      {
+        "label": "C",
+        "content": "由内存中的 redolog buffer 和磁盘中的 redolog 文件两部分组成"
+      },
+      {
+        "label": "D",
+        "content": "属于逻辑日志，记录的是 SQL 语句本身"
+      }
+    ],
+    "answer": [
+      "A",
+      "C"
+    ],
+    "analysis": "A 正确，redolog 用于保证事务的持久性。B 正确，原文指出它由内存中的 redolog buffer 和磁盘中的 redolog 文件两部分组成。C 错误，追加写、写满新建文件、不覆盖旧日志的是 binlog，redolog 是循环写、日志空间大小固定。D 错误，记录 SQL 语句或逻辑操作的是 binlog（逻辑日志），redolog 记录的是对某个数据页做了什么修改。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "日志类型",
+      "持久性",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于下列连接方式，说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "FULL JOIN 在 MySQL 中被直接支持，无需借助 UNION"
+      },
+      {
+        "label": "B",
+        "content": "SELF JOIN 是表与自身连接，可用于查找上下级关系这类相关记录"
+      },
+      {
+        "label": "C",
+        "content": "CROSS JOIN 返回两表的笛卡尔积，即所有组合"
+      },
+      {
+        "label": "D",
+        "content": "NATURAL JOIN 自动基于两表中同名且相同类型的列进行连接"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "A 与原文一致：交叉连接（CROSS JOIN）就是笛卡尔积，返回两个表所有组合（原文还提示不推荐在大表中使用）。B 与原文一致：自然连接自动基于两个表中同名且相同类型的列进行连接（原文注明不常用、容易出错）。C 与原文一致：自连接是表与自身进行连接，用于查找表中相关的记录（如上下级关系）。D 错误，原文明确 FULL JOIN 在 MySQL 中不直接支持、需要用 UNION 模拟。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "连接方式",
+      "笛卡尔积",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "创建或优化索引时，哪些字段是文中建议重点考虑的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "经常用于 WHERE 子句的字段"
+      },
+      {
+        "label": "B",
+        "content": "Join 连表查询的连接条件的字段"
+      },
+      {
+        "label": "C",
+        "content": "Order by 排序的字段"
+      },
+      {
+        "label": "D",
+        "content": "只在 SELECT 列表出现、从不参与过滤或连接的字段"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文指出应为经常用于 WHERE、Order by、Join 连接条件以及 group by 的字段建立索引，A、B、C 正确。D 描述的是几乎不参与过滤与连接的字段，为它建索引收益很低，不在建议之列。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 `binlog` 的刷盘，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`sync_binlog` 大于 1 时，每次提交事务都写到 page cache，累积 N 个事务时才 fsync 刷新到磁盘"
+      },
+      {
+        "label": "B",
+        "content": "事务执行过程中先把 binlog 写到 binlog cache（Server 层），事务提交时再写到 binlog 文件"
+      },
+      {
+        "label": "C",
+        "content": "`sync_binlog` 为 0 时，每次提交事务都会立即持久化到磁盘"
+      },
+      {
+        "label": "D",
+        "content": "InnoDB 的后台线程每隔 1 秒会把 binlog cache 持久化到磁盘"
+      }
+    ],
+    "answer": [
+      "A",
+      "B"
+    ],
+    "analysis": "A 正确，binlog 先写到 Server 层的 binlog cache，事务提交时才写到 binlog 文件。B 正确，sync_binlog 大于 1 为 N 时，每次提交只写到 page cache，累积 N 个事务时才 fsync 刷盘。C 错误，为 0 时只写到 page cache、由操作系统决定何时持久化，立即持久化对应的是 1。D 错误，后台线程每秒刷的是 redolog buffer，不是 binlog cache。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于不可重复读和幻读的区分，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "幻读表现为两次范围查询返回的记录数不一致"
+      },
+      {
+        "label": "B",
+        "content": "不可重复读由其他事务对已读数据做 UPDATE、DELETE 引起"
+      },
+      {
+        "label": "C",
+        "content": "不可重复读表现为同一事务多次读取同行的结果不一样"
+      },
+      {
+        "label": "D",
+        "content": "幻读由其他事务对已存在的数据行做 UPDATE 引起"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "A 正确，原文说不可重复读是「有其他事务对数据进行了修改（UPDATE、DELETE)」导致的。B 正确，原文括注「多次读取数据，结果不一样」。C 正确，幻读是「导致范围查询的结果记录数不一致」，括注为「数据量不一样」。D 错误，幻读的诱因是其他事务在范围内「新增了记录(INSERT)」，把 INSERT 换成 UPDATE 就把幻读说成了不可重复读。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "不可重复读",
+      "幻读",
+      "隔离级别",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "两阶段提交的 prepare（准备）阶段会完成哪些操作？",
+    "options": [
+      {
+        "label": "A",
+        "content": "将 redo log 对应的事务状态设置为 prepare，并把 redo log 持久化到磁盘"
+      },
+      {
+        "label": "B",
+        "content": "调用引擎的提交事务接口，将 redo log 状态设置为 commit"
+      },
+      {
+        "label": "C",
+        "content": "将 XID 写入 binlog 并持久化到磁盘"
+      },
+      {
+        "label": "D",
+        "content": "将 XID 写入 redo log"
+      }
+    ],
+    "answer": [
+      "A",
+      "D"
+    ],
+    "analysis": "prepare 阶段：把内部 XA 事务的 XID 写入 redo log，将 redo log 事务状态置为 prepare，然后把 redo log 持久化到磁盘，A、B 正确。把 XID 写入 binlog 并刷盘、以及把 redo log 状态改成 commit 都发生在 commit 阶段（C、D 恰是把两个阶段的动作记反了）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "两阶段提交",
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 `LIKE` 以 `%` 开头时的索引使用情况，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "此时索引一定完全失效，任何情况下都用不到索引"
+      },
+      {
+        "label": "B",
+        "content": "若查询需要的字段全部包含在索引中（覆盖索引），仍可避免回表、提高效率"
+      },
+      {
+        "label": "C",
+        "content": "前导 % 只在联合索引中才会导致索引失效"
+      },
+      {
+        "label": "D",
+        "content": "此时通常无法利用 B+ 树索引加速查找，会走全表扫描"
+      }
+    ],
+    "answer": [
+      "B",
+      "D"
+    ],
+    "analysis": "A 正确：前导 % 无法利用索引有序性定位，通常只能全表扫描。C 正确：原文指出即使不能加速查找，若字段全包含在索引中（覆盖索引），仍可避免回表、提升效率，所以还是使用了索引。B 错：与原文覆盖索引下仍使用索引的说法矛盾，过于绝对。D 错：前导 % 对单列索引同样会导致无法快速定位，并非只在联合索引中才失效。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "LIKE",
+      "覆盖索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列对 `binlog` 与 `redo log` 的描述，正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "binlog 是循环写，日志空间大小固定"
+      },
+      {
+        "label": "B",
+        "content": "redo log 用于备份恢复和主从复制"
+      },
+      {
+        "label": "C",
+        "content": "binlog 是 MySQL Server 层实现的日志，所有存储引擎都可以使用"
+      },
+      {
+        "label": "D",
+        "content": "redo log 是物理日志，记录的是在某个数据页做了什么修改"
+      }
+    ],
+    "answer": [
+      "C",
+      "D"
+    ],
+    "analysis": "A 正确，binlog 由 Server 层实现、所有存储引擎通用。B 正确，redo log 是物理日志，记录的是在某个数据页做了什么修改。C 错误，备份恢复、主从复制是 binlog 的用途；redo log 用于掉电等故障恢复，且因为是循环写、不是全量日志，不能用于备份恢复。D 错误，循环写、空间固定是 redo log，binlog 是追加写、保存全量日志。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "redo日志",
+      "日志类型",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "MVCC 的实现原理依赖哪些部分？",
+    "options": [
+      {
+        "label": "A",
+        "content": "InnoDB 表的隐藏字段"
+      },
+      {
+        "label": "B",
+        "content": "redo log 的刷盘时机"
+      },
+      {
+        "label": "C",
+        "content": "UndoLog 版本链"
+      },
+      {
+        "label": "D",
+        "content": "ReadView"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "A、B、C 正确，原文「MVCC的原理是通过 InnoDB 表的隐藏字段、UndoLog 版本链、ReadView来实现的」。D 错误，redo log 负责持久性与崩溃恢复，与 MVCC 判断数据版本可见性无关，属于日志职责张冠李戴。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "MVCC",
+      "undo日志",
+      "ReadView",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "InnoDB 通过哪几种链表来管理 Buffer Pool 中的缓冲页？",
+    "options": [
+      {
+        "label": "A",
+        "content": "LRU List，管理脏页+干净页"
+      },
+      {
+        "label": "B",
+        "content": "Flush List（脏页链表），管理脏页"
+      },
+      {
+        "label": "C",
+        "content": "Free List（空闲页链表），管理空闲页"
+      },
+      {
+        "label": "D",
+        "content": "Change List，管理待刷盘的变更页"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "A、B、C 正确，原文「Innodb 通过三种链表来管理缓冲页」，并分别说明 Free List 管理空闲页、Flush List 管理脏页、LRU List 管理脏页+干净页。D 错误，原文并未提到 Change List；change buffer 是另一个概念，与这里管理缓冲页的三种链表无关，属于干扰术语。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "以下哪些写法会导致 MySQL 索引失效？",
+    "options": [
+      {
+        "label": "A",
+        "content": "在 WHERE 中对索引列使用函数或表达式，如 where score / 10 > 8"
+      },
+      {
+        "label": "B",
+        "content": "对区分度高的索引列做等值匹配，如 where user_id = 123"
+      },
+      {
+        "label": "C",
+        "content": "LIKE 以通配符 % 开头，如 LIKE '%张'"
+      },
+      {
+        "label": "D",
+        "content": "使用联合索引时不满足最左前缀法则"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "A、B、C 正确，原文列出的失效场景包含：不满足最左前缀法则、在 WHERE 中对索引列使用函数或表达式、LIKE 以通配符开头。D 错：对区分度高的列做等值匹配正是索引最擅长的场景，不会失效。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引失效",
+      "最左前缀",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "`explain` 的 Extra 列中，下列关于各标记含义的说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Using index 表示使用了覆盖索引，所需数据在索引中即可全部获得，避免了回表"
+      },
+      {
+        "label": "B",
+        "content": "Using temporary 表示 MySQL 创建了临时表来存储查询结果"
+      },
+      {
+        "label": "C",
+        "content": "Using filesort 表示使用了索引顺序完成了排序，性能较好"
+      },
+      {
+        "label": "D",
+        "content": "Using index condition 表示在索引上执行了部分条件过滤，通常和索引下推有关"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "A、B、D 正确，分别对应覆盖索引、索引下推、临时表。C 错：Using filesort 表示无法用索引排序而改用了文件排序，性能较差，把它说成「用索引排序」恰好说反了。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "覆盖索引",
+      "索引下推",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 count(*) 和 count(1)，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "count(*) 会忽略 null 值所在的行，而 count(1) 不会"
+      },
+      {
+        "label": "B",
+        "content": "二者在性能上几乎没差别"
+      },
+      {
+        "label": "C",
+        "content": "二者都会统计表中所有行的数量"
+      },
+      {
+        "label": "D",
+        "content": "二者都不会忽略 null 值所在的行"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "原文说明 count(*) 会统计表中所有行的数量、包括 null 值，且 count(1) 和 count(*) 几乎没差别、也会统计所有行（包括 null），故 A、B、C 正确。D 把二者行为对立起来，与原文“几乎没差别、都会统计所有行”直接矛盾。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "count",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "MySQL 中下列哪些语句属于当前读？",
+    "options": [
+      {
+        "label": "A",
+        "content": "update"
+      },
+      {
+        "label": "B",
+        "content": "普通的 select 语句（不加锁）"
+      },
+      {
+        "label": "C",
+        "content": "insert"
+      },
+      {
+        "label": "D",
+        "content": "select ... for update"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "A、B 正确，原文「MySQL 里除了普通查询是快照读，其他都是当前读，比如 update、insert、delete，这些语句执行前都会查询最新版本的数据」。C 正确，正文也把 select ... for update / lock in share mode 归为当前读。D 错误，普通的 select（不加锁）是快照读，不走当前读、不读最新版本。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "当前读",
+      "快照读",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "MySQL 选择 B+树作为索引结构的原因有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "非叶子节点只存索引键，可存很多索引键，使树层数较低，降低磁盘 I/O"
+      },
+      {
+        "label": "B",
+        "content": "所有叶子节点通过指针连接，范围查询和顺序遍历效率较高"
+      },
+      {
+        "label": "C",
+        "content": "B+树的每个节点都同时存储索引键和数据"
+      },
+      {
+        "label": "D",
+        "content": "B+树查找的时间复杂度 O(log n) 比较低"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文给出的三条理由正是：查找时间复杂度 O(log n) 比较低（A）、非叶子节点只存索引键使层数低从而降低磁盘 I/O（B）、叶子节点用指针连接使范围查询和顺序遍历效率高（C）。D 说反了：数据都存放在叶子节点，非叶子节点只存索引键，若每个节点都存数据就不会有层数低的优势。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "索引类型",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "MySQL 中按锁的粒度（范围）可以分为哪几类？",
+    "options": [
+      {
+        "label": "A",
+        "content": "行级锁"
+      },
+      {
+        "label": "B",
+        "content": "表级锁"
+      },
+      {
+        "label": "C",
+        "content": "全局锁"
+      },
+      {
+        "label": "D",
+        "content": "页级锁"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文写明在 MySQL 里根据锁的粒度或范围，可以分为全局锁、表级锁和行级锁三类。页级锁不是本文分类中的一类，属于干扰项。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "锁类型",
+      "表锁",
+      "行锁",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些情况会触发 InnoDB 将脏页刷入磁盘？",
+    "options": [
+      {
+        "label": "A",
+        "content": "MySQL 正常关闭之前"
+      },
+      {
+        "label": "B",
+        "content": "每个事务提交时立即刷脏页"
+      },
+      {
+        "label": "C",
+        "content": "Buffer Pool 空间不足，需要淘汰数据页且淘汰的是脏页"
+      },
+      {
+        "label": "D",
+        "content": "redo log 日志满了"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "A 正确，原文「当 redo log 日志满了的情况下，会主动触发脏页刷新到磁盘」。B 正确，「Buffer Pool 空间不足时……如果淘汰的是脏页，需要先将脏页同步到磁盘」。C 正确，「MySQL 正常关闭之前，会把所有的脏页刷入到磁盘」。D 错误，原文把「MySQL 认为空闲时、后台线程定期刷」也列为触发时机，说明是择机批量刷盘，而非每个事务提交都立即刷脏页。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 MyISAM 与 InnoDB 的差异，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "MyISAM 支持事务和外键约束，而 InnoDB 不支持"
+      },
+      {
+        "label": "B",
+        "content": "MyISAM 会保存表的行数，而 InnoDB 不会保存"
+      },
+      {
+        "label": "C",
+        "content": "MyISAM 读性能好，而 InnoDB 写性能好"
+      },
+      {
+        "label": "D",
+        "content": "MyISAM 主键索引的数据和索引是分开的，而 InnoDB 的数据和索引是一起的"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "A 与原文“MyISAM读性能好, 而InnoDB写性能好”一致；B 与原文“MyISAM主键索引的数据和索引是分开的, 而InnoDB主键索引的数据和索引是一起的”一致，也对应 MyISAM 非聚簇、InnoDB 聚簇的差别；C 与原文“MyISAM会保存表的行数，而InnoDB不会”一致。D 说反了，原文明确 InnoDB 支持事务和外键、MyISAM 不支持，故 D 错误。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "存储引擎",
+      "MyISAM",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "一个表的聚簇索引最多可以有几个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "1 个"
+      },
+      {
+        "label": "B",
+        "content": "2 个"
+      },
+      {
+        "label": "C",
+        "content": "与表的主键列数相同"
+      },
+      {
+        "label": "D",
+        "content": "不限个数"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文在聚簇索引后明确标注「(只能有一个)」，故选 A。聚簇索引决定了数据行的物理组织方式，一张表的数据只有一种排列，因此只能有一个；B、C、D 都与其唯一性矛盾。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "索引类型",
+      "聚簇索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "直接写 JOIN 而不加任何提示时，由谁决定哪张表作为驱动表？",
+    "options": [
+      {
+        "label": "A",
+        "content": "始终以左表为驱动表"
+      },
+      {
+        "label": "B",
+        "content": "始终以右表为驱动表"
+      },
+      {
+        "label": "C",
+        "content": "始终以记录数少的表为驱动表"
+      },
+      {
+        "label": "D",
+        "content": "MySQL 优化器自动选择"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文总结直接使用 join 时 MySQL 优化器会自动选择驱动表，除非使用 STRAIGHT_JOIN、left join、right join 等。也就是说只有在用这些语法时驱动表才被强制或固定，默认由优化器决定，故 A 正确；B、C 是 left join/right join 的固定行为，D 只是优化器通常的倾向而非强制规则。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "故障恢复时为什么用 `redo log` 而不用 `binlog`？",
+    "options": [
+      {
+        "label": "A",
+        "content": "binlog 是逻辑日志，无法重现数据操作"
+      },
+      {
+        "label": "B",
+        "content": "redo log 记录的是页的变化，恢复效率更高"
+      },
+      {
+        "label": "C",
+        "content": "redo log 是追加写，保存的是全量日志"
+      },
+      {
+        "label": "D",
+        "content": "binlog 只记录表结构变更，不记录数据修改"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文括号内解释：故障恢复不用 binlog，是因为 redo log 记录的是页的变化，恢复效率更高。B 错误，binlog 记录逻辑操作、能够重现，只是恢复效率低于页级重做；C 错误，追加写、保存全量日志的是 binlog，redo log 是循环写；D 错误，binlog 既记录表结构变更也记录表数据修改。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "binlog",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MVCC 的全称是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Multi-Value Cache Consistency（多值缓存一致性）"
+      },
+      {
+        "label": "B",
+        "content": "Multi-Version Commit Control（多版本提交控制）"
+      },
+      {
+        "label": "C",
+        "content": "Multi-Version Concurrency Control（多版本并发控制）"
+      },
+      {
+        "label": "D",
+        "content": "Memory-Version Concurrency Compaction（内存版本并发压缩）"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确，原文「MVCC 全称 Multi-Version Concurrency Control，多版本并发控制」。B 把 Concurrency 换成 Cache Consistency，C 把 Concurrency 换成 Commit，D 用 Memory-Version 替换，都是替换了全称中的关键词，与原文不符。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "MVCC",
+      "事务特性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "哪种连接会返回左表的所有记录，即使右表中没有匹配的记录？",
+    "options": [
+      {
+        "label": "A",
+        "content": "LEFT JOIN"
+      },
+      {
+        "label": "B",
+        "content": "RIGHT JOIN"
+      },
+      {
+        "label": "C",
+        "content": "INNER JOIN"
+      },
+      {
+        "label": "D",
+        "content": "SELF JOIN"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文对左连接（LEFT JOIN）的说明是“返回左表的所有记录，即使右表中没有匹配的记录”，故 A 正确。RIGHT JOIN 返回的是右表的所有记录，方向相反；INNER JOIN 只返回两表匹配的记录；SELF JOIN 是表与自身连接，与“保留左表全部”无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "连接方式",
+      "外连接",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`explain` 输出的 type 列中，访问类型性能从好到差的排列顺序是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "const > eq_ref > ref > index > range > ALL"
+      },
+      {
+        "label": "B",
+        "content": "eq_ref > const > ref > range > index > ALL"
+      },
+      {
+        "label": "C",
+        "content": "const > eq_ref > ref > range > index > ALL"
+      },
+      {
+        "label": "D",
+        "content": "const > ref > eq_ref > range > index > ALL"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确：原文给出的顺序是 const > eq_ref > ref > range > index > ALL。B 错：把 range 与 index 颠倒，range 只扫描表的一部分，优于要扫描整个索引的 index。C 错：eq_ref 与 const 位置颠倒，const 是常量比较最多命中一行，最优。D 错：把 ref 排在 eq_ref 之前，eq_ref 用主键/唯一索引做连接，比使用非唯一索引的 ref 更优。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "执行计划",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "「串行化」隔离级别是依靠什么让事务串行执行的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "依靠 MVCC 快照读，让每个事务读到一致的历史版本"
+      },
+      {
+        "label": "B",
+        "content": "对记录加读写锁，读写冲突时后访问的事务必须等前一个事务执行完成"
+      },
+      {
+        "label": "C",
+        "content": "依靠 undo log 回滚产生冲突的事务"
+      },
+      {
+        "label": "D",
+        "content": "依靠间隙锁阻塞范围内的插入操作"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确，原文说串行化会对记录加上读写锁，读写冲突时后访问的事务必须等前一个事务执行完成才能继续，即用读写锁让事务串行执行。B 是读已提交/可重复读使用快照读的机制，不是串行化的实现。C 串行化靠锁等待而非回滚来避免冲突。D 间隙锁是 InnoDB 解决可重复读下当前读幻读的手段，不是串行化的定义方式。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "隔离级别",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在可重复读隔离级别下，针对快照读（普通 select 语句）的幻读问题是通过什么方式（部分）解决的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "next-key lock（记录锁+间隙锁）"
+      },
+      {
+        "label": "B",
+        "content": "表级排他锁"
+      },
+      {
+        "label": "C",
+        "content": "仅依靠间隙锁"
+      },
+      {
+        "label": "D",
+        "content": "MVCC"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确，原文「针对快照读（普通 select 语句），是通过 MVCC 方式解决了部分幻读」。B next-key lock 针对的是当前读（select ... for update 等），不是快照读。C 快照读本身不加锁，更不会用表级排他锁。D 间隙锁是 next-key lock 的组成部分，用于当前读场景，与快照读靠 MVCC 解决的问题不对应。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "快照读",
+      "MVCC",
+      "幻读",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "B+树的更新操作主要影响哪些节点？",
+    "options": [
+      {
+        "label": "A",
+        "content": "根节点"
+      },
+      {
+        "label": "B",
+        "content": "叶子节点"
+      },
+      {
+        "label": "C",
+        "content": "全部非叶子节点"
+      },
+      {
+        "label": "D",
+        "content": "整个树的所有节点"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说「B+树的更新操作主要影响叶子节点, 而B树的更新操作可能会影响整个树」，故选 A。D「整个树的所有节点」正是原文给 B树 的描述，被拿来当干扰项属于把 B树 的特征错安到 B+树 上；B 根节点、C 全部非叶子节点都不是「主要影响」的对象。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "B树",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当表既没有主键、也没有合适的唯一索引时，InnoDB 如何确定聚簇索引？",
+    "options": [
+      {
+        "label": "A",
+        "content": "自动生成一个 rowid 作为隐藏的聚集索引"
+      },
+      {
+        "label": "B",
+        "content": "使用表上第一个非唯一普通索引"
+      },
+      {
+        "label": "C",
+        "content": "改用全文索引作为聚集索引"
+      },
+      {
+        "label": "D",
+        "content": "该表不建立聚集索引"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文的聚簇索引选取规则第三条写明「如果表没有主键，或没有合适的唯一索引，则InnoDB会自动生成一个rowid作为隐藏的聚集索引」，故选 A。B 普通索引不在选取规则内（规则只认唯一索引）；C 全文索引不是聚集索引候选；D 与「InnoDB 会自动生成 rowid」相矛盾，任何 InnoDB 表都有聚集索引。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "聚簇索引",
+      "主键设计",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "“A 给 B 转账，无论转账事务成功与否，两人的存款总额不变”体现的是哪个特性？",
+    "options": [
+      {
+        "label": "A",
+        "content": "原子性"
+      },
+      {
+        "label": "B",
+        "content": "一致性"
+      },
+      {
+        "label": "C",
+        "content": "隔离性"
+      },
+      {
+        "label": "D",
+        "content": "持久性"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文在一致性处举例“A给B转账，不论转账的事务操作是否成功，其两者的存款总额不变”，说明事务前后数据都处于一致的有效状态，故 A 正确。原子性强调整体成功或失败并回滚；隔离性强调事务之间互不干扰；持久性强调修改永久保存，三者都与“转账前后总额不变”这一描述不符。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "事务特性",
+      "一致性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`explain` 中 type 为 `const` 表示什么含义？",
+    "options": [
+      {
+        "label": "A",
+        "content": "查询的表最多只有一行匹配结果，通常发生在查询条件是主键或唯一索引且为常量比较"
+      },
+      {
+        "label": "B",
+        "content": "在连接操作中使用了主键或唯一索引，且连接条件是等值条件"
+      },
+      {
+        "label": "C",
+        "content": "采用非唯一索引或前缀索引，返回结果可能是多条"
+      },
+      {
+        "label": "D",
+        "content": "扫描索引中的所有行，而不是表中的所有行"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确：const 表示表最多只有一行匹配结果，常见于主键或唯一索引的常量等值比较。B 错：这是 eq_ref 的含义，它出现在连接操作中。C 错：这是 ref 的含义，使用非唯一索引或前缀索引可能返回多条。D 错：这是 index 的含义，即扫描整个索引。四个选项正是 type 中容易混淆的几种访问类型。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "执行计划",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "读已提交（RC）和可重复读（RR）在 ReadView 生成时机上的区别是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "RC 每次快照读都生成一个 ReadView，RR 只在第一次快照读时生成并后续复用"
+      },
+      {
+        "label": "B",
+        "content": "RC 只在第一次快照读时生成 ReadView，RR 每次快照读都生成"
+      },
+      {
+        "label": "C",
+        "content": "两者都在事务开始时生成一次 ReadView，之后的快照读复用"
+      },
+      {
+        "label": "D",
+        "content": "两者都在每次快照读时生成 ReadView，互不复用"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确，原文 RC「每次执行快照读的时候都会生成一个ReadView」，RR「唯一区别就是 ReadView 只在第一次执行快照读的时候生成(当前读不会), 后续都是复用该ReadView」。B 把 RC 与 RR 的行为对调了。C 只有 RR 才是生成一次后复用，RC 每次快照读都会重新生成。D 与 RR 复用同一个 ReadView 的描述矛盾。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "隔离级别",
+      "MVCC",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "索引下推优化的核心作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "让范围查询字段后面的列也能继续利用联合索引"
+      },
+      {
+        "label": "B",
+        "content": "在联合索引遍历过程中，对索引中包含的字段先做判断，过滤掉不满足条件的记录，减少回表次数"
+      },
+      {
+        "label": "C",
+        "content": "把查询中未建索引的列自动加入联合索引，扩大覆盖范围"
+      },
+      {
+        "label": "D",
+        "content": "让存储引擎跳过回表，直接把完整数据行返回给服务层"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确：原文的定位就是在遍历联合索引时先对索引中包含的字段做判断，直接过滤不满足条件的记录，减少回表次数。B 错：范围字段后面的列能否用索引由最左前缀与范围查询规则决定，和索引下推是两回事。C 错：那是覆盖索引与联合索引的设计思路。D 错：索引下推正是为了减少回表，而不是跳过回表直接返回数据行。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引下推",
+      "回表",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "跟踪数据页缓存的哈希表中，键（key）由什么组成？",
+    "options": [
+      {
+        "label": "A",
+        "content": "表名和主键值"
+      },
+      {
+        "label": "B",
+        "content": "主键值和索引列的值"
+      },
+      {
+        "label": "C",
+        "content": "表空间 ID 和数据页号"
+      },
+      {
+        "label": "D",
+        "content": "数据页号和页内偏移"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明「键（key）是由表空间 ID 和数据页号组成」，故选 A。B 表名和主键值、C 主键值和索引列的值都是索引层（下级 B+树叶子节点）会用到的信息，而不是页缓存哈希表的键；D 页内偏移并非原文所述的键组成部分。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为什么经常更新的字段不适合建立索引？",
+    "options": [
+      {
+        "label": "A",
+        "content": "经常更新的字段无法建立唯一索引"
+      },
+      {
+        "label": "B",
+        "content": "更新时要维护 B+Tree 的有序性，需频繁重建索引，影响数据库性能"
+      },
+      {
+        "label": "C",
+        "content": "更新操作会让该索引失效，后续查询只能全表扫描"
+      },
+      {
+        "label": "D",
+        "content": "索引会占满磁盘空间导致无法写入"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文解释「因为索引字段频繁修改，由于要维护 B+Tree的有序性，那么就需要频繁的重建索引，这个过程是会影响数据库性能的」，故选 A。B 能否建唯一索引与字段是否经常更新无关；C 更新不会使索引永久失效；D 索引占用物理空间是原文提到的建索引代价，但不是「经常更新不适合建索引」的原因，且不会占满磁盘。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引类型",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "以 bigint 作为主键索引时，一个 B+树节点大约可以存放多少个索引键？",
+    "options": [
+      {
+        "label": "A",
+        "content": "1170"
+      },
+      {
+        "label": "B",
+        "content": "16"
+      },
+      {
+        "label": "C",
+        "content": "2000"
+      },
+      {
+        "label": "D",
+        "content": "16384"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「存主键索引的话如果是`bigint`可以存1170个索引键,也就是1170个主键」，故选 A。B「16」是原文中「一条数据按1KB算，一个叶子节点可以放下的记录条数」，属于把不同数字互换的干扰；C「2000」对应的是「约2000万行」这个量级而非单节点键数；D「16384」是按 16KB 页大小换算出的字节数联想，原文并未采用。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 在更新记录前先记录 undo log，是为了什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把更新后的新值记下来，用于主从复制"
+      },
+      {
+        "label": "B",
+        "content": "把被更新列的旧值记下来，用于回滚"
+      },
+      {
+        "label": "C",
+        "content": "记录本次更新的物理页变化，用于崩溃恢复"
+      },
+      {
+        "label": "D",
+        "content": "记录 SQL 语句原文，方便日后审计"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文指出 undo log 记录的是被更新列的旧值（用于回滚、MVCC），A 正确。记录新值并用于复制的是 binlog（B 错）；记录物理页变化用于崩溃恢复的是 redo log（C 错）；记录 SQL 原文是 binlog 的语句格式，不是 undo log（D 错）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "更新流程",
+      "undo日志",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 重启恢复时，扫描到处于 prepare 状态的 redo log，会拿其中的 XID 去 binlog 中如何判断？",
+    "options": [
+      {
+        "label": "A",
+        "content": "binlog 中不存在该 XID，则提交事务"
+      },
+      {
+        "label": "B",
+        "content": "binlog 中不存在该 XID，则回滚事务"
+      },
+      {
+        "label": "C",
+        "content": "binlog 中存在该 XID，则回滚事务"
+      },
+      {
+        "label": "D",
+        "content": "无论 binlog 中是否存在该 XID，都直接提交事务"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文写明：若 binlog 中没有当前内部 XA 事务的 XID，说明 redo log 已刷盘而 binlog 尚未刷盘，此时应回滚事务，A 正确。B、D 把“找不到 XID”错判成提交；C 记反了——binlog 中存在 XID 表示两份日志都已刷盘，应当提交事务而非回滚。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "两阶段提交",
+      "binlog",
+      "redo日志",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 用什么数据结构跟踪哪些数据页已经在 Buffer Pool 中被缓存？",
+    "options": [
+      {
+        "label": "A",
+        "content": "B+树"
+      },
+      {
+        "label": "B",
+        "content": "哈希表（页哈希索引 / 页目录）"
+      },
+      {
+        "label": "C",
+        "content": "双向链表"
+      },
+      {
+        "label": "D",
+        "content": "跳表"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说「MySQL 使用了一个哈希表来跟踪哪些数据页已经在 Buffer Pool 中被缓存」，并称其为「页哈希索引」或「页目录」，故选 A。B+树是索引结构，双向链表在 B+树叶子节点间使用，跳表原文均未用于页缓存判断。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当事务 A、B 要插入的记录之间存在间隙锁时，事务 B 会加什么锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "间隙锁（等待状态）"
+      },
+      {
+        "label": "B",
+        "content": "插入意向锁（等待状态）"
+      },
+      {
+        "label": "C",
+        "content": "临键锁（等待状态）"
+      },
+      {
+        "label": "D",
+        "content": "共享记录锁（等待状态）"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文最后一段说明：记录之间有间隙锁时，加插入意向锁（等待状态），A 正确。B 是已经持有、导致等待的那种锁，不是事务 B 要加的锁；C、D 分别对应唯一二级索引、唯一主键索引冲突场景的加锁，与间隙场景不符。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "插入意向锁",
+      "间隙锁",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`innodb_flush_log_at_trx_commit` 设置为 2 时，什么情况下不会丢失数据？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只要数据库进程不崩溃就不会丢失数据"
+      },
+      {
+        "label": "B",
+        "content": "任何情况下都不会丢失数据"
+      },
+      {
+        "label": "C",
+        "content": "只有在事务提交的那一刻才不会丢失数据"
+      },
+      {
+        "label": "D",
+        "content": "只要操作系统不宕机，即使数据库崩溃了也不会丢失数据"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文说明设置为 2 时把 redolog 缓存在 PageCache，只要操作系统不宕机，即使数据库崩溃了也不会丢失数据——因为日志已交给操作系统缓存，数据库进程崩溃不影响。B、C 与之矛盾或夸大；D 把刷盘时机与是否丢数据混为一谈。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为身份证号这类较长的文本列建索引时，原文建议怎么处理？",
+    "options": [
+      {
+        "label": "A",
+        "content": "必须对整列建索引，不能用前缀"
+      },
+      {
+        "label": "B",
+        "content": "前缀越短越好，这样索引体积最小"
+      },
+      {
+        "label": "C",
+        "content": "使用前缀索引来减少索引大小，但前缀也不能设置过短"
+      },
+      {
+        "label": "D",
+        "content": "文本列一律不建索引"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确：原文建议文本列可用前缀索引减少索引大小，同时提醒若前缀太短（如身份证号只用前 6 位）会因区分度不足导致查询效率下降。B 错：原文明确长文本可用前缀索引。C 错：与前缀过短会降低区分度的提醒相反。D 错：原文并未说文本列一律不建索引。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "数据类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "事务的原子性（Atomicity）是指什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "一个事务中的所有操作要么全部成功、要么全部失败，失败则回滚到事务开启前的状态"
+      },
+      {
+        "label": "B",
+        "content": "事务之间相互隔离，不会互相干扰"
+      },
+      {
+        "label": "C",
+        "content": "事务执行前后数据必须保持一致性的有效状态"
+      },
+      {
+        "label": "D",
+        "content": "事务结束后对数据的修改永久保存"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文对原子性的定义是一个事务中的所有操作要么全部成功，要么全部失败，如果失败就会回滚到事务开启前的状态，故 A 正确。B 是隔离性、C 是一致性、D 是持久性的描述，这三个选项是把四个特性互相张冠李戴。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "事务特性",
+      "原子性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`explain` 输出中，用于表示「实际用到的索引」的列是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "possible_keys"
+      },
+      {
+        "label": "B",
+        "content": "key_len"
+      },
+      {
+        "label": "C",
+        "content": "ref"
+      },
+      {
+        "label": "D",
+        "content": "key"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确：key 表示实际用到的索引。B 错：possible_keys 是可能用到的索引，只是候选而非最终选择。C 错：key_len 表示用到索引的长度，不表示用了哪个索引。D 错：ref 显示索引的哪一列被使用（与索引列比较的列或常量），不是实际使用的索引本身。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "执行计划",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 中的 STRAIGHT_JOIN 适用于哪种连接方式？",
+    "options": [
+      {
+        "label": "A",
+        "content": "左连接"
+      },
+      {
+        "label": "B",
+        "content": "右连接"
+      },
+      {
+        "label": "C",
+        "content": "全连接"
+      },
+      {
+        "label": "D",
+        "content": "内连接"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文指出 STRAIGHT_JOIN 只适用于内连接，原因在于 left join、right join 已经天然确定了哪个表作为驱动表（left join 以左表为驱动表，right join 反之），只有内连接才需要 STRAIGHT_JOIN 强制指定以左表为驱动表。B、C 的左右连接驱动表已固定，不需要也无从用 STRAIGHT_JOIN；D 全连接 MySQL 本就不直接支持，故 A 正确。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 使用 STATEMENT 格式存在什么问题？",
+    "options": [
+      {
+        "label": "A",
+        "content": "遇到 uuid、now 等动态函数会导致主从复制数据不一致"
+      },
+      {
+        "label": "B",
+        "content": "每行数据变化都被记录，导致 binlog 文件过大"
+      },
+      {
+        "label": "C",
+        "content": "无法记录表结构变更的 DDL 语句"
+      },
+      {
+        "label": "D",
+        "content": "完全无法用于主从复制"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "STATEMENT 记录的是修改数据的 SQL，从库重新执行 SQL 来重现；但遇到 uuid、now 这类随时变化的函数时，主库与从库执行结果不一致，从而导致复制的数据不一致。B 是 ROW 格式的缺点；C、D 与原文不符，STATEMENT 同样可用于主从复制。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "主从复制",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "使用 left join 时，驱动表是哪张表？",
+    "options": [
+      {
+        "label": "A",
+        "content": "右边的表"
+      },
+      {
+        "label": "B",
+        "content": "左边的表"
+      },
+      {
+        "label": "C",
+        "content": "记录数较少的那张表"
+      },
+      {
+        "label": "D",
+        "content": "由优化器临时决定"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说明 left join 就是以左表为驱动表、right join 反之，即 left join 的驱动表由语法固定为左表，故 A 正确。C、D 描述的是内连接由优化器选择驱动表的情形，不适用于 left join；B 是 right join 的驱动表。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "count(字段名) 统计的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "表中所有行的数量（含 null 所在行）"
+      },
+      {
+        "label": "B",
+        "content": "该字段值等于 0 的行数"
+      },
+      {
+        "label": "C",
+        "content": "该字段值不为 null 的行数"
+      },
+      {
+        "label": "D",
+        "content": "该字段去重后的取值个数"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明 count(字段名) 会统计指定字段不为 null 的行数，只会统计字段值不为 null 的行，故 A 正确。B 是 count(*)/count(1) 的行为，二者不会忽略任何一行；C 的“等于 0”和 D 的“去重计数”原文都没有这种语义，是对 count 的常见误解。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "count",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`redolog` 主要用于保证事务的哪个特性？",
+    "options": [
+      {
+        "label": "A",
+        "content": "原子性"
+      },
+      {
+        "label": "B",
+        "content": "隔离性"
+      },
+      {
+        "label": "C",
+        "content": "持久性"
+      },
+      {
+        "label": "D",
+        "content": "一致性"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "redolog 是重做日志，记录某个数据页发生了什么修改，即便系统宕机内存数据丢失也能据此恢复，从而保证持久性。原子性由 undolog 回滚保证；隔离性由隔离级别与锁/MVCC 保证；一致性是目标而非由某一种日志单独保证。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "持久性",
+      "事务特性",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 的主要用途是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "回滚事务、保证原子性"
+      },
+      {
+        "label": "B",
+        "content": "掉电等故障后按数据页恢复"
+      },
+      {
+        "label": "C",
+        "content": "事务提交时刷盘以保证持久性"
+      },
+      {
+        "label": "D",
+        "content": "备份恢复、主从复制"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文写明 binlog 用于备份恢复、主从复制，保存的是全量日志，可以配合全量备份恢复到特定时间点。B 是 undolog 的作用；C、D 是 redolog 的作用，与 binlog 的定位混淆了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "主从复制",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`explain` 输出中 `id` 列的含义是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "该表在连接中的序号，从左到右依次递增"
+      },
+      {
+        "label": "B",
+        "content": "查询的执行顺序的标识符，值越大优先级越高"
+      },
+      {
+        "label": "C",
+        "content": "本次查询使用到的索引的编号"
+      },
+      {
+        "label": "D",
+        "content": "预估要扫描的行数"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确：id 是查询执行顺序的标识符，值越大优先级越高；简单查询通常为 1，含子查询或 UNION 的复杂查询会有多个 id。B 错：id 不是连接序号。C 错：用到的索引由 key 列表示。D 错：预估扫描行数是 rows 列。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "执行计划",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "undo log 属于哪一类日志，其作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "逻辑日志，记录更新前的旧值，用于在事务回滚时恢复数据"
+      },
+      {
+        "label": "B",
+        "content": "物理日志，记录数据页的物理修改，用于崩溃后重做"
+      },
+      {
+        "label": "C",
+        "content": "逻辑日志，记录更新后的新值，用于宕机后恢复已提交数据"
+      },
+      {
+        "label": "D",
+        "content": "物理日志，记录数据页地址变化，用于保证隔离性"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确，原文说明 undo log「用来回滚事务保证事务的原子性」，是一种用于撤销回退的日志，属于逻辑日志，更新一条记录时会记录旧值，据此回滚。B 把「物理日志 + 重做」的职责安到 undo log 上，日志类型与用途都错了，重做是 redo log 的事。C 记录旧值用于回滚才是 undo log；记录新值并用于崩溃恢复的是 redo log，此处混淆了两者。D 隔离性靠的是锁+MVCC，与 undo log 是逻辑还是物理日志无关，属于张冠李戴。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "undo日志",
+      "原子性",
+      "事务特性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "“反范式”这种设计策略的核心做法是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "消除传递依赖，保证数据的独立性"
+      },
+      {
+        "label": "B",
+        "content": "确保每个字段都是原子值，只存储一个值"
+      },
+      {
+        "label": "C",
+        "content": "有意引入冗余或重复字段，以换取更高的查询效率、更少的表连接"
+      },
+      {
+        "label": "D",
+        "content": "消除部分依赖，保证数据的完整性"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文指出反范式是为提升性能（尤其是读取性能）而有意违反规范化范式，通常会引入一些数据冗余或重复字段，以换取更高的查询效率、更少的表连接，故 A 正确。B 消除传递依赖是第三范式、C 保证原子值是第一范式、D 消除部分依赖是第二范式，三者都是范式化的做法，与反范式方向相反。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "反范式",
+      "范式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "共享锁与共享锁、共享锁与排它锁之间的互斥关系分别是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "互斥、不互斥"
+      },
+      {
+        "label": "B",
+        "content": "不互斥、互斥"
+      },
+      {
+        "label": "C",
+        "content": "都互斥"
+      },
+      {
+        "label": "D",
+        "content": "都不互斥"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说明共享锁与共享锁不互斥（允许多个事务并发读取同一资源），与排它锁互斥，只有在释放共享锁后其他事务才能获得排它锁。B、C、D 的互斥关系均与原意不符。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "共享锁",
+      "排他锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "B+Tree 索引比 Hash 索引适用场景更广的原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Hash 表不适合做范围查询，更适合等值查询"
+      },
+      {
+        "label": "B",
+        "content": "Hash 索引的搜索复杂度高于 B+Tree"
+      },
+      {
+        "label": "C",
+        "content": "B+Tree 的节点不需要存储数据指针"
+      },
+      {
+        "label": "D",
+        "content": "Hash 索引不支持唯一性约束"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「但是 Hash 表不适合做范围查询，它更适合做等值的查询，这也是 B+Tree 索引要比 Hash 表索引有着更广泛的适用场景的原因」，故选 A。B 恰好相反，Hash 等值查询复杂度是 O(1)，比 B+Tree 更低而不是更高；C、D 原文未提及，也不是适用场景广的原因。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "哈希索引",
+      "B+树",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "指定慢查询日志文件存放位置和名称的参数是哪个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`slow_query_log`"
+      },
+      {
+        "label": "B",
+        "content": "`long_query_time`"
+      },
+      {
+        "label": "C",
+        "content": "`slow_query_log_file`"
+      },
+      {
+        "label": "D",
+        "content": "`general_log_file`"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说明通过 slow_query_log_file 参数指定慢查询日志文件的存放位置和名称。slow_query_log 只是慢查询日志的开关；long_query_time 是时间阈值；general_log_file 原文未提及。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "慢查询日志",
+      "日志类型",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "执行 UPDATE 语句时，如果目标记录所在的数据页不在 buffer pool 中，InnoDB 会怎么处理？",
+    "options": [
+      {
+        "label": "A",
+        "content": "将数据页从磁盘读入 buffer pool，再把记录返回给执行器"
+      },
+      {
+        "label": "B",
+        "content": "直接从磁盘读取该行并就地更新，不加载整个数据页"
+      },
+      {
+        "label": "C",
+        "content": "跳过该记录继续扫描下一条"
+      },
+      {
+        "label": "D",
+        "content": "把整张表的所有数据页一次性加载进 buffer pool"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明：若记录不在 buffer pool，会将数据页从磁盘读入到 buffer pool，再返回记录给执行器，A 正确。InnoDB 以页为单位读写，不会只读单行（B 错）；也不可能跳过目标记录或整表加载（C、D 错）。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "更新流程",
+      "buffer pool",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MyISAM 引擎执行不带条件的 count(*) 效率很高，原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它把一个表的总行数存在了磁盘上，执行时直接返回该数"
+      },
+      {
+        "label": "B",
+        "content": "它统计时不需要加任何锁"
+      },
+      {
+        "label": "C",
+        "content": "它会把全表数据常驻内存，无需读盘"
+      },
+      {
+        "label": "D",
+        "content": "它会用后台线程并行累计行数"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明 MyISAM 引擎把一个表的总行数存在了磁盘上，因此执行 count(*) 时会直接返回这个数、效率很高（并指出带条件的 count 时 MyISAM 也慢），故 A 正确。B、C、D 的原因原文均未提及，属于编造。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "count",
+      "存储引擎",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 通过哪个参数调整 Buffer Pool 的大小，其默认值是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "innodb_old_blocks_pct，默认 128M"
+      },
+      {
+        "label": "B",
+        "content": "innodb_flush_log_at_trx_commit，默认 128M"
+      },
+      {
+        "label": "C",
+        "content": "innodb_buffer_pool_size，默认 128M"
+      },
+      {
+        "label": "D",
+        "content": "innodb_buffer_pool_size，默认 1G"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确，原文「Buffer Pool 以页为单位缓冲数据，可以通过 innodb_buffer_pool_size 参数调整缓冲池的大小，默认是128 M」。B innodb_old_blocks_pct 用于设置 young 与 old 区域比例，不是缓冲池大小。C innodb_flush_log_at_trx_commit 控制 redo log 的刷盘时机。D 参数对了但默认值错，原文默认是 128M 而非 1G。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "自适应哈希索引是由谁创建和维护的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "用户通过 CREATE INDEX 语句手动创建"
+      },
+      {
+        "label": "B",
+        "content": "DBA 通过参数手动开启并指定哈希列"
+      },
+      {
+        "label": "C",
+        "content": "由查询优化器根据查询模式一次性创建"
+      },
+      {
+        "label": "D",
+        "content": "InnoDB 在运行过程中自动创建和维护"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确：原文明确自适应哈希索引不是用户手动创建的，而是 InnoDB 在运行过程中自动创建和维护的基于哈希的加速访问机制。B、C 错：都把它当成了需要人工创建的普通索引。D 错：它在运行时按访问热点自动建立，不是优化器创建的一次性结构。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "自适应哈希索引",
+      "存储引擎",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "开启 MySQL 慢查询日志的开关参数是哪个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`slow_query_log=1`"
+      },
+      {
+        "label": "B",
+        "content": "`long_query_time=2`"
+      },
+      {
+        "label": "C",
+        "content": "`slow_query_log_file`"
+      },
+      {
+        "label": "D",
+        "content": "`sync_binlog=1`"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文中慢查询开关由 slow_query_log=1 开启。long_query_time 用来设置判定为慢查询的时间阈值；slow_query_log_file 用于指定慢查询日志文件的存放位置和名称；sync_binlog 控制的是 binlog 的刷盘频率，与本知识点无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "慢查询日志",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为什么建议经常用执行计划分析索引使用情况？",
+    "options": [
+      {
+        "label": "A",
+        "content": "EXPLAIN 会缓存索引，不分析索引就会失效"
+      },
+      {
+        "label": "B",
+        "content": "只有执行过 EXPLAIN 的查询才会走索引"
+      },
+      {
+        "label": "C",
+        "content": "EXPLAIN 能自动为慢查询创建索引"
+      },
+      {
+        "label": "D",
+        "content": "随着数据量和索引数量变化，最终使用的索引可能不同，需要经常确认索引是否被正确使用"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确：原文说因为数据量、索引数量变化后，最终使用的索引可能不一样，所以要经常查看索引是否被正确使用。B 错：索引是否被使用与是否执行 EXPLAIN 无关。C 错：EXPLAIN 只是分析工具，不会决定查询是否走索引。D 错：EXPLAIN 不会自动创建索引。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "explain",
+      "执行计划",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "联合索引 (a, b) 在 B+Tree 中的数据是如何组织的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只按最左字段 a 排序，b 字段不参与排序"
+      },
+      {
+        "label": "B",
+        "content": "先按 b 排序，b 相同再按 a 排序"
+      },
+      {
+        "label": "C",
+        "content": "非叶子节点用多个字段的值作为 key；叶子节点链表先按 a 排序，a 相同再按 b 排序"
+      },
+      {
+        "label": "D",
+        "content": "为 a、b 各建一棵独立的 B+Tree，查询时再合并结果"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确：原文说联合索引的非叶子节点用多个字段的值作为 B+Tree 的 key 值，叶子节点上的链表先按 a 排序、在 a 相同的情况下再按 b 排序。B 错：b 字段也参与排序。C 错：排序主次颠倒，是先 a 后 b。D 错：联合索引是同一棵 B+Tree，不是两棵独立索引再合并。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "最左前缀",
+      "B+树",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`innodb_flush_log_at_trx_commit` 设置为哪个值时，事务提交时不主动刷盘、性能最好？",
+    "options": [
+      {
+        "label": "A",
+        "content": "0：事务提交时不主动刷盘，性能最好"
+      },
+      {
+        "label": "B",
+        "content": "1：事务提交时就把 redolog 刷新到磁盘（默认值）"
+      },
+      {
+        "label": "C",
+        "content": "2：事务提交时把 redolog 缓存在 PageCache 中"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写明该参数默认值为 1（事务提交时就把 redolog 刷新到磁盘），设置为 0 时事务提交时不主动刷盘、性能最好，设置为 2 时把 redolog 缓存在 PageCache 中（只要操作系统不宕机就不会丢数据）。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 中只有哪两种隔离级别会使用快照读？",
+    "options": [
+      {
+        "label": "A",
+        "content": "READ UNCOMMITTED 和 READ COMMITTED"
+      },
+      {
+        "label": "B",
+        "content": "REPEATABLE READ 和 SERIALIZABLE"
+      },
+      {
+        "label": "C",
+        "content": "READ UNCOMMITTED 和 SERIALIZABLE"
+      },
+      {
+        "label": "D",
+        "content": "READ COMMITTED 和 REPEATABLE READ"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确，原文「在MySQL 中，只有READ COMMITTED 和 REPEATABLE READ这两种事务隔离级别才会使用快照读」。B 把读未提交算进来，但读未提交直接读最新数据，并不走快照读。C 把串行化算进来，串行化靠读写锁让事务串行执行。D 两种级别都不使用快照读。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "MVCC",
+      "快照读",
+      "隔离级别",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL InnoDB 引擎默认的事务隔离级别是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "读未提交（read uncommitted）"
+      },
+      {
+        "label": "B",
+        "content": "读已提交（read committed）"
+      },
+      {
+        "label": "C",
+        "content": "串行化（serializable）"
+      },
+      {
+        "label": "D",
+        "content": "可重复读（repeatable read）"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "C 正确，原文明确指出可重复读是「MySQL InnoDB 引擎的默认隔离级别」。A 读未提交级别最低，可能发生脏读、不可重复读和幻读。B 读已提交能避免脏读，但仍可能发生不可重复读和幻读。D 串行化最严格，靠读写锁让事务串行执行，并非默认级别。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "隔离级别",
+      "事务特性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在「可重复读」隔离级别下，仍可能发生的并发异常现象是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "幻读"
+      },
+      {
+        "label": "B",
+        "content": "脏读"
+      },
+      {
+        "label": "C",
+        "content": "不可重复读"
+      },
+      {
+        "label": "D",
+        "content": "脏读、不可重复读和幻读都不会发生"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "C 正确，原文「在「可重复读」隔离级别下，可能发生幻读现象，但是不可能脏读和不可重复读现象」。A、B 错在可重复读下已经能避免脏读和不可重复读。D 错误，「三者都不发生」是串行化的特性，可重复读并不能完全消除幻读。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "幻读",
+      "隔离级别",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为什么 B+树的范围查询和顺序遍历效率比 B树高？",
+    "options": [
+      {
+        "label": "A",
+        "content": "所有叶子节点之间通过指针连接构成一个双向链表"
+      },
+      {
+        "label": "B",
+        "content": "非叶子节点只存索引键，树的层数更低"
+      },
+      {
+        "label": "C",
+        "content": "插入数据时不需要分裂节点"
+      },
+      {
+        "label": "D",
+        "content": "节点内部的键是无序排列的"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「B+树的所有叶子节点之间都通过指针连接构成一个双向链表, 范围查询和顺序遍历的效率比较高」，故选 A。B 非叶子节点只存索引键带来的是层数低、磁盘 I/O 少，针对的是查找而不是范围遍历；C 与是否分裂节点无关且说法错误；D 恰恰相反，同一节点的键是有序排列的。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "B树",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "引入缓存层时，文中建议写请求采用什么缓存更新策略？",
+    "options": [
+      {
+        "label": "A",
+        "content": "先更新数据库，再删除缓存"
+      },
+      {
+        "label": "B",
+        "content": "先删除缓存，再更新数据库"
+      },
+      {
+        "label": "C",
+        "content": "只更新缓存，不更新数据库"
+      },
+      {
+        "label": "D",
+        "content": "先更新缓存，再异步更新数据库"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明：读请求选择旁路缓存策略，写请求选择先更新 db、再删除缓存的策略，A 正确。B 把两步顺序调反；C、D 会造成缓存与数据库长期不一致，均不符合原文。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "缓存",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "遍历 undo log 版本链时，若某条记录的 trx_id 大于等于 ReadView 的 max_trx_id，说明什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "该事务已经提交，该版本可以访问"
+      },
+      {
+        "label": "B",
+        "content": "该数据是当前事务自己修改的，可以访问"
+      },
+      {
+        "label": "C",
+        "content": "该事务是在 ReadView 生成之后才开启的，该版本不可访问"
+      },
+      {
+        "label": "D",
+        "content": "该事务处于活跃状态，需要再看是否在 m_ids 中"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确，原文「如果 trx_id >= max_trx_id, 说明该事务是在 ReadView 生成后才开启, 不可以访问」。B 是 trx_id < min_trx_id 时的结论（已提交、可访问）。C 是 trx_id 等于 creator_trx_id 时的结论。D 是 trx_id 落在 min_trx_id 与 max_trx_id 之间时的处理方式，与「大于等于最大值」这一分支无关。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "MVCC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 MySQL 的字符串类型中，属于定长字符串的是哪一个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "varchar"
+      },
+      {
+        "label": "B",
+        "content": "text"
+      },
+      {
+        "label": "C",
+        "content": "char"
+      },
+      {
+        "label": "D",
+        "content": "blob"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明字符串类型中 char 是定长字符串、varchar 是变长字符串。char 为定长字符串，故选 A；varchar 是变长字符串，两者恰好是易混的一对；text 与 blob 用于存储大文本和二进制大对象，并非定长字符串。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "数据类型",
+      "字符类型",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 的数据类型主要分为哪三大类？",
+    "options": [
+      {
+        "label": "A",
+        "content": "数值类型、二进制类型和布尔类型"
+      },
+      {
+        "label": "B",
+        "content": "数值类型、字符串类型和日期/时间类型"
+      },
+      {
+        "label": "C",
+        "content": "字符串类型、布尔类型和空间类型"
+      },
+      {
+        "label": "D",
+        "content": "数值类型、字符类型和枚举类型"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确指出 MySQL 的数据类型主要分为数值类型、字符串类型和日期/时间类型三大类。B 的二进制/布尔、C 的字符串/布尔/空间、D 的枚举都不属于原文划分的三大类；枚举和空间类型只是原文额外顺带提及的其他类型，并非三大类的组成部分。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "数据类型",
+      "类型分类",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 默认使用的存储引擎是哪一个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "MyISAM"
+      },
+      {
+        "label": "B",
+        "content": "Memory"
+      },
+      {
+        "label": "C",
+        "content": "Archive"
+      },
+      {
+        "label": "D",
+        "content": "InnoDB"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文明确写出“MySQL 默认使用 InnoDB”，故 A 正确。MyISAM、Memory、Archive 虽然都是 MySQL 支持的存储引擎，但都不是默认引擎，属于把同类引擎搬来当干扰项。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "存储引擎",
+      "InnoDB",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 不直接支持、需要用 UNION 来模拟的是哪种连接？",
+    "options": [
+      {
+        "label": "A",
+        "content": "CROSS JOIN（交叉连接）"
+      },
+      {
+        "label": "B",
+        "content": "FULL JOIN（全连接）"
+      },
+      {
+        "label": "C",
+        "content": "SELF JOIN（自连接）"
+      },
+      {
+        "label": "D",
+        "content": "NATURAL JOIN（自然连接）"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确指出全连接（FULL JOIN）MySQL 不直接支持，可以用 UNION 模拟（LEFT JOIN 与 RIGHT JOIN 的并集），故 A 正确。CROSS JOIN、SELF JOIN、NATURAL JOIN 在原文字段中都被列为其支持并可写出的连接写法，并不需要用 UNION 模拟。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "连接方式",
+      "外连接",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 在什么条件下会为 B+ 树索引建立自适应哈希索引？",
+    "options": [
+      {
+        "label": "A",
+        "content": "当对某些 B+ 树索引的访问呈现「热点」特征（重复访问特定页或范围）时，基于这些 B+ 树页内容创建"
+      },
+      {
+        "label": "B",
+        "content": "建表时对每个 B+ 树索引都会自动建立一份哈希索引"
+      },
+      {
+        "label": "C",
+        "content": "当某列被声明为主键或唯一索引时自动建立"
+      },
+      {
+        "label": "D",
+        "content": "当优化器判断哈希查找比 B+ 树更省内存时建立"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确：原文指出当访问模式具有热点特征（重复访问特定页或范围）时，才基于这些 B+ 树页内容创建哈希索引，从而把查找降到 O(1)。B 错：并非所有索引都建，只有出现热点访问时才建。C 错：主键或唯一索引与自适应哈希索引没有这种绑定关系。D 错：触发条件是访问热点，而不是优化器对内存的比较。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "自适应哈希索引",
+      "B+树",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在可重复读隔离级别下，针对当前读（select ... for update / lock in share mode 等）的幻读问题是通过什么方式解决的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "next-key lock（记录锁+间隙锁）"
+      },
+      {
+        "label": "B",
+        "content": "MVCC 快照读"
+      },
+      {
+        "label": "C",
+        "content": "undo log 回滚冲突事务"
+      },
+      {
+        "label": "D",
+        "content": "redo log 崩溃恢复"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确，原文「针对当前读（select ... for update / lock in share mode 等语句），是通过 next-key lock（记录锁+间隙锁）方式解决了幻读」，因为范围内有其他事务插入时会被阻塞。B MVCC 解决的是快照读的部分幻读，而当前读并不使用 ReadView。C undo log 用于回滚保证原子性，不是解决当前读幻读的手段。D redo log 负责持久化与崩溃恢复，与幻读无关。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "当前读",
+      "间隙锁",
+      "幻读",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当某字段的选择性很低（某值在表中占比很高）时，MySQL 查询优化器通常会怎么做？",
+    "options": [
+      {
+        "label": "A",
+        "content": "强制使用该索引"
+      },
+      {
+        "label": "B",
+        "content": "自动为该字段重建一个新索引"
+      },
+      {
+        "label": "C",
+        "content": "忽略该索引，改为全表扫描"
+      },
+      {
+        "label": "D",
+        "content": "报错提示索引失效"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说「查询优化器发现某个值出现在表的数据行中的百分比很高的时候(也就是选择性低)，它一般会忽略索引，进行全表扫描」，故选 A。B 与优化器行为相反；C 优化器不会自动重建索引；D 索引不会因此失效，也不会报错，只是优化器判断走全表扫描更划算。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "索引失效",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 中控制事务锁等待超时时间的参数是哪个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`innodb_lock_wait_timeout`"
+      },
+      {
+        "label": "B",
+        "content": "`innodb_deadlock_detect`"
+      },
+      {
+        "label": "C",
+        "content": "`innodb_autoinc_lock_mode`"
+      },
+      {
+        "label": "D",
+        "content": "`sql_safe_updates`"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明 innodb_lock_wait_timeout 控制了事务的超时等待时间，时间一到事务就会被回滚。innodb_deadlock_detect 控制是否开启死锁检测；innodb_autoinc_lock_mode 控制自增锁类型；sql_safe_updates 用于限制 update 的执行条件。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "死锁",
+      "锁类型",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "更新记录时 InnoDB 不立即把脏页写回磁盘、而是先写 redo log，这样做的主要目的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "保证 binlog 与 redo log 的一致性"
+      },
+      {
+        "label": "B",
+        "content": "省去记录 undo log 的步骤"
+      },
+      {
+        "label": "C",
+        "content": "减少磁盘 I/O，后续由后台线程择机把脏页刷盘"
+      },
+      {
+        "label": "D",
+        "content": "让事务在提交前就对其它事务可见"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说明：为了减少磁盘 I/O，不会立即将脏页写入磁盘，而是先写 redo 日志，后续由后台线程择机刷脏页，这就是 WAL，A 正确。保证两份日志一致靠两阶段提交（B 错）；WAL 并不取消 undo log（C 错）；事务可见性由隔离机制决定，与 WAL 无关（D 错）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "更新流程",
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪种做法有助于避免索引失效？",
+    "options": [
+      {
+        "label": "A",
+        "content": "在 WHERE 条件中对索引列使用函数计算"
+      },
+      {
+        "label": "B",
+        "content": "在 WHERE 条件中对索引列使用表达式计算"
+      },
+      {
+        "label": "C",
+        "content": "对索引列使用前缀模糊匹配（形如 %abc）"
+      },
+      {
+        "label": "D",
+        "content": "查询时不使用以 % 开头的左模糊匹配"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文建议避免索引失效：不要用左模糊匹配、函数计算、表达式计算等，A 正是遵守这一点。B、C 让索引列参与函数或表达式运算，会导致索引失效；D 的「%abc」本身就是左模糊匹配，同样会失效。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "索引失效",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "SQL 查询语句实际执行时，下列子句中最早生效的是哪一个？",
+    "options": [
+      {
+        "label": "A",
+        "content": "where"
+      },
+      {
+        "label": "B",
+        "content": "select"
+      },
+      {
+        "label": "C",
+        "content": "order by"
+      },
+      {
+        "label": "D",
+        "content": "from"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "执行顺序为 from -> join on -> where -> group by -> having -> select -> distinct -> order by -> limit，from 最先执行以确定数据来源，A 正确。where、select、order by 都排在 from 之后依次执行。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "SQL执行顺序",
+      "执行流程",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "需要查两个 B+Tree 才能拿到完整行数据的过程叫什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "回表"
+      },
+      {
+        "label": "B",
+        "content": "覆盖索引"
+      },
+      {
+        "label": "C",
+        "content": "索引下推"
+      },
+      {
+        "label": "D",
+        "content": "索引跳跃扫描"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「这个过程叫『回表』，也就是说要查两个 B+Tree 才能查到数据」，故选 A。B 覆盖索引只需查一个 B+Tree，与回表刚好对立；C 索引下推是过滤时机的优化；D 索引跳跃扫描是特定条件下的索引访问方式，均与「查两个 B+Tree」的描述不符。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "回表",
+      "覆盖索引",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当某个值出现在表中的百分比很高（惯用界线约 30%）时，MySQL 查询优化器通常会怎么做？",
+    "options": [
+      {
+        "label": "A",
+        "content": "强制使用索引，因为索引一定比全表扫描快"
+      },
+      {
+        "label": "B",
+        "content": "忽略索引，改为全表扫描，以避免频繁回表导致的频繁磁盘 IO"
+      },
+      {
+        "label": "C",
+        "content": "对该列建立哈希索引来加速查找"
+      },
+      {
+        "label": "D",
+        "content": "直接报错并要求重写 SQL"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确：原文说优化器发现某值在数据行中出现的百分比很高（惯用界线是 30%）时，一般会忽略索引进行全表扫描，以避免频繁回表导致的频繁磁盘 IO。B 错：与原文相反，此时回表开销反而更大。C 错：是否建哈希索引与优化器选路无关。D 错：优化器只是切换访问方式，不会因此报错。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "索引失效",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪一项是文中列出的可能导致 SQL 变慢的原因？",
+    "options": [
+      {
+        "label": "A",
+        "content": "索引区分度不高"
+      },
+      {
+        "label": "B",
+        "content": "索引区分度很高"
+      },
+      {
+        "label": "C",
+        "content": "事务比较短"
+      },
+      {
+        "label": "D",
+        "content": "数据库连接数过多"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文列出的原因之一正是「索引区分度不高」，A 正确。B 把「不高」改成了「很高」，正好说反；C 原文是「事务比较长」而非「短」；D 原文是「数据库连接数不够」而非「过多」，B、C、D 都是把边界条件说反的干扰项。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "索引区分度",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Hash 索引做等值查询时的搜索复杂度是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "O(logN)"
+      },
+      {
+        "label": "B",
+        "content": "O(logdN)"
+      },
+      {
+        "label": "C",
+        "content": "O(N)"
+      },
+      {
+        "label": "D",
+        "content": "O(1)"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文说「Hash 在做等值查询的时候效率贼快，搜索复杂度为 O(1)」，故选 A。B「O(logN)」是二叉树的复杂度、C「O(logdN)」是 B+Tree 的复杂度，二者都容易被误当成 Hash 的复杂度；D 线性复杂度更不符合 Hash 等值查询的特点。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "哈希索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 有几种日志格式，默认是哪种？",
+    "options": [
+      {
+        "label": "A",
+        "content": "3 种，默认 ROW"
+      },
+      {
+        "label": "B",
+        "content": "3 种，默认 STATEMENT"
+      },
+      {
+        "label": "C",
+        "content": "2 种，默认 ROW"
+      },
+      {
+        "label": "D",
+        "content": "3 种，默认 MIXED"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写明 binlog 有 3 种格式类型：STATEMENT、ROW、MIXED，其中 ROW 是 5.7 及以后的默认格式。B、D 把默认格式说错；C 把格式数量说成 2 种，都不符合原文。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "日志类型",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "第二范式（2NF）在第一范式基础上要消除的是哪种依赖？",
+    "options": [
+      {
+        "label": "A",
+        "content": "部分依赖"
+      },
+      {
+        "label": "B",
+        "content": "传递依赖"
+      },
+      {
+        "label": "C",
+        "content": "完全依赖"
+      },
+      {
+        "label": "D",
+        "content": "多值依赖"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写明第二范式的目的是消除部分依赖，确保数据的完整性，故 A 正确。传递依赖是第三范式要消除的对象，属于张冠李戴；完全依赖（非主键字段完全依赖主键）是第二范式要求达到的状态，而不是要消除的对象；多值依赖不是原文出现的概念。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "范式",
+      "反范式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "执行 SQL 的预处理阶段主要做什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "基于查询成本选择执行计划"
+      },
+      {
+        "label": "B",
+        "content": "对查询语句做词法分析和语法分析"
+      },
+      {
+        "label": "C",
+        "content": "按执行计划从存储引擎读取记录并返回客户端"
+      },
+      {
+        "label": "D",
+        "content": "检查表或字段是否存在"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "预处理阶段会检查表或字段是否存在（并把 select * 展开为所有列），A 正确。B 属于优化阶段；C 属于解析器；D 属于执行阶段——三项各自对应了流程里的其他环节。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "执行流程",
+      "查询流程",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 和 `redolog` 默认在什么时候刷盘？",
+    "options": [
+      {
+        "label": "A",
+        "content": "事务开始的时候"
+      },
+      {
+        "label": "B",
+        "content": "事务执行过程中每写一条语句刷一次"
+      },
+      {
+        "label": "C",
+        "content": "事务提交的时候"
+      },
+      {
+        "label": "D",
+        "content": "只在数据库正常关闭时"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文总结指出 binlog 和 redolog 默认都是在事务提交的时候刷盘。此外 InnoDB 后台线程每隔 1 秒也会把 redolog buffer 持久化，那是补充机制，不是默认的唯一时机；B、C、D 与原文不符。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "binlog",
+      "刷盘策略",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "建立联合索引时，字段顺序一般应遵循什么原则？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把区分度大的字段排在前面"
+      },
+      {
+        "label": "B",
+        "content": "把区分度小的字段排在前面"
+      },
+      {
+        "label": "C",
+        "content": "按字段名首字母排序"
+      },
+      {
+        "label": "D",
+        "content": "按建表时字段的物理顺序排列"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确：原文指出越靠前的字段被用于索引过滤的概率越高，应把区分度大的字段排在前面，这样它更可能被更多 SQL 用到。B 错：区分度小的字段（如性别）过滤效果差，不适合排在联合索引靠前位置。C、D 错：联合索引的列顺序应依据区分度和查询模式确定，与字段名或物理顺序无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "最左前缀",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 与 `redo log` 的写入方式分别是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "binlog 追加写，redo log 循环写"
+      },
+      {
+        "label": "B",
+        "content": "两者都是追加写"
+      },
+      {
+        "label": "C",
+        "content": "两者都是循环写"
+      },
+      {
+        "label": "D",
+        "content": "binlog 循环写，redo log 追加写"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明 binlog 是追加写，写满一个文件就创建新文件继续写、不会覆盖以前的日志、保存的是全量日志；redo log 是循环写，日志空间大小固定，全部写满就从头开始，只保存未被刷入磁盘的脏页日志。B、C、D 都把两者的写入方式混淆或颠倒了。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "redo日志",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在被连接字段都有索引的前提下，为什么小表驱动大表的整体复杂度更低？",
+    "options": [
+      {
+        "label": "A",
+        "content": "小表驱动时外层循环次数少，内层按索引 log(n) 查找的次数整体更少"
+      },
+      {
+        "label": "B",
+        "content": "大表驱动时可以直接用哈希索引跳过内层循环"
+      },
+      {
+        "label": "C",
+        "content": "小表驱动时无需再访问被驱动表的索引"
+      },
+      {
+        "label": "D",
+        "content": "小表驱动时内层循环会退化为全表扫描"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文用复杂度对比给出答案：大表驱动小表为 O(1000) * O(log 10)，小表驱动大表为 O(10) * O(log 1000)。两种方式内层都是走索引的 log(n) 查找，但小表驱动时外层只循环 10 次，乘积更小，故 A 正确。B 的哈希方案原文特意排除（明确说不考虑 hash join）；C 说反了，被驱动表仍要按索引查找；D 与原文“索引的查询是比较快的，他的复杂度是log(n)”相矛盾。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "聚簇索引的 B+Tree 叶子节点存放的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "主键值和索引列的值"
+      },
+      {
+        "label": "B",
+        "content": "整行的完整记录"
+      },
+      {
+        "label": "C",
+        "content": "仅主键值"
+      },
+      {
+        "label": "D",
+        "content": "仅索引列的值"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文写明「聚簇索引的 B+Tree 的叶子节点存放的是整行的完整记录」，故选 A。B「主键值和索引列的值」是非聚簇索引（二级索引）叶子节点存的内容，属于易混互换；C、D 只说了其中一部分，不完整。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "聚簇索引",
+      "非聚簇索引",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "执行计划的 Extra 中出现 `Using index condition`，说明使用了什么优化？",
+    "options": [
+      {
+        "label": "A",
+        "content": "覆盖索引优化"
+      },
+      {
+        "label": "B",
+        "content": "文件排序优化"
+      },
+      {
+        "label": "C",
+        "content": "索引下推优化"
+      },
+      {
+        "label": "D",
+        "content": "临时表优化"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确：原文明确 Extra 为 Using index condition 说明使用了索引下推的优化。B 错：覆盖索引在 Extra 中表现为 Using index。C 错：文件排序对应 Using filesort。D 错：临时表对应 Using temporary。该题把几个常见 Extra 标记做了互换。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "索引下推",
+      "explain",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 的 Buffer Pool 以什么为单位缓冲数据？",
+    "options": [
+      {
+        "label": "A",
+        "content": "数据页（page）"
+      },
+      {
+        "label": "B",
+        "content": "数据行（row）"
+      },
+      {
+        "label": "C",
+        "content": "整张表（table）"
+      },
+      {
+        "label": "D",
+        "content": "单个字段（column）"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文明确「Buffer Pool 以页为单位缓冲数据」，所以选 A。B 行、C 表、D 字段都不是 Buffer Pool 的缓冲单位：Buffer Pool 管理的是数据页，一行数据可以分布在页内，但它并不以整行或整表为缓冲单位。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "buffer pool",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`redo log` 是由 MySQL 的哪一层实现的日志？",
+    "options": [
+      {
+        "label": "A",
+        "content": "MySQL Server 层"
+      },
+      {
+        "label": "B",
+        "content": "所有存储引擎共用的公共层"
+      },
+      {
+        "label": "C",
+        "content": "操作系统层面"
+      },
+      {
+        "label": "D",
+        "content": "InnoDB 存储引擎"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文写明 redo log 是 InnoDB 存储引擎实现的日志。由 Server 层实现、所有存储引擎都能使用的是 binlog；操作系统不是日志的实现层。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "binlog",
+      "日志类型",
+      "存储引擎",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 使用 ROW 格式的主要缺点是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "会出现 uuid、now 等动态函数导致的主从不一致"
+      },
+      {
+        "label": "B",
+        "content": "每行数据的变化都被记录，批量更新时会产生大量记录，使 binlog 文件过大"
+      },
+      {
+        "label": "C",
+        "content": "无法精确匹配 WHERE 条件，可能误操作其它行"
+      },
+      {
+        "label": "D",
+        "content": "不能用于数据恢复"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文指出 ROW 会把每行数据的变化结果都记录下来，执行批量 update 时更新多少行就产生多少条记录，导致 binlog 文件过大，而在 STATEMENT 格式下只会记录一条 update。B 是 STATEMENT 格式的问题；C 与原文相反，ROW 严格匹配 WHERE 条件，确保行级复制或恢复中不误操作其它行；D 错误，ROW 同样可用于恢复。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "日志类型",
+      "主从复制",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Change Buffer 主要用来优化对哪类索引的 DML 操作性能？",
+    "options": [
+      {
+        "label": "A",
+        "content": "聚簇索引（主键索引）"
+      },
+      {
+        "label": "B",
+        "content": "非聚簇索引（二级索引）"
+      },
+      {
+        "label": "C",
+        "content": "全文索引"
+      },
+      {
+        "label": "D",
+        "content": "哈希索引"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说 Change Buffer「是一个用于优化对非聚簇索引的DML操作性能的机制」，故 A 正确。B 聚簇索引（主键索引）不在 Change Buffer 的优化范围内；C 全文索引、D 哈希索引原文均未提及，属于无关干扰。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "change buffer",
+      "非聚簇索引",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 执行 count(*) 为什么比 MyISAM 慢？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它统计行数时必须加表级排他锁"
+      },
+      {
+        "label": "B",
+        "content": "它需要把数据一行一行地从引擎里读出来，再累积计数"
+      },
+      {
+        "label": "C",
+        "content": "它每次都要扫描全部二级索引"
+      },
+      {
+        "label": "D",
+        "content": "它把总行数存在内存里而非磁盘上"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文写明 InnoDB 执行 count(*) 时需要把数据一行一行地从引擎里面读出来，然后累积计数，这正是它比 MyISAM 慢的原因，故 A 正确。B、C 的原因原文均未提及；D 说反了，是 MyISAM 才把总行数存在磁盘上，InnoDB 并不保存行数。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "count",
+      "存储引擎",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "一条 UPDATE 语句执行过程中产生的 binlog，是什么时候被刷新到硬盘上的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "语句执行完成时立即刷盘"
+      },
+      {
+        "label": "B",
+        "content": "每次写入 redo log 时同步刷盘"
+      },
+      {
+        "label": "C",
+        "content": "由后台线程按固定间隔刷盘，与事务提交无关"
+      },
+      {
+        "label": "D",
+        "content": "先写入 binlog cache，在事务提交时统一刷新到硬盘"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文说明：binlog 先保存到 binlog cache，并没有立刻刷到硬盘，事务提交时才统一将该事务的所有 binlog 刷新到硬盘，B 正确。A、C 把刷盘时机提前了；D 把刷盘与事务提交解耦，与原文不符。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "更新流程",
+      "binlog",
+      "刷盘策略",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "对于唯一主键索引，当事务 B 向已存在相同索引列值的记录插入时，会添加什么锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "S 型记录锁（等待状态）"
+      },
+      {
+        "label": "B",
+        "content": "S 型临键锁（等待状态）"
+      },
+      {
+        "label": "C",
+        "content": "X 型间隙锁（等待状态）"
+      },
+      {
+        "label": "D",
+        "content": "插入意向锁（等待状态）"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说明：对唯一主键索引，事务 B 会给已存在的记录添加 S 型记录锁（等待状态），A 正确。B 是唯一二级索引冲突时的加锁方式，注意二者仅一字之差；C 混淆了锁模式与锁范围；D 是记录间存在间隙锁时的加锁。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "隐式锁",
+      "行锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列 count 各种写法的效率从高到低排列，正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "COUNT(字段名) > COUNT(主键字段) > COUNT(1) ≈ COUNT(*)"
+      },
+      {
+        "label": "B",
+        "content": "COUNT(主键字段) > COUNT(*) ≈ COUNT(1) > COUNT(字段名)"
+      },
+      {
+        "label": "C",
+        "content": "COUNT(*) > COUNT(字段名) > COUNT(1) > COUNT(主键字段)"
+      },
+      {
+        "label": "D",
+        "content": "COUNT(*) ≈ COUNT(1) > COUNT(主键字段) > COUNT(字段名)"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文直接给出排序 COUNT(*) ≈ COUNT(1) > COUNT(主键字段) > COUNT(字段名)。因为主键或有 not null 约束的字段会直接按行累加，所以比普通字段名更快，故 A 正确。B 把顺序完全颠倒；C 把主键字段排到了 count(*)/count(1) 之前；D 打乱了中间次序，均与原文不符。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "count",
+      "调优",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于第二范式中的“部分依赖”，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只要表有主键，任何情况下都可能出现部分依赖"
+      },
+      {
+        "label": "B",
+        "content": "部分依赖是第三范式要消除的问题"
+      },
+      {
+        "label": "C",
+        "content": "部分依赖是反范式有意引入的冗余"
+      },
+      {
+        "label": "D",
+        "content": "只有主键是组合主键（多个字段组合而成）时才可能出现部分依赖"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文在第二范式处特别注明主键是组合主键（多个字段组合而成）时才可能出现部分依赖，说明单一主键下不存在部分依赖，故 A 正确。B 把出现条件放宽到任意主键，错误；C 把部分依赖误归给第三范式（第三范式消除的是传递依赖）；D 把部分依赖与反范式的冗余字段混为一谈，均错误。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "范式",
+      "反范式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在可重复读隔离级别下执行 `update`，如果 `where` 条件里的字段没有索引，会出现什么情况？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只锁住被更新的记录，不会影响其他行"
+      },
+      {
+        "label": "B",
+        "content": "只对记录之间的间隙加锁，不锁记录本身"
+      },
+      {
+        "label": "C",
+        "content": "不会加任何锁，直接执行完毕"
+      },
+      {
+        "label": "D",
+        "content": "因为没有索引会全表扫描，每条匹配的记录都被加上临键锁，相当于锁了整张表"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文指出在可重复读隔离级别下用当前读（比如 update）加锁时，会对符合 where 条件的记录和记录之间的间隙加锁；如果 where 里的字段没有索引会导致整张表被锁，因为没有索引会做全表扫描，每一个匹配的记录都被加上临键锁，相当于锁了整张表。B、C、D 都低估或否定了无索引时的加锁范围。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "临键锁",
+      "行锁",
+      "索引失效",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`binlog` 的 MIXED 格式有什么特点？",
+    "options": [
+      {
+        "label": "A",
+        "content": "始终只记录 ROW 格式"
+      },
+      {
+        "label": "B",
+        "content": "始终只记录 STATEMENT 格式"
+      },
+      {
+        "label": "C",
+        "content": "根据情况自动在 ROW 和 STATEMENT 之间切换"
+      },
+      {
+        "label": "D",
+        "content": "同时写两份 ROW 和 STATEMENT 日志"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说明 MIXED 包含了 STATEMENT 和 ROW 两种模式，会根据不同情况自动选择，例如使用了 now 这样的函数就会切换到 ROW 模式。B、C 把它当成单一格式；D 说同时记录两份日志，与原文不符。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "binlog",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "排查慢查询原因时，常用什么命令分析 SQL 的执行计划？",
+    "options": [
+      {
+        "label": "A",
+        "content": "SHOW INDEX"
+      },
+      {
+        "label": "B",
+        "content": "SHOW PROCESSLIST"
+      },
+      {
+        "label": "C",
+        "content": "EXPLAIN"
+      },
+      {
+        "label": "D",
+        "content": "ANALYZE TABLE"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文建议用 EXPLAIN 命令分析 SQL 执行计划，找出是否全表扫描、索引是否未被利用等，A 正确。SHOW INDEX 只是查看索引定义；SHOW PROCESSLIST 用于查看活跃线程（原文用它排查长查询）；ANALYZE TABLE 用于更新统计信息，三者都不用于查看执行计划。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "explain",
+      "执行计划",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪组特性是 InnoDB 支持而 MyISAM 不支持的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "事务、外键、行级锁"
+      },
+      {
+        "label": "B",
+        "content": "事务、外键、表锁"
+      },
+      {
+        "label": "C",
+        "content": "全文索引、外键、行级锁"
+      },
+      {
+        "label": "D",
+        "content": "事务、行级锁、表锁"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写明 InnoDB 支持事务、外键和行级锁，而 MyISAM 不支持事务、外键和行级锁（只支持表锁），故 InnoDB 相对 MyISAM 多出的正是事务、外键、行级锁，A 正确。B 中的表锁 MyISAM 本来就支持；C 中的全文索引 MyISAM 也支持（原文反而提到 InnoDB 5.6 之前不支持全文索引）；D 把表锁也当成 InnoDB 的相对优势，错误。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "存储引擎",
+      "InnoDB",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "有 N 个叶子节点的 B+Tree，其搜索复杂度是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "O(logN)"
+      },
+      {
+        "label": "B",
+        "content": "O(1)"
+      },
+      {
+        "label": "C",
+        "content": "O(logdN)，d 为节点允许的最大子节点个数"
+      },
+      {
+        "label": "D",
+        "content": "O(N)"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明「对于有 N 个叶子节点的 B+Tree，其搜索复杂度为 O(logdN)，其中 d 表示节点允许的最大子节点个数」，故选 A。B「O(logN)」是二叉树（每个父节点最多 2 个子节点）的复杂度，属于易混；C「O(1)」是 Hash 等值查询的复杂度；D 线性复杂度不对。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "索引类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "哪种连接返回两个表中匹配的记录（即两表的交集）？",
+    "options": [
+      {
+        "label": "A",
+        "content": "LEFT JOIN"
+      },
+      {
+        "label": "B",
+        "content": "CROSS JOIN"
+      },
+      {
+        "label": "C",
+        "content": "FULL JOIN"
+      },
+      {
+        "label": "D",
+        "content": "INNER JOIN"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文对内连接（INNER JOIN）的说明正是“返回两个表中匹配的记录（交集）”，故 A 正确。LEFT JOIN 返回左表所有记录（右表没有匹配也保留），不是交集；CROSS JOIN 返回笛卡尔积；FULL JOIN 返回左右两表所有记录，三者都不等同于交集。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "连接方式",
+      "内连接",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "只需要查一个 B+Tree 就能拿到全部所需数据的过程叫什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "回表"
+      },
+      {
+        "label": "B",
+        "content": "索引下推"
+      },
+      {
+        "label": "C",
+        "content": "最左前缀匹配"
+      },
+      {
+        "label": "D",
+        "content": "覆盖索引"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文说「在二级索引的 B+Tree 就能查询到结果的过程就叫作『覆盖索引』，也就是只需要查一个 B+Tree 就能找到数据」，故选 A。B 回表恰好相反，是需要查两个 B+Tree；C 索引下推是把条件下推到存储引擎层过滤，与查几个 B+Tree 无关；D 最左前缀讲的是联合索引的匹配规则，不是这个过程。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "覆盖索引",
+      "回表",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "使用联合索引时，多个字段 `order by` 在什么情况下会导致索引失效？",
+    "options": [
+      {
+        "label": "A",
+        "content": "order by 使用了 DESC 降序排列"
+      },
+      {
+        "label": "B",
+        "content": "order by 的字段都是联合索引中的字段"
+      },
+      {
+        "label": "C",
+        "content": "order by 后面带了 limit"
+      },
+      {
+        "label": "D",
+        "content": "order by 的字段顺序与联合索引的顺序不一致"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确：原文将「多个字段 order by 时索引顺序与联合索引顺序不一致」列为索引失效场景。B 错：升降序本身不是原文列出的失效原因。C 错：order by 的字段都在联合索引中反而有利于走索引排序。D 错：limit 与是否失效无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "索引失效",
+      "最左前缀",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`LIKE` 以 `%` 开头时索引失效的根本原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "前导 % 使优化器无法统计该列的区分度，于是放弃索引"
+      },
+      {
+        "label": "B",
+        "content": "前导 % 会触发索引列的隐式类型转换，等价于对索引用了函数"
+      },
+      {
+        "label": "C",
+        "content": "以 % 开头无法利用 B+ 树索引的有序性快速定位，只能全表扫描"
+      },
+      {
+        "label": "D",
+        "content": "前导 % 会使索引 key_len 变长，超出索引长度上限而失效"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确：原文说明以 % 开头时 MySQL 无法利用 B+ 树索引的有序性快速定位，只能全表扫描，因此索引失效。B 错：区分度是建索引和优化器选路时考虑的因素，并非前导 % 失效的直接原因。C 错：隐式类型转换是数字与字符串比较导致的另一类失效，与 % 无关。D 错：key_len 反映用到索引的长度，前导 % 不会使其变长导致失效。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "LIKE",
+      "索引失效",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "把慢查询时间阈值设置为 2 秒使用哪个参数？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`slow_query_log=1`"
+      },
+      {
+        "label": "B",
+        "content": "`long_query_time=2`"
+      },
+      {
+        "label": "C",
+        "content": "`slow_query_log_file`"
+      },
+      {
+        "label": "D",
+        "content": "`innodb_lock_wait_timeout`"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文示例用 long_query_time=2 设置慢日志时间为 2 秒，SQL 执行时间超过 2 秒即视为慢查询并记录慢查询日志。slow_query_log=1 是开启开关；slow_query_log_file 指定日志文件位置；innodb_lock_wait_timeout 是锁等待超时参数，与慢查询无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "慢查询日志",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "事务 b 执行 `select id from user where a = 1 lock in share mode` 将 a=1 的记录锁起来后，该锁的持有者是谁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "事务 b，因为是它发起的加锁读"
+      },
+      {
+        "label": "B",
+        "content": "事务 a 与事务 b 共同持有"
+      },
+      {
+        "label": "C",
+        "content": "不会真正加锁，只记录一个标记"
+      },
+      {
+        "label": "D",
+        "content": "事务 a"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文指出：事务 b 执行加锁读后，虽然把 a=1 的记录锁了起来，但锁的持有者还是事务 a，这正是隐式锁的含义，A 正确。B 只看「谁发起加锁」而忽略了锁的归属；C 与「持有者还是事务 a」不符；D 忽略了隐式锁在冲突时会被转为显式锁。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "隐式锁",
+      "当前读",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "最左前缀法则对联合索引查询的核心要求是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "查询条件中的字段必须按联合索引定义的顺序书写"
+      },
+      {
+        "label": "B",
+        "content": "查询必须从联合索引最左边的列开始，且不能跳过索引中间的列"
+      },
+      {
+        "label": "C",
+        "content": "联合索引只能用于等值查询，任何范围查询都会使其完全失效"
+      },
+      {
+        "label": "D",
+        "content": "联合索引最左边的列必须是区分度最高的列"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确：原文要求通过联合索引查询时要从最左边的列开始，并且不能跳过中间的列。B 错：原文明确说有查询优化器，字段在 where 子句中的顺序并不重要。C 错：范围查询的字段本身仍能用到联合索引，只是其后面的字段用不上，并非整个索引失效。D 错：区分度高的列放前面是设计索引时字段顺序的优化建议，不属于最左前缀法则的内容。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "最左前缀",
+      "索引失效",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "哪个参数可以让 `update` 满足一定条件才能执行成功，从而降低误更新整表的风险？",
+    "options": [
+      {
+        "label": "A",
+        "content": "`sql_safe_updates`"
+      },
+      {
+        "label": "B",
+        "content": "`innodb_lock_wait_timeout`"
+      },
+      {
+        "label": "C",
+        "content": "`innodb_autoinc_lock_mode`"
+      },
+      {
+        "label": "D",
+        "content": "`innodb_deadlock_detect`"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文提到可以通过 sql_safe_updates 这个参数，让 update 满足一定的条件才能够执行成功。innodb_lock_wait_timeout 控制锁等待超时；innodb_autoinc_lock_mode 控制自增锁类型；innodb_deadlock_detect 控制死锁检测，均与本考点无关。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "调优",
+      "行锁",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "B+树中的一个节点就是一个页，其大小默认是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "16KB"
+      },
+      {
+        "label": "B",
+        "content": "4KB"
+      },
+      {
+        "label": "C",
+        "content": "8KB"
+      },
+      {
+        "label": "D",
+        "content": "64KB"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说「b+树中的一个节点就是一个页, 大小默认为16KB」，故选 A。4KB、8KB、64KB 都是常见的页/块大小，容易被误记，但原文给出的默认值是 16KB；这个默认值也是下面容量推算的基数。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "两个事务同时持有同一范围的间隙锁，又各自向该间隙插入记录，为什么会形成死锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "间隙锁之间互斥，两个事务无法同时持有同一间隙的间隙锁"
+      },
+      {
+        "label": "B",
+        "content": "插入意向锁之间互斥，先插入的事务会一直阻塞"
+      },
+      {
+        "label": "C",
+        "content": "记录锁与间隙锁互斥，导致插入操作无法进行"
+      },
+      {
+        "label": "D",
+        "content": "插入会生成插入意向锁，而插入意向锁与间隙锁互斥，双方都阻塞等待对方释放"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文场景：事务 a 和事务 b 同时拥有同一范围的间隙锁，各自向该间隙插入记录时会生成插入意向锁并阻塞等待，因为插入意向锁和间隙锁互斥；事务不提交间隙锁就不释放，于是双方相互等待形成死锁。B 错误，间隙锁可以共存、并不互斥；C 错误，冲突发生在插入意向锁与间隙锁之间，而不是两个插入意向锁之间；D 错误，此处冲突的是插入意向锁与间隙锁。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "死锁",
+      "间隙锁",
+      "插入意向锁",
+      "行锁",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "非聚簇索引（二级索引）的 B+Tree 叶子节点存放的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "整行的完整记录"
+      },
+      {
+        "label": "B",
+        "content": "仅索引列的值"
+      },
+      {
+        "label": "C",
+        "content": "主键值和索引列的值"
+      },
+      {
+        "label": "D",
+        "content": "表名和行号"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说「非聚簇索引的 B+Tree 的叶子节点存放的是主键值和索引列的值」，故选 A。B「整行的完整记录」是聚簇索引叶子节点的特征，二者极易混淆；C 只列了索引列，漏掉了同样存放的主键值；D 不是二级索引叶子节点的存储内容。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "非聚簇索引",
+      "聚簇索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当记录的 trx_id 落在 ReadView 的 min_trx_id 与 max_trx_id 之间时，如何判断该版本是否可访问？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只要落在该区间内就一定可以访问"
+      },
+      {
+        "label": "B",
+        "content": "只要落在该区间内就一定不可访问"
+      },
+      {
+        "label": "C",
+        "content": "看 trx_id 是否大于 creator_trx_id，大于则可访问"
+      },
+      {
+        "label": "D",
+        "content": "看 trx_id 是否在 m_ids（活跃事务集合）中：不在说明已提交、可访问，在则不可访问"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确，原文「如果 trx_id 在 min_trx_id 和 max_trx_id之间, 那就要看 trx_id 在不在 m_ids 也就是当前活跃的事务ID集合中, 如果不在, 说明数据已经提交, 可以访问, 否则就不能访问」。B、C 都把「落在区间内」一刀切，忽略了还要结合 m_ids 判断。D 拿 creator_trx_id 当阈值没有依据，把参与比较的字段都换掉了。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "MVCC",
+      "隔离性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 采用先写 redo log 的 WAL 策略，而不是直接把数据写回磁盘，主要原因是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "redo log 占用的空间比数据页小，能减少总写入量"
+      },
+      {
+        "label": "B",
+        "content": "redo log 只写在内存中，不产生磁盘 IO"
+      },
+      {
+        "label": "C",
+        "content": "redo log 是顺序写，直接写磁盘是随机写，顺序写效率高于随机写"
+      },
+      {
+        "label": "D",
+        "content": "直接写磁盘无法保证事务的原子性"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确，原文给出的原因就是「写入 redo log 的方式是顺序写，而直接写入磁盘是随机写，顺序写的效率要大于随机写」。B 原文并未提体积优势，而且写日志并不能减少数据页最终落盘的总量，只是把随机写推迟合并。C redo log 最终要落到磁盘上的 redo log 文件，并非纯内存操作。D 保证原子性靠的是 undo log，与是否先写 redo log 无关。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "redo日志",
+      "持久性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 的可重复读（RR）隔离级别是如何实现的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "在第一次执行快照读时生成一次 ReadView 并后续复用，使后续快照读返回结果保持一致"
+      },
+      {
+        "label": "B",
+        "content": "每次快照读都生成新的 ReadView，实时读取已提交的最新数据"
+      },
+      {
+        "label": "C",
+        "content": "对读取到的记录全部加排他锁，阻止其他事务修改"
+      },
+      {
+        "label": "D",
+        "content": "通过 redo log 重做已提交的修改来固定读取结果"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确，原文「可重复读的原理和读已提交类似, 唯一区别就是 ReadView 只在第一次执行快照读的时候生成, 后续都是复用该ReadView」，ReadView 一样则快照读返回结果也一样。B 描述的是读已提交（RC）每次快照读都生成 ReadView 的行为。C 可重复读靠 MVCC 快照读，并非给所有记录加排他锁。D redo log 负责持久化与崩溃恢复，不是控制快照读可见版本的机制。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "隔离级别",
+      "MVCC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "事务的隔离性（Isolation）指的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "一个事务中的所有操作要么全部成功要么全部失败"
+      },
+      {
+        "label": "B",
+        "content": "事务结束后对数据的修改永久保存"
+      },
+      {
+        "label": "C",
+        "content": "事务之间相互隔离，不会互相干扰"
+      },
+      {
+        "label": "D",
+        "content": "事务执行前后数据保持一致性的有效状态"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文对隔离性的定义是事务之间相互隔离、不会互相干扰，故 A 正确。B 是原子性、C 是持久性、D 是一致性的描述，均与隔离性无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "事务特性",
+      "隔离性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "覆盖索引的含义是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "查询把主键索引的所有字段都查了出来"
+      },
+      {
+        "label": "B",
+        "content": "二级索引中包含了查询所需的所有字段，查询仅通过二级索引即可完成而无需访问主键索引"
+      },
+      {
+        "label": "C",
+        "content": "联合索引覆盖了系统中所有可能的查询条件"
+      },
+      {
+        "label": "D",
+        "content": "索引的叶子节点直接存储了完整的表数据行"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确：原文定义覆盖索引是二级索引中包含了查询所需的所有字段，从而使查询仅通过访问二级索引而不需要访问实际表数据（主键索引）。B 错：是否覆盖取决于查询用到的字段是否都在二级索引里，与是否查主键全字段无关。C 错：覆盖是针对某条具体查询而言的，不可能覆盖所有查询。D 错：叶子节点存完整数据行是聚簇索引（主键索引）的特征，不是覆盖索引的定义。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "覆盖索引",
+      "回表",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`undolog` 主要用于保证事务的哪个特性？",
+    "options": [
+      {
+        "label": "A",
+        "content": "持久性"
+      },
+      {
+        "label": "B",
+        "content": "原子性"
+      },
+      {
+        "label": "C",
+        "content": "隔离性"
+      },
+      {
+        "label": "D",
+        "content": "一致性"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确 undolog 用来回滚事务、保证事务的原子性，属于逻辑日志，更新记录时把旧值记下来以便回滚。B 持久性由 redolog 保证；C 隔离性靠隔离级别与锁、MVCC 等实现；D 一致性是事务的最终目标，都不是 undolog 的直接作用。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "undo日志",
+      "原子性",
+      "事务特性",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "索引跳跃（Index Skip Scan）适用于什么场景？",
+    "options": [
+      {
+        "label": "A",
+        "content": "查询命中了多列索引的第一列且选择性很好时，跳过后续列"
+      },
+      {
+        "label": "B",
+        "content": "把 B+ 树索引替换成哈希索引以加快等值查找"
+      },
+      {
+        "label": "C",
+        "content": "在联合索引上做覆盖查询，避免回表"
+      },
+      {
+        "label": "D",
+        "content": "查询不是以多列索引的第一列开始，且第一列的选择性很差时，可以跳过该列在后续列上查找"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "A 正确：原文说索引跳跃用于多列索引，即使查询不是以第一列开始，当第一列选择性很差时可以跳过该列、在后续列上查找，从而减少索引扫描次数。B 错：第一列选择性好时正是最左前缀能正常发挥作用的情况，不需要跳跃。C 错：换成哈希索引是自适应哈希索引的思路。D 错：覆盖查询避免回表属于覆盖索引。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "索引跳跃",
+      "最左前缀",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "慢查询日志的作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "记录数据库启动、运行过程中的错误信息"
+      },
+      {
+        "label": "B",
+        "content": "记录数据库执行过的所有 SQL 语句"
+      },
+      {
+        "label": "C",
+        "content": "记录主从复制的中继日志"
+      },
+      {
+        "label": "D",
+        "content": "记录执行时间超过指定阈值的 SQL 语句"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文明确慢查询日志用于记录执行时间超过指定阈值的 SQL 语句。B 对应错误日志、C 对应查询日志、D 对应中继日志，这三类虽在同一标题下被列出，但都不是慢查询日志的作用。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "慢查询日志",
+      "日志类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ReadView（读视图）在 MVCC 中的作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "记录已提交事务对数据页做的修改，用于崩溃后重做"
+      },
+      {
+        "label": "B",
+        "content": "把一条记录的多次更新串成 undo log 版本链"
+      },
+      {
+        "label": "C",
+        "content": "记录一系列未提交事务的 id，控制快照读时可访问的数据版本"
+      },
+      {
+        "label": "D",
+        "content": "决定 redo log buffer 何时刷新到磁盘"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "A 正确，原文「ReadView（读视图）是MVCC机制中快照读 SQL 执行时读取数据的依据，通过记录一系列未提交事务的id，控制快照读时可访问的数据版本」。B 描述的是 redo log 的职责，且它记录的是数据页修改而非「未提交事务 id」。C 串联版本链靠记录里的 DB_ROLL_PTR 回滚指针，不是 ReadView。D redo log buffer 何时刷盘由 innodb_flush_log_at_trx_commit 等参数决定，与 ReadView 无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "MVCC",
+      "快照读",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "临键锁（Next-Key Lock）锁的范围是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只锁住一条记录本身"
+      },
+      {
+        "label": "B",
+        "content": "只锁住记录之间的间隙，是一个左闭右开区间"
+      },
+      {
+        "label": "C",
+        "content": "相当于记录锁加间隙锁的组合，锁的是一个左开右闭的区间"
+      },
+      {
+        "label": "D",
+        "content": "相当于两个间隙锁的组合"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说明临键锁相当于记录锁+间隙锁的组合，锁的范围是一个左开右闭的区间。B 描述的是记录锁；C 描述的是间隙锁且区间表述错误；D 把组合成分说错，临键锁是记录锁加间隙锁，不是两个间隙锁。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "临键锁",
+      "间隙锁",
+      "行锁",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为什么 UUID 不适合作为数据库主键？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它占用的存储空间太小，无法保证唯一性"
+      },
+      {
+        "label": "B",
+        "content": "它不能参与 B+ 树索引，只能做辅助索引"
+      },
+      {
+        "label": "C",
+        "content": "它生成的值是随机的，插入位置不可预测，容易导致频繁的页分裂和数据重排"
+      },
+      {
+        "label": "D",
+        "content": "它在插入时会强制对整张表加锁"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文指出 UUID 生成的值是随机的、插入位置不可预测，容易导致频繁的页分裂和数据重排，影响插入性能，故 A 正确。对照之下自增 ID 是顺序插入到 B+ 树末尾、能有效减少页分裂和数据移动，所以更优。B、C、D 的原因原文均未提及，属于编造。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "主键设计",
+      "UUID",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "事务 a 执行 `update user set a = 1 where c = 2`（c 列没有索引）时，为什么会几乎锁住整张表？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为 update 语句默认对所有记录加共享锁"
+      },
+      {
+        "label": "B",
+        "content": "因为 c 没有索引，只能在主键索引上扫描整张表，而 update 是当前读，每扫描到一条记录都会加临键锁"
+      },
+      {
+        "label": "C",
+        "content": "因为主键索引被整体加载进 buffer pool 后会自动锁表"
+      },
+      {
+        "label": "D",
+        "content": "因为二级索引在更新时会退化成表锁"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说明：c 没有索引，会去主键索引里扫描整张表，而 update 是当前读，每扫描到一个记录都会用临键锁锁起来，就相当于把整张表锁住，A 正确。update 加的是排他性质的行级锁而非共享锁（B 错）；把数据页加载进 buffer pool 不产生表锁（C 错）；二级索引更新用的是先删后插，并非退化成表锁（D 错）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "隐式锁",
+      "行锁",
+      "当前读",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "InnoDB 在二级索引中修改某个索引键值时，采取的措施是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "直接在原记录上就地修改"
+      },
+      {
+        "label": "B",
+        "content": "把该二级索引标记为失效后整体重建"
+      },
+      {
+        "label": "C",
+        "content": "先删除旧记录，再插入新记录"
+      },
+      {
+        "label": "D",
+        "content": "先忽略二级索引，等事务提交后统一重建"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说明：在 a 索引找到记录直接修改是不行的，会破坏索引的有序性，InnoDB 采取的措施是先删后插，A 正确。B 正是文中被否定的做法；C、D 都不是 InnoDB 的处理方式。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "隐式锁",
+      "非聚簇索引",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ReadView 的字段 max_trx_id 表示什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "最小活跃事务 ID"
+      },
+      {
+        "label": "B",
+        "content": "预分配事务 ID，即当前最大事务 ID + 1"
+      },
+      {
+        "label": "C",
+        "content": "当前活跃的事务 ID 集合"
+      },
+      {
+        "label": "D",
+        "content": "创建该 ReadView 的事务的 ID"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确，原文「max_trx_id: 预分配事务ID(当前最大事务ID+1（因为事务ID是自增的）)」。B 是 min_trx_id（最小活跃事务 ID）。C 是 m_ids（当前活跃的事务 ID 集合）。D 是 creator_trx_id（ReadView 创建者的事务 ID）。后三项都是把 ReadView 其它字段的含义套到了 max_trx_id 上。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "ReadView",
+      "MVCC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "MySQL 中连接器的主要职责是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "对 SQL 做词法分析、语法分析并构建语法树"
+      },
+      {
+        "label": "B",
+        "content": "基于查询成本选择成本最小的执行计划"
+      },
+      {
+        "label": "C",
+        "content": "建立连接、管理连接并校验用户身份"
+      },
+      {
+        "label": "D",
+        "content": "查询语句命中查询缓存时直接返回结果"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "连接器负责建立连接、管理连接、校验用户身份，A 正确。词法/语法分析并构建语法树是解析器的职责（B 错）；选择成本最小的执行计划是优化阶段的优化器工作（C 错）；命中缓存直接返回属于查询缓存模块（D 错）。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "执行流程",
+      "查询流程",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在读已提交/可重复读隔离级别下，`select ... for update` 的读取方式及加锁行为是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "当前读，每次读最新版本数据，并对读到的记录加 next-key lock"
+      },
+      {
+        "label": "B",
+        "content": "快照读，读取历史版本且不加锁"
+      },
+      {
+        "label": "C",
+        "content": "当前读，每次读最新版本数据但不加任何锁"
+      },
+      {
+        "label": "D",
+        "content": "快照读，但对读到的记录加 gap lock"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "A 正确，原文「select .. for update 语句就不是快照读了，而是当前读了，也就是每次读都是拿到最新版本的数据，但是它会对读到的记录加上 next-key lock 锁」。B 与原文「不是快照读」直接相反。C 漏掉了加锁，忽略了它会加 next-key lock。D 读取方式定性错误，且加的是 next-key lock（记录锁+间隙锁）而不是只加间隙锁。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "当前读",
+      "快照读",
+      "间隙锁",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "undo log 版本链是通过哪个字段（指针）把一条记录的多次更新串联起来的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "DB_TRX_ID（事务 id）"
+      },
+      {
+        "label": "B",
+        "content": "DB_ROLL_PTR（回滚指针）"
+      },
+      {
+        "label": "C",
+        "content": "min_trx_id（最小活跃事务 id）"
+      },
+      {
+        "label": "D",
+        "content": "creator_trx_id（ReadView 创建者事务 id）"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "A 正确，原文指出通过 DB_ROLL_PTR（回滚指针）指向上一个 undo log，把这些 undo log 串成一个链表，这个链表就称为版本链。B 错误，DB_TRX_ID 用来说明该记录是被哪个事务修改的，只做标识不做串联。C、D 都是 ReadView 内部用于判断可见性的字段，与版本链如何串联无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "undo日志",
+      "MVCC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "第三范式（3NF）要消除的问题是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "非主键字段只依赖组合主键的一部分（部分依赖）"
+      },
+      {
+        "label": "B",
+        "content": "非主键字段依赖于其他非主键字段（传递依赖）"
+      },
+      {
+        "label": "C",
+        "content": "字段值还可以继续拆分，不是原子值"
+      },
+      {
+        "label": "D",
+        "content": "表中存在冗余字段，需要增加联表"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文总结第三范式就是在第二范式的基础上消除了传递依赖，非主键字段不依赖于其他非主键字段，故 A 正确。B 的部分依赖是第二范式要消除的对象；C 的字段非原子是第一范式要解决的问题；D 说反了，增加冗余字段是反范式的做法，而不是第三范式要消除的问题。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "范式",
+      "反范式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "作为数据库主键，作者更推荐使用哪种类型？",
+    "options": [
+      {
+        "label": "A",
+        "content": "UUID"
+      },
+      {
+        "label": "B",
+        "content": "自增 ID"
+      },
+      {
+        "label": "C",
+        "content": "两者均可，效果相同"
+      },
+      {
+        "label": "D",
+        "content": "取决策略，视表大小而定"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文开篇即给出结论“推荐使用自增 ID，不建议使用 UUID”，结尾也重申“自增 ID 更适合作为数据库的主键”，故 A 正确。B 与原文立场相反；C 的“效果相同”和 D 的“视表大小而定”都不是原文的说法，原文是比较后明确选择了自增 ID。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "主键设计",
+      "UUID",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "`select ... lock in share mode` 会申请什么锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "排它锁"
+      },
+      {
+        "label": "B",
+        "content": "意向锁"
+      },
+      {
+        "label": "C",
+        "content": "共享锁"
+      },
+      {
+        "label": "D",
+        "content": "间隙锁"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明 select ... lock in share mode 会申请共享锁。申请排它锁的是 update、insert、delete 以及 select ... for update；意向锁是加行锁时自动加的标记；间隙锁与这条语句无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "共享锁",
+      "排他锁",
+      "锁类型",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "两阶段提交的主要作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "保证 redo log 和 binlog 的一致性"
+      },
+      {
+        "label": "B",
+        "content": "保证 undo log 和 redo log 的一致性"
+      },
+      {
+        "label": "C",
+        "content": "保证主库与从库之间的数据同步"
+      },
+      {
+        "label": "D",
+        "content": "保证多个事务之间的隔离性"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文明确「两阶段提交用来保证 redo log 和 binlog 的一致性」，故选 A。B 换了日志对象，undo log 与 redo log 的一致性不是两阶段提交的目的；C 主从同步依赖 binlog 复制，属于另一套机制；D 事务隔离性由锁和 MVCC 实现，与两阶段提交无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "两阶段提交",
+      "redo日志",
+      "binlog",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "按一条数据 1KB、每页 16KB 计算，三层 B+树大约可以存多少行数据？",
+    "options": [
+      {
+        "label": "A",
+        "content": "约 200 万行"
+      },
+      {
+        "label": "B",
+        "content": "约 1170 万行"
+      },
+      {
+        "label": "C",
+        "content": "约 16 万行"
+      },
+      {
+        "label": "D",
+        "content": "约 2000 万行"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文的结论是「假如一条数据按1KB算, 一个叶子节点可以放下16条数据, 那么三层b+树就可以存下大约2000万行数据」，故选 A。B「约200万行」少了一个数量级；C 把单节点键数 1170 误当成行数量级；D「约16万行」对应的是单叶子节点的 16 条数据放大了数量级，都不是最终结论。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "B+树",
+      "page",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "当连接条件所用的字段没有索引时，MySQL 会借助什么机制来加载驱动表数据并完成匹配？",
+    "options": [
+      {
+        "label": "A",
+        "content": "undo log"
+      },
+      {
+        "label": "B",
+        "content": "change buffer"
+      },
+      {
+        "label": "C",
+        "content": "join_buffer"
+      },
+      {
+        "label": "D",
+        "content": "redo log"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文指出连接条件的字段没有索引时可能会用到 join_buffer，MySQL 会先将驱动表的数据加载进 join_buffer，再和被驱动表进行匹配，故 A 正确。undo log、redo log 分别是回滚与持久化相关的日志，change buffer 用于二级非唯一索引的写缓冲，都与无索引连接的匹配过程无关，属于把相邻知识点搬来当干扰项。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "mysql",
+    "tags": [
+      "小表驱动大表",
+      "连接方式",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "对于唯一二级索引，当事务 B 向已存在相同索引列值的记录插入时，会添加什么锁？",
+    "options": [
+      {
+        "label": "A",
+        "content": "S 型记录锁（等待状态）"
+      },
+      {
+        "label": "B",
+        "content": "X 型临键锁（等待状态）"
+      },
+      {
+        "label": "C",
+        "content": "插入意向锁（等待状态）"
+      },
+      {
+        "label": "D",
+        "content": "S 型临键锁（等待状态）"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文说明：对唯一二级索引，事务 B 会给已存在的重复二级索引记录添加 S 型临键锁（等待状态），A 正确。B 是唯一主键索引冲突时的加锁方式，属易混项；C 把共享锁 S 误作排他锁 X；D 是记录之间存在间隙锁时的加锁。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "mysql",
+    "tags": [
+      "隐式锁",
+      "间隙锁",
+      "锁类型",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "意向锁的作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "解决可重复读隔离级别下的幻读现象"
+      },
+      {
+        "label": "B",
+        "content": "在加表级锁时快速判断行级锁是否存在"
+      },
+      {
+        "label": "C",
+        "content": "在插入数据时确保自增后的主键唯一"
+      },
+      {
+        "label": "D",
+        "content": "防止事务执行期间表结构被变更"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确意向锁的作用是在加表级锁的时候快速判断行级锁是否存在，加行锁时 MySQL 会自动加上相应的意向锁。B 是间隙锁的作用；C 是自增锁（AUTO-INC 锁）的作用；D 是元数据锁（MDL）的作用。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "mysql",
+    "tags": [
+      "意向锁",
+      "表锁",
+      "行锁",
+      "中频"
+    ]
+  }
+]
