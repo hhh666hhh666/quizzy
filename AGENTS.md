@@ -1,43 +1,24 @@
 # Quizzy · 给 AI 的规矩
 
-适用任何 AI 工具。**权威版本在 `.codebuddy/rules/`（两条规则总是自动加载），本文件是精简摘要；两边冲突以那边为准**，改那边就要改这里。
+适用任何 AI 工具。**权威版本在 `.codebuddy/rules/`（三条，均 `alwaysApply: true`，每次会话自动加载）；本文件只做路由与收尾清单，不复述规则内容**——两边冲突以那边为准，新增或改名规则要同步下面这张表。
 
 Spring Boot + Vue 的自用刷题工具，围绕「一道题反复练到会」。领域词看 `CONTEXT.md`，文档总索引看 `docs/README.md`。
 
-**测试相关的三处入口**（不属于下面那几条纪律，是文档入口）：现状与盲区看 `docs/testing/README.md`；「改了代码要补哪层测试」看 `docs/testing/系统说明.md`；要让 AI 像真实用户跑一次探索测试 → 任务书在 `docs/testing/agent-exploration.md`（**手动触发**，报告写到 `.workbuddy/exploration/`，不进仓库）。
+**测试相关的三处入口**（文档入口，不属于纪律）：现状与盲区看 `docs/testing/README.md`；「改了代码要补哪层测试」看 `docs/testing/系统说明.md`；要让 AI 像真实用户跑一次探索测试 → 任务书在 `docs/testing/agent-exploration.md`（**手动触发**，报告写到 `.workbuddy/exploration/`，不进仓库）。
 
-## 1. 未决事项必须落盘 `docs/todo/`
+## 纪律 → 去哪读全文
 
-出现「以后 / 回头 / 暂缓 / 先不 / 还没定 / 看情况 / 再说」任一词，或有选项没给推荐，就在本次回复结束前：
+- **未决事项必须落盘**：任何没定的事，本次回复结束前必须变成 `docs/todo/` 下的文件 → `.codebuddy/rules/todo-discipline.md`
+- **改代码 = 改文档**：改了行为就顺手改文档；移动 / 删除文件后全仓搜旧名 → `.codebuddy/rules/docs-sync.md`
+- **会话工作台**：任务要动文件，动手**之前**先建 `docs/worklog/` 工作台 → `.codebuddy/rules/session-worklog.md`
 
-- 同主题已有文件 → 追加；没有 → 新建 `docs/todo/YYYY-MM-DD-TODO-<主题>.md`（日期 = 创建日期，改文件不改名）
-- 头三行固定：`# 待办：<主题>` / 空行 / `创建：YYYY-MM-DD · 状态：待办 · 优先级：高|中|低`
-- **必须在 `docs/todo/README.md` 索引表补/改一行**
-- 一条待办解决完 → `状态` 改 `已解决` 后 `git mv` 进 `docs/todo/archive/`（文件名不改），并从主索引表移到「已归档」区、修文内 `../` 链接退一级（理由见 ADR 0025）
-- 已拍板的**不是** TODO：结论进 `docs/adr/00NN-*.md`（编号递增、只追加；被否的选项写进同一张卡的 Considered Options），并在「已定，不用再想」表加一行
-- **主人手动操作域**（如题库导入数据库）不是 TODO：不落盘、也别反复提建议——它是有意为之，不是遗漏
-- 任何文档正文里不许开第二份待办清单，一律指回 `docs/todo/`
+规则的体积预算：**单条 ≤ 100 行**，常驻规则越少越好（ADR 0014）。
 
-## 2. 改代码 = 改文档
+纪律的形态是三件套：规则让 AI **知道**，`/wrap-up` 让 AI **记得做**，`scripts/check-doc-links.sh` + CI job 让 AI **不做就过不去**——能机械验的别只靠提示词。
 
-- 能从代码 / 脚本 / `.env.example` / Flyway / springdoc 查到的事实，文档只写「去哪看」，**不复制**（ADR 0006）；文档与代码冲突以代码为准，顺手改文档
-- 改了接口 / 表结构 / 判分 / 导入导出 / 前端 / 部署脚本 → 对 `docs/design/`、`docs/operations/` 下对应文件（索引见 `docs/README.md`）
-- **移动或删除文件**：用 `git mv`，然后 `git grep -n '<旧名>'` 全仓搜（含注释、脚本、YAML、Dockerfile）逐个改
-- md 里写虚构路径用行内代码 `` `foo/bar.md` ``，别写成链接
+## 收尾（每次对话结束前）
 
-## 3. 收尾（每次对话结束前）
-
-1. 扫本次对话有没有「提到但没做」的事 → 按第 1 条落 TODO（在回复里客套一句不算完成）
-2. `git status --porcelain` 列出改动 → 按第 2 条补文档与引用
-3. 跑 `bash scripts/check-doc-links.sh`，修到全绿（CI 里有同名 job 会再验一次）
+1. 扫本次有没有「提到但没做」的事 → 落 `docs/todo/`
+2. `git status --porcelain` 列改动 → 补文档与引用
+3. 跑 `bash scripts/check-doc-links.sh`，修到全绿（CI 里有同名 job 会再验）
 4. 回复末尾给出：改了哪些文件 / 新增或更新了哪些 TODO / 建议的 Conventional Commits 切分
-
-## 4. 会话工作台（动手之前先建）
-
-任务要动文件时，**动手之前**先在 `docs/worklog/` 下建本次会话的工作台文档，并随进度更新；纯问答与只读查看不建。规范全文见 `.codebuddy/rules/session-worklog.md`，这里只放结论：
-
-- 文件名 `<YYYY-MM-DD>-<HHmm>-<短ID>.md`；短 ID 只为防文件名撞车，**不代表任何身份**
-- 本次会话上下文里已有工作台 → 续写；没有 → 新建
-- 上半部写「现在在哪 / 接下来要做什么 / 卡住」，下半部流水账只追加
-- ⚠️ 该目录**入库**：内部**不写相对链接**（路径用行内代码），否则 `check-doc-links.sh` 会红；**其他会话默认不读**
-- 收尾把「本轮状态」改成 `本轮完成`；整份没有实质记录就删掉它
