@@ -32,6 +32,11 @@
   断言已结案的待办都已移入 `docs/todo/archive/`——主索引表里不得还有「已解决」行、`docs/todo/` 下不得还有
   状态为「已解决」的待办。挂进「文档 · 链接与引用自检」job，与 `check-doc-links.sh`、`check-module-tests.sh` 同列。
 
+- **PC 端新增「跟随系统 / 浅色 / 深色」三档外观**（切换入口在顶栏用户区，登录页只能跟随已存的偏好）：
+  走 Element Plus 官方的深色变量表（`html.dark` + `theme-chalk/dark/css-vars.css`），自有样式里的硬编码色值
+  全部改写成 `var(--el-*)` 语义变量，于是明暗两档共用一套样式。代码块高亮的深色配色单独手写——
+  `highlight.js` 的浅色版与暗色版选择器同名，两份同时引入会互相覆盖。机制与约定见 [《前端》](./docs/design/前端.md)。
+
 ### Changed
 
 - **已结案的待办移入 `docs/todo/archive/`**（[ADR 0025](./docs/adr/0025-archive-resolved-todos.md)）：
