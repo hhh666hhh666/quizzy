@@ -417,7 +417,14 @@
 
 - 提交信息沿用 Conventional Commits（`feat:` / `fix:` / `docs:` / `chore:`），`git log` 就是归类依据。
 - 变更记入 `[Unreleased]`；**用户可感知的破坏性变更必须在版本段里单独说明迁移方式**。
-- 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿。
+- 下一个版本发布时：把 `[Unreleased]` 里的内容固化成新的版本段 → 打附注 tag（`git tag -a vX.Y.Z -m "vX.Y.Z"`）→ **单独推送 tag**（`git push origin vX.Y.Z`，它不随普通 push 走）→ 更新底部两个比较链接 → 跑一遍 `bash scripts/check-version.sh vX.Y.Z` 应当全绿 → **建 GitHub Release（见下三条）**。
+- **只推 tag，`/releases` 页会是空的**：那一页列的是 **Release 对象**，不是 tag。本项目 `v1.2.0`～`v1.5.0` 就这么漏了——
+  页面上只剩 `v1.0.0` / `v1.1.0`，`Latest` 一直停在 `v1.1.0`，看着像一个月没发版（2026-10-06 补建了那 6 条）。
+  建法：`gh release create vX.Y.Z --title vX.Y.Z --notes-file <正文>`；正文取本文件的对应版本段，**但段里的相对链接必须改写成指向该 tag 的绝对地址**
+  （`](./docs/...` → `](https://github.com/hhh666hhh666/quizzy/blob/vX.Y.Z/docs/...`），否则在 Release 页上全是死链。
+  ⚠️ 改写后**双向自检**：既要数「还有没有 `](./`」，也要数「`]后直接跟 https`」——后者能抓到「把 `](` 一并吃掉」的改写 bug（第一次就是这么错的）。
+- 建 Release **不触发** `release.yml`（它只听 `push: tags`），所以补建历史版本不会二次部署；也正因为如此，**忘了建不会有任何人提醒**，只能靠这条约定兜着。
+- 刻意**不把建 Release 做成自动化**：正文是给人看的说明书，手写比搬运本文件更用心，而发版是低频、需要人过目的动作。
 - 许可证见 [LICENSE](./LICENSE)。
 
 [Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...HEAD
