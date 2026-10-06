@@ -2,9 +2,11 @@ package com.quizzy.module.paper.controller;
 
 import com.quizzy.common.PageResult;
 import com.quizzy.common.Result;
+import com.quizzy.module.paper.dto.PaperAppendDTO;
 import com.quizzy.module.paper.dto.PaperRuleDTO;
 import com.quizzy.module.paper.dto.PaperSaveDTO;
 import com.quizzy.module.paper.service.PaperService;
+import com.quizzy.module.paper.vo.PaperAppendResultVO;
 import com.quizzy.module.paper.vo.PaperVO;
 import com.quizzy.module.paper.vo.QuestionPreviewVO;
 import com.quizzy.security.UserContext;
@@ -62,6 +64,19 @@ public class PaperController {
     public Result<Void> delete(@PathVariable Long id) {
         paperService.delete(id, UserContext.requireUserId());
         return Result.success();
+    }
+
+    /**
+     * 往固定卷**追加**题目（题库页「加入已有试卷」的落点）。
+     *
+     * <p>与 {@code PUT /api/papers/{id}} 的区别：那个是全量替换题目列表，这个是**并入**——
+     * 已有的题原样留着，已在卷里的会被忽略，不报错也不重复加。
+     */
+    @Operation(summary = "往固定卷追加题目（并入，重复的忽略）")
+    @PostMapping("/{id}/questions")
+    public Result<PaperAppendResultVO> appendQuestions(@PathVariable Long id,
+                                                       @Valid @RequestBody PaperAppendDTO dto) {
+        return Result.success(paperService.appendQuestions(id, dto.getQuestionIds(), UserContext.requireUserId()));
     }
 
     @Operation(summary = "规则预览抽题")

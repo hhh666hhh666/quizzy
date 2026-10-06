@@ -35,18 +35,29 @@ public class QuestionImportExportController {
 
     private final QuestionImportService importService;
 
-    @Operation(summary = "JSON 批量导入")
+    /**
+     * JSON 批量导入。
+     *
+     * <p>⚠️ body **仍是裸数组**（ADR 0006）：卷名这类元信息走查询参数，不进 body——
+     * 理由是它与「题目内容」是两回事（ADR 0006 Amendment 1）。
+     *
+     * @param paperTitle 可选。给了就顺带把本次**成功导入**的题装进一张新固定卷（ADR 0026）
+     */
+    @Operation(summary = "JSON 批量导入（可选 paperTitle：顺带建一张固定卷）")
     @PostMapping("/import/json")
-    public Result<ImportResultVO> importJson(@Valid @RequestBody List<QuestionImportDTO> items) {
-        return Result.success(importService.importJson(items, UserContext.requireUserId()));
+    public Result<ImportResultVO> importJson(@Valid @RequestBody List<QuestionImportDTO> items,
+                                             @RequestParam(required = false) String paperTitle) {
+        return Result.success(importService.importJson(items, UserContext.requireUserId(), paperTitle));
     }
 
-    @Operation(summary = "Excel 导入")
+    /** Excel 导入。{@code paperTitle} 语义同 {@link #importJson}，走 multipart 的普通表单字段。 */
+    @Operation(summary = "Excel 导入（可选 paperTitle：顺带建一张固定卷）")
     @PostMapping("/import/excel")
-    public Result<ImportResultVO> importExcel(@RequestParam("file") MultipartFile file) {
+    public Result<ImportResultVO> importExcel(@RequestParam("file") MultipartFile file,
+                                              @RequestParam(required = false) String paperTitle) {
         assertExcel(file);
         try {
-            return Result.success(importService.importExcel(file.getInputStream(), UserContext.requireUserId()));
+            return Result.success(importService.importExcel(file.getInputStream(), UserContext.requireUserId(), paperTitle));
         } catch (IOException e) {
             throw new BusinessException("读取文件失败：" + e.getMessage());
         }

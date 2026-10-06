@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.quizzy.common.BusinessException;
 import com.quizzy.module.category.entity.Category;
 import com.quizzy.module.category.mapper.CategoryMapper;
+import com.quizzy.module.paper.dto.PaperSaveDTO;
+import com.quizzy.module.paper.enums.PaperMode;
+import com.quizzy.module.paper.service.PaperService;
 import com.quizzy.module.question.dto.OptionDTO;
 import com.quizzy.module.question.dto.QuestionExcelRow;
 import com.quizzy.module.question.dto.QuestionImportDTO;
@@ -38,13 +41,21 @@ public class QuestionImportService {
 
     private final QuestionService questionService;
     private final CategoryMapper categoryMapper;
+    private final PaperService paperService;
 
-    public ImportResultVO importExcel(InputStream inputStream, Long userId) {
+    /**
+     * 导入 Excel。
+     *
+     * @param paperTitle 给了卷名就**顺带把本次成功导入的题装进一张新固定卷**（ADR 0026）；
+     *                   留空则只导入题目。元信息走查询参数，不动裸数组契约（ADR 0006 Amendment 1）。
+     */
+    public ImportResultVO importExcel(InputStream inputStream, Long userId, String paperTitle) {
         List<QuestionExcelRow> rows = EasyExcel.read(inputStream)
                 .head(QuestionExcelRow.class)
                 .sheet()
                 .doReadSync();
         List<ImportErrorVO> errors = new ArrayList<>();
+        List<Long> createdIds = new ArrayList<>();
         int total = 0;
         int success = 0;
         for (int i = 0; i < rows.size(); i++) {
@@ -54,7 +65,7 @@ public class QuestionImportService {
             }
             total++;
             try {
-                questionService.save(toSaveDTO(row), userId);
+                createdIds.add(questionService.save(toSaveDTO(row), userId));
                 success++;
             } catch (BusinessException e) {
                 errors.add(new ImportErrorVO(i + 2, row.getStem(), e.getMessage()));
@@ -62,19 +73,21 @@ public class QuestionImportService {
                 errors.add(new ImportErrorVO(i + 2, row.getStem(), "格式不正确：" + e.getMessage()));
             }
         }
-        return ImportResultVO.of(total, success, errors);
+        return ImportResultVO.of(total, success, errors, createPaperIfRequested(paperTitle, createdIds, userId));
     }
 
-    public ImportResultVO importJson(List<QuestionImportDTO> items, Long userId) {
+    /** 同 {@link #importExcel}，只是入参是已经解析好的 JSON 裸数组。 */
+    public ImportResultVO importJson(List<QuestionImportDTO> items, Long userId, String paperTitle) {
         if (CollectionUtils.isEmpty(items)) {
             throw new BusinessException("导入内容为空");
         }
         List<ImportErrorVO> errors = new ArrayList<>();
+        List<Long> createdIds = new ArrayList<>();
         int success = 0;
         for (int i = 0; i < items.size(); i++) {
             QuestionImportDTO item = items.get(i);
             try {
-                questionService.save(toSaveDTO(item), userId);
+                createdIds.add(questionService.save(toSaveDTO(item), userId));
                 success++;
             } catch (BusinessException e) {
                 errors.add(new ImportErrorVO(i + 1, item.getStem(), e.getMessage()));
@@ -82,7 +95,31 @@ public class QuestionImportService {
                 errors.add(new ImportErrorVO(i + 1, item.getStem(), "格式不正确：" + e.getMessage()));
             }
         }
-        return ImportResultVO.of(items.size(), success, errors);
+        return ImportResultVO.of(items.size(), success, errors, createPaperIfRequested(paperTitle, createdIds, userId));
+    }
+
+    /**
+     * 按需把「本次成功导入的题」装进一张**新**固定卷。三条边界：
+     *
+     * <ul>
+     *   <li>没给卷名（或只有空白）→ 不建卷。卷名是「要不要建卷」的开关本身；</li>
+     *   <li>一题都没成功 → 不建卷。一张空卷对用户没有意义，只会污染试卷列表；</li>
+     *   <li>卷名**不去重** → 每次导入都是新卷，同名就同名（{@code paper.title} 本就没有唯一键）。</li>
+     * </ul>
+     *
+     * <p>⚠️ 题是**逐条**入库的（ADR 0005 的部分成功语义），而建卷是**最后一步**：
+     * 这一步若因数据库故障失败，已入库的题不会回滚——调用方拿到的是错误信封，可题其实已经进去了。
+     * 现实里只有数据库故障能触发它，所以不额外包一层容错。
+     */
+    private Long createPaperIfRequested(String paperTitle, List<Long> createdIds, Long userId) {
+        if (!StringUtils.hasText(paperTitle) || createdIds.isEmpty()) {
+            return null;
+        }
+        PaperSaveDTO dto = new PaperSaveDTO();
+        dto.setTitle(paperTitle.trim());
+        dto.setMode(PaperMode.FIXED);
+        dto.setQuestionIds(createdIds);
+        return paperService.save(dto, userId);
     }
 
     public void writeTemplate(OutputStream outputStream) {

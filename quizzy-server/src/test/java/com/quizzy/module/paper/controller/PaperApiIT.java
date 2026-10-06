@@ -109,4 +109,74 @@ class PaperApiIT extends ApiTestBase {
         assertThat(res.path("data").size()).as("种子题库里有单选题，预览不该是空的").isPositive();
         assertThat(papersTotal(token)).as("预览不该建出试卷").isEqualTo(before);
     }
+
+    // ---------- 空卷与追加题目（ADR 0026） ----------
+
+    @Test
+    @DisplayName("空固定卷能建：题留到之后再往里加")
+    void emptyFixedPaperIsAllowed() throws Exception {
+        String token = newUserToken();
+        long paperId = createFixedPaper(token, "IT 空卷 " + newUsername(), List.of());
+
+        JsonNode detail = apiGet("/api/papers/" + paperId, token);
+        assertThat(detail.path("code").asInt()).isZero();
+        assertThat(detail.path("data").path("questionCount").asInt()).isZero();
+        assertThat(detail.path("data").path("questionIds").size()).isZero();
+    }
+
+    @Test
+    @DisplayName("追加题目：并入已有列表、重复的忽略，回执给新增数与总数")
+    void appendQuestionsMergesAndIgnoresDuplicates() throws Exception {
+        String token = newUserToken();
+        long q1 = createSingle(token);
+        long q2 = createSingle(token);
+        long paperId = createFixedPaper(token, "IT 追加卷 " + newUsername(), List.of(q1));
+
+        // 把已在卷里的 q1 与新题 q2 一起提交：q1 该被忽略
+        JsonNode res = apiPost("/api/papers/" + paperId + "/questions", token,
+                payload("questionIds", List.of(q1, q2)));
+
+        assertThat(res.path("code").asInt()).isZero();
+        assertThat(res.path("data").path("added").asInt()).isEqualTo(1);
+        assertThat(res.path("data").path("total").asInt()).isEqualTo(2);
+        assertThat(apiGet("/api/papers/" + paperId, token).path("data").path("questionCount").asInt())
+                .isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("追加题目：空入参被参数校验拦下（400），不是静默成功")
+    void appendWithEmptyIdsIsRejected() throws Exception {
+        String token = newUserToken();
+        long paperId = createFixedPaper(token, "IT 空参追加卷 " + newUsername(), List.of());
+
+        assertThat(apiPost("/api/papers/" + paperId + "/questions", token, payload("questionIds", List.of()))
+                .path("code").asInt()).isEqualTo(400);
+    }
+
+    @Test
+    @DisplayName("追加题目到别人的卷：404，且真的没加进去")
+    void appendToOtherUsersPaperLooksMissing() throws Exception {
+        String owner = newUserToken();
+        String other = newUserToken();
+        long paperId = createFixedPaper(owner, "IT 别人的追加卷 " + newUsername(), List.of());
+        long myQuestion = createSingle(other);
+
+        assertThat(apiPost("/api/papers/" + paperId + "/questions", other,
+                payload("questionIds", List.of(myQuestion))).path("code").asInt()).isEqualTo(404);
+
+        // 只断言状态码会被「先报错、后偷偷改」骗过，所以回查一次
+        assertThat(apiGet("/api/papers/" + paperId, owner).path("data").path("questionCount").asInt()).isZero();
+    }
+
+    @Test
+    @DisplayName("存卷时塞别人的私有题：404——这是可见性边界，不是 400 参数错")
+    void fixedPaperRejectsOthersPrivateQuestion() throws Exception {
+        String owner = newUserToken();
+        String other = newUserToken();
+        long privateId = createSingle(owner);
+
+        assertThat(apiPost("/api/papers", other, payload(
+                "title", "IT 越权存卷 " + newUsername(), "mode", "FIXED", "questionIds", List.of(privateId)))
+                .path("code").asInt()).isEqualTo(404);
+    }
 }

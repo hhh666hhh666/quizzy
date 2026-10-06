@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.quizzy.module.paper.dto.PaperSaveDTO;
 import com.quizzy.module.paper.dto.PaperRuleDTO;
 import com.quizzy.module.paper.enums.PaperMode;
+import com.quizzy.module.paper.vo.PaperAppendResultVO;
 import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.paper.entity.PaperQuestion;
 import com.quizzy.module.paper.mapper.PaperQuestionMapper;
@@ -172,5 +173,175 @@ class PaperServiceIT extends ApiTestBase {
         assertThatThrownBy(() -> paperService.detail(paperId, otherId))
                 .as("别人的卷应当连存在性都不确认（防探测）")
                 .hasMessageContaining("不存在");
+    }
+
+    // ---------- 空卷与追加题目（ADR 0026） ----------
+
+    @Test
+    @DisplayName("空固定卷也能存：questionCount 为 0、关系表为空")
+    void emptyFixedPaperIsAllowed() throws Exception {
+        JsonNode me = newAccount();
+        long owner = me.path("user").path("id").asLong();
+
+        Long paperId = paperService.save(fixedPaper("IT 空卷 " + newUsername(), List.of()), owner);
+
+        assertThat(paperService.detail(paperId, owner).getQuestionCount()).isZero();
+        assertThat(paperService.detail(paperId, owner).getQuestionIds()).isEmpty();
+        assertThat(storedRelations(paperId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("空固定卷：questionIds 传 null 也不炸（前端没选题就是这个形状）")
+    void fixedPaperWithNullQuestionIdsIsAllowed() throws Exception {
+        JsonNode me = newAccount();
+        long owner = me.path("user").path("id").asLong();
+
+        Long paperId = paperService.save(fixedPaper("IT 空卷null " + newUsername(), null), owner);
+
+        assertThat(paperService.detail(paperId, owner).getQuestionCount()).isZero();
+        assertThat(storedRelations(paperId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("固定卷入参去重：同一个 id 传两次不会炸在唯一键上")
+    void duplicateQuestionIdsAreDeduped() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long owner = me.path("user").path("id").asLong();
+        long q1 = createQuestion(token);
+
+        Long paperId = paperService.save(fixedPaper("IT 去重卷 " + newUsername(), List.of(q1, q1)), owner);
+
+        assertThat(storedRelations(paperId)).containsExactly(q1);
+        assertThat(paperService.detail(paperId, owner).getQuestionCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("追加题目：并入已有列表，新题接在末尾")
+    void appendQuestionsMergesIntoPaper() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long owner = me.path("user").path("id").asLong();
+        long q1 = createQuestion(token);
+        long q2 = createQuestion(token);
+        long q3 = createQuestion(token);
+
+        Long paperId = paperService.save(fixedPaper("IT 追加卷 " + newUsername(), List.of(q1)), owner);
+
+        PaperAppendResultVO result = paperService.appendQuestions(paperId, List.of(q2, q3), owner);
+
+        assertThat(result.added()).isEqualTo(2);
+        assertThat(result.total()).isEqualTo(3);
+        // 顺序也要对：q1 还在最前，新加的两道按入参顺序跟在后面
+        assertThat(storedRelations(paperId)).containsExactly(q1, q2, q3);
+        assertThat(paperService.detail(paperId, owner).getQuestionCount()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("追加题目：已在卷里的题被忽略，重复调用不会越加越多")
+    void appendQuestionsIgnoresAlreadyPresent() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long owner = me.path("user").path("id").asLong();
+        long q1 = createQuestion(token);
+        long q2 = createQuestion(token);
+
+        Long paperId = paperService.save(fixedPaper("IT 重复追加卷 " + newUsername(), List.of(q1)), owner);
+
+        PaperAppendResultVO first = paperService.appendQuestions(paperId, List.of(q1, q2), owner);
+        assertThat(first.added()).as("q1 已在卷里，只该新增 q2").isEqualTo(1);
+        assertThat(first.total()).isEqualTo(2);
+
+        PaperAppendResultVO second = paperService.appendQuestions(paperId, List.of(q1, q2), owner);
+        assertThat(second.added()).as("再来一次应当一道都加不进去").isZero();
+        assertThat(second.total()).isEqualTo(2);
+        assertThat(storedRelations(paperId)).containsExactly(q1, q2);
+    }
+
+    @Test
+    @DisplayName("追加题目：规则卷不行——它根本没有题目列表")
+    void appendQuestionsRejectsRulePaper() throws Exception {
+        JsonNode me = newAccount();
+        long owner = me.path("user").path("id").asLong();
+
+        PaperRuleDTO rule = new PaperRuleDTO();
+        rule.setTypes(List.of(QuestionType.SINGLE));
+        rule.setCount(5);
+        PaperSaveDTO rulePaper = new PaperSaveDTO();
+        rulePaper.setTitle("IT 规则卷 " + newUsername());
+        rulePaper.setMode(PaperMode.RULE);
+        rulePaper.setRule(rule);
+        Long paperId = paperService.save(rulePaper, owner);
+
+        assertThatThrownBy(() -> paperService.appendQuestions(paperId, List.of(1L), owner))
+                .hasMessageContaining("固定卷");
+    }
+
+    @Test
+    @DisplayName("追加题目到别人的卷：报 404，且真的没加进去")
+    void appendQuestionsRejectsOtherUsersPaper() throws Exception {
+        JsonNode owner = newAccount();
+        JsonNode other = newAccount();
+        long ownerId = owner.path("user").path("id").asLong();
+        long otherId = other.path("user").path("id").asLong();
+
+        Long paperId = paperService.save(fixedPaper("IT 别人的追加卷 " + newUsername(), List.of()), ownerId);
+        long myQuestion = createQuestion(other.path("token").asText());
+
+        assertThatThrownBy(() -> paperService.appendQuestions(paperId, List.of(myQuestion), otherId))
+                .hasMessageContaining("不存在");
+        assertThat(storedRelations(paperId)).isEmpty();
+        assertThat(paperService.detail(paperId, ownerId).getQuestionCount()).isZero();
+    }
+
+    @Test
+    @DisplayName("追加题目：看不见的题（别人的私有题）不许加进来——否则能借作答把题干读出来")
+    void appendQuestionsRejectsInvisibleQuestion() throws Exception {
+        JsonNode a = newAccount();
+        JsonNode b = newAccount();
+        long bId = b.path("user").path("id").asLong();
+
+        long privateQuestionOfA = createQuestion(a.path("token").asText());
+        Long paperOfB = paperService.save(fixedPaper("IT 越权加题 " + newUsername(), List.of()), bId);
+
+        assertThatThrownBy(() -> paperService.appendQuestions(paperOfB, List.of(privateQuestionOfA), bId))
+                .as("id 是自增的、猜得到，所以必须按可见性拒绝")
+                .hasMessageContaining("不属于你");
+        assertThat(storedRelations(paperOfB)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("存卷时不许塞进别人的私有题——id 是自增的，塞进来就能借作答读到题干")
+    void saveRejectsOtherUsersPrivateQuestion() throws Exception {
+        JsonNode a = newAccount();
+        JsonNode b = newAccount();
+        long bId = b.path("user").path("id").asLong();
+        long privateQuestionOfA = createQuestion(a.path("token").asText());
+
+        assertThatThrownBy(() -> paperService.save(
+                fixedPaper("IT 越权存卷 " + newUsername(), List.of(privateQuestionOfA)), bId))
+                .hasMessageContaining("不属于你");
+    }
+
+    @Test
+    @DisplayName("改卷时，卷里那道已被自己软删的题允许继续挂着——不能因为它就整张卷保存不了")
+    void updatingPaperKeepsItsOwnDeletedQuestion() throws Exception {
+        JsonNode me = newAccount();
+        String token = me.path("token").asText();
+        long owner = me.path("user").path("id").asLong();
+
+        long kept = createQuestion(token);
+        long deleted = createQuestion(token);
+        Long paperId = paperService.save(fixedPaper("IT 含删题卷 " + newUsername(), List.of(kept, deleted)), owner);
+
+        // 把卷里的一道题删掉，再回来改这张卷——它仍引用着那道题
+        questionService.delete(deleted, owner);
+
+        PaperSaveDTO update = fixedPaper("IT 含删题卷改名 " + newUsername(), List.of(kept, deleted));
+        update.setId(paperId);
+        paperService.save(update, owner);
+
+        assertThat(storedRelations(paperId)).containsExactly(kept, deleted);
+        assertThat(paperService.detail(paperId, owner).getQuestionCount()).isEqualTo(2);
     }
 }

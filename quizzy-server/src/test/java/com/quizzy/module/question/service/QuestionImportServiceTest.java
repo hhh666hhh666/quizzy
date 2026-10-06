@@ -1,6 +1,9 @@
 package com.quizzy.module.question.service;
 
 import com.quizzy.common.BusinessException;
+import com.quizzy.module.paper.dto.PaperSaveDTO;
+import com.quizzy.module.paper.enums.PaperMode;
+import com.quizzy.module.paper.service.PaperService;
 import com.quizzy.module.question.dto.OptionDTO;
 import com.quizzy.module.question.dto.QuestionImportDTO;
 import com.quizzy.module.question.dto.QuestionSaveDTO;
@@ -9,9 +12,11 @@ import com.quizzy.module.question.vo.ImportResultVO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class QuestionImportServiceTest {
@@ -28,9 +33,9 @@ class QuestionImportServiceTest {
                 return 1L;
             }
         };
-        QuestionImportService importService = new QuestionImportService(fakeQuestionService, null);
+        QuestionImportService importService = new QuestionImportService(fakeQuestionService, null, null);
 
-        ImportResultVO result = importService.importJson(List.of(validQuestion("第一题"), invalidQuestion("第二题")), 1L);
+        ImportResultVO result = importService.importJson(List.of(validQuestion("第一题"), invalidQuestion("第二题")), 1L, null);
 
         assertEquals(2, result.total());
         assertEquals(1, result.successCount());
@@ -42,11 +47,11 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("未知题型在转换阶段就标记为错误行")
     void unknownTypeShouldBeReported() {
-        QuestionImportService importService = new QuestionImportService(null, null);
+        QuestionImportService importService = new QuestionImportService(null, null, null);
         QuestionImportDTO dto = validQuestion("第一题");
         dto.setType("填空题");
 
-        ImportResultVO result = importService.importJson(List.of(dto), 1L);
+        ImportResultVO result = importService.importJson(List.of(dto), 1L, null);
 
         assertEquals(0, result.successCount());
         assertEquals(1, result.failed().size());
@@ -67,16 +72,93 @@ class QuestionImportServiceTest {
                 return 1L;
             }
         };
-        QuestionImportService importService = new QuestionImportService(fakeQuestionService, null);
+        QuestionImportService importService = new QuestionImportService(fakeQuestionService, null, null);
 
         QuestionImportDTO dto = validQuestion("第一题");
         dto.setType("多选");
         dto.setAnswer(List.of("A", "C"));
         dto.setOptions(List.of(option("A", "甲"), option("B", "乙"), option("C", "丙")));
 
-        ImportResultVO result = importService.importJson(List.of(dto), 1L);
+        ImportResultVO result = importService.importJson(List.of(dto), 1L, null);
 
         assertEquals(1, result.successCount());
+    }
+
+    // ---------- 导入时顺带建卷（ADR 0026） ----------
+
+    @Test
+    @DisplayName("给了卷名：本次**成功**导入的题装进一张新固定卷，失败的题不进去")
+    void createsOneFixedPaperFromSuccessfulRows() {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
+            private long seq = 100;
+
+            @Override
+            public Long save(QuestionSaveDTO dto, Long userId) {
+                if ("第二题".equals(dto.getStem())) {
+                    throw new BusinessException("单选题与判断题只能有一个正确答案");
+                }
+                return seq++;
+            }
+        };
+        List<PaperSaveDTO> built = new ArrayList<>();
+        PaperService fakePaperService = new PaperService(null, null, null, null, null, null) {
+            @Override
+            public Long save(PaperSaveDTO dto, Long userId) {
+                built.add(dto);
+                return 999L;
+            }
+        };
+
+        ImportResultVO result = new QuestionImportService(fakeQuestionService, null, fakePaperService)
+                .importJson(List.of(validQuestion("第一题"), invalidQuestion("第二题")), 7L, "MySQL");
+
+        assertEquals(1, result.successCount());
+        assertEquals(999L, result.paperId());
+        assertEquals(1, built.size(), "只该建一张卷");
+        PaperSaveDTO paper = built.get(0);
+        assertEquals("MySQL", paper.getTitle());
+        assertEquals(PaperMode.FIXED, paper.getMode());
+        // 关键：只装成功的那一道（第二题是错误行），不是把整批 id 都塞进去
+        assertEquals(List.of(100L), paper.getQuestionIds());
+    }
+
+    @Test
+    @DisplayName("没给卷名 / 一题都没成功：都不建卷")
+    void doesNotCreatePaperWithoutTitleOrWithoutQuestions() {
+        List<PaperSaveDTO> built = new ArrayList<>();
+        PaperService fakePaperService = new PaperService(null, null, null, null, null, null) {
+            @Override
+            public Long save(PaperSaveDTO dto, Long userId) {
+                built.add(dto);
+                return 1L;
+            }
+        };
+        QuestionService okService = new QuestionService(null, null, null, null, null, null, null, null) {
+            @Override
+            public Long save(QuestionSaveDTO dto, Long userId) {
+                return 1L;
+            }
+        };
+        QuestionService alwaysFailing = new QuestionService(null, null, null, null, null, null, null, null) {
+            @Override
+            public Long save(QuestionSaveDTO dto, Long userId) {
+                throw new BusinessException("就是不行");
+            }
+        };
+
+        // ① 没给卷名：题照常导入，但根本不碰建卷这条路
+        ImportResultVO noTitle = new QuestionImportService(okService, null, fakePaperService)
+                .importJson(List.of(validQuestion("第一题")), 1L, null);
+        assertEquals(1, noTitle.successCount());
+        assertNull(noTitle.paperId());
+
+        // ② 给了卷名但全军覆没：建一张空卷对用户没有意义，只会污染试卷列表
+        ImportResultVO allFailed = new QuestionImportService(alwaysFailing, null, fakePaperService)
+                .importJson(List.of(validQuestion("第一题")), 1L, "MySQL");
+        assertEquals(0, allFailed.successCount());
+        assertNull(allFailed.paperId());
+
+        assertTrue(built.isEmpty(), "这两种情况都不该真的调用建卷");
     }
 
     private QuestionImportDTO validQuestion(String stem) {
