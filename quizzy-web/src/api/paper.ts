@@ -24,16 +24,38 @@ export function previewRule(rule: PaperRuleDTO) {
   return unwrap<QuestionListItemVO[]>(request.post('/papers/preview', rule))
 }
 
-export function importExcel(file: File) {
+/**
+ * 批量导入。
+ *
+ * ⚠️ `paperTitle` 这类元信息走**查询参数**，不进 body——JSON 那条的 body 必须是**裸数组**
+ * （见 docs/adr/0006-bare-array-import-contract.md，其 Amendment 1 记了为什么不用包装对象）。
+ * 给了卷名，后端会把**本次成功导入的题**装进一张新的固定卷，并在结果里回 `paperId`。
+ */
+export function importExcel(file: File, paperTitle?: string) {
   const form = new FormData()
   form.append('file', file)
   return unwrap<ImportResultVO>(request.post('/questions/import/excel', form, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    params: paperTitle ? { paperTitle } : undefined
   }))
 }
 
-export function importJson(items: any[]) {
-  return unwrap<ImportResultVO>(request.post('/questions/import/json', items))
+export function importJson(items: any[], paperTitle?: string) {
+  return unwrap<ImportResultVO>(request.post('/questions/import/json', items, {
+    params: paperTitle ? { paperTitle } : undefined
+  }))
+}
+
+/**
+ * 往一张**固定卷**追加题目。
+ *
+ * 语义是**并入**不是替换：已在卷里的题会被忽略（后端靠 `paper_question` 的唯一键去重），
+ * 所以重复调用不会越加越多。返回本次真正新增的题量与追加后的总题量。
+ */
+export function appendPaperQuestions(paperId: number, questionIds: number[]) {
+  return unwrap<{ added: number; total: number }>(
+    request.post(`/papers/${paperId}/questions`, { questionIds })
+  )
 }
 
 /**

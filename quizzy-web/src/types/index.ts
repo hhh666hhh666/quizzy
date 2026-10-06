@@ -190,4 +190,9 @@ export interface ImportResultVO {
   total: number
   successCount: number
   failed: ImportErrorVO[]
+  /**
+   * 导入时按需创建的固定卷 id；**没建卷时整个字段不出现**（后端配了 `non_null`，
+   * 所以判断「有没有建卷」要用 `paperId != null`，别指望它是 `null`）。
+   */
+  paperId?: number
 }

@@ -43,6 +43,51 @@ test('批量导入（JSON 粘贴）：题目入库、给出逐行报告、出现
   await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
 })
 
+test('批量导入并顺带建卷：卷出现在试卷列表、题就在里面', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await registerNewUser(page)
+
+  const stamp = String(Date.now())
+  const stem = `IT 导入建卷的题 ${stamp}`
+  const title = `ITimport${stamp}`
+  const payload = JSON.stringify([
+    {
+      type: 'SINGLE',
+      stem,
+      options: [
+        { label: 'A', content: '甲' },
+        { label: 'B', content: '乙' }
+      ],
+      answer: ['A']
+    }
+  ])
+
+  await page.goto('/questions')
+  await page.getByRole('button', { name: '批量导入' }).click()
+
+  const dialog = page.locator('.el-dialog:visible')
+  await dialog.locator('.el-radio-button, .el-tabs__item', { hasText: 'JSON 导入' }).first().click()
+  await dialog.locator('textarea').fill(payload)
+  // 勾上才会建卷；标题是必填的
+  await dialog.getByTestId('import-create-paper').click()
+  await dialog.getByPlaceholder('试卷标题（必填）').fill(title)
+  await dialog.getByRole('button', { name: '开始导入' }).click()
+
+  await expect(dialog.locator('.report')).toContainText('共 1 条')
+  // 回执里点名了卷名——证明后端真的建了，而不是前端自己编了一句
+  await expect(dialog.locator('.paper-created')).toContainText(title)
+
+  // 真的建出来了，而且题在里面
+  await dialog.getByTestId('import-goto-papers').click()
+  await expect(page).toHaveURL(/\/papers$/)
+  const row = page.locator('.el-table__row', { hasText: title })
+  await expect(row).toHaveCount(1)
+  await row.getByRole('button', { name: '编辑' }).click()
+  const editDialog = page.locator('.el-dialog:visible').first()
+  await expect(editDialog).toContainText('共 1 道')
+  await expect(editDialog.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
+})
+
 test('导出 JSON：真的下载到文件，且内容里带得刚才那道题', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 })
   await registerNewUser(page)
