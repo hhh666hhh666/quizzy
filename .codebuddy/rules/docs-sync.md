@@ -26,6 +26,7 @@ alwaysApply: true
 | 测试策略 | `docs/testing/`（现状看 README，设计看系统说明） |
 | CI / 镜像构建 | `.github/workflows/` + ADR 0010 / 0016 |
 | 领域词汇 | `CONTEXT.md` |
+| 受众 / 语气 / 定位（产品真相） | 根 `PRODUCT.md` |
 | 本次迭代交付项 | `CHANGELOG.md` |
 | 面向用户的功能、页面流、可用操作 | `docs/requirements/功能展望.md`——只**核对并修正**「现状缺口」列，**别新增条目当待办**（那些归 `docs/todo/`） |
 

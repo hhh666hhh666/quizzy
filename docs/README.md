@@ -13,6 +13,7 @@
 |------|------|------|--------|
 | [../README.md](../README.md) | 5 分钟上手：定位、功能、跑起来、配置要点、CI 与部署 | 所有人 | 代码与脚本 |
 | [../CONTEXT.md](../CONTEXT.md) | 领域术语表（题目 / 会话 / 错题本…纯词汇，不含实现） | 读代码的人 | 本文件 |
+| [../PRODUCT.md](../PRODUCT.md) | 产品真相：受众 / 用途 / 定位 / 语气 / 约束（**不复制范围清单**，指 `scope.md`） | 判断"某个设计对不对"的人 | 本文件（范围与能力见 `scope.md`） |
 | [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
 | [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.codebuddy/rules/` |
 | [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
