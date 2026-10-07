@@ -29,3 +29,5 @@ PC 端（`quizzy-web`）**原地重建**：组件基座由 Element Plus 换成 *
 - **反噬到一条既有测试决策**：`docs/testing/系统说明.md` 里「暂缓组件测试」的理由之一是「无共享组件库」——shadcn-vue 的组件源码进仓库后**该理由不再成立**，需在重构落地后重新评估。
 - **代码落地时**才同步的文档：`README.md` 技术栈表、`docs/design/前端.md`（整篇）、`docs/design/移动端.md` 里提到 PC 栈的那句、`CHANGELOG.md`。
 - 属破坏性大改，按 ADR 0023 **单独发版**。
+
+> ⚠️ **后续（2026-10-07）**：Impeccable 的 `scripts/` **已装**。它的启动器会在**首次调用**时从 GitHub Releases 按版本锁定拉取平台二进制（本机落在 `~/.impeccable/bin/0.1.11/impeccable.exe`，探针实测返回 `impeccable-engine 0.1.11`）——这是本仓库**唯一一处"运行期拉取并执行外部二进制"**，故在此记明来历。**hooks 仍未装**：探测器只在我们主动调用时才跑。回退方式：删 `~/.impeccable` 与该 skill 下的 `scripts/`，即回到只用 guidance。
