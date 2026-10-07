@@ -71,6 +71,11 @@ export interface QuestionListItemVO {
   inWrongBook: boolean
   /** 收藏 = 在至少一个收藏夹里（ADR 0030） */
   favorited: boolean
+  /**
+   * 什么时候收藏的（最近一次进夹的时间）。
+   * ⚠️ **只有收藏夹页面会拿到它**——题库列表没有「夹」这个概念，后端不返回这个字段。
+   */
+  favoritedAt?: string
   tags: TagVO[]
 }
 

@@ -60,6 +60,9 @@
           <el-table-column label="分类" width="110">
             <template #default="{ row }">{{ row.categoryName || '-' }}</template>
           </el-table-column>
+          <el-table-column label="收藏时间" width="150">
+            <template #default="{ row }">{{ formatTime(row.favoritedAt) }}</template>
+          </el-table-column>
           <el-table-column label="收藏" width="60" align="center">
             <template #default="{ row }">
               <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
@@ -94,19 +97,21 @@ import {
   createFolder,
   deleteFolder,
   listFolders,
+  pageFavoriteQuestions,
   practiceFavorites,
   removeFromFolder,
   renameFolder
 } from '@/api/favorite'
-import { pageQuestions } from '@/api/question'
-import type { FavoriteFolderVO, QuestionListItemVO, QuestionQuery } from '@/types'
+import type { FavoriteFolderVO, QuestionListItemVO } from '@/types'
 
 /**
  * 收藏夹页面：左边是夹、右边是这个夹里的题。
  *
- * 两条与状态有关的取值，改之前先看 `docs/adr/0030`：
+ * 三条与状态有关的取值，改之前先看 `docs/adr/0030`：
  * - `selected === null` 表示**「全部收藏」**（跨夹、不重复计），它不是一个真实的夹；
- * - 夹列表的顺序由后端给（按「最近有新题进来」倒序），前端不再排一次。
+ * - 夹列表的顺序由后端给（按「最近有新题进来」倒序），前端不再排一次；
+ * - 右列的题也由后端按**最近收藏的排最前**给（`GET /api/favorites/questions`，不是题库列表接口），
+ *   前端同样不再排一次——**别在这张表上加 `sortable`**，那只会排当前这一页，与服务端排序打架。
  */
 const router = useRouter()
 
@@ -138,13 +143,7 @@ async function loadFolders() {
 async function loadQuestions() {
   loading.value = true
   try {
-    const query: QuestionQuery = { page: page.value, size: size.value }
-    if (selected.value === null) {
-      query.anyFavorite = true
-    } else {
-      query.favoriteFolderIds = [selected.value]
-    }
-    const result = await pageQuestions(query)
+    const result = await pageFavoriteQuestions(selected.value, page.value, size.value)
     rows.value = result.list
     total.value = result.total
   } finally {
@@ -246,6 +245,14 @@ async function onPractice() {
 
 function typeLabel(type: string) {
   return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
+}
+
+/**
+ * 收藏时间只做「变得好读」，**不做时区换算**：后端已经固定在 Asia/Shanghai 输出，
+ * 这里把它变成 `2026-10-07 13:45`。顺手兼容两种写法——ISO 的 `T` 分隔与空格分隔。
+ */
+function formatTime(value?: string) {
+  return value ? value.replace('T', ' ').slice(0, 16) : '-'
 }
 
 onMounted(loadAll)

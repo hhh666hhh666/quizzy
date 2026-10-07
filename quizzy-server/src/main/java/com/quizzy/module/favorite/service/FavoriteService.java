@@ -2,12 +2,15 @@ package com.quizzy.module.favorite.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.quizzy.common.BusinessException;
+import com.quizzy.common.PageResult;
 import com.quizzy.common.ResultCode;
 import com.quizzy.module.favorite.entity.FavoriteFolder;
 import com.quizzy.module.favorite.mapper.FavoriteFolderMapper;
 import com.quizzy.module.favorite.mapper.FavoriteFolderQuestionMapper;
 import com.quizzy.module.favorite.vo.FavoriteFolderVO;
+import com.quizzy.module.favorite.vo.FavoriteQuestionRef;
 import com.quizzy.module.question.service.QuestionService;
+import com.quizzy.module.question.vo.QuestionListItemVO;
 import com.quizzy.module.quiz.dto.QuizStartDTO;
 import com.quizzy.module.quiz.enums.SourceType;
 import com.quizzy.module.quiz.service.QuizService;
@@ -18,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -48,6 +54,10 @@ public class FavoriteService {
     /** 抽题上限，与错题重练对齐 */
     private static final int MAX_PRACTICE_COUNT = 200;
 
+    /** 收藏夹右列的分页默认值与上限——与题库列表（{@link QuestionService#page}）取同一个口径 */
+    private static final long DEFAULT_PAGE_SIZE = 10;
+    private static final long MAX_PAGE_SIZE = 100;
+
     private final FavoriteFolderMapper folderMapper;
     private final FavoriteFolderQuestionMapper folderQuestionMapper;
     private final QuestionService questionService;
@@ -55,6 +65,41 @@ public class FavoriteService {
 
     public List<FavoriteFolderVO> listFolders(Long userId) {
         return folderMapper.selectFoldersWithStat(userId);
+    }
+
+    /**
+     * 某个桶里的题目，**按最近收藏的排最前**——收藏夹页面的右列。
+     *
+     * <p>{@code folderId} 为空表示「全部收藏」（跨夹、一题多夹去重）。题目本身的组装仍走
+     * {@link QuestionService}，这里只管「顺序」与「分页」——所以两处列表的字段形状是同一份。
+     *
+     * <p>⚠️ 这个排序是**收藏视角**专有的：题库列表仍按题目 id 倒序（它是题目视角，与「最新入库的
+     * 排最前」一致）。两处刻意不同，理由见 docs/adr/0030。
+     */
+    public PageResult<QuestionListItemVO> pageQuestions(Long folderId, Long page, Long size, Long userId) {
+        long pageNo = page == null || page < 1 ? 1 : page;
+        long pageSize = size == null || size < 1 ? DEFAULT_PAGE_SIZE : Math.min(size, MAX_PAGE_SIZE);
+        if (folderId != null) {
+            // 别人的夹按「不存在」处理（404），与其它收藏接口同一个口径
+            requireFolder(folderId, userId);
+        }
+        long total = folderQuestionMapper.countQuestionsOfBucket(userId, folderId);
+        if (total == 0) {
+            return PageResult.of(List.of(), 0, pageNo, pageSize);
+        }
+        List<FavoriteQuestionRef> refs = folderQuestionMapper.selectQuestionRefsOfBucket(
+                userId, folderId, (pageNo - 1) * pageSize, pageSize);
+        // 手写循环而不是 toMap：后者在 value 为 null 时会抛 NPE，而这里不该由「时间恰好为空」决定成败
+        Map<Long, LocalDateTime> favoritedAt = new HashMap<>();
+        for (FavoriteQuestionRef ref : refs) {
+            favoritedAt.put(ref.getQuestionId(), ref.getFavoritedAt());
+        }
+        List<QuestionListItemVO> items = questionService.listByIds(
+                refs.stream().map(FavoriteQuestionRef::getQuestionId).toList(), userId);
+        for (QuestionListItemVO item : items) {
+            item.setFavoritedAt(favoritedAt.get(item.getId()));
+        }
+        return PageResult.of(items, total, pageNo, pageSize);
     }
 
     @Transactional(rollbackFor = Exception.class)

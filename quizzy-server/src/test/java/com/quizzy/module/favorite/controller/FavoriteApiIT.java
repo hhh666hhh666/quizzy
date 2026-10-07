@@ -130,6 +130,28 @@ class FavoriteApiIT extends ApiTestBase {
         return null;
     }
 
+    /**
+     * 收藏夹页面右列的题 id，**按后端给的顺序**（不传 {@code folderId} 表示「全部收藏」）。
+     *
+     * <p>刻意用「取 id 列表」而不是「取总数」来断言：这里要钉的正是**顺序**。
+     */
+    private List<Long> questionIdsOf(String token, Long folderId) throws Exception {
+        String url = folderId == null
+                ? "/api/favorites/questions"
+                : "/api/favorites/questions?folderId=" + folderId;
+        JsonNode res = apiGet(url, token);
+        assertThat(res.path("code").asInt()).as("取收藏夹题目应当成功，实际响应：%s", res).isZero();
+        List<Long> ids = new ArrayList<>();
+        res.path("data").path("list").forEach(node -> ids.add(node.path("id").asLong()));
+        return ids;
+    }
+
+    private void addToFolder(String token, long folderId, List<Long> questionIds) throws Exception {
+        JsonNode res = apiPost("/api/favorites/folders/" + folderId + "/questions", token,
+                payload("questionIds", questionIds));
+        assertThat(res.path("code").asInt()).as("加入收藏夹应当成功，实际响应：%s", res).isZero();
+    }
+
     // ---------- 用例 ----------
 
     @Test
@@ -327,6 +349,70 @@ class FavoriteApiIT extends ApiTestBase {
     }
 
     @Test
+    @DisplayName("收藏夹右列按「最近收藏的排最前」；一题多夹时跨夹去重、时间取最近一次")
+    void folderQuestionsOrderFollowsFavoritedTime() throws Exception {
+        JsonNode account = newAccount();
+        String token = tokenOf(account);
+        long userId = idOf(account);
+        long first = newQuestion(userId, asciiStem("fo1"));
+        long second = newQuestion(userId, asciiStem("fo2"));
+
+        long a = createFolder(token, "A");
+        long b = createFolder(token, "B");
+        addToFolder(token, a, List.of(first));
+        addToFolder(token, b, List.of(second));
+
+        assertThat(questionIdsOf(token, a)).containsExactly(first);
+        assertThat(questionIdsOf(token, b)).containsExactly(second);
+        assertThat(questionIdsOf(token, null)).as("全部收藏 = 跨夹去重，仍是两道").containsExactly(second, first);
+
+        // 间隔一小下，好让「最近一次进夹」的时间真的比上一批新（列是毫秒精度，同毫秒会退化成按 id 兜底）
+        Thread.sleep(10);
+        addToFolder(token, b, List.of(first));
+
+        assertThat(questionIdsOf(token, b)).as("刚放进来的排最前").containsExactly(first, second);
+        assertThat(questionIdsOf(token, null))
+                .as("全部收藏里 first 只出现一次；因为刚被收进 B，它的时间变成最新")
+                .containsExactly(first, second);
+        assertThat(apiGet("/api/favorites/questions", token).path("data").path("list").get(0)
+                .hasNonNull("favoritedAt")).as("收藏夹列表要带上收藏时间，否则排序无从自证").isTrue();
+    }
+
+    @Test
+    @DisplayName("收藏夹右列的分页：total 是去重后的题数，两页合起来不重不漏；别人的夹 404")
+    void folderQuestionsPaging() throws Exception {
+        JsonNode account = newAccount();
+        String token = tokenOf(account);
+        long userId = idOf(account);
+        long a = createFolder(token, "A");
+        List<Long> questionIds = new ArrayList<>();
+        for (int i = 0; i < 3; i += 1) {
+            questionIds.add(newQuestion(userId, asciiStem("pg" + i)));
+        }
+        addToFolder(token, a, questionIds);
+
+        JsonNode firstPage = apiGet("/api/favorites/questions?folderId=" + a + "&page=1&size=2", token)
+                .path("data");
+        assertThat(firstPage.path("total").asLong()).isEqualTo(3);
+        assertThat(firstPage.path("list").size()).isEqualTo(2);
+        JsonNode secondPage = apiGet("/api/favorites/questions?folderId=" + a + "&page=2&size=2", token)
+                .path("data");
+        assertThat(secondPage.path("list").size()).isEqualTo(1);
+
+        List<Long> paged = new ArrayList<>();
+        firstPage.path("list").forEach(node -> paged.add(node.path("id").asLong()));
+        secondPage.path("list").forEach(node -> paged.add(node.path("id").asLong()));
+        assertThat(paged).containsExactlyInAnyOrderElementsOf(questionIds);
+
+        // 别人的夹按「不存在」处理，与其它收藏接口同一个口径
+        String otherToken = newUserToken();
+        assertThat(apiGet("/api/favorites/questions?folderId=" + a, otherToken).path("code").asInt())
+                .isEqualTo(404);
+        // 「全部收藏」对没收藏过任何东西的人是空集，不是错误
+        assertThat(apiGet("/api/favorites/questions", otherToken).path("data").path("total").asLong()).isZero();
+    }
+
+    @Test
     @DisplayName("用收藏开练习：来源是 FAVORITE、标题带夹名；别人的夹取不到；不传夹 = 全部收藏")
     void practiceFromFolder() throws Exception {
         JsonNode account = newAccount();
@@ -394,5 +480,6 @@ class FavoriteApiIT extends ApiTestBase {
         assertThat(apiPost("/api/favorites/folders", null, payload("name", "x")).path("code").asInt())
                 .isEqualTo(401);
         assertThat(apiPost("/api/favorites/practice", null, null).path("code").asInt()).isEqualTo(401);
+        assertThat(apiGet("/api/favorites/questions", null).path("code").asInt()).isEqualTo(401);
     }
 }

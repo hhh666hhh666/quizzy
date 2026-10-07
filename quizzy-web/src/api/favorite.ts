@@ -1,5 +1,5 @@
 import request, { unwrap } from './request'
-import type { FavoriteFolderVO } from '@/types'
+import type { FavoriteFolderVO, PageResult, QuestionListItemVO } from '@/types'
 
 /**
  * 收藏夹。模型见 `docs/adr/0030`，三处最容易搞混的地方先写在这里：
@@ -25,6 +25,21 @@ export function renameFolder(folderId: number, name: string) {
 /** 删夹只把题从它里面移出；题若因此不属于任何夹，就不再是收藏。默认夹删不了（后端会拒）。 */
 export function deleteFolder(folderId: number) {
   return unwrap<void>(request.delete(`/favorites/folders/${folderId}`))
+}
+
+/**
+ * 某个收藏夹（`folderId` 为空 = **全部收藏**）里的题，**按最近收藏的排最前**。
+ *
+ * ⚠️ 它**不是**题库列表接口：题库页筛收藏走的是 `QuestionQuery.anyFavorite` /
+ * `favoriteFolderIds`，那是**题目视角**（按题目 id 倒序）。这里是**收藏视角**，
+ * 排序维度只存在于关联表上，所以后端另开了一个端点。理由见 `docs/adr/0030`。
+ */
+export function pageFavoriteQuestions(folderId: number | null, page: number, size: number) {
+  return unwrap<PageResult<QuestionListItemVO>>(
+    request.get('/favorites/questions', {
+      params: { folderId: folderId ?? undefined, page, size }
+    })
+  )
 }
 
 /** 批量加入某个夹（只加不减）。 */

@@ -74,11 +74,39 @@ public class QuestionService {
         wrapper.orderByDesc(Question::getId);
 
         IPage<Question> mpPage = questionMapper.selectPage(new Page<>(pageNo, pageSize), wrapper);
-        List<Question> records = mpPage.getRecords();
-        if (records.isEmpty()) {
-            return PageResult.of(Collections.emptyList(), mpPage.getTotal(), pageNo, pageSize);
-        }
+        return PageResult.of(assemble(mpPage.getRecords(), userId), mpPage.getTotal(), pageNo, pageSize);
+    }
 
+    /**
+     * 按**给定的 id 顺序**取一组题目，组装成列表项——收藏夹页面的右列用它。
+     *
+     * <p>顺序由调用方决定（收藏夹要的是「最近收藏的排最前」），所以这里取完数据后**按传入的
+     * {@code ids} 重排**，而不是听 {@code selectList} 自己的顺序。
+     *
+     * <p>取不到的 id 会被静默去掉（题目被逻辑删掉时 {@code deleted=0} 过滤会把它挡在外面）——
+     * 于是返回的条数可能少于传入的条数，调用方**不能**靠下标对齐两份列表。
+     */
+    public List<QuestionListItemVO> listByIds(List<Long> ids, Long userId) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return List.of();
+        }
+        Map<Long, Question> byId = questionMapper
+                .selectList(new LambdaQueryWrapper<Question>().in(Question::getId, ids)).stream()
+                .collect(Collectors.toMap(Question::getId, Function.identity(), (a, b) -> a));
+        List<Question> ordered = ids.stream().map(byId::get).filter(Objects::nonNull).toList();
+        return assemble(ordered, userId);
+    }
+
+    /**
+     * 列表项的公共组装：标签、分类名、错题标记、收藏标记。
+     *
+     * <p>题库列表与收藏夹页面**共用这一份**——两处的筛选与排序都不同，但输出形状必须一致，
+     * 否则同一个 VO 在两个页面会缺字段。这也是「收藏夹页面不重写一遍列表逻辑」的落点。
+     */
+    private List<QuestionListItemVO> assemble(List<Question> records, Long userId) {
+        if (records.isEmpty()) {
+            return List.of();
+        }
         List<Long> questionIds = records.stream().map(Question::getId).toList();
         Map<Long, List<TagVO>> tagsByQuestion = loadTags(questionIds);
         Map<Long, String> categoryNames = loadCategoryNames(records.stream().map(Question::getCategoryId).toList());
@@ -96,7 +124,7 @@ public class QuestionService {
             item.setFavorited(favoriteIds.contains(question.getId()));
             items.add(item);
         }
-        return PageResult.of(items, mpPage.getTotal(), pageNo, pageSize);
+        return items;
     }
 
     public QuestionVO detail(Long id, Long userId) {

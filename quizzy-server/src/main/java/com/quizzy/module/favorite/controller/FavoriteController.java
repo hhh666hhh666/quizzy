@@ -1,11 +1,13 @@
 package com.quizzy.module.favorite.controller;
 
+import com.quizzy.common.PageResult;
 import com.quizzy.common.Result;
 import com.quizzy.module.favorite.dto.FavoriteFolderIdsDTO;
 import com.quizzy.module.favorite.dto.FavoriteFolderSaveDTO;
 import com.quizzy.module.favorite.dto.FavoriteQuestionsDTO;
 import com.quizzy.module.favorite.service.FavoriteService;
 import com.quizzy.module.favorite.vo.FavoriteFolderVO;
+import com.quizzy.module.question.vo.QuestionListItemVO;
 import com.quizzy.security.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +28,18 @@ import java.util.List;
 /**
  * 收藏夹。模型见 docs/adr/0030。
  *
- * <p>⚠️ **收藏夹页面的右列（某个夹里有哪些题）不在这个 Controller 里**——它走的是
- * {@code GET /api/questions?favoriteFolderIds=...}，与题库页共用同一套筛选与组装。
- * 这样「收藏筛选」只有一份实现，不会出现两个列表口径不一致。
+ * <p>两处容易混淆的边界：
+ *
+ * <ul>
+ *   <li>**题库页的收藏筛选**走 {@code GET /api/questions?anyFavorite=…&favoriteFolderIds=…}，
+ *       与其它筛选条件共用同一套实现——那是**题目视角**，排序仍是题目 id 倒序；
+ *   <li>**收藏夹页面的右列**走本类的 {@code GET /api/favorites/questions}——那是**收藏视角**，
+ *       按最近收藏的排最前，还要跨夹去重（同一题可能在多个夹里）。排序维度只存在于关联表上，
+ *       塞进通用的题目查询会让它多出「参数 A 只在参数 B 存在时才有意义」的耦合。
+ * </ul>
+ *
+ * <p>两处**输出形状仍是一份**（都返回题目列表项，组装复用 {@code QuestionService}），
+ * 变的只是顺序与分页。
  */
 @Tag(name = "收藏夹")
 @RestController
@@ -71,11 +82,19 @@ public class FavoriteController {
         return Result.success();
     }
 
-    @Operation(summary = "把某道题从某个收藏夹移出")
+    @Operation(summary = "某道题从某个收藏夹移出")
     @DeleteMapping("/folders/{folderId}/questions/{questionId}")
     public Result<Void> removeFromFolder(@PathVariable Long folderId, @PathVariable Long questionId) {
         favoriteService.removeFromFolder(folderId, questionId, UserContext.requireUserId());
         return Result.success();
+    }
+
+    @Operation(summary = "收藏夹里的题目（不传 folderId = 全部收藏），按最近收藏的排最前")
+    @GetMapping("/questions")
+    public Result<PageResult<QuestionListItemVO>> pageQuestions(@RequestParam(required = false) Long folderId,
+                                                                @RequestParam(defaultValue = "1") Long page,
+                                                                @RequestParam(defaultValue = "10") Long size) {
+        return Result.success(favoriteService.pageQuestions(folderId, page, size, UserContext.requireUserId()));
     }
 
     @Operation(summary = "收藏（落到默认收藏夹，返回它供界面提示）")

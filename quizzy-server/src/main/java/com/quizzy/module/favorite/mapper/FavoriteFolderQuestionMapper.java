@@ -1,5 +1,6 @@
 package com.quizzy.module.favorite.mapper;
 
+import com.quizzy.module.favorite.vo.FavoriteQuestionRef;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -130,4 +131,49 @@ public interface FavoriteFolderQuestionMapper {
             + "join favorite_folder f on f.id = fq.folder_id "
             + "where f.user_id = #{userId} order by fq.create_time desc limit #{limit}")
     List<Long> selectQuestionIdsByUser(@Param("userId") Long userId, @Param("limit") int limit);
+
+    /**
+     * 一个「桶」里的题，按**最近收藏的排最前**——收藏夹页面的右列用。
+     *
+     * <p>{@code folderId} 为空表示「全部收藏」：那是跨夹的视角，一道题在多个夹里会出现多行，
+     * 所以必须 {@code group by} 去重，时间取 {@code max}（最近一次被收进来）。
+     * 末尾用 {@code question_id desc} 兜底，好让同一毫秒内的几道题也有稳定顺序。
+     *
+     * <p>⚠️ 与 {@link #selectQuestionIdsByFolder} **排序口径相同但用途不同**：那个是开练习抽题
+     * （只要 id、有上限、不要总数），这个是分页展示（要时间、要总数）。别把两者合成一个，
+     * 否则「练习抽题上限」与「翻页大小」这两个无关的数字会互相牵制。
+     */
+    @Select("""
+            <script>
+            select fq.question_id as questionId, max(fq.create_time) as favoritedAt
+            from favorite_folder_question fq
+            join favorite_folder f on f.id = fq.folder_id
+            where f.user_id = #{userId}
+            <if test="folderId != null"> and fq.folder_id = #{folderId} </if>
+            group by fq.question_id
+            order by max(fq.create_time) desc, fq.question_id desc
+            limit #{offset}, #{size}
+            </script>
+            """)
+    List<FavoriteQuestionRef> selectQuestionRefsOfBucket(@Param("userId") Long userId,
+                                                         @Param("folderId") Long folderId,
+                                                         @Param("offset") long offset,
+                                                         @Param("size") long size);
+
+    /**
+     * 上面那个桶里一共有多少道题——分页要的总数。
+     *
+     * <p>{@code count(distinct question_id)} 与上面的 {@code group by} 是同一件事的两种写法，
+     * 两处的过滤条件**必须一起改**，否则会出现「总数说有 20 条、翻到第 3 页却是空的」。
+     */
+    @Select("""
+            <script>
+            select count(distinct fq.question_id)
+            from favorite_folder_question fq
+            join favorite_folder f on f.id = fq.folder_id
+            where f.user_id = #{userId}
+            <if test="folderId != null"> and fq.folder_id = #{folderId} </if>
+            </script>
+            """)
+    long countQuestionsOfBucket(@Param("userId") Long userId, @Param("folderId") Long folderId);
 }
