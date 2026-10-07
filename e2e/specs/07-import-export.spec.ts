@@ -37,7 +37,10 @@ test('批量导入（JSON 粘贴）：题目入库、给出逐行报告、出现
 
   // 逐行报告：共 N 条 / 成功 M 条
   await expect(dialog.locator('.report')).toContainText('共 1 条')
-  await dialog.getByRole('button', { name: '关闭' }).click()
+  // ⚠️ 必须限定在 footer 里：弹窗右上角那个 × 的 `aria-label` 在中文语言包下**也叫「关闭」**
+  //    （英文时是 "Close"，所以早先不限定也能过），不限定就会同时命中两个元素、严格模式报错。
+  //    要关弹窗请用 `.el-dialog__headerbtn`（按类找，不看文案），见 06 号用例的收尾写法。
+  await dialog.locator('.el-dialog__footer').getByRole('button', { name: '关闭' }).click()
 
   // 真的进库了
   await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
