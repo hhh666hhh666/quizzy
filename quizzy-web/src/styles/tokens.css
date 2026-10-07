@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Quizzy 设计 token（唯一真相源 · 第一版，2026-10-08 荧 起草）
+
+   这里是**唯一一处**定义设计原子的地方：颜色 / 形状 / 字体 / 字阶 / 阴影 / 动效。
+   组件只许引用这里的**语义名**，不许写死数值。
+
+   ⚠️ 主题：现在只出**浅色**。深色的结构已预留（`html.dark` 那一块）——
+      所有"深浅本质不同"的点都已建模成 token（阴影 / 描边 / 图片描边 / color-scheme），
+      要开深色时把值填进去、并给 `<html>` 加 `dark` 类即可。见 docs/adr/0031。
+
+   ⚠️ 首版数值是荧 起草的：走"克制"路线——**精美来自尺度与留白，不来自花哨**。
+      数值全部可改，**改这里，全站跟着变**。调色板若要动，优先动 `--color-brand`。
+
+   ⚠️ 本文件用 `@theme static`：强制把变量全部输出到 CSS（默认只有被用到的才输出，
+      那样 `var(--color-…)` 会在没被工具类引用时失效）。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import "tailwindcss";
+
+@theme static {
+  /* ── 颜色：语义名 → 工具类 `bg-canvas` / `text-ink` / `border-line` / `bg-brand` … ── */
+  --color-canvas:     oklch(98.2% 0.004 85); /* 页面底：暖白 */
+  --color-surface:    oklch(100% 0 0);       /* 卡片 / 内容面：纯白 */
+  --color-surface-2:  oklch(96.8% 0.005 85); /* 次级面：悬停 / 交替带 */
+  --color-line:       oklch(91.5% 0.004 85); /* 结构边框 / 分隔线 */
+  --color-line-soft:  oklch(94.5% 0.003 85); /* 更弱的分隔 */
+  --color-ink:        oklch(24% 0.006 85);   /* 正文 / 标题 */
+  --color-ink-muted:  oklch(50% 0.008 85);   /* 次要文字 */
+  --color-ink-subtle: oklch(64% 0.007 85);   /* 占位符 / 辅助说明 */
+  --color-brand:      oklch(54% 0.17 258);   /* 主色：**唯一的强调色**，克制使用 */
+  --color-brand-soft: oklch(95% 0.03 258);   /* 主色的浅底（选中 / 高亮背景） */
+  --color-brand-ink:  oklch(100% 0 0);       /* 主色之上的文字 */
+  --color-ok:         oklch(55% 0.13 155);
+  --color-warn:       oklch(66% 0.14 75);
+  --color-danger:     oklch(56% 0.18 25);
+  --color-focus:      oklch(54% 0.17 258);   /* 焦点环 */
+
+  /* ── 形状：同心圆角的外层 = 内层 + padding（见 make-interfaces-feel-better 第 1 条）── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* ── 字体：先用系统栈；自托管中文子集是**后续增强**（见 docs/todo/）── */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    "Noto Sans SC", "Source Han Sans SC", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
+
+  /* ── 字阶：工具型界面，正文 14px；行高比默认略松一点，中文更好读 ── */
+  --text-2xs:  0.6875rem; /* 11px */
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.8125rem; /* 13px */
+  --text-base: 0.875rem;  /* 14px —— 正文 */
+  --text-md:   1rem;      /* 16px */
+  --text-lg:   1.125rem;  /* 18px */
+  --text-xl:   1.375rem;  /* 22px */
+  --text-2xl:  1.75rem;   /* 28px */
+
+  /* ── 阴影：低不透明度、多层 —— 要"嵌入感"，不要"悬浮感"（Notion 式）── */
+  --shadow-xs: 0 1px 0 0 oklch(0% 0 0 / 0.03);
+  --shadow-sm: 0 1px 2px -1px oklch(0% 0 0 / 0.06), 0 1px 0 0 oklch(0% 0 0 / 0.03);
+  --shadow-md: 0 4px 12px -4px oklch(0% 0 0 / 0.08), 0 1px 3px -1px oklch(0% 0 0 / 0.05);
+
+  /* ── 动效：时长与缓动也 token 化，统一调整 ── */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* 页面级默认：让滚动条与原生控件跟随主题 */
+:root {
+  color-scheme: light;
+}
+
+/* ── 深色：**目前不启用**。开的时候把值填进来即可（结构已预留）────────────────
+   html.dark {
+     color-scheme: dark;
+     --color-canvas: …; --color-surface: …; --color-ink: …;  …
+   }
+   ──────────────────────────────────────────────────────────────────────── */
+html.dark {
+  color-scheme: dark;
+}
+
+/* ── 无障碍地板：尊重系统的"减少动态效果"（见 docs/ 的测试说明）──────────────
+   只降级**运动类**属性，保留颜色/透明度这类静态反馈，不做一刀切全砍。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+    transition-duration: 120ms !important;
+    scroll-behavior: auto !important;
+  }
+}

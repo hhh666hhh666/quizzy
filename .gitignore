@@ -19,3 +19,5 @@ dist/
 *.iml
 .vscode/
 .DS_Store
+# 一次性校验产物（待清）
+quizzy-web/.csscheck-out/
