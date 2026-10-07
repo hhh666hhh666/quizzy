@@ -1,22 +1,41 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Quizzy 设计 token（唯一真相源 · 第一版，2026-10-08 荧 起草）
 
-   这里是**唯一一处**定义设计原子的地方：颜色 / 形状 / 字体 / 字阶 / 阴影 / 动效。
-   组件只许引用这里的**语义名**，不许写死数值。
+   本文件分**两节**，读的时候别混：
+
+     第一节 `@theme static { … }`  —— **我们的 token**。作者：荧/主人。
+                                     颜色 / 形状 / 字体 / 字阶 / 阴影 / 动效的真实值都在这。
+
+     第二节 `:root { … }`          —— **翻译给 shadcn-vue 的组件用**。
+                                     shadcn 的组件认的是它自己那套名字
+                                     （`--primary` / `--background` / `--border` …），
+                                     这一节**只做映射、不写颜色值**。
+
+   ⚠️ **改颜色、改圆角、改字体 → 只改第一节。**
+      在第二节写死颜色 = 又造一份真相，改了不会同步（这正是本仓库删过一次
+      `DESIGN.md` 的原因，见 docs/README.md 的「单一信息源纪律」）。
+
+   ⚠️ **换 shadcn 的 preset 时**：新版 CLI 会重写第二节那一套变量——
+      只要第一节不动，主人的调色板就不会被它带走。若它又往第二节写了硬值，
+      把它改回 `var(--color-…)` 即可。
 
    ⚠️ 主题：现在只出**浅色**。深色的结构已预留（`html.dark` 那一块）——
-      所有"深浅本质不同"的点都已建模成 token（阴影 / 描边 / 图片描边 / color-scheme），
+      所有"深浅本质不同"的点都已建模成 token（阴影 / 描边 / color-scheme），
       要开深色时把值填进去、并给 `<html>` 加 `dark` 类即可。见 docs/adr/0031。
 
    ⚠️ 首版数值是荧 起草的：走"克制"路线——**精美来自尺度与留白，不来自花哨**。
       数值全部可改，**改这里，全站跟着变**。调色板若要动，优先动 `--color-brand`。
-
-   ⚠️ 本文件用 `@theme static`：强制把变量全部输出到 CSS（默认只有被用到的才输出，
-      那样 `var(--color-…)` 会在没被工具类引用时失效）。
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @import "tailwindcss";
 
+/* shadcn 组件的进/出场动画工具类（纯 CSS，很小）。shadcn-vue 的组件依赖它。 */
+@import "tw-animate-css";
+
+/* shadcn 的 `dark:` 变体约定：认 `<html class="dark">` 之下的元素 */
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════ 第一节 · 我们的 token（唯一真相源）═══════════════════ */
 @theme static {
   /* ── 颜色：语义名 → 工具类 `bg-canvas` / `text-ink` / `border-line` / `bg-brand` … ── */
   --color-canvas:     oklch(98.2% 0.004 85); /* 页面底：暖白 */
@@ -33,6 +52,7 @@
   --color-ok:         oklch(55% 0.13 155);
   --color-warn:       oklch(66% 0.14 75);
   --color-danger:     oklch(56% 0.18 25);
+  --color-danger-ink: oklch(100% 0 0);       /* 危险色之上的文字 */
   --color-focus:      oklch(54% 0.17 258);   /* 焦点环 */
 
   /* ── 形状：同心圆角的外层 = 内层 + padding（见 make-interfaces-feel-better 第 1 条）── */
@@ -42,7 +62,8 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* ── 字体：先用系统栈；自托管中文子集是**后续增强**（见 docs/todo/）── */
+  /* ── 字体：先用系统栈；自托管中文子集是**后续增强**（见 docs/todo/）──
+     ⚠️ 不要在这里引入 Web 字体：国内加载会失败，也会拖慢首屏。 */
   --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei",
     "Noto Sans SC", "Source Han Sans SC", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
@@ -66,19 +87,106 @@
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* 页面级默认：让滚动条与原生控件跟随主题 */
+/* ═══════════════ 第二节 · 映射给 shadcn-vue 的组件（只翻译，不写值）═══════════════ */
 :root {
-  color-scheme: light;
+  color-scheme: light; /* 让滚动条与原生控件跟随主题 */
+
+  /* shadcn 的全局圆角：它内部会由 `--radius` 推出 sm/md/lg。
+     这里指向我们自己的档位，避免出现第二套圆角标尺。 */
+  --radius: var(--radius-lg);
+
+  --background: var(--color-canvas);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-brand);
+  --primary-foreground: var(--color-brand-ink);
+  --secondary: var(--color-surface-2);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-surface-2);
+  --muted-foreground: var(--color-ink-muted);
+  --accent: var(--color-brand-soft);
+  --accent-foreground: var(--color-brand);
+  --destructive: var(--color-danger);
+  --destructive-foreground: var(--color-danger-ink);
+  --border: var(--color-line);
+  --input: var(--color-line);
+  --ring: var(--color-focus);
+
+  /* 本项目不做图表（统计看板在范围外），但 shadcn 组件可能引用这几个名字；
+     照样映射，免得页面里悄悄长出一套独立色板。 */
+  --chart-1: var(--color-brand);
+  --chart-2: var(--color-ok);
+  --chart-3: var(--color-warn);
+  --chart-4: var(--color-danger);
+  --chart-5: var(--color-ink-subtle);
+
+  /* 侧栏（我们的 MainLayout 有侧栏，shadcn 也有 Sidebar 组件） */
+  --sidebar: var(--color-surface);
+  --sidebar-foreground: var(--color-ink);
+  --sidebar-primary: var(--color-brand);
+  --sidebar-primary-foreground: var(--color-brand-ink);
+  --sidebar-accent: var(--color-surface-2);
+  --sidebar-accent-foreground: var(--color-ink);
+  --sidebar-border: var(--color-line);
+  --sidebar-ring: var(--color-focus);
 }
 
-/* ── 深色：**目前不启用**。开的时候把值填进来即可（结构已预留）────────────────
-   html.dark {
-     color-scheme: dark;
-     --color-canvas: …; --color-surface: …; --color-ink: …;  …
-   }
-   ──────────────────────────────────────────────────────────────────────── */
+/* 把上面那套变量注册成 Tailwind 的 `bg-primary` / `text-muted-foreground` 之类工具类。
+   ⚠️ CLI 生成时这里带了 `--radius-sm/md/lg/xl` 四行，会把第一节的圆角标尺顶掉，
+      已被删除——圆角只认第一节。 */
+@theme inline {
+  --font-heading: var(--font-sans);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* ── 深色：**目前不启用** ────────────────────────────────────────────────────
+   启用时照第一节的办法补深色值，并在这一节把上面那套映射再写一遍（指向深色 token）。
+   CLI 生成时这里是一组写死的深色值，已被删除——留着一份写死的深色 = 第二套真相。 */
 html.dark {
   color-scheme: dark;
+}
+
+/* shadcn 的基础层：给所有元素一个默认边框色，并让 body 跟随主题变量 */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 /* ── 无障碍地板：尊重系统的"减少动态效果"（见 docs/ 的测试说明）──────────────
