@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN" class="bg-canvas">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>设计系统预览 · Quizzy</title>
+  </head>
+  <body class="bg-canvas text-ink font-sans text-base">
+    <div class="mx-auto max-w-4xl px-8 py-12">
+      <header class="border-b border-line pb-6">
+        <h1 class="text-2xl font-semibold tracking-tight">设计系统预览</h1>
+        <p class="mt-2 text-ink-muted text-sm">
+          这一页展示的是 <code class="font-mono text-xs">src/styles/tokens.css</code> 里的 token。
+          <span class="text-ink-subtle">改那个文件，这一页跟着变。</span>
+        </p>
+      </header>
+
+      <!-- 颜色 -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">颜色</h2>
+        <p class="mt-1 text-ink-subtle text-sm">语义名，不是"蓝色/灰色"这种描述名。</p>
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-canvas border border-line-soft"></div>
+            <p class="mt-2 text-xs font-medium">canvas</p>
+            <p class="text-2xs text-ink-subtle">页面底</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-surface border border-line"></div>
+            <p class="mt-2 text-xs font-medium">surface</p>
+            <p class="text-2xs text-ink-subtle">卡片 / 内容面</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-surface-2"></div>
+            <p class="mt-2 text-xs font-medium">surface-2</p>
+            <p class="text-2xs text-ink-subtle">次级面 / 悬停</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-brand"></div>
+            <p class="mt-2 text-xs font-medium">brand</p>
+            <p class="text-2xs text-ink-subtle">唯一强调色</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-ok"></div>
+            <p class="mt-2 text-xs font-medium">ok</p>
+            <p class="text-2xs text-ink-subtle">正确 / 成功</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-warn"></div>
+            <p class="mt-2 text-xs font-medium">warn</p>
+            <p class="text-2xs text-ink-subtle">提醒</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-danger"></div>
+            <p class="mt-2 text-xs font-medium">danger</p>
+            <p class="text-2xs text-ink-subtle">错误 / 删除</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-brand-soft border border-line-soft"></div>
+            <p class="mt-2 text-xs font-medium">brand-soft</p>
+            <p class="text-2xs text-ink-subtle">选中底</p>
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-md border border-line bg-surface p-4 shadow-xs">
+          <p class="text-xs text-ink-muted">文字层级</p>
+          <p class="mt-2 text-base">ink —— 正文用这个，14px。</p>
+          <p class="text-ink-muted text-sm">ink-muted —— 次要说明，13px。</p>
+          <p class="text-ink-subtle text-sm">ink-subtle —— 占位符与辅助信息。</p>
+        </div>
+      </section>
+
+      <!-- 文字 -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">字阶</h2>
+        <p class="mt-1 text-ink-subtle text-sm">工具型界面：正文 14px，比默认略紧。</p>
+        <div class="mt-4 rounded-md border border-line bg-surface p-5 shadow-xs">
+          <p class="text-2xl font-semibold tracking-tight">2xl · 28px 页面主标题</p>
+          <p class="mt-3 text-xl font-medium">xl · 22px 区块标题</p>
+          <p class="mt-3 text-lg font-medium">lg · 18px 小标题</p>
+          <p class="mt-3 text-md">md · 16px 强调正文</p>
+          <p class="mt-3 text-base">base · 14px 正文：题干、选项、解析都用它。中英混排 mixed Latin text 200 OK。</p>
+          <p class="mt-3 text-sm">sm · 13px 次要文字</p>
+          <p class="mt-3 text-xs">xs · 12px 标签</p>
+          <p class="mt-3 text-2xs uppercase tracking-wide text-ink-subtle">2xs · 11px 极小标签</p>
+        </div>
+      </section>
+
+      <!-- 形状与阴影 -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">形状与层级</h2>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-md border border-line bg-surface p-5 shadow-xs">
+            <p class="text-xs text-ink-muted">圆角阶梯</p>
+            <div class="mt-3 flex items-end gap-3">
+              <div class="h-10 w-10 rounded-xs bg-surface-2 border border-line"></div>
+              <div class="h-10 w-10 rounded-sm bg-surface-2 border border-line"></div>
+              <div class="h-10 w-10 rounded-md bg-surface-2 border border-line"></div>
+              <div class="h-10 w-10 rounded-lg bg-surface-2 border border-line"></div>
+              <div class="h-10 w-10 rounded-xl bg-surface-2 border border-line"></div>
+            </div>
+            <p class="mt-2 text-2xs text-ink-subtle">xs / sm / md / lg / xl</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-5 shadow-xs">
+            <p class="text-xs text-ink-muted">同心圆角（外 = 内 + 内边距）</p>
+            <div class="mt-3 rounded-lg border border-line bg-surface-2 p-2">
+              <div class="rounded-sm bg-surface border border-line p-3 text-2xs text-ink-subtle">
+                外层 lg(12) + 内边距 8 = 20 …这里用 md(8) 演示内层
+              </div>
+            </div>
+            <p class="mt-3 text-2xs text-ink-subtle">嵌套圆角不相等，是界面"看着别扭"的最常见原因。</p>
+          </div>
+        </div>
+        <div class="mt-3 grid gap-3 sm:grid-cols-3">
+          <div class="rounded-md bg-surface p-5 shadow-xs"><p class="text-xs">shadow-xs</p></div>
+          <div class="rounded-md bg-surface p-5 shadow-sm"><p class="text-xs">shadow-sm</p></div>
+          <div class="rounded-md bg-surface p-5 shadow-md"><p class="text-xs">shadow-md</p></div>
+        </div>
+      </section>
+
+      <!-- 状态 -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">状态与交互</h2>
+        <p class="mt-1 text-ink-subtle text-sm">每个可点的东西都要有：默认 / 悬停 / 按下 / 焦点 / 禁用。</p>
+        <div class="mt-4 flex flex-wrap items-center gap-3 rounded-md border border-line bg-surface p-5 shadow-xs">
+          <button class="rounded-md bg-brand px-3 py-1.5 text-sm text-brand-ink transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out)] hover:opacity-90 active:opacity-100">
+            主按钮
+          </button>
+          <button class="rounded-md border border-line bg-surface px-3 py-1.5 text-sm transition-colors duration-[var(--duration-fast)] hover:bg-surface-2">
+            次按钮
+          </button>
+          <button class="rounded-md px-3 py-1.5 text-sm text-brand hover:bg-brand-soft transition-colors duration-[var(--duration-fast)]">
+            文字按钮
+          </button>
+          <button class="rounded-md border border-line bg-surface-2 px-3 py-1.5 text-sm text-ink-subtle" disabled>
+            禁用
+          </button>
+          <button class="rounded-md outline-none ring-2 ring-focus ring-offset-2 ring-offset-surface px-3 py-1.5 text-sm border border-line bg-surface">
+            焦点态
+          </button>
+        </div>
+
+        <div class="mt-3 flex flex-wrap items-center gap-3">
+          <span class="rounded-sm bg-brand-soft px-2 py-0.5 text-xs text-brand">选中标签</span>
+          <span class="rounded-sm bg-surface-2 px-2 py-0.5 text-xs text-ink-muted">普通标签</span>
+          <span class="rounded-sm bg-ok/12 px-2 py-0.5 text-xs">答对 12</span>
+          <span class="rounded-sm bg-danger/12 px-2 py-0.5 text-xs">答错 3</span>
+          <span class="rounded-sm bg-warn/16 px-2 py-0.5 text-xs">待复习 5</span>
+        </div>
+
+        <div class="mt-3 rounded-md border border-line bg-surface p-5 shadow-xs">
+          <label class="block text-xs text-ink-muted" for="demo-input">输入框（含焦点环）</label>
+          <input id="demo-input" placeholder="输入关键词…"
+            class="mt-2 w-full rounded-md border border-line bg-surface px-3 py-1.5 text-sm outline-none placeholder:text-ink-subtle focus:ring-2 focus:ring-focus focus:border-brand transition-shadow duration-[var(--duration-fast)]" />
+        </div>
+      </section>
+
+      <!-- 间距 -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">间距</h2>
+        <p class="mt-1 text-ink-subtle text-sm">4px 网格。间距只用这几个档，不要出现 7px、13px 这种数。</p>
+        <div class="mt-4 space-y-2 rounded-md border border-line bg-surface p-5 shadow-xs">
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">1 · 4</span><div class="h-3 w-1 bg-brand-soft"></div></div>
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">2 · 8</span><div class="h-3 w-2 bg-brand-soft"></div></div>
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">3 · 12</span><div class="h-3 w-3 bg-brand-soft"></div></div>
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">4 · 16</span><div class="h-3 w-4 bg-brand-soft"></div></div>
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">6 · 24</span><div class="h-3 w-6 bg-brand-soft"></div></div>
+          <div class="flex items-center gap-3"><span class="w-12 text-2xs text-ink-subtle">8 · 32</span><div class="h-3 w-8 bg-brand-soft"></div></div>
+        </div>
+      </section>
+
+      <footer class="mt-12 border-t border-line pt-6 text-ink-subtle text-xs">
+        <p>
+          ⚠️ 深色目前**未启用**：结构已在 <code class="font-mono">tokens.css</code> 里预留（<code class="font-mono">html.dark</code> 那一块）。
+        </p>
+        <p class="mt-1">缩窄窗口看响应式；系统开"减少动态效果"时，动效会自动降级。</p>
+      </footer>
+    </div>
+
+    <script type="module" src="/src/preview/main.ts"></script>
+  </body>
+</html>

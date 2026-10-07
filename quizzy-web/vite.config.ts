@@ -27,6 +27,16 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  build: {
+    rollupOptions: {
+      // 两个入口：index（主应用）+ preview（设计系统预览页）。
+      // preview 只挂 token 层，用来肉眼看设计系统；主应用不受它影响。
+      input: {
+        index: fileURLToPath(new URL('./index.html', import.meta.url)),
+        preview: fileURLToPath(new URL('./preview.html', import.meta.url))
+      }
+    }
+  },
   server: {
     port: 5173,
     proxy: {
