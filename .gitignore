@@ -10,6 +10,11 @@ dist/
 # 出题中间产物（切片清单/模型产出分片/校验明细），随时可重跑重来
 .qbgen/
 .workbuddy/
+# Impeccable：只忽略**生成物与本机设置**；`.impeccable/config.json` 与 `.impeccable/surfaces/*.md` 要入库
+.impeccable/design.json
+.impeccable/config.local.json
+.impeccable/build/
+.impeccable/review/
 .idea/
 *.iml
 .vscode/
