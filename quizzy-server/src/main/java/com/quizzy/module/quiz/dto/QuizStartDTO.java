@@ -19,4 +19,11 @@ public class QuizStartDTO {
 
     /** sourceType = WRONG_BOOK 时可选，默认 20 */
     private Integer count;
+
+    /**
+     * sourceType = FAVORITE 时用：从哪个收藏夹抽题。
+     *
+     * <p>为空表示「全部收藏」（该用户收藏的所有题，跨夹）。见 docs/adr/0030。
+     */
+    private Long folderId;
 }

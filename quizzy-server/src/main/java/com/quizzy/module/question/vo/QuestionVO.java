@@ -38,6 +38,9 @@ public class QuestionVO {
 
     private boolean inWrongBook;
 
+    /** 见 docs/adr/0030：收藏 = 在至少一个收藏夹里。 */
+    private boolean favorited;
+
     private List<OptionVO> options = new ArrayList<>();
 
     private List<TagVO> tags = new ArrayList<>();

@@ -15,5 +15,7 @@ public record QuizResultItemVO(Long questionId,
                                List<String> correctAnswers,
                                boolean answered,
                                boolean correct,
+                               /** 收藏 = 在至少一个收藏夹里（见 docs/adr/0030）：结果页据此显示星标 */
+                               boolean favorited,
                                String analysis) {
 }

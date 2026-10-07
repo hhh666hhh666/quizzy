@@ -1,7 +1,7 @@
 export type QuestionType = 'SINGLE' | 'MULTI' | 'JUDGE'
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD'
 export type PaperMode = 'FIXED' | 'RULE'
-export type SourceType = 'PAPER' | 'QUICK' | 'WRONG_BOOK'
+export type SourceType = 'PAPER' | 'QUICK' | 'WRONG_BOOK' | 'FAVORITE'
 export type SessionStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED'
 
 export interface Result<T> {
@@ -16,6 +16,20 @@ export interface PageResult<T> {
   total: number
   page: number
   size: number
+}
+
+/**
+ * 收藏夹。⚠️「收藏」= 题目在至少一个夹里，**没有「未分组」这个状态**；
+ * 默认收藏夹不可删、可改名，所以它的名字只能从接口拿，界面里不许写死。
+ */
+export interface FavoriteFolderVO {
+  id: number
+  name: string
+  /** 默认收藏夹不可删除（但可改名），界面据此决定要不要显示「删除」 */
+  isDefault: boolean
+  questionCount: number
+  /** 该夹最近一次有新题进来的时间；空夹时后端不返回这个字段 */
+  lastAddedTime?: string
 }
 
 export interface UserVO {
@@ -55,6 +69,8 @@ export interface QuestionListItemVO {
   ownerId: number | null
   editable: boolean
   inWrongBook: boolean
+  /** 收藏 = 在至少一个收藏夹里（ADR 0030） */
+  favorited: boolean
   tags: TagVO[]
 }
 
@@ -93,6 +109,10 @@ export interface QuestionQuery {
   tagIds?: number[]
   scope?: string
   onlyWrong?: boolean
+  /** 按收藏夹筛（可多选）。⚠️ anyFavorite 为真时它被忽略——两者是包含关系，不是并列 */
+  favoriteFolderIds?: number[]
+  /** 只看收藏（在任意一个收藏夹里）。界面上的「全部收藏」就是它 */
+  anyFavorite?: boolean
 }
 
 export interface PaperRuleDTO {
@@ -165,6 +185,8 @@ export interface QuizResultItemVO {
   correctAnswers: string[]
   answered: boolean
   correct: boolean
+  /** 收藏 = 在至少一个收藏夹里（ADR 0030） */
+  favorited: boolean
   analysis: string
 }
 

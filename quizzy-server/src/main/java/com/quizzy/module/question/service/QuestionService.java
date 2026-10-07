@@ -13,6 +13,7 @@ import com.quizzy.module.category.mapper.CategoryMapper;
 import com.quizzy.module.category.mapper.TagMapper;
 import com.quizzy.module.category.service.CategoryService;
 import com.quizzy.module.category.service.TagService;
+import com.quizzy.module.favorite.mapper.FavoriteFolderQuestionMapper;
 import com.quizzy.module.question.converter.QuestionConverter;
 import com.quizzy.module.question.dto.OptionDTO;
 import com.quizzy.module.question.dto.QuestionQueryDTO;
@@ -35,6 +36,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,6 +60,7 @@ public class QuestionService {
     private final TagService tagService;
     private final CategoryService categoryService;
     private final QuestionConverter questionConverter;
+    private final FavoriteFolderQuestionMapper favoriteFolderQuestionMapper;
 
     public PageResult<QuestionListItemVO> page(QuestionQueryDTO query, Long userId) {
         long pageNo = query.getPage() == null || query.getPage() < 1 ? 1 : query.getPage();
@@ -80,6 +83,9 @@ public class QuestionService {
         Map<Long, List<TagVO>> tagsByQuestion = loadTags(questionIds);
         Map<Long, String> categoryNames = loadCategoryNames(records.stream().map(Question::getCategoryId).toList());
         Set<Long> wrongIds = new HashSet<>(selectWrongQuestionIds(userId));
+        // 收藏标记只查**当前页**那几十个 id（与错题标记的全量捞取不同，见 Mapper 上的说明）
+        Set<Long> favoriteIds = new HashSet<>(
+                favoriteFolderQuestionMapper.selectFavoriteQuestionIds(userId, questionIds));
 
         List<QuestionListItemVO> items = new ArrayList<>();
         for (Question question : records) {
@@ -87,6 +93,7 @@ public class QuestionService {
             fillBase(item, question, userId, categoryNames);
             item.setTags(tagsByQuestion.getOrDefault(question.getId(), List.of()));
             item.setInWrongBook(wrongIds.contains(question.getId()));
+            item.setFavorited(favoriteIds.contains(question.getId()));
             items.add(item);
         }
         return PageResult.of(items, mpPage.getTotal(), pageNo, pageSize);
@@ -98,6 +105,8 @@ public class QuestionService {
         QuestionVO vo = questionConverter.toVO(question);
         vo.setAnswers(AnswerUtil.split(question.getAnswer()));
         vo.setEditable(isOwner(question, userId));
+        vo.setFavorited(!favoriteFolderQuestionMapper
+                .selectFolderIdsByQuestion(userId, question.getId()).isEmpty());
         vo.setOptions(loadOptions(question.getId()));
         vo.setTags(loadTags(List.of(question.getId())).getOrDefault(question.getId(), List.of()));
         if (question.getCategoryId() != null) {
@@ -111,6 +120,34 @@ public class QuestionService {
             vo.setInWrongBook(stat.getInWrongBook() != null && stat.getInWrongBook() == 1);
         }
         return vo;
+    }
+
+    /**
+     * 这道题对当前用户可见吗（公开题或自己的题）？不可见的按「不存在」处理（404），
+     * 与 {@link #assertVisible} 同一口径。
+     *
+     * <p>收藏等**跨模块**的动作靠它守住可见性——公开的那份规则只此一处，别在别处重写一遍。
+     */
+    public void requireVisible(Long questionId, Long userId) {
+        assertVisible(questionMapper.selectById(questionId), userId);
+    }
+
+    /**
+     * 一批题目对当前用户是否都可见。**一次查询**判完，别在循环里逐题查。
+     *
+     * <p>题库页的批量动作（导出的 id、收藏夹的批量加入）都走它。
+     */
+    public void requireVisible(Collection<Long> questionIds, Long userId) {
+        List<Long> distinct = questionIds.stream().filter(Objects::nonNull).distinct().toList();
+        if (distinct.isEmpty()) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "请先选题目");
+        }
+        Long visible = questionMapper.selectCount(new LambdaQueryWrapper<Question>()
+                .in(Question::getId, distinct)
+                .and(w -> w.isNull(Question::getOwnerId).or().eq(Question::getOwnerId, userId)));
+        if (visible == null || visible != distinct.size()) {
+            throw new BusinessException(ResultCode.NOT_FOUND, "有题目不存在或无权访问");
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -220,6 +257,8 @@ public class QuestionService {
                 .eq(QuestionOption::getQuestionId, id));
         questionMapper.deleteTags(id);
         questionStatMapper.delete(new LambdaQueryWrapper<QuestionStat>().eq(QuestionStat::getQuestionId, id));
+        // 收藏关联跟着硬删：与上面那条「删题硬删作答统计」同一个口径，不留指向已删题的悬挂行（ADR 0029）
+        favoriteFolderQuestionMapper.deleteByQuestion(id);
         // 这道题可能是旧分类最后的引用
         categoryService.pruneIfOrphan(question.getCategoryId());
     }
@@ -280,7 +319,31 @@ public class QuestionService {
             }
             wrapper.in(Question::getId, wrongIds);
         }
+        List<Long> favoriteIds = resolveFavoriteFilter(query, userId);
+        if (favoriteIds != null) {
+            if (favoriteIds.isEmpty()) {
+                return null;
+            }
+            wrapper.in(Question::getId, favoriteIds);
+        }
         return wrapper;
+    }
+
+    /**
+     * 收藏筛选。返回 {@code null} 表示「没启用收藏筛选」，返回空列表表示「这个条件一道题都命不中」。
+     *
+     * <p>⚠️「全部收藏」（{@code anyFavorite}）一旦为真就**忽略** {@code favoriteFolderIds}——
+     * 两者是包含关系而非并列关系（「在任意夹里」当然包含「在这些夹里」）。形状与分类那套
+     * （多选 + 「未分类」哨兵）一致，写法上也照它那样避免把 OR 漏到外层去。
+     */
+    private List<Long> resolveFavoriteFilter(QuestionQueryDTO query, Long userId) {
+        if (Boolean.TRUE.equals(query.getAnyFavorite())) {
+            return favoriteFolderQuestionMapper.selectAllFavoriteQuestionIds(userId);
+        }
+        if (CollectionUtils.isEmpty(query.getFavoriteFolderIds())) {
+            return null;
+        }
+        return favoriteFolderQuestionMapper.selectQuestionIdsByFolders(userId, query.getFavoriteFolderIds());
     }
 
     /**

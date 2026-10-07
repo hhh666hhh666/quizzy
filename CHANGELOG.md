@@ -28,15 +28,16 @@
 
 ### Added
 
-- **账户自助**：新增「我的账户」页（独立路由 `/profile`，入口在顶栏用户区），支持改密码、改昵称、改头像、
-  注销账号、退出所有设备。四个接口挂在 `module/auth` 下：
-  - **改密码后本机换发新 token、其他设备立刻掉线**；「退出所有设备」复用同一机制
-    （[ADR 0027](./docs/adr/0027-token-version-invalidates-all-devices.md)）
-  - **头像**以 data URL 存进 `user` 表（Flyway `V3__account_self_service.sql` 加 `avatar` 与 `token_version` 两列），
-    没设头像时由前端按用户 id 生成默认方块头像；只收 jpeg / png / webp 且按文件头判定
-    （[ADR 0028](./docs/adr/0028-avatar-stored-in-database.md)）
-  - **注销为硬删**：账号连同其题目、试卷、作答统计、会话一并物理删除，用户名立即可重新注册
-    （[ADR 0029](./docs/adr/0029-account-deletion-hard-delete.md)）
+- **收藏夹**（[ADR 0030](./docs/adr/0030-favorites-as-named-folders.md)）：可以把题目收进**自己命名的多个收藏夹**，
+  一道题可同时属于多个夹。
+  - **「收藏」= 在至少一个收藏夹里**，没有「未分组」；每个用户天然有一个**默认收藏夹**（按需创建、不可删、可改名），
+    点星标先落进它
+  - 星标两种手势：**短按**收藏 / 取消收藏（取消后可**撤销**），**长按**打开「修改收藏夹」面板；
+    收藏时会弹一条带「修改收藏夹」的横幅
+  - 新增「收藏夹」页面（左夹右题，可新建 / 改名 / 删夹、把题移出某个夹、用某个夹的题开一次练习）
+  - 题库页新增「收藏夹」筛选（含「全部收藏」）、批量「加入收藏夹」与行内星标；题目详情与答题结果页也有星标
+  - 后端：Flyway `V4__question_favorites.sql`（`favorite_folder` + `favorite_folder_question` 两张表）；
+    「来源」新增第四种 `FAVORITE`
 
 ### Changed
 
@@ -45,6 +46,7 @@
 - **登录态从「纯无状态 JWT」变成半状态**：JWT 里带一个 token 版本号，每个带 token 的请求都会与库里的值比对，
   因此**每个请求多一次查库**。这是换「改密码即全场下线」的代价，理由与被否的替代方案见
   [ADR 0027](./docs/adr/0027-token-version-invalidates-all-devices.md)
+- **`CONTEXT.md` 的「收藏夹」不再是错题本的禁用别名**：它现在指自己的收藏功能（[ADR 0030](./docs/adr/0030-favorites-as-named-folders.md)）
 
 ## [1.5.0] - 2026-10-06
 

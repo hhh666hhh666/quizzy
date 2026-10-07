@@ -7,6 +7,7 @@
         <el-menu-item index="/papers">试卷</el-menu-item>
         <el-menu-item index="/quiz/quick">快速练习</el-menu-item>
         <el-menu-item index="/wrong-book">错题本</el-menu-item>
+        <el-menu-item index="/favorites">收藏夹</el-menu-item>
         <el-menu-item index="/history">答题记录</el-menu-item>
       </el-menu>
     </el-aside>

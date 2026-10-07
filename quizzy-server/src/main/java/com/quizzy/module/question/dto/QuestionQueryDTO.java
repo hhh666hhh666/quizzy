@@ -38,4 +38,16 @@ public class QuestionQueryDTO {
 
     /** 只查看错题本中的题目 */
     private Boolean onlyWrong;
+
+    /**
+     * 按收藏夹筛选，可多选。
+     *
+     * <p>⚠️ 与 {@link #anyFavorite} 的关系：{@code anyFavorite} 一旦为真，本字段**被忽略**——
+     * 「在任意夹里」本来就包含「在这些夹里」，两个条件是包含关系、不是并列关系。
+     * 这与分类那套（多选 + 「未分类」哨兵）形状一致，见 docs/adr/0030。
+     */
+    private List<Long> favoriteFolderIds;
+
+    /** 只看收藏（在任意一个收藏夹里）。界面上的「全部收藏」选项就是它。 */
+    private Boolean anyFavorite;
 }

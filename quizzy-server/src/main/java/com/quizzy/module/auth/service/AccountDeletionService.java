@@ -25,14 +25,19 @@ public class AccountDeletionService {
         int stats = cleanupMapper.deleteStats(userId);
         int paperQuestions = cleanupMapper.deletePaperQuestions(userId);
         int papers = cleanupMapper.deletePapers(userId);
+        int favoriteLinks = cleanupMapper.deleteFavoriteLinks(userId);
+        int favoriteLinksOfOwned = cleanupMapper.deleteFavoriteLinksOfOwnedQuestions(userId);
         int tags = cleanupMapper.deleteQuestionTags(userId);
         int options = cleanupMapper.deleteQuestionOptions(userId);
         int questionStats = cleanupMapper.deleteStatsOfOwnedQuestions(userId);
         int questions = cleanupMapper.deleteQuestions(userId);
+        int favoriteFolders = cleanupMapper.deleteFavoriteFolders(userId);
         int user = cleanupMapper.deleteUser(userId);
 
         // 只记条数、不记内容：注销是用户的隐私动作，日志里不该留下他做过什么。
-        log.info("账号已注销 userId={}：作答 {} / 会话 {} / 统计 {} / 试卷题 {} / 试卷 {} / 标签关联 {} / 选项 {} / 题目统计 {} / 题目 {} / 账号 {}",
-                userId, answers, sessions, stats, paperQuestions, papers, tags, options, questionStats, questions, user);
+        log.info("账号已注销 userId={}：作答 {} / 会话 {} / 统计 {} / 试卷题 {} / 试卷 {} / 收藏关联 {} /"
+                        + " 题目上的收藏 {} / 标签关联 {} / 选项 {} / 题目统计 {} / 题目 {} / 收藏夹 {} / 账号 {}",
+                userId, answers, sessions, stats, paperQuestions, papers, favoriteLinks,
+                favoriteLinksOfOwned, tags, options, questionStats, questions, favoriteFolders, user);
     }
 }

@@ -24,7 +24,7 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("跳过错误行：一行失败不影响其余行，并返回逐行错误报告")
     void shouldSkipInvalidRowAndKeepOthers() {
-        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 if ("第二题".equals(dto.getStem())) {
@@ -62,7 +62,7 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("中文题型别名与多种分隔符都能正确解析")
     void shouldParseAliasesAndSeparators() {
-        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 assertEquals(2, dto.getAnswers().size());
@@ -89,7 +89,7 @@ class QuestionImportServiceTest {
     @Test
     @DisplayName("给了卷名：本次**成功**导入的题装进一张新固定卷，失败的题不进去")
     void createsOneFixedPaperFromSuccessfulRows() {
-        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null) {
+        QuestionService fakeQuestionService = new QuestionService(null, null, null, null, null, null, null, null, null) {
             private long seq = 100;
 
             @Override
@@ -133,13 +133,13 @@ class QuestionImportServiceTest {
                 return 1L;
             }
         };
-        QuestionService okService = new QuestionService(null, null, null, null, null, null, null, null) {
+        QuestionService okService = new QuestionService(null, null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 return 1L;
             }
         };
-        QuestionService alwaysFailing = new QuestionService(null, null, null, null, null, null, null, null) {
+        QuestionService alwaysFailing = new QuestionService(null, null, null, null, null, null, null, null, null) {
             @Override
             public Long save(QuestionSaveDTO dto, Long userId) {
                 throw new BusinessException("就是不行");

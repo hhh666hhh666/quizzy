@@ -28,5 +28,8 @@ public class QuestionListItemVO {
 
     private boolean inWrongBook;
 
+    /** 这道题是不是已在某个收藏夹里（等价于「收藏过」）。见 docs/adr/0030。 */
+    private boolean favorited;
+
     private List<TagVO> tags = new ArrayList<>();
 }

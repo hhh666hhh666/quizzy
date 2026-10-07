@@ -40,6 +40,8 @@ export function toQueryParams(query: QuestionQuery): URLSearchParams {
   if (query.uncategorized) params.set('uncategorized', 'true')
   query.tagIds?.forEach((id) => params.append('tagIds', String(id)))
   if (query.onlyWrong) params.set('onlyWrong', 'true')
+  query.favoriteFolderIds?.forEach((id) => params.append('favoriteFolderIds', String(id)))
+  if (query.anyFavorite) params.set('anyFavorite', 'true')
   if (query.page) params.set('page', String(query.page))
   if (query.size) params.set('size', String(query.size))
   return params

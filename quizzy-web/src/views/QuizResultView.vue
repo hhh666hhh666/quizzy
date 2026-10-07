@@ -29,6 +29,11 @@
           {{ item.correct ? '正确' : item.answered ? '错误' : '未作答' }}
         </el-tag>
         <span class="score">{{ item.correct ? item.score : 0 }} / {{ item.score }} 分</span>
+        <!--
+          收藏星标。⚠️ 结果页上「这题答错了」这件事**已经自动进错题本了**，
+          所以这里的星标只表达「我要留着自己再看」——两个集合的含义不同，别混。
+        -->
+        <FavoriteStar :question-id="item.questionId" :favorited="item.favorited" @change="onStarChange(item, $event)" />
       </div>
       <MarkdownRenderer :source="item.stem" />
       <ul class="option-list">
@@ -61,6 +66,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import FavoriteStar from '@/components/FavoriteStar.vue'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
 import { getSessionResult } from '@/api/quiz'
 import type { QuizResultItemVO, SessionResultVO } from '@/types'
@@ -80,6 +86,10 @@ function optionClass(item: QuizResultItemVO, label: string) {
 
 function typeLabel(type: string) {
   return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
+}
+
+function onStarChange(item: QuizResultItemVO, favorited: boolean) {
+  item.favorited = favorited
 }
 
 onMounted(async () => {

@@ -61,6 +61,26 @@
             <el-option v-for="t in tags" :key="t.id" :label="t.name" :value="t.id" />
           </el-select>
         </el-form-item>
+        <!--
+          收藏夹筛选。⚠️ 与上面的分类不同，这里**把「全部收藏」做成一个可勾的选项**而不是顶部动作：
+          后端的语义是「在任意夹里」**或**「在这些夹里」，两者是包含关系、不存在谁赢谁输，
+          所以界面不需要发明任何互斥规则。分类那边做成顶部动作，是因为「全部分类」与具体分类
+          之间的互斥规则不好解释——两处取舍不同，别照搬。
+        -->
+        <el-form-item label="收藏夹">
+          <el-select
+            v-model="state.favoriteChoices"
+            multiple
+            clearable
+            collapse-tags
+            collapse-tags-tooltip
+            placeholder="全部收藏夹"
+            style="width: 200px"
+          >
+            <el-option label="全部收藏" :value="ALL_FAVORITES" />
+            <el-option v-for="f in favoriteFolders" :key="f.id" :label="f.name" :value="f.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="applySearch">查询</el-button>
           <el-button @click="onReset">重置</el-button>
@@ -84,6 +104,7 @@
         <span class="batch-count">已选 {{ selectedCount }} 道（可跨页）</span>
         <el-button size="small" type="primary" data-testid="batch-add-to-paper" @click="openAddToPaper">加入试卷</el-button>
         <el-button size="small" data-testid="batch-new-paper" @click="onCreatePaperFromSelection">用所选新建试卷</el-button>
+        <el-button size="small" data-testid="batch-add-to-favorite" @click="addToFavoriteVisible = true">加入收藏夹</el-button>
         <el-button size="small" link @click="clearSelection">清空选择</el-button>
       </div>
 
@@ -114,6 +135,11 @@
         <el-table-column prop="score" label="分值" width="70" />
         <el-table-column label="归属" width="100">
           <template #default="{ row }">{{ row.ownerId ? '我的' : '公开' }}</template>
+        </el-table-column>
+        <el-table-column label="收藏" width="60" align="center">
+          <template #default="{ row }">
+            <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange(row, $event)" />
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="220">
           <template #default="{ row }">
@@ -156,6 +182,14 @@
     <QuestionEditDialog v-model:visible="editVisible" :question-id="editingId" @saved="load" />
     <ImportDialog v-model:visible="importVisible" @done="load" />
 
+    <!-- 批量加入收藏夹：**只加不减**，与单题的「修改收藏夹」（覆盖）刻意不同（见 ADR 0030） -->
+    <FavoriteFoldersDialog
+      v-model:visible="addToFavoriteVisible"
+      mode="add"
+      :question-ids="selectedIdList"
+      @saved="onBatchFavoriteSaved"
+    />
+
     <!-- 「加入已有试卷」：只列固定卷——规则卷没有题目列表，加不进去（后端也会拒） -->
     <el-dialog v-model="addToPaperVisible" title="加入试卷" width="460px">
       <p class="add-hint">只能加入<b>固定卷</b>；已在卷中的题会被自动忽略，不会重复。</p>
@@ -190,11 +224,14 @@ import type { LocationQuery } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteQuestion, listCategories, listTags, pageQuestions, toQueryParams } from '@/api/question'
 import { appendPaperQuestions, exportPath, pagePapers, savePaper, templatePath } from '@/api/paper'
+import { listFolders } from '@/api/favorite'
 import request from '@/api/request'
+import FavoriteStar from '@/components/FavoriteStar.vue'
+import FavoriteFoldersDialog from '@/components/FavoriteFoldersDialog.vue'
 import QuestionDetailDialog from './QuestionDetailDialog.vue'
 import QuestionEditDialog from './QuestionEditDialog.vue'
 import ImportDialog from './ImportDialog.vue'
-import type { Difficulty, QuestionListItemVO, QuestionQuery, QuestionType, TagVO } from '@/types'
+import type { Difficulty, FavoriteFolderVO, QuestionListItemVO, QuestionQuery, QuestionType, TagVO } from '@/types'
 
 /**
  * 分类下拉里「未分类」这一项的值。
@@ -205,6 +242,15 @@ import type { Difficulty, QuestionListItemVO, QuestionQuery, QuestionType, TagVO
 const UNCATEGORIZED = 'none'
 type CategoryChoice = number | typeof UNCATEGORIZED
 
+/**
+ * 收藏夹下拉里「全部收藏」这一项的值。
+ *
+ * 收藏夹 id 一律是数字，所以这个字符串当哨兵不会撞上真实的夹。与分类的「未分类」不同，它**是一个可勾的选项**
+ * （理由见模板里那段注释）；上送后端时被翻成 `anyFavorite=true`。
+ */
+const ALL_FAVORITES = 'all'
+type FavoriteChoice = number | typeof ALL_FAVORITES
+
 /** 页面的全部状态，**也就是写进网址的那一份**——两边同源，不存在「网址上有、界面上没有」的字段。 */
 interface PageState {
   keyword: string
@@ -213,6 +259,7 @@ interface PageState {
   scope: string
   categoryIds: CategoryChoice[]
   tagIds: number[]
+  favoriteChoices: FavoriteChoice[]
   page: number
   size: number
 }
@@ -232,6 +279,7 @@ const total = ref(0)
 const loading = ref(false)
 const categories = ref<{ id: number; name: string }[]>([])
 const tags = ref<TagVO[]>([])
+const favoriteFolders = ref<FavoriteFolderVO[]>([])
 const detailVisible = ref(false)
 const editVisible = ref(false)
 const importVisible = ref(false)
@@ -245,6 +293,8 @@ const editingId = ref<number | null>(null)
 // 一旦不带，翻到第二页再操作就会**静默丢掉第一页的选择**。同一取舍见 `PaperEditDialog` 的选题器。
 const selectedIds = ref(new Set<number>())
 const selectedCount = computed(() => selectedIds.value.size)
+/** 给「加入收藏夹」面板用：批量接口要的是一份 id 数组，不是 Set。 */
+const selectedIdList = computed(() => [...selectedIds.value])
 const pageAllSelected = computed(
   () => rows.value.length > 0 && rows.value.every((row) => selectedIds.value.has(row.id))
 )
@@ -252,6 +302,7 @@ const pageSomeSelected = computed(
   () => !pageAllSelected.value && rows.value.some((row) => selectedIds.value.has(row.id))
 )
 const addToPaperVisible = ref(false)
+const addToFavoriteVisible = ref(false)
 const fixedPapers = ref<{ id: number; title: string; questionCount: number }[]>([])
 const targetPaperId = ref<number | null>(null)
 const adding = ref(false)
@@ -301,6 +352,22 @@ async function onAddToPaper() {
   }
 }
 
+/**
+ * 星标变了：**只改这一行**，不重取列表。
+ *
+ * 与收藏夹页面刻意不同——那一页本身就是「按收藏筛选」的视图，收藏状态一变、这一行很可能已经
+ * 不属于当前结果集；而题库页的筛选条件与收藏无关，行不会因此消失，就地更新既准又省一次请求。
+ */
+function onStarChange(row: QuestionListItemVO, favorited: boolean) {
+  row.favorited = favorited
+}
+
+/** 批量加入收藏夹之后得重取一次：这一页里好几行的星标都可能跟着亮了。 */
+function onBatchFavoriteSaved() {
+  clearSelection()
+  load()
+}
+
 async function onCreatePaperFromSelection() {
   try {
     const { value } = await ElMessageBox.prompt('新试卷的标题', '用所选题目新建试卷', {
@@ -328,6 +395,7 @@ const state = reactive<PageState>({
   scope: DEFAULT_SCOPE,
   categoryIds: [],
   tagIds: [],
+  favoriteChoices: [],
   page: 1,
   size: DEFAULT_SIZE
 })
@@ -340,7 +408,8 @@ const noFilterButMine = computed(
     !state.type &&
     !state.difficulty &&
     !state.categoryIds.length &&
-    !state.tagIds.length
+    !state.tagIds.length &&
+    !state.favoriteChoices.length
 )
 
 // ---------- 状态 ↔ 网址 ----------
@@ -375,6 +444,20 @@ function toIds(values: string[]): number[] {
   return values.map((v) => Number(v)).filter((v) => Number.isFinite(v))
 }
 
+/** 把网址上的收藏夹值翻成界面值；认不出来的一律丢掉（与分类同款防御，别让脏值打到后端）。 */
+function toFavoriteChoices(values: string[]): FavoriteChoice[] {
+  const choices: FavoriteChoice[] = []
+  for (const value of values) {
+    if (value === ALL_FAVORITES) {
+      choices.push(ALL_FAVORITES)
+      continue
+    }
+    const id = Number(value)
+    if (Number.isFinite(id)) choices.push(id)
+  }
+  return choices
+}
+
 /**
  * 从网址读出页面状态。
  *
@@ -395,6 +478,7 @@ function readStateFromRoute(): PageState {
     scope: SCOPES.includes(scope ?? '') ? (scope as string) : DEFAULT_SCOPE,
     categoryIds: toCategoryChoices(listOf(q.categoryIds)),
     tagIds: toIds(listOf(q.tagIds)),
+    favoriteChoices: toFavoriteChoices(listOf(q.favoriteFolderIds)),
     page: Number.isFinite(page) && page > 1 ? page : 1,
     size: Number.isFinite(size) && size > 0 ? size : DEFAULT_SIZE
   }
@@ -416,6 +500,7 @@ function writeStateToRoute() {
   if (state.scope !== DEFAULT_SCOPE) query.scope = state.scope
   if (state.categoryIds.length) query.categoryIds = state.categoryIds.map(String)
   if (state.tagIds.length) query.tagIds = state.tagIds.map(String)
+  if (state.favoriteChoices.length) query.favoriteFolderIds = state.favoriteChoices.map(String)
   if (state.page > 1) query.page = String(state.page)
   if (state.size !== DEFAULT_SIZE) query.size = String(state.size)
   router.replace({ path: '/questions', query })
@@ -437,7 +522,11 @@ function apiQuery(): QuestionQuery {
     scope: state.scope,
     categoryIds: state.categoryIds.filter((v): v is number => v !== UNCATEGORIZED),
     uncategorized: state.categoryIds.includes(UNCATEGORIZED),
-    tagIds: state.tagIds
+    tagIds: state.tagIds,
+    // 「全部收藏」勾了就置 anyFavorite：后端那边它**覆盖**具体夹（包含关系），
+    // 所以这里不必把两者合起来算，界面也就不用解释「谁赢」。
+    anyFavorite: state.favoriteChoices.includes(ALL_FAVORITES),
+    favoriteFolderIds: state.favoriteChoices.filter((v): v is number => v !== ALL_FAVORITES)
   }
 }
 
@@ -484,6 +573,7 @@ function onReset() {
     scope: DEFAULT_SCOPE,
     categoryIds: [],
     tagIds: [],
+    favoriteChoices: [],
     page: 1,
     size: DEFAULT_SIZE
   } satisfies PageState)
@@ -573,9 +663,10 @@ function difficultyLabel(level: string) {
 onMounted(async () => {
   // 顺序有讲究：先把网址里的条件读进来，再取下拉框的候选值，最后才查列表
   Object.assign(state, readStateFromRoute())
-  const [categoryList, tagList] = await Promise.all([listCategories(), listTags()])
+  const [categoryList, tagList, folderList] = await Promise.all([listCategories(), listTags(), listFolders()])
   categories.value = categoryList
   tags.value = tagList
+  favoriteFolders.value = folderList
   await load()
 })
 </script>

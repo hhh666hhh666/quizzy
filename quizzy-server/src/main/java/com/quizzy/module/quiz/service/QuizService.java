@@ -7,6 +7,9 @@ import com.quizzy.common.BusinessException;
 import com.quizzy.common.PageResult;
 import com.quizzy.common.ResultCode;
 import com.quizzy.common.util.AnswerUtil;
+import com.quizzy.module.favorite.entity.FavoriteFolder;
+import com.quizzy.module.favorite.mapper.FavoriteFolderMapper;
+import com.quizzy.module.favorite.mapper.FavoriteFolderQuestionMapper;
 import com.quizzy.module.paper.entity.Paper;
 import com.quizzy.module.paper.mapper.PaperMapper;
 import com.quizzy.module.paper.service.PaperService;
@@ -40,8 +43,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +63,8 @@ public class QuizService {
     private final PaperMapper paperMapper;
     private final PaperService paperService;
     private final ScoreStrategy scoreStrategy;
+    private final FavoriteFolderMapper favoriteFolderMapper;
+    private final FavoriteFolderQuestionMapper favoriteFolderQuestionMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public Long start(QuizStartDTO dto, Long userId) {
@@ -89,6 +96,24 @@ public class QuizService {
             case WRONG_BOOK -> {
                 questionIds = selectWrongBookQuestionIds(userId, dto.getCount() == null ? 20 : dto.getCount());
                 title = "错题重练";
+            }
+            case FAVORITE -> {
+                int limit = dto.getCount() == null || dto.getCount() <= 0 ? 20 : Math.min(dto.getCount(), 200);
+                if (dto.getFolderId() == null) {
+                    // 「全部收藏」：跨夹去重（一道题可能同时在几个夹里）
+                    questionIds = favoriteFolderQuestionMapper.selectQuestionIdsByUser(userId, limit)
+                            .stream().distinct().toList();
+                    title = "收藏练习";
+                } else {
+                    // ⚠️ 归属必须在这里校验：抽题 SQL 也带了 user_id 过滤（双保险），
+                    //    但只靠它的话，别人的夹会退化成「没有符合要求的题目」这种含糊报错。
+                    FavoriteFolder folder = favoriteFolderMapper.selectById(dto.getFolderId());
+                    if (folder == null || !userId.equals(folder.getUserId())) {
+                        throw new BusinessException(ResultCode.NOT_FOUND, "收藏夹不存在");
+                    }
+                    questionIds = favoriteFolderQuestionMapper.selectQuestionIdsByFolder(userId, folder.getId(), limit);
+                    title = "收藏练习：" + folder.getName();
+                }
             }
             default -> throw new BusinessException("不支持的答题来源");
         }
@@ -255,6 +280,11 @@ public class QuizService {
     private SessionResultVO result(QuizSession session) {
         List<QuizAnswer> answers = loadAnswers(session.getId());
         Map<Long, Question> questionMap = loadQuestionMap(answers.stream().map(QuizAnswer::getQuestionId).toList());
+        // 结果页要给每道题显示收藏星标，一次批量取完，别在循环里逐题查
+        Set<Long> favoriteIds = answers.isEmpty()
+                ? Collections.emptySet()
+                : new HashSet<>(favoriteFolderQuestionMapper.selectFavoriteQuestionIds(
+                        session.getUserId(), answers.stream().map(QuizAnswer::getQuestionId).toList()));
         List<QuizResultItemVO> items = new ArrayList<>();
         int totalScore = 0;
         int obtainedScore = 0;
@@ -282,6 +312,7 @@ public class QuizService {
                     AnswerUtil.split(question.getAnswer()),
                     answered,
                     answer.getIsCorrect() != null && answer.getIsCorrect() == 1,
+                    favoriteIds.contains(question.getId()),
                     question.getAnalysis()));
         }
         double accuracy = answeredCount == 0 ? 0 : (correctCount * 100.0) / answeredCount;

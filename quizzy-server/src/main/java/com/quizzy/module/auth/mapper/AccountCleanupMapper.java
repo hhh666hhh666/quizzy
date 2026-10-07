@@ -63,4 +63,18 @@ public interface AccountCleanupMapper {
     /** 最后删账号本身。 */
     @Delete("delete from `user` where id = #{userId}")
     int deleteUser(@Param("userId") Long userId);
+
+    /** 他的收藏关联（要排在删收藏夹之前）。 */
+    @Delete("delete from favorite_folder_question "
+            + "where folder_id in (select id from favorite_folder where user_id = #{userId})")
+    int deleteFavoriteLinks(@Param("userId") Long userId);
+
+    /** 别人在他题目上的收藏（要排在删题目之前）。理由同 {@link #deleteStatsOfOwnedQuestions}。 */
+    @Delete("delete from favorite_folder_question "
+            + "where question_id in (select id from question where owner_id = #{ownerId})")
+    int deleteFavoriteLinksOfOwnedQuestions(@Param("ownerId") Long ownerId);
+
+    /** 他的收藏夹。 */
+    @Delete("delete from favorite_folder where user_id = #{userId}")
+    int deleteFavoriteFolders(@Param("userId") Long userId);
 }

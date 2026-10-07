@@ -14,6 +14,7 @@ const routes = [
       { path: 'quiz/:id/result', name: 'quiz-result', component: () => import('@/views/QuizResultView.vue') },
       { path: 'history', name: 'history', component: () => import('@/views/HistoryView.vue') },
       { path: 'wrong-book', name: 'wrong-book', component: () => import('@/views/WrongBookView.vue') },
+      { path: 'favorites', name: 'favorites', component: () => import('@/views/FavoriteView.vue') },
       { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue') }
     ]
   }

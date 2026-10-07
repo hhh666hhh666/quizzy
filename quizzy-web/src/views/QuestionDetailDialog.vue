@@ -16,6 +16,7 @@
             {{ detail.ownerId ? '我的题' : '公开题（只读）' }}
           </el-tag>
           <el-tag v-if="detail.inWrongBook" size="small" type="danger">在错题本</el-tag>
+          <FavoriteStar :question-id="detail.id" :favorited="detail.favorited" @change="onStarChange" />
         </div>
 
         <div v-if="detail.tags?.length" class="meta">
@@ -79,6 +80,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { getQuestion } from '@/api/question'
+import FavoriteStar from '@/components/FavoriteStar.vue'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
 import type { QuestionVO } from '@/types'
 
@@ -111,6 +113,13 @@ watch(
 function onEdit() {
   emit('edit', props.questionId)
   emit('update:visible', false)
+}
+
+/** 星标只同步这一份详情，不回头刷列表——列表页自己有星标，它那行会各自更新。 */
+function onStarChange(favorited: boolean) {
+  if (detail.value) {
+    detail.value.favorited = favorited
+  }
 }
 
 function typeLabel(type: string) {
