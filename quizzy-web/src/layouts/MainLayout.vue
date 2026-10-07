@@ -14,7 +14,18 @@
       <el-header class="header">
         <span class="title">{{ route.meta.title || '' }}</span>
         <div class="user-area">
-          <span>{{ store.user?.nickname || '未登录' }}</span>
+          <el-dropdown trigger="click" @command="onUserCommand">
+            <span class="user-trigger">
+              <UserAvatar :user="store.user" :size="28" />
+              <span>{{ store.user?.nickname || '未登录' }}</span>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">我的账户</el-dropdown-item>
+                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
           <el-dropdown trigger="click" @command="onTheme">
             <el-button link type="primary">外观：{{ modeLabel }}</el-button>
             <template #dropdown>
@@ -26,7 +37,6 @@
             </template>
           </el-dropdown>
           <el-button link type="primary" @click="aboutVisible = true">关于</el-button>
-          <el-button link type="primary" @click="onLogout">退出</el-button>
         </div>
       </el-header>
       <el-main>
@@ -43,6 +53,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore, type ThemeMode } from '@/stores/theme'
+import UserAvatar from '@/components/UserAvatar.vue'
 import AboutDialog from '@/views/AboutDialog.vue'
 
 const route = useRoute()
@@ -77,6 +88,17 @@ function onLogout() {
   store.logout()
   router.push('/login')
 }
+
+/** 顶栏用户区的下拉：资料入口与登出都收在这儿，避免顶栏平铺太多按钮。 */
+function onUserCommand(command: string) {
+  if (command === 'profile') {
+    router.push('/profile')
+    return
+  }
+  if (command === 'logout') {
+    onLogout()
+  }
+}
 </script>
 
 <style scoped>
@@ -86,4 +108,5 @@ function onLogout() {
 .header { display: flex; align-items: center; justify-content: space-between; background: var(--el-bg-color); border-bottom: 1px solid var(--el-border-color-lighter); }
 .title { font-size: 16px; font-weight: 500; }
 .user-area { display: flex; align-items: center; gap: 12px; }
+.user-trigger { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; outline: none; }
 </style>

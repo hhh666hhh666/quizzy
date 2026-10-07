@@ -13,7 +13,8 @@ const routes = [
       { path: 'quiz/:id', name: 'quiz', component: () => import('@/views/QuizView.vue') },
       { path: 'quiz/:id/result', name: 'quiz-result', component: () => import('@/views/QuizResultView.vue') },
       { path: 'history', name: 'history', component: () => import('@/views/HistoryView.vue') },
-      { path: 'wrong-book', name: 'wrong-book', component: () => import('@/views/WrongBookView.vue') }
+      { path: 'wrong-book', name: 'wrong-book', component: () => import('@/views/WrongBookView.vue') },
+      { path: 'profile', name: 'profile', component: () => import('@/views/ProfileView.vue') }
     ]
   }
 ]

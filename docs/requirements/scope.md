@@ -34,7 +34,7 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 - **答题**：逐题作答、即时判分与解析、一题一答（**已作答的题只可回看、不能改答案**）、进度落库因而可断点续答
 - **错题本**：答错自动入本，练熟后自动移出，也支持手动移出与一键错题重练
 - **作答记录**：历史会话列表，未完成的可以继续作答
-- **用户**：注册后即可自建题库。公开注册带图形验证码与按 IP 限流，不做后台管理与角色权限（[ADR 0017](../adr/0017-public-signup-service.md)）
+- **用户**：注册后即可自建题库，并能**自助管理账号**（改密码、改昵称、改头像、注销账号；**不改登录名**——`username` 带唯一键且与「邮箱作登录名」的远期方向纠缠，见 [ADR 0027](../adr/0027-token-version-invalidates-all-devices.md)）。公开注册带图形验证码与按 IP 限流，不做后台管理与角色权限（[ADR 0017](../adr/0017-public-signup-service.md)）
 
 具体实现边界见 [《判分与业务规则》](../design/判分与业务规则.md) 与 [《数据模型》](../design/数据模型.md)。
 
@@ -46,7 +46,7 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 - 限时考试、防作弊、监考、成绩排名
 - 统计看板与掌握度分析
 - 后台用户管理与角色权限（RBAC）
-- 图片上传与富文本编辑器
+- **题目内容里的**图片上传与富文本编辑器（头像不受这条限制——它是账号资料，不是题目内容，见 [ADR 0028](../adr/0028-avatar-stored-in-database.md)）
 - Redis、消息队列、多级缓存
 - Refresh Token 机制
 - Excel 与 JSON 之外的导入格式
@@ -89,6 +89,9 @@ quizzy 是一个**以「一道题反复练到会」为核心的刷题工具**。
 | 版本号以 `git tag` 为准，只经构建参数注入 | [ADR 0015](../adr/0015-version-number-governance.md) |
 | 移动端 / 小程序只是新增客户端形态，不新增业务能力；建设类功能留在 PC | [ADR 0019](../adr/0019-mobile-clients-with-uniapp.md) |
 | 测试分三层（单元 / 接口与服务集成 / 端到端）；**排版只做几何断言，不做视觉回归** | [ADR 0020](../adr/0020-layered-test-system.md) 及其 Amendment 1 |
+| 改密码即**全场下线**（`user.token_version` + JWT 里带版本号，每次请求比对）；「退出所有设备」复用同一机制 | [ADR 0027](../adr/0027-token-version-invalidates-all-devices.md) |
+| 头像**存进数据库**（data URL）；没有头像时由**前端**生成默认方块头像；只收 jpeg / png / webp，拒绝 SVG | [ADR 0028](../adr/0028-avatar-stored-in-database.md) |
+| 注销账号 = **硬删**（题目跟着物理删，不留悬挂 `owner_id`），配置二确认 | [ADR 0029](../adr/0029-account-deletion-hard-delete.md) |
 
 ## 术语与决策入口
 

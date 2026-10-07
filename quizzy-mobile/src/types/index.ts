@@ -22,6 +22,11 @@ export interface UserVO {
   id: number
   username: string
   nickname: string
+  /**
+   * 头像 data URL。**没设头像时整个字段不出现**——后端配了 `non_null`，
+   * 所以判断「有没有自定义头像」要用 `!user.avatar`，别指望它是 `null`。
+   */
+  avatar?: string
 }
 
 export interface LoginVO {

@@ -32,5 +32,19 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('quizzy_token')
   }
 
-  return { token, user, login, register, loadUser, logout }
+  /** 保存资料后把服务端返回的最新用户信息换上，免得再发一次 /me。 */
+  function setUser(next: UserVO) {
+    user.value = next
+  }
+
+  /**
+   * 改密码后，后端只给**当前设备**换发新 token（见 ADR 0027），
+   * 本地凭据要跟着换，否则下一次请求就 401 了。
+   */
+  function applyToken(next: string) {
+    token.value = next
+    localStorage.setItem('quizzy_token', next)
+  }
+
+  return { token, user, login, register, loadUser, logout, setUser, applyToken }
 })

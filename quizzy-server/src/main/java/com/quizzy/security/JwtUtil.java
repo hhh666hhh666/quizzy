@@ -24,6 +24,9 @@ public class JwtUtil {
     private static final String INSECURE_DEFAULT_SECRET =
             "quizzy-default-jwt-secret-please-replace-in-production-0123456789abcdef";
 
+    /** 承载 token 版本号的 claim 名。短名字只是为了少占 token 体积。 */
+    private static final String CLAIM_TOKEN_VERSION = "tv";
+
     private final SecretKey key;
     private final long expireMillis;
 
@@ -53,10 +56,21 @@ public class JwtUtil {
         return random;
     }
 
-    public String generateToken(Long userId) {
+    /**
+     * 解析出来的载荷：用户 id + token 版本号。见 {@link #parseToken(String)}。
+     */
+    public record TokenPayload(Long userId, int tokenVersion) {
+    }
+
+    /**
+     * 签发 token。`tv` 是 token 版本号，与 `user.token_version` 比对（见 ADR 0027）——
+     * 改密码 / 退出所有设备把库里的值 +1，所有旧 token 下一次请求就失效。
+     */
+    public String generateToken(Long userId, int tokenVersion) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(String.valueOf(userId))
+                .claim(CLAIM_TOKEN_VERSION, tokenVersion)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expireMillis))
                 .signWith(key)
@@ -69,15 +83,21 @@ public class JwtUtil {
 
     /**
      * 解析 token，失败返回 null。
+     *
+     * <p>⚠️ 不带 `tv` 的旧 token 按**版本 0** 处理——切换那一刻签出去的存量 token 因此照常可用
+     * （库里的默认值也是 0），不会把所有人踢下线。
      */
-    public Long parseUserId(String token) {
+    public TokenPayload parseToken(String token) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return Long.valueOf(claims.getSubject());
+            Long userId = Long.valueOf(claims.getSubject());
+            Object rawVersion = claims.get(CLAIM_TOKEN_VERSION);
+            int tokenVersion = rawVersion instanceof Number number ? number.intValue() : 0;
+            return new TokenPayload(userId, tokenVersion);
         } catch (JwtException | IllegalArgumentException e) {
             log.debug("invalid jwt token: {}", e.getMessage());
             return null;

@@ -23,6 +23,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     private static final String BEARER = "Bearer ";
 
     private final JwtUtil jwtUtil;
+    private final TokenVersionSource tokenVersionSource;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -35,13 +36,25 @@ public class JwtInterceptor implements HandlerInterceptor {
             writeUnauthorized(response);
             return false;
         }
-        Long userId = jwtUtil.parseUserId(header.substring(BEARER.length()));
-        if (userId == null) {
+        JwtUtil.TokenPayload payload = jwtUtil.parseToken(header.substring(BEARER.length()));
+        if (payload == null || !isStillCurrent(payload)) {
             writeUnauthorized(response);
             return false;
         }
-        UserContext.setUserId(userId);
+        UserContext.setUserId(payload.userId());
         return true;
+    }
+
+    /**
+     * 比对 token 版本号：改密码 / 退出所有设备会把 `user.token_version` +1，所有旧 token
+     * 下一次请求即作废；查不到用户（已注销）同样作废。
+     *
+     * <p>⚠️ 这是「无状态 JWT」变成「半状态」的那一处——**每个带 token 的请求都多一次查库**。
+     * 代价是明知故犯，理由与替代方案见 docs/adr/0027。
+     */
+    private boolean isStillCurrent(JwtUtil.TokenPayload payload) {
+        Integer current = tokenVersionSource.currentVersion(payload.userId());
+        return current != null && current == payload.tokenVersion();
     }
 
     @Override

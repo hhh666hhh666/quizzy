@@ -29,4 +29,10 @@ quizzy 原先是「PC Web（`quizzy-web`）+ 后端」两端形态。本次要�
 - 未来上线时，web 入口需同时服务 `/m/`，届时同步 `docs/operations/deployment.md`——属未来改动，现在不动。
 - 移动端前端设计另立一份文档（[《移动端》](../design/移动端.md)），不并入 [《前端》](../design/前端.md)（后者收敛为 PC 端专属）。
 
+## 补充（2026-10-07）：账户自助的客户端归属
+
+账户自助（改密码 / 改昵称 / 改头像 / 注销账号）既不是上面列的「消费」，也不在「建设」那张清单（题库增删改查 / 组卷 / 导入导出）里——它是第三类，**本次只落 PC**。
+
+理由：本卡的默认倾向是「建设类留 PC」；账户设置是低频操作、不是刷题消费；而移动端**尚未上线**（卡在 ICP 备案，见 [备案与 HTTPS](../todo/2026-10-03-TODO-备案与HTTPS.md)），此时为它铺 UI 等于给一个没有用户的入口写代码，还要背上两套 UI 长期同步的维护成本。移动端真正需要账户自助时再单议，届时要定的第一件事是「生成头像那段算法要不要从 PC 复制过去」。范围与取舍见 [ADR 0027](0027-token-version-invalidates-all-devices.md)。
+
 相关：[ADR 0017](0017-public-signup-service.md)（公开服务与注册风控）、[ADR 0016](0016-cloud-deploy-with-release-pipeline.md)（部署形态与对外入口）、[ADR 0001](0001-practice-not-exam-semantics.md)（练习语义，移动端沿用「消费」定位）、[ADR 0006](0006-bare-array-import-contract.md)（单一信息源纪律）。
