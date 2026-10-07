@@ -178,6 +178,69 @@ export async function startPaperQuiz(page: Page, paperTitle: string): Promise<vo
 }
 
 /**
+ * 断言弹窗**真的浮在最上面**，不会被表格的行穿透。
+ *
+ * <p>为什么需要它：弹窗的层级不是天然就对的。把 `el-dialog` 写在「被表格 / 滚动容器包住」的位置
+ * （2026-10-07 那次是挂在表格单元格里的星标上），它的遮罩与弹窗会被困在那一层，
+ * 现象是**表格的行盖到弹窗上来**——肉眼一眼看得出，但**几何断言完全测不出来**
+ * （它们只量位置尺寸，而位置尺寸都是对的）。
+ *
+ * <p>两条判据**都要过**，各管一段：
+ * <ol>
+ *   <li><b>根因</b>：遮罩不能落在 `.el-table` / `.el-scrollbar` 内部——中了就说明这个弹窗没写
+ *       `append-to-body`，早晚要被穿透。这条是主力，稳定且换布局也不飘。</li>
+ *   <li><b>现象</b>：身上撒九个点做命中测试，最上面都得是弹窗自己。
+ *       ⚠️ 它没那么可靠：穿透只发生在「表格真的盖到弹窗」的那片区域上，表格不够高时一个点都碰不到
+ *       （第一版就是因此假的绿）。留着是当兜底——它抓到的是**用户真正看到的那一层**。</li>
+ * </ol>
+ *
+ * <p>⚠️ 只测**当前可见**的那个弹窗（取最后一个）：`el-dialog` 打开过就会留在 DOM 里，
+ * 用 `querySelector` 会拿到先前打开过的那个隐藏弹窗。
+ */
+export async function expectDialogOnTop(page: Page, dialogSelector = '.el-dialog'): Promise<void> {
+  const problems = await page.evaluate((sel) => {
+    const visible = Array.from(document.querySelectorAll(sel)).filter((el) => {
+      const r = el.getBoundingClientRect()
+      return r.width > 0 && r.height > 0
+    })
+    const dialog = visible[visible.length - 1]
+    if (!dialog) {
+      return ['找不到可见的 ' + sel]
+    }
+    const problems: string[] = []
+
+    const overlay = dialog.closest('.el-overlay')
+    const trapped = overlay?.closest('.el-table, .el-scrollbar')
+    if (trapped) {
+      problems.push(
+        `弹窗的遮罩被渲染在 ${trapped.tagName}.${String(trapped.className).slice(0, 32)} 里` +
+          '——给 el-dialog 加 append-to-body，否则表格的行会盖到弹窗上'
+      )
+    }
+
+    const r = dialog.getBoundingClientRect()
+    const xs = [r.left + 24, r.left + r.width / 2, r.right - 24]
+    const ys = [r.top + 24, r.top + r.height / 2, r.bottom - 12]
+    for (const y of ys) {
+      for (const x of xs) {
+        const hit = document.elementFromPoint(x, y)
+        const ok = hit != null && (hit === dialog || dialog.contains(hit))
+        if (!ok) {
+          problems.push(
+            `(${Math.round(x)}, ${Math.round(y)}) 命中的是 ${
+              hit ? hit.tagName + '.' + String(hit.className).slice(0, 40) : 'null'
+            }`
+          )
+        }
+      }
+    }
+    return problems
+  }, dialogSelector)
+
+  expect(problems, '弹窗必须盖住它下方的一切（表格的行、卡片…）').toEqual([])
+}
+
+/**
  * 点名验「内容被裁掉」：只在调用方**明确知道该容器不允许滚动**时使用。
  *
  * 判据是「宽度被吃掉 **且** `overflow-x` 是 hidden」——后者是关键：

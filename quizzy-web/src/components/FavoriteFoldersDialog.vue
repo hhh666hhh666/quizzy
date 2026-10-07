@@ -1,8 +1,15 @@
 <template>
+  <!--
+    ⚠️ `append-to-body` 必须留着，别删：这个面板挂在**表格单元格里的星标**上（`FavoriteStar` 每行一个），
+    不挂到 body 的话，它的遮罩与弹窗会被困在表格内部那层（`el-table` 里的 `el-scrollbar`），
+    结果是**表格的行盖到面板上来**——主人 2026-10-07 的原话是「题库的文字被渲染到了收藏夹的面板」。
+    ⚠️ 打开时加载数据也别挂 `el-dialog` 的 `@open`（首次挂载不触发，见下面的 watch）。
+  -->
   <el-dialog
     :model-value="visible"
     :title="title"
     width="440px"
+    append-to-body
     @update:model-value="emit('update:visible', $event)"
   >
     <p class="hint">

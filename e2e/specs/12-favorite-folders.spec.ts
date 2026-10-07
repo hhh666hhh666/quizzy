@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
+import { createQuestion, expectDialogOnTop, lastMessage, registerNewUser } from './support/helpers'
 
 /**
  * 收藏夹的两条用户主路（模型见 docs/adr/0030）。
@@ -16,8 +16,14 @@ test('题库页收藏一道题后，打开「修改收藏夹」能列出收藏�
   await page.setViewportSize({ width: 1280, height: 900 })
   await registerNewUser(page)
 
-  const stem = `E2E 收藏 ${Date.now()}`
+  const stamp = String(Date.now())
+  const stem = `E2E 收藏 ${stamp}`
   await createQuestion(page, { stem, options: ['甲', '乙'], correct: ['A'] })
+  // ⚠️ 再建几道**垫底**的：弹窗底部必须真的压在表格的行上，下面那条层级断言才有意义——
+  //    表格只有一行时弹窗下方全是空白，穿不穿透都测不出来（第一版就是这么假的绿）。
+  for (let i = 1; i <= 3; i += 1) {
+    await createQuestion(page, { stem: `E2E 垫底 ${stamp}-${i}`, options: ['甲', '乙'], correct: ['A'] })
+  }
 
   await page.goto('/questions')
   const row = page.locator('.el-table__row', { hasText: stem })
@@ -36,6 +42,11 @@ test('题库页收藏一道题后，打开「修改收藏夹」能列出收藏�
   // 前面刚收藏过，默认夹必然存在——此时说「还没有收藏夹」就是谎报
   await expect(dialog).not.toContainText('还没有收藏夹')
   await expect(dialog.locator('.folder-row')).toHaveCount(1)
+
+  // ⚠️ 这条挡的是**层叠**不是内容：面板挂在表格单元格里的星标上，弹窗默认不 append-to-body，
+  //    于是表格的行会盖在面板底部（主人的原话是「题库的文字被渲染到了面板上」）。
+  //    肉眼一眼可见，但几何断言量不出来——只能用命中测试 + 遮罩位置两条一起看。
+  await expectDialogOnTop(page)
 })
 
 test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这道题', async ({ page }) => {
