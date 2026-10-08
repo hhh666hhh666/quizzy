@@ -43,7 +43,8 @@ const foreground = computed(() => `hsl(${art.value.hue} 55% 45%)`)
 const boxStyle = computed(() => ({
   width: `${props.size}px`,
   height: `${props.size}px`,
-  borderRadius: `${Math.max(4, Math.round(props.size / 5))}px`,
+  // 圆框（2026-10-08 主人拍板）：与生成图的方块图案配合，由 overflow:hidden 裁成圆形。
+  borderRadius: '50%',
   background: `hsl(${art.value.hue} 45% 90%)`
 }))
 </script>

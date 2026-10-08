@@ -28,22 +28,14 @@
       <!-- 底部用户区（2026-10-08 按主人参考图从顶栏移来）：左「头像 + 昵称」，右「浅色 / 关于」，单行齐平 -->
       <div class="mt-auto border-t border-line-soft px-2.5 py-3">
         <div class="flex items-center justify-between gap-1.5">
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <button
-                type="button"
-                class="flex min-w-0 items-center gap-2 rounded-md py-1 text-left outline-none hover:bg-surface focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <UserAvatar :user="store.user" :size="30" />
-                <span class="truncate text-sm font-semibold">{{ store.user?.nickname || '未登录' }}</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" side="top" class="w-40">
-              <DropdownMenuItem @click="router.push('/profile')">我的账户</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem class="text-danger" @click="onLogout">退出登录</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <!-- 头像与昵称都进设置页；不给整块加 hover 底色（主人：别出现白框），只让名字轻微变色 -->
+          <RouterLink
+            to="/profile"
+            class="no-underline flex min-w-0 items-center gap-2 rounded-md py-1 outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            <UserAvatar :user="store.user" :size="30" />
+            <span class="truncate text-sm font-semibold transition-colors hover:text-brand">{{ store.user?.nickname || '未登录' }}</span>
+          </RouterLink>
 
           <div class="flex shrink-0 items-center gap-0.5 text-xs text-ink-muted">
             <DropdownMenu>
@@ -94,7 +86,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, type Component } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import {
   ArchiveIcon,
   ClipboardListIcon,
@@ -112,12 +104,10 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator
+  DropdownMenuItem
 } from '@/components/ui/dropdown-menu'
 
 const route = useRoute()
-const router = useRouter()
 const store = useUserStore()
 const themeStore = useThemeStore()
 
@@ -143,7 +133,7 @@ function navIconClass(item: { accent?: boolean }, active: boolean) {
   return active ? 'text-ink-blue' : 'text-ink-muted'
 }
 
-// 顶栏常驻，所以外观切换放在这里（登录页没有顶栏，只能跟随已存的偏好）
+// 外观切换放在侧栏底部（登录页没有侧栏，只能跟随已存的偏好）
 const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
   { value: 'auto', label: '跟随系统' },
   { value: 'light', label: '浅色' },
@@ -161,9 +151,4 @@ function onTheme(command: ThemeMode) {
 onMounted(() => {
   if (!store.user) store.loadUser()
 })
-
-function onLogout() {
-  store.logout()
-  router.push('/login')
-}
 </script>

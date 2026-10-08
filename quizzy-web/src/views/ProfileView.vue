@@ -81,7 +81,16 @@
 
       <div class="my-5 border-t border-line-soft" />
 
+      <!-- 退出登录（本设备）：原来挂在侧栏用户下拉里，2026-10-08 用户区改纯链接后挪到设置页 -->
       <div class="flex items-center justify-between gap-4">
+        <div>
+          <div class="text-sm font-medium">退出登录</div>
+          <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">仅退出这台设备，其他设备保持登录。</p>
+        </div>
+        <Button variant="outline" @click="onLogout">退出登录</Button>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between gap-4">
         <div>
           <div class="text-sm font-medium">退出所有设备</div>
           <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">包括这一台。用于「怀疑有别的设备拿着登录凭据」时。</p>
@@ -214,6 +223,11 @@ async function onChangePassword() {
   } finally {
     changingPassword.value = false
   }
+}
+
+async function onLogout() {
+  store.logout()
+  router.push('/login')
 }
 
 async function onLogoutAll() {
