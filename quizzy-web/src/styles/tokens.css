@@ -61,6 +61,7 @@
   --color-line-soft: oklch(93% 0.01 250);  /* 更弱的分隔 */
 
   /* ── 字 ── */
+  --color-ink-strong: oklch(16% 0.02 265);  /* 最重的字：底栏昵称等要有「纯黑感」的强调（2026-10-08 主人拍板） */
   --color-ink:        oklch(23% 0.025 265); /* 正文 / 标题 */
   --color-ink-muted:  oklch(48% 0.025 265); /* 次要文字 */
   --color-ink-subtle: oklch(62% 0.02 265);  /* 占位符 / 辅助说明。

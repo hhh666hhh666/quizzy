@@ -34,7 +34,7 @@
             class="no-underline flex min-w-0 items-center gap-2 rounded-md py-1 outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             <UserAvatar :user="store.user" :size="30" />
-            <span class="truncate text-sm font-semibold transition-colors hover:text-brand">{{ store.user?.nickname || '未登录' }}</span>
+            <span class="truncate text-sm font-semibold text-ink-strong transition-colors hover:text-ink-muted">{{ store.user?.nickname || '未登录' }}</span>
           </RouterLink>
 
           <div class="flex shrink-0 items-center gap-0.5 text-xs text-ink-muted">
