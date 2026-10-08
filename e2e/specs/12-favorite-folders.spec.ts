@@ -75,7 +75,8 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
   await expect(lastMessage(page, 'success')).toContainText('加入')
 
   // 回收藏夹页面：选中那个夹，右列应当只有这一道题
+  // ⚠️ /favorites 还没迁移（仍是 Element Plus 表格），行选择器不能用题库页的 .qb-row
   await page.goto('/favorites')
   await page.locator('.folder-item', { hasText: folder }).click()
-  await expect(questionRow(page, stem)).toHaveCount(1)
+  await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
 })
