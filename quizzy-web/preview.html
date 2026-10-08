@@ -60,6 +60,21 @@
             <p class="mt-2 text-xs font-medium">brand-soft</p>
             <p class="text-2xs text-ink-subtle">选中底</p>
           </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-ok-soft border border-line-soft"></div>
+            <p class="mt-2 text-xs font-medium">ok-soft</p>
+            <p class="text-2xs text-ink-muted">对 / 成功 的浅底</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-warn-soft border border-line-soft"></div>
+            <p class="mt-2 text-xs font-medium">warn-soft</p>
+            <p class="text-2xs text-ink-muted">提醒的浅底</p>
+          </div>
+          <div class="rounded-md border border-line bg-surface p-3 shadow-xs">
+            <div class="h-12 rounded-sm bg-danger-soft border border-line-soft"></div>
+            <p class="mt-2 text-xs font-medium">danger-soft</p>
+            <p class="text-2xs text-ink-muted">错 / 删除 的浅底</p>
+          </div>
         </div>
 
         <div class="mt-4 rounded-md border border-line bg-surface p-4 shadow-xs">
@@ -136,6 +151,43 @@
         </p>
       </section>
 
+      <!-- 构图样例：登录（挑定版） -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">构图样例 · 登录（挑定版）</h2>
+        <p class="mt-1 text-ink-muted text-sm">
+          用 token 把挑定的「双栏」构图拼一遍：<b>左身份面（tint 容器）/ 右近白表单</b>。
+          上面压一枚真玻璃提示——玻璃的真实观感只在浏览器里成立。
+        </p>
+
+        <div class="relative mt-4">
+          <div class="mx-auto max-w-2xl">
+            <div class="grid overflow-hidden rounded-xl bg-tint-blue shadow-sm sm:grid-cols-[1fr_1.15fr]">
+              <div class="flex flex-col justify-between gap-6 p-6">
+                <div>
+                  <p class="text-xl font-semibold tracking-tight">quizzy</p>
+                  <p class="mt-2 text-sm text-ink-muted">个人自主刷题与记忆强化系统</p>
+                </div>
+                <p class="text-xs text-ink-muted">外观设置 · 帮助文档 · 关于</p>
+              </div>
+              <div class="bg-surface p-6">
+                <label class="block text-xs text-ink-muted">用户名</label>
+                <input class="mt-2 w-full rounded-md border border-line bg-reader px-3 py-2 text-sm outline-none placeholder:text-ink-muted" placeholder="输入用户名…" />
+                <label class="mt-4 block text-xs text-ink-muted">密码</label>
+                <input type="password" class="mt-2 w-full rounded-md border border-line bg-reader px-3 py-2 text-sm outline-none placeholder:text-ink-muted" placeholder="输入密码…" />
+                <button class="mt-6 w-full rounded-md bg-brand px-3 py-2 text-sm text-brand-ink">登录</button>
+                <p class="mt-4 text-center text-xs text-ink-muted">还没有账号？<span class="text-brand">注册</span></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass absolute left-1/2 top-1/2 w-80 max-w-[calc(100%_-_3rem)] -translate-x-1/2 -translate-y-1/2 p-4">
+            <p class="text-base font-medium">登录失败</p>
+            <p class="mt-1 text-sm text-ink-muted">用户名或密码不正确，请重试。</p>
+            <button class="mt-4 w-full rounded-md bg-brand px-3 py-1.5 text-sm text-brand-ink">知道了</button>
+          </div>
+        </div>
+      </section>
+
       <!-- 文字 -->
       <section class="mt-10">
         <h2 class="text-lg font-medium">字阶</h2>
@@ -207,12 +259,15 @@
         </div>
 
         <div class="mt-3 flex flex-wrap items-center gap-3">
-          <span class="rounded-sm bg-brand-soft px-2 py-0.5 text-xs text-brand">选中标签</span>
+          <span class="rounded-sm bg-brand-soft px-2 py-0.5 text-xs text-ink">选中标签</span>
           <span class="rounded-sm bg-surface-2 px-2 py-0.5 text-xs text-ink-muted">普通标签</span>
-          <span class="rounded-sm bg-ok/12 px-2 py-0.5 text-xs">答对 12</span>
-          <span class="rounded-sm bg-danger/12 px-2 py-0.5 text-xs">答错 3</span>
-          <span class="rounded-sm bg-warn/16 px-2 py-0.5 text-xs">待复习 5</span>
+          <span class="rounded-sm bg-ok-soft px-2 py-0.5 text-xs">答对 12</span>
+          <span class="rounded-sm bg-danger-soft px-2 py-0.5 text-xs">答错 3</span>
+          <span class="rounded-sm bg-warn-soft px-2 py-0.5 text-xs">待复习 5</span>
         </div>
+        <p class="mt-2 text-2xs text-ink-muted">
+          状态标 = 软容器底 + ink 文字；对错靠文字说清，本体色只当"面"用。
+        </p>
 
         <div class="mt-3 rounded-md border border-line bg-surface p-5 shadow-xs">
           <label class="block text-xs text-ink-muted" for="demo-input">输入框（含焦点环）</label>
