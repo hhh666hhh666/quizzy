@@ -24,9 +24,17 @@ export const useThemeStore = defineStore('theme', () => {
 
   const isDark = computed(() => (mode.value === 'auto' ? systemDark.value : mode.value === 'dark'))
 
-  // 深色变量表的选择器就是 `html.dark`（Element Plus 约定），所以只动 <html> 上的类
+  /** 浏览器 UI 的配色（地址栏等）。浅色值与 tokens 的 canvas 一致；index.html 里有初值兜底。 */
+  const LIGHT_THEME_COLOR = '#EEF4FB'
+  const DARK_THEME_COLOR = '#10151C'
+
+  // 深色开关就是 `html.dark` 类（迁移前是 Element Plus 的约定，现在它就是我们自己的开关）
   function apply() {
-    document.documentElement.classList.toggle('dark', isDark.value)
+    const dark = isDark.value
+    document.documentElement.classList.toggle('dark', dark)
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', dark ? DARK_THEME_COLOR : LIGHT_THEME_COLOR)
   }
 
   function setMode(next: ThemeMode) {

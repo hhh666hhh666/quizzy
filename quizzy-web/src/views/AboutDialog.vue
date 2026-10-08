@@ -22,7 +22,7 @@
           </div>
           <div class="flex items-center justify-between border-b border-line-soft py-2">
             <span class="text-ink-muted">仓库</span>
-            <a class="text-brand hover:underline" :href="REPO_URL" target="_blank" rel="noopener">{{ REPO_URL }}</a>
+            <a class="link-button text-brand hover:underline" :href="REPO_URL" target="_blank" rel="noopener">{{ REPO_URL }}</a>
           </div>
           <div class="flex items-center justify-between py-2">
             <span class="text-ink-muted">许可证</span>

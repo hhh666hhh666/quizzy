@@ -24,8 +24,9 @@
           <p class="rounded-md bg-tint-blue/60 px-3 py-2 text-sm">
             列顺序：题型 | 题干 | 选项A-F | 答案 | 解析 | 难度 | 分值 | 分类 | 标签
           </p>
-          <div
-            class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line bg-reader px-4 py-8 text-sm text-ink-muted transition-colors hover:border-brand hover:text-ink"
+          <button
+            type="button"
+            class="flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line bg-reader px-4 py-8 text-sm text-ink-muted transition-colors hover:border-brand hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
             @click="fileInput?.click()"
             @dragover.prevent
             @drop.prevent="onDrop"
@@ -33,7 +34,7 @@
             <input ref="fileInput" class="hidden" type="file" accept=".xlsx,.xls" @change="onPick" />
             <span v-if="file" class="text-ink">已选择：{{ file.name }}</span>
             <span v-else>把文件拖到这里，或点击选择（.xlsx / .xls）</span>
-          </div>
+          </button>
         </template>
         <template v-else>
           <Textarea
@@ -56,7 +57,7 @@
           <Input
             v-model="paperTitle"
             :disabled="!createPaper"
-            placeholder="试卷标题（必填）"
+            placeholder="试卷标题（必填）…"
             data-testid="import-paper-title"
             class="w-[240px] bg-reader"
           />
@@ -72,7 +73,7 @@
           </p>
           <p v-if="result.paperId" class="paper-created">
             已把成功的题装进新试卷「{{ paperTitle }}」。
-            <button type="button" class="text-brand hover:underline" data-testid="import-goto-papers" @click="goPapers">
+            <button type="button" class="link-button text-brand hover:underline" data-testid="import-goto-papers" @click="goPapers">
               去试卷页看看
             </button>
           </p>

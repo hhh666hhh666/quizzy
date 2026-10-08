@@ -1,5 +1,6 @@
 <template>
   <div class="font-sans text-base text-ink">
+    <h1 class="sr-only">题库</h1>
     <div class="rounded-xl bg-surface p-6 shadow-sm">
       <!-- ── 筛选区 ─────────────────────────────────────────────────────────── -->
       <div class="flex flex-wrap items-end gap-x-4 gap-y-3">
@@ -8,7 +9,7 @@
           <Input
             id="filter-keyword-input"
             v-model="state.keyword"
-            placeholder="搜索题干"
+            placeholder="搜索题干…"
             class="h-9 w-44 bg-reader"
             @keyup.enter="applySearch"
           />
@@ -79,12 +80,13 @@
               </button>
             </PopoverTrigger>
             <PopoverContent align="start" class="w-56 p-0">
-              <div
-                class="cursor-pointer border-b border-line-soft px-3 py-2 text-xs text-ink-muted hover:text-brand"
+              <button
+                type="button"
+                class="link-button block w-full border-b border-line-soft px-3 py-2 text-left text-xs text-ink-muted hover:text-brand"
                 @click="clearCategories"
               >
                 全部分类（点此清空）
-              </div>
+              </button>
               <div class="max-h-60 overflow-y-auto py-1">
                 <label
                   v-for="opt in categoryOptions"
@@ -238,13 +240,13 @@
                 <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange(row, $event)" />
               </td>
               <td class="whitespace-nowrap px-3 py-2.5">
-                <button type="button" class="text-brand hover:underline" @click="onView(row)">查看</button>
-                <button type="button" class="ml-2 text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50" :disabled="!row.editable" @click="onEdit(row)">
+                <button type="button" class="link-button text-brand hover:underline" @click="onView(row)">查看</button>
+                <button type="button" class="link-button ml-2 text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50" :disabled="!row.editable" @click="onEdit(row)">
                   编辑
                 </button>
                 <button
                   type="button"
-                  class="ml-2 text-danger hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                  class="link-button ml-2 text-danger hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                   :disabled="!row.editable"
                   @click="onDelete(row)"
                 >

@@ -1,5 +1,12 @@
 <template>
   <div class="flex h-full">
+    <!-- 键盘用户的「跳到主要内容」：平时 sr-only，聚焦时才出现（规范审查后补） -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:shadow-md focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      跳到主要内容
+    </a>
     <!-- 侧栏：实心有色面（surface-2）。⚠️ 它后面没有可透的内容，按「两层语言」的规矩②不用玻璃 -->
     <aside class="app-aside flex w-[200px] shrink-0 flex-col border-r border-line bg-surface-2 font-sans text-base text-ink">
       <!-- 产品标识：图标块 + 双行字标（2026-10-08 主人给的参考样式） -->
@@ -69,7 +76,7 @@
 
     <!-- 右列：主内容从顶栏下面穿过——顶栏的玻璃才有东西可透 -->
     <div class="relative h-full min-w-0 flex-1">
-      <main class="app-main absolute inset-0 overflow-y-auto pt-14">
+      <main id="main-content" tabindex="-1" class="app-main absolute inset-0 overflow-y-auto pt-14">
         <div class="p-5">
           <router-view />
         </div>

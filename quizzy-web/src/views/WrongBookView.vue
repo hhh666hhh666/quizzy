@@ -51,14 +51,14 @@
         </table>
       </div>
 
-      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; load() }" />
+      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; writeStateToRoute(); load() }" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { toast } from '@/lib/toast'
 import { pageWrongBook, practiceWrongBook, removeFromWrongBook } from '@/api/quiz'
 import { Button } from '@/components/ui/button'
@@ -66,6 +66,7 @@ import { Input } from '@/components/ui/input'
 import TablePagination from '@/components/TablePagination.vue'
 import TypeTag from '@/components/TypeTag.vue'
 
+const route = useRoute()
 const router = useRouter()
 const rows = ref<any[]>([])
 const total = ref(0)
@@ -74,6 +75,29 @@ const size = ref(10)
 const count = ref(20)
 const loading = ref(false)
 const starting = ref(false)
+
+// ---------- 界面状态 ↔ 网址（与题库页同款约定）----------
+const DEFAULT_SIZE = 10
+
+function pick(v: unknown): string | undefined {
+  const one = Array.isArray(v) ? v[0] : v
+  return typeof one === 'string' && one !== '' ? one : undefined
+}
+
+function readStateFromRoute() {
+  const q = route.query
+  const p = Number.parseInt(pick(q.page) ?? '', 10)
+  const z = Number.parseInt(pick(q.size) ?? '', 10)
+  page.value = Number.isFinite(p) && p > 1 ? p : 1
+  size.value = Number.isFinite(z) && z > 0 && z <= 100 ? z : DEFAULT_SIZE
+}
+
+function writeStateToRoute() {
+  const query: Record<string, string> = {}
+  if (page.value > 1) query.page = String(page.value)
+  if (size.value !== DEFAULT_SIZE) query.size = String(size.value)
+  router.replace({ path: '/wrong-book', query })
+}
 
 async function load() {
   loading.value = true
@@ -104,5 +128,8 @@ async function onRemove(row: any) {
   load()
 }
 
-onMounted(load)
+onMounted(() => {
+  readStateFromRoute()
+  void load()
+})
 </script>

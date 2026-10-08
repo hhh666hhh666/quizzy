@@ -1,5 +1,6 @@
 <template>
   <div class="font-sans text-base text-ink">
+    <h1 class="sr-only">试卷</h1>
     <div class="rounded-xl bg-surface p-6 shadow-sm">
       <Button @click="onCreate">新建试卷</Button>
 
@@ -16,26 +17,26 @@
           </thead>
           <tbody>
             <tr v-for="row in rows" :key="row.id" class="paper-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
-              <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+              <td class="px-3 py-2.5 tabular-nums text-ink-muted">{{ row.id }}</td>
               <td class="max-w-0 px-3 py-2.5">
                 <span class="block truncate" :title="row.title">{{ row.title }}</span>
               </td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ row.mode === 'FIXED' ? '固定卷' : '规则卷' }}</td>
-              <td class="px-3 py-2.5">{{ row.questionCount }}</td>
+              <td class="px-3 py-2.5 tabular-nums">{{ row.questionCount }}</td>
               <td class="whitespace-nowrap px-3 py-2.5">
                 <!-- 空卷不能发起作答：置灰 + 悬浮说明（title 即可，这是一句话的事） -->
                 <span :title="isEmptyPaper(row) ? '这张试卷还没有题目' : undefined">
                   <button
                     type="button"
-                    class="text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                    class="link-button text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
                     :disabled="isEmptyPaper(row)"
                     @click="onStart(row.id)"
                   >
                     开始作答
                   </button>
                 </span>
-                <button type="button" class="ml-3 text-ink hover:underline" @click="onEdit(row)">编辑</button>
-                <button type="button" class="ml-3 text-danger hover:underline" @click="onDelete(row)">删除</button>
+                <button type="button" class="link-button ml-3 text-ink hover:underline" @click="onEdit(row)">编辑</button>
+                <button type="button" class="link-button ml-3 text-danger hover:underline" @click="onDelete(row)">删除</button>
               </td>
             </tr>
             <tr v-if="!rows.length">
@@ -47,7 +48,7 @@
         </table>
       </div>
 
-      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; load() }" />
+      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; writeStateToRoute(); load() }" />
     </div>
 
     <PaperEditDialog v-model:visible="editVisible" :paper-id="editingId" @saved="load" />
@@ -56,6 +57,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { confirmBox } from '@/lib/box'
 import { toast } from '@/lib/toast'
@@ -66,6 +68,7 @@ import TablePagination from '@/components/TablePagination.vue'
 import PaperEditDialog from './PaperEditDialog.vue'
 import type { PaperVO } from '@/types'
 
+const route = useRoute()
 const router = useRouter()
 const rows = ref<PaperVO[]>([])
 const total = ref(0)
@@ -73,6 +76,29 @@ const page = ref(1)
 const size = ref(10)
 const loading = ref(false)
 const editVisible = ref(false)
+
+// ---------- 界面状态 ↔ 网址（与题库页同款约定）----------
+const DEFAULT_SIZE = 10
+
+function pick(v: unknown): string | undefined {
+  const one = Array.isArray(v) ? v[0] : v
+  return typeof one === 'string' && one !== '' ? one : undefined
+}
+
+function readStateFromRoute() {
+  const q = route.query
+  const p = Number.parseInt(pick(q.page) ?? '', 10)
+  const z = Number.parseInt(pick(q.size) ?? '', 10)
+  page.value = Number.isFinite(p) && p > 1 ? p : 1
+  size.value = Number.isFinite(z) && z > 0 && z <= 100 ? z : DEFAULT_SIZE
+}
+
+function writeStateToRoute() {
+  const query: Record<string, string> = {}
+  if (page.value > 1) query.page = String(page.value)
+  if (size.value !== DEFAULT_SIZE) query.size = String(size.value)
+  router.replace({ path: '/papers', query })
+}
 const editingId = ref<number | null>(null)
 
 async function load() {
@@ -117,5 +143,8 @@ async function onDelete(row: PaperVO) {
   load()
 }
 
-onMounted(load)
+onMounted(() => {
+  readStateFromRoute()
+  void load()
+})
 </script>

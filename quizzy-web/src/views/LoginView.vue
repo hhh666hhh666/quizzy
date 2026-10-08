@@ -18,6 +18,8 @@
               v-model="form.username"
               :data-testid="mode === 'login' ? 'login-username' : 'register-username'"
               autocomplete="username"
+              name="username"
+              :spellcheck="false"
               placeholder="输入用户名…"
               class="bg-reader"
             />
@@ -32,6 +34,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 :data-testid="mode === 'login' ? 'login-password' : 'register-password'"
                 :autocomplete="mode === 'login' ? 'current-password' : 'new-password'"
+              name="password"
                 placeholder="输入密码…"
                 class="bg-reader pr-12"
               />

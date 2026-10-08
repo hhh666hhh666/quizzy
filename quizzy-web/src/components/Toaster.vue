@@ -9,7 +9,7 @@
       :key="item.id"
       class="toast pointer-events-auto flex items-start gap-2.5 rounded-lg border border-line bg-surface p-3 shadow-md"
       :class="`toast--${item.type}`"
-      role="status"
+      :role="item.type === 'error' ? 'alert' : 'status'"
     >
       <span class="mt-1.5 size-2 shrink-0 rounded-full" :class="dotClass(item.type)" aria-hidden="true" />
       <div class="min-w-0 flex-1 text-sm leading-relaxed text-ink">

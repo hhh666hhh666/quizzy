@@ -7,19 +7,19 @@
       <div class="mt-4 grid grid-cols-2 gap-4 rounded-xl bg-tint-blue p-5 sm:grid-cols-4">
         <div>
           <div class="text-xs text-ink-muted">得分</div>
-          <div class="mt-1 text-2xl font-semibold">{{ result.obtainedScore }}<span class="text-sm font-normal text-ink-muted"> / {{ result.totalScore }}</span></div>
+          <div class="mt-1 text-2xl font-semibold tabular-nums">{{ result.obtainedScore }}<span class="text-sm font-normal text-ink-muted"> / {{ result.totalScore }}</span></div>
         </div>
         <div>
           <div class="text-xs text-ink-muted">正确率</div>
-          <div class="mt-1 text-2xl font-semibold">{{ result.accuracy }}<span class="text-sm font-normal text-ink-muted">%</span></div>
+          <div class="mt-1 text-2xl font-semibold tabular-nums">{{ result.accuracy }}<span class="text-sm font-normal text-ink-muted">%</span></div>
         </div>
         <div>
           <div class="text-xs text-ink-muted">答对</div>
-          <div class="mt-1 text-2xl font-semibold">{{ result.correctCount }}<span class="text-sm font-normal text-ink-muted"> / {{ result.answeredCount }}</span></div>
+          <div class="mt-1 text-2xl font-semibold tabular-nums">{{ result.correctCount }}<span class="text-sm font-normal text-ink-muted"> / {{ result.answeredCount }}</span></div>
         </div>
         <div>
           <div class="text-xs text-ink-muted">未作答</div>
-          <div class="mt-1 text-2xl font-semibold">{{ result.unansweredCount }}</div>
+          <div class="mt-1 text-2xl font-semibold tabular-nums">{{ result.unansweredCount }}</div>
         </div>
       </div>
 

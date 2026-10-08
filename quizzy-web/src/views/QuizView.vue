@@ -10,7 +10,7 @@
 
       <!-- 进度条：细条 + 品牌填充 -->
       <div class="quiz-progress mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
-        <div class="h-full rounded-full bg-brand transition-all" :style="{ width: answeredPercent + '%' }" />
+        <div class="h-full rounded-full bg-brand transition-[width]" :style="{ width: answeredPercent + '%' }" />
       </div>
 
       <div v-if="currentQuestion" class="mt-5">

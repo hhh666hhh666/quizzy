@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quizzy 答题</title>
+    <!-- 浏览器 UI（地址栏等）跟随主题；此初值为浅色，深色由 stores/theme.ts 的 apply() 改写 -->
+    <meta name="theme-color" content="#EEF4FB" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script>
       // 首屏防闪烁：深色类必须在样式生效前挂到 <html> 上，否则会先渲染一帧浅色再翻深色。
       // ⚠️ 这里的 key 与 src/stores/theme.ts 的 THEME_STORAGE_KEY 必须一致。

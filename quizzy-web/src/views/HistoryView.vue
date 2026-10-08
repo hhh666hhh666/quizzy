@@ -11,7 +11,7 @@
             type="button"
             class="rounded-sm px-3 py-1 text-sm transition-colors"
             :class="status === opt.value ? 'bg-surface font-medium text-ink shadow-sm' : 'text-ink-muted hover:text-ink'"
-            @click="status = opt.value; load()"
+            @click="selectStatus(opt.value)"
           >
             {{ opt.label }}
           </button>
@@ -33,7 +33,7 @@
           </thead>
           <tbody>
             <tr v-for="row in rows" :key="row.id" class="his-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
-              <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+              <td class="px-3 py-2.5 tabular-nums text-ink-muted">{{ row.id }}</td>
               <td class="max-w-0 px-3 py-2.5">
                 <span class="block truncate" :title="row.title">{{ row.title }}</span>
               </td>
@@ -43,18 +43,18 @@
                   {{ statusLabel(row.status) }}
                 </span>
               </td>
-              <td class="whitespace-nowrap px-3 py-2.5">{{ row.obtainedScore }} / {{ row.totalScore }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5 tabular-nums">{{ row.obtainedScore }} / {{ row.totalScore }}</td>
               <td class="whitespace-nowrap px-3 py-2.5 text-ink-muted">{{ formatTime(row.startTime) }}</td>
               <td class="whitespace-nowrap px-3 py-2.5">
                 <button
                   v-if="row.status === 'IN_PROGRESS'"
                   type="button"
-                  class="text-brand hover:underline"
+                  class="link-button text-brand hover:underline"
                   @click="router.push(`/quiz/${row.id}`)"
                 >
                   继续作答
                 </button>
-                <button v-else type="button" class="text-brand hover:underline" @click="router.push(`/quiz/${row.id}/result`)">
+                <button v-else type="button" class="link-button text-brand hover:underline" @click="router.push(`/quiz/${row.id}/result`)">
                   查看结果
                 </button>
               </td>
@@ -68,18 +68,19 @@
         </table>
       </div>
 
-      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; load() }" />
+      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; writeStateToRoute(); load() }" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { listSessions } from '@/api/quiz'
 import TablePagination from '@/components/TablePagination.vue'
 import type { SessionVO } from '@/types'
 
+const route = useRoute()
 const router = useRouter()
 const rows = ref<SessionVO[]>([])
 const total = ref(0)
@@ -121,10 +122,61 @@ function statusLabel(status: string) {
   return { IN_PROGRESS: '进行中', COMPLETED: '已完成', ABANDONED: '已放弃' }[status] || status
 }
 
-/** 与收藏时间的展示同款约定：后端固定 Asia/Shanghai 输出，前端只做「变得好读」。 */
+/** 时间展示：后端固定 Asia/Shanghai 下发（无时区后缀 → 按本地解析），用 Intl 格式化。 */
 function formatTime(value?: string) {
-  return value ? value.replace('T', ' ').slice(0, 16) : '-'
+  if (!value) return '-'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
+    .format(date)
+    .replace(/\//g, '-')
 }
 
-onMounted(load)
+// ---------- 界面状态 ↔ 网址（与题库页同款约定：脏值忽略、默认值不写进网址）----------
+
+const DEFAULT_SIZE = 10
+const STATUS_VALUES = ['', 'IN_PROGRESS', 'COMPLETED', 'ABANDONED']
+
+function pick(v: unknown): string | undefined {
+  const one = Array.isArray(v) ? v[0] : v
+  return typeof one === 'string' && one !== '' ? one : undefined
+}
+
+function readStateFromRoute() {
+  const q = route.query
+  const s = pick(q.status)
+  const p = Number.parseInt(pick(q.page) ?? '', 10)
+  const z = Number.parseInt(pick(q.size) ?? '', 10)
+  status.value = STATUS_VALUES.includes(s ?? '') ? (s ?? '') : ''
+  page.value = Number.isFinite(p) && p > 1 ? p : 1
+  size.value = Number.isFinite(z) && z > 0 && z <= 100 ? z : DEFAULT_SIZE
+}
+
+/** 写回网址用 replace：翻页 / 筛选若走 push 会把后退历史淹掉。 */
+function writeStateToRoute() {
+  const query: Record<string, string> = {}
+  if (status.value) query.status = status.value
+  if (page.value > 1) query.page = String(page.value)
+  if (size.value !== DEFAULT_SIZE) query.size = String(size.value)
+  router.replace({ path: '/history', query })
+}
+
+function selectStatus(next: string) {
+  status.value = next
+  page.value = 1
+  writeStateToRoute()
+  load()
+}
+
+onMounted(() => {
+  readStateFromRoute()
+  void load()
+})
 </script>

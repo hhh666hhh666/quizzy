@@ -33,13 +33,13 @@
                 {{ folder.name }}
                 <span v-if="folder.isDefault" class="ml-1 rounded-sm bg-surface-2 px-1 py-0.5 text-2xs text-ink-muted">默认</span>
               </span>
-              <span class="shrink-0 text-xs text-ink-muted">{{ folder.questionCount }}</span>
+              <span class="shrink-0 text-xs tabular-nums text-ink-muted">{{ folder.questionCount }}</span>
               <span class="hidden shrink-0 items-center gap-1.5 group-hover:flex group-focus-within:flex">
-                <button type="button" class="text-xs text-brand hover:underline" @click.stop="onRenameFolder(folder)">改名</button>
+                <button type="button" class="link-button text-xs text-brand hover:underline" @click.stop="onRenameFolder(folder)">改名</button>
                 <button
                   v-if="!folder.isDefault"
                   type="button"
-                  class="text-xs text-danger hover:underline"
+                  class="link-button text-xs text-danger hover:underline"
                   @click.stop="onDeleteFolder(folder)"
                 >
                   删除
@@ -77,7 +77,7 @@
                     <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
                   </td>
                   <td v-if="selected !== null" class="whitespace-nowrap px-3 py-2.5">
-                    <button type="button" class="text-danger hover:underline" @click="onRemoveFromFolder(row)">移出此夹</button>
+                    <button type="button" class="link-button text-danger hover:underline" @click="onRemoveFromFolder(row)">移出此夹</button>
                   </td>
                 </tr>
                 <tr v-if="!rows.length">
@@ -256,7 +256,19 @@ async function onPractice() {
  * 这里把它变成 `2026-10-07 13:45`。顺手兼容两种写法——ISO 的 `T` 分隔与空格分隔。
  */
 function formatTime(value?: string) {
-  return value ? value.replace('T', ' ').slice(0, 16) : '-'
+  if (!value) return '-'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  })
+    .format(date)
+    .replace(/\//g, '-')
 }
 
 onMounted(loadAll)

@@ -58,7 +58,7 @@
                     <span class="block truncate" :title="q.stem">{{ q.stem }}</span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-2 text-right">
-                    <button type="button" class="text-danger hover:underline" @click="removeQuestion(q.id)">移除</button>
+                    <button type="button" class="link-button text-danger hover:underline" @click="removeQuestion(q.id)">移除</button>
                   </td>
                 </tr>
               </tbody>
@@ -151,7 +151,7 @@
           <div class="flex flex-wrap items-center gap-2">
             <Input
               v-model="selectorQuery.keyword"
-              placeholder="按题干搜索"
+              placeholder="按题干搜索…"
               class="h-9 w-48 bg-reader"
               @keyup.enter="searchCandidates"
             />

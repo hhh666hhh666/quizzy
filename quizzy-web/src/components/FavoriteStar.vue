@@ -3,6 +3,7 @@
     class="favorite-star"
     :class="{ 'is-favorited': favorited, 'is-holding': holding }"
     :title="title"
+    :aria-label="title"
     role="button"
     tabindex="0"
     @mousedown="onPressStart"

@@ -58,7 +58,7 @@
             </label>
             <button
               type="button"
-              class="shrink-0 text-sm text-danger hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+              class="link-button shrink-0 text-sm text-danger hover:underline disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="form.type === 'JUDGE' || form.options.length <= 2"
               @click="removeOption(index)"
             >
@@ -67,7 +67,7 @@
           </div>
           <button
             type="button"
-            class="self-start text-sm text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+            class="link-button self-start text-sm text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
             :disabled="form.type === 'JUDGE' || form.options.length >= 6"
             @click="addOption"
           >
@@ -112,14 +112,14 @@
               input-id="q-category"
               :model-value="form.categoryId"
               :options="categoryOptions"
-              placeholder="输入可新建分类"
+              placeholder="输入可新建分类…"
               @update:model-value="(v: any) => ((form as any).categoryId = v)"
             />
             <!-- 只在选中了既有分类时才出现：新建的名字还没有 id，谈不上改名 -->
             <button
               v-if="typeof form.categoryId === 'number'"
               type="button"
-              class="self-start text-xs text-brand hover:underline"
+              class="link-button self-start text-xs text-brand hover:underline"
               @click="onRenameCategory"
             >
               改分类名
@@ -134,7 +134,7 @@
             multiple
             :model-value="tagNames"
             :options="tagOptions"
-            placeholder="输入后回车新建"
+            placeholder="输入后回车新建…"
             @update:model-value="(v: any) => (tagNames = v as string[])"
           />
         </div>

@@ -19,6 +19,10 @@
         ref="inputRef"
         v-model="query"
         :id="inputId"
+        role="combobox"
+        aria-haspopup="listbox"
+        :aria-expanded="open"
+        :aria-controls="`${inputId}-panel`"
         :placeholder="inputPlaceholder"
         class="min-w-[80px] flex-1 border-0 bg-transparent text-sm text-ink outline-none placeholder:text-ink-subtle"
         @focus="open = true"
@@ -30,12 +34,16 @@
 
     <div
       v-if="open"
+      :id="`${inputId}-panel`"
+      role="listbox"
       class="create-select-panel absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-line bg-surface py-1 shadow-md"
     >
       <button
         v-for="opt in filtered"
         :key="String(opt.value)"
         type="button"
+        role="option"
+        :aria-selected="isSelected(opt.value)"
         class="flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm hover:bg-surface-2"
         :class="isSelected(opt.value) ? 'font-medium text-ink-blue' : 'text-ink'"
         @click="pick(opt.value)"

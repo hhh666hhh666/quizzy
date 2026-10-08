@@ -14,3 +14,27 @@
 @import "tw-animate-css";
 @import "./tokens.css";
 @import "./base.css";
+
+/* ── 行内文字按钮统一件（2026-10-08 规范审查后收口）────────────────────────
+   表格行操作、链接式动作有十余处裸 <button>/<a>：hover 下划线各自保留（颜色语义不同，
+   brand/ink/danger），**键盘焦点环统一到这里**——审查前它们只有 hover 态、
+   键盘用户 Tab 过去没有可见指示。加 class 即得，别再各处抄工具类。 */
+@layer components {
+  .link-button {
+    border-radius: 4px;
+    outline: none;
+  }
+  .link-button:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-focus);
+  }
+}
+
+/* 桌面端抑制页面橡胶带（触屏保留默认，别影响移动端的下拉刷新）。 */
+@media (pointer: fine) {
+  html {
+    overscroll-behavior: none;
+  }
+  .app-main {
+    overscroll-behavior: none;
+  }
+}
