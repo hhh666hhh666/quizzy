@@ -24,6 +24,55 @@
           <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
+
+      <!-- 底部用户区（2026-10-08 按主人参考图从顶栏移来）：左「头像 + 昵称」，右「浅色 / 关于」，单行齐平 -->
+      <div class="mt-auto border-t border-line-soft px-2.5 py-3">
+        <div class="flex items-center justify-between gap-1.5">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <button
+                type="button"
+                class="flex min-w-0 items-center gap-2 rounded-md py-1 text-left outline-none hover:bg-surface focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <UserAvatar :user="store.user" :size="30" />
+                <span class="truncate text-sm font-semibold">{{ store.user?.nickname || '未登录' }}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="top" class="w-40">
+              <DropdownMenuItem @click="router.push('/profile')">我的账户</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem class="text-danger" @click="onLogout">退出登录</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div class="flex shrink-0 items-center gap-0.5 text-xs text-ink-muted">
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <button
+                  type="button"
+                  class="rounded-sm outline-none hover:text-brand focus-visible:ring-2 focus-visible:ring-focus"
+                  :aria-label="`外观设置（当前：${modeLabel}）`"
+                >
+                  {{ modeLabel }}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="top">
+                <DropdownMenuItem v-for="opt in THEME_OPTIONS" :key="opt.value" @click="onTheme(opt.value)">
+                  {{ themeStore.mode === opt.value ? '✓ ' : '' }}{{ opt.label }}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <span aria-hidden="true">/</span>
+            <button
+              type="button"
+              class="rounded-sm outline-none hover:text-brand focus-visible:ring-2 focus-visible:ring-focus"
+              @click="aboutVisible = true"
+            >
+              关于
+            </button>
+          </div>
+        </div>
+      </div>
     </aside>
 
     <!-- 右列：主内容从顶栏下面穿过——顶栏的玻璃才有东西可透 -->
@@ -36,37 +85,6 @@
 
       <header class="app-header glass-bar absolute inset-x-0 top-0 z-10 flex h-14 items-center justify-between border-b px-4 font-sans text-base text-ink">
         <span class="text-sm font-medium">{{ route.meta.title || '' }}</span>
-        <div class="flex items-center gap-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <button
-                type="button"
-                class="flex items-center gap-2 rounded-md px-2 py-1 outline-none focus-visible:ring-2 focus-visible:ring-focus"
-              >
-                <UserAvatar :user="store.user" :size="28" />
-                <span>{{ store.user?.nickname || '未登录' }}</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-40">
-              <DropdownMenuItem @click="router.push('/profile')">我的账户</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem class="text-danger" @click="onLogout">退出登录</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button variant="link">外观：{{ modeLabel }}</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem v-for="opt in THEME_OPTIONS" :key="opt.value" @click="onTheme(opt.value)">
-                {{ themeStore.mode === opt.value ? '✓ ' : '' }}{{ opt.label }}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button variant="link" @click="aboutVisible = true">关于</Button>
-        </div>
       </header>
     </div>
 
@@ -97,7 +115,6 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 
 const route = useRoute()
 const router = useRouter()
