@@ -1,91 +1,99 @@
 <template>
-  <el-card>
-    <template #header>
-      <div class="header">
-        <span>收藏夹</span>
-        <div class="header-actions">
-          <span class="hint-inline">将练习：{{ currentName }}</span>
-          <el-input-number v-model="count" :min="1" :max="100" size="small" />
-          <el-button type="primary" size="small" :loading="starting" @click="onPractice">
-            用收藏的题练习
-          </el-button>
+  <div class="font-sans text-base text-ink">
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 class="text-base font-medium">收藏夹</h1>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-ink-muted">将练习：{{ currentName }}</span>
+          <Input v-model.number="count" type="number" min="1" max="100" aria-label="练习题数" class="h-8 w-20 bg-reader" />
+          <Button size="sm" :disabled="starting" @click="onPractice">用收藏的题练习</Button>
         </div>
       </div>
-    </template>
 
-    <div class="body">
-      <aside class="side">
-        <el-button class="new-folder" size="small" @click="onCreateFolder">新建收藏夹</el-button>
-        <ul class="folder-list">
-          <li class="folder-item" :class="{ active: selected === null }" @click="select(null)">
-            <span class="folder-name">全部收藏</span>
-          </li>
-          <li
-            v-for="folder in folders"
-            :key="folder.id"
-            class="folder-item"
-            :class="{ active: selected === folder.id }"
-            @click="select(folder.id)"
-          >
-            <span class="folder-name" :title="folder.name">
-              {{ folder.name }}
-              <span v-if="folder.isDefault" class="tag">默认</span>
-            </span>
-            <span class="folder-count">{{ folder.questionCount }}</span>
-            <span class="folder-actions">
-              <el-button link type="primary" size="small" @click.stop="onRenameFolder(folder)">
-                改名
-              </el-button>
-              <el-button
-                v-if="!folder.isDefault"
-                link
-                type="danger"
-                size="small"
-                @click.stop="onDeleteFolder(folder)"
-              >
-                删除
-              </el-button>
-            </span>
-          </li>
-        </ul>
-      </aside>
+      <div class="flex items-start gap-4">
+        <!-- 左：夹列表。⚠️ `.folder-item` 是 e2e 的钩子，别改名（12 号 spec 在用） -->
+        <aside class="w-[220px] shrink-0">
+          <Button variant="outline" class="mb-2 w-full" @click="onCreateFolder">新建收藏夹</Button>
+          <ul class="overflow-hidden rounded-lg border border-line-soft py-1">
+            <li
+              class="folder-item group flex cursor-pointer items-center gap-1.5 px-3 py-2 text-sm"
+              :class="selected === null ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
+              @click="select(null)"
+            >
+              <span class="min-w-0 flex-1 truncate">全部收藏</span>
+            </li>
+            <li
+              v-for="folder in folders"
+              :key="folder.id"
+              class="folder-item group flex cursor-pointer items-center gap-1.5 px-3 py-2 text-sm"
+              :class="selected === folder.id ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
+              @click="select(folder.id)"
+            >
+              <span class="min-w-0 flex-1 truncate" :title="folder.name">
+                {{ folder.name }}
+                <span v-if="folder.isDefault" class="ml-1 rounded-sm bg-surface-2 px-1 py-0.5 text-2xs text-ink-muted">默认</span>
+              </span>
+              <span class="shrink-0 text-xs text-ink-muted">{{ folder.questionCount }}</span>
+              <span class="hidden shrink-0 items-center gap-1.5 group-hover:flex group-focus-within:flex">
+                <button type="button" class="text-xs text-brand hover:underline" @click.stop="onRenameFolder(folder)">改名</button>
+                <button
+                  v-if="!folder.isDefault"
+                  type="button"
+                  class="text-xs text-danger hover:underline"
+                  @click.stop="onDeleteFolder(folder)"
+                >
+                  删除
+                </button>
+              </span>
+            </li>
+          </ul>
+        </aside>
 
-      <div class="main">
-        <el-table :data="rows" v-loading="loading" border>
-          <el-table-column prop="id" label="ID" width="70" />
-          <el-table-column label="题型" width="80">
-            <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-          </el-table-column>
-          <el-table-column prop="stem" label="题干" min-width="240" show-overflow-tooltip />
-          <el-table-column label="分类" width="110">
-            <template #default="{ row }">{{ row.categoryName || '-' }}</template>
-          </el-table-column>
-          <el-table-column label="收藏时间" width="150">
-            <template #default="{ row }">{{ formatTime(row.favoritedAt) }}</template>
-          </el-table-column>
-          <el-table-column label="收藏" width="60" align="center">
-            <template #default="{ row }">
-              <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
-            </template>
-          </el-table-column>
-          <el-table-column v-if="selected !== null" label="操作" width="110">
-            <template #default="{ row }">
-              <el-button link type="danger" @click="onRemoveFromFolder(row)">移出此夹</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <!-- 右：这个夹里的题 -->
+        <div class="min-w-0 flex-1">
+          <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
+            <table class="w-full border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+                  <th class="px-3 py-2.5 font-medium">ID</th>
+                  <th class="px-3 py-2.5 font-medium">题型</th>
+                  <th class="px-3 py-2.5 font-medium">题干</th>
+                  <th class="px-3 py-2.5 font-medium">分类</th>
+                  <th class="px-3 py-2.5 font-medium">收藏时间</th>
+                  <th class="px-3 py-2.5 text-center font-medium">收藏</th>
+                  <th v-if="selected !== null" class="px-3 py-2.5 font-medium">操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in rows" :key="row.id" class="fav-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
+                  <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+                  <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
+                  <td class="max-w-0 px-3 py-2.5">
+                    <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '-' }}</td>
+                  <td class="whitespace-nowrap px-3 py-2.5 text-ink-muted">{{ formatTime(row.favoritedAt) }}</td>
+                  <td class="px-3 py-2.5 text-center">
+                    <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
+                  </td>
+                  <td v-if="selected !== null" class="whitespace-nowrap px-3 py-2.5">
+                    <button type="button" class="text-danger hover:underline" @click="onRemoveFromFolder(row)">移出此夹</button>
+                  </td>
+                </tr>
+                <tr v-if="!rows.length">
+                  <td :colspan="selected !== null ? 7 : 6" class="px-4 py-8 text-center text-sm leading-loose text-ink-muted">
+                    这个收藏夹里还没有题。去「题库」用星标或「加入收藏夹」把题收进来吧。
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-        <el-pagination
-          class="pagination"
-          layout="total, prev, pager, next"
-          :total="total"
-          v-model:current-page="page"
-          v-model:page-size="size"
-          @change="loadQuestions"
-        />
+          <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; loadQuestions() }" />
+        </div>
       </div>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -93,6 +101,10 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import FavoriteStar from '@/components/FavoriteStar.vue'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import TablePagination from '@/components/TablePagination.vue'
+import TypeTag from '@/components/TypeTag.vue'
 import {
   createFolder,
   deleteFolder,
@@ -243,10 +255,6 @@ async function onPractice() {
   }
 }
 
-function typeLabel(type: string) {
-  return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
-}
-
 /**
  * 收藏时间只做「变得好读」，**不做时区换算**：后端已经固定在 Asia/Shanghai 输出，
  * 这里把它变成 `2026-10-07 13:45`。顺手兼容两种写法——ISO 的 `T` 分隔与空格分隔。
@@ -257,113 +265,3 @@ function formatTime(value?: string) {
 
 onMounted(loadAll)
 </script>
-
-<style scoped>
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.hint-inline {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-
-.body {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.side {
-  flex: none;
-  width: 220px;
-}
-
-.new-folder {
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.folder-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.folder-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 13px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-
-.folder-item:last-child {
-  border-bottom: none;
-}
-
-.folder-item:hover {
-  background: var(--el-fill-color-light);
-}
-
-.folder-item.active {
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
-}
-
-.folder-name {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.folder-count {
-  flex: none;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-}
-
-/* 操作按钮平时让位给「名字 + 数量」，指到哪一行才出现 */
-.folder-actions {
-  flex: none;
-  display: none;
-}
-
-.folder-item:hover .folder-actions {
-  display: inline-flex;
-}
-
-.tag {
-  margin-left: 4px;
-  padding: 0 4px;
-  font-size: 11px;
-  border-radius: 3px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color);
-}
-
-.main {
-  flex: 1;
-  min-width: 0;
-}
-
-.pagination {
-  margin-top: 12px;
-  justify-content: flex-end;
-}
-</style>

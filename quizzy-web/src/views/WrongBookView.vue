@@ -1,40 +1,59 @@
 <template>
-  <el-card>
-    <template #header>
-      <div class="header">
-        <span>错题本（连续答对 3 次会自动移出）</span>
+  <div class="font-sans text-base text-ink">
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <el-input-number v-model="count" :min="1" :max="100" size="small" />
-          <el-button type="primary" size="small" :loading="starting" @click="onPractice">开始错题练习</el-button>
+          <h1 class="text-base font-medium">错题本</h1>
+          <p class="mt-0.5 text-xs text-ink-muted">连续答对 3 次会自动移出</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <Input
+            v-model.number="count"
+            type="number"
+            min="1"
+            max="100"
+            aria-label="练习题数"
+            class="h-8 w-20 bg-reader"
+          />
+          <Button size="sm" :disabled="starting" @click="onPractice">开始错题练习</Button>
         </div>
       </div>
-    </template>
 
-    <el-table :data="rows" v-loading="loading" border>
-      <el-table-column prop="id" label="ID" width="70" />
-      <el-table-column label="题型" width="80">
-        <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-      </el-table-column>
-      <el-table-column prop="stem" label="题干" min-width="260" show-overflow-tooltip />
-      <el-table-column label="分类" width="120">
-        <template #default="{ row }">{{ row.categoryName || '-' }}</template>
-      </el-table-column>
-      <el-table-column label="操作" width="180">
-        <template #default="{ row }">
-          <el-button link type="danger" @click="onRemove(row)">移出</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+              <th class="px-3 py-2.5 font-medium">ID</th>
+              <th class="px-3 py-2.5 font-medium">题型</th>
+              <th class="px-3 py-2.5 font-medium">题干</th>
+              <th class="px-3 py-2.5 font-medium">分类</th>
+              <th class="px-3 py-2.5 font-medium">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows" :key="row.id" class="wrong-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
+              <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+              <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
+              <td class="max-w-0 px-3 py-2.5">
+                <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '-' }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5">
+                <button type="button" class="text-danger hover:underline" @click="onRemove(row)">移出</button>
+              </td>
+            </tr>
+            <tr v-if="!rows.length">
+              <td colspan="5" class="px-4 py-8 text-center text-sm leading-loose text-ink-muted">
+                错题本还是空的——答错的题会自动进到这里来。
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <el-pagination
-      class="pagination"
-      layout="total, prev, pager, next"
-      :total="total"
-      v-model:current-page="page"
-      v-model:page-size="size"
-      @change="load"
-    />
-  </el-card>
+      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; load() }" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -42,6 +61,10 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { pageWrongBook, practiceWrongBook, removeFromWrongBook } from '@/api/quiz'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import TablePagination from '@/components/TablePagination.vue'
+import TypeTag from '@/components/TypeTag.vue'
 
 const router = useRouter()
 const rows = ref<any[]>([])
@@ -81,14 +104,5 @@ async function onRemove(row: any) {
   load()
 }
 
-function typeLabel(type: string) {
-  return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
-}
-
 onMounted(load)
 </script>
-
-<style scoped>
-.header { display: flex; align-items: center; justify-content: space-between; }
-.pagination { margin-top: 12px; justify-content: flex-end; }
-</style>

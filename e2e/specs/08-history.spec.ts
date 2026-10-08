@@ -23,20 +23,19 @@ test('答题记录：结算后出现在列表，能按状态筛，并能跳回�
   await finishOneQuiz(page)
 
   await page.goto('/history')
-  const row = page.locator('.el-table__row').first()
+  const row = page.locator('.his-row').first()
   await expect(row).toContainText('快速练习')
   await expect(row).toContainText('已完成')
 
-  // 按状态筛：⚠️ 不能按 role 找——el-radio-button 拿不到可访问名（与题型下拉同理），
-  // 直接点它外层。
-  await page.locator('.el-radio-button', { hasText: '已完成' }).click()
-  await expect(page.locator('.el-table__row')).not.toHaveCount(0)
+  // 按状态筛：分段器是真按钮，role 能拿到可访问名（旧 el-radio-button 拿不到）
+  await page.getByRole('button', { name: '已完成' }).click()
+  await expect(page.locator('.his-row')).not.toHaveCount(0)
 
-  await page.locator('.el-radio-button', { hasText: '已放弃' }).click()
-  await expect(page.locator('.el-table__row')).toHaveCount(0)
+  await page.getByRole('button', { name: '已放弃' }).click()
+  await expect(page.locator('.his-row')).toHaveCount(0)
 
   // 从记录页能跳回结果页
-  await page.locator('.el-radio-button', { hasText: '已完成' }).click()
-  await page.locator('.el-table__row').first().getByRole('button', { name: '查看结果' }).click()
+  await page.getByRole('button', { name: '已完成' }).click()
+  await page.locator('.his-row').first().getByRole('button', { name: '查看结果' }).click()
   await expect(page).toHaveURL(/\/quiz\/\d+\/result$/)
 })

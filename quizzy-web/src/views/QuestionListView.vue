@@ -226,20 +226,12 @@
                 />
               </td>
               <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
-              <td class="px-3 py-2.5">
-                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium" :class="typeTagClass(row.type)">
-                  {{ typeLabel(row.type) }}
-                </span>
-              </td>
+              <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
               <td class="max-w-0 px-3 py-2.5">
                 <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
               </td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '未分类' }}</td>
-              <td class="whitespace-nowrap px-3 py-2.5">
-                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium" :class="difficultyTagClass(row.difficulty)">
-                  {{ difficultyLabel(row.difficulty) }}
-                </span>
-              </td>
+              <td class="whitespace-nowrap px-3 py-2.5"><DifficultyTag :level="row.difficulty" /></td>
               <td class="px-3 py-2.5">{{ row.score }}</td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ row.ownerId ? '我的' : '公开' }}</td>
               <td class="px-3 py-2.5 text-center">
@@ -281,32 +273,14 @@
       </div>
 
       <!-- ── 分页 ───────────────────────────────────────────────────────────── -->
-      <div class="mt-4 flex items-center justify-end gap-3">
-        <span class="text-sm text-ink-muted">共 {{ total }} 条</span>
-        <Select :model-value="String(state.size)" @update:model-value="(v) => { state.size = Number(v); applyPage() }">
-          <SelectTrigger class="h-8 w-[100px]">
-            <span>{{ state.size }}条/页</span>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="s in [10, 20, 50]" :key="s" :value="String(s)">{{ s }}条/页</SelectItem>
-          </SelectContent>
-        </Select>
-        <div class="flex items-center gap-1">
-          <Button variant="outline" size="icon-sm" aria-label="上一页" :disabled="state.page <= 1" @click="goPage(state.page - 1)">
-            ‹
-          </Button>
-          <span class="px-2 text-sm text-ink-muted">第 {{ state.page }} / {{ pageCount }} 页</span>
-          <Button
-            variant="outline"
-            size="icon-sm"
-            aria-label="下一页"
-            :disabled="state.page >= pageCount"
-            @click="goPage(state.page + 1)"
-          >
-            ›
-          </Button>
-        </div>
-      </div>
+      <TablePagination
+        :total="total"
+        :page="state.page"
+        :size="state.size"
+        sizes
+        @update:page="(p) => { state.page = p; applyPage() }"
+        @update:size="(s) => { state.size = s; applyPage() }"
+      />
     </div>
 
     <QuestionDetailDialog v-model:visible="detailVisible" :question-id="viewingId" @edit="onEditFromDetail" />
@@ -365,6 +339,9 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import DifficultyTag from '@/components/DifficultyTag.vue'
+import TablePagination from '@/components/TablePagination.vue'
+import TypeTag from '@/components/TypeTag.vue'
 import QuestionDetailDialog from './QuestionDetailDialog.vue'
 import QuestionEditDialog from './QuestionEditDialog.vue'
 import ImportDialog from './ImportDialog.vue'
@@ -604,26 +581,7 @@ const scopeFilterLabel = computed(() => SCOPE_LABELS[state.scope] ?? '我的题�
 
 // ---------- 题型 / 难度标签（彩色小标签：tint 底 + 深字色，2026-10-08 主人拍板） ----------
 // 色相映射按主人给的参考图：单选=蓝、多选=绿、判断=紫；简单=绿、中等=琥珀、困难=红。
-
-const TYPE_TAG_CLASS: Record<QuestionType, string> = {
-  SINGLE: 'bg-tint-blue text-ink-blue',
-  MULTI: 'bg-tint-green text-ink-green',
-  JUDGE: 'bg-tint-violet text-ink-violet'
-}
-
-const DIFFICULTY_TAG_CLASS: Record<Difficulty, string> = {
-  EASY: 'bg-tint-green text-ink-green',
-  MEDIUM: 'bg-tint-amber text-ink-amber',
-  HARD: 'bg-danger-soft text-ink-red'
-}
-
-function typeTagClass(type: string) {
-  return TYPE_TAG_CLASS[type as QuestionType] ?? 'bg-surface-2 text-ink'
-}
-
-function difficultyTagClass(level: string) {
-  return DIFFICULTY_TAG_CLASS[level as Difficulty] ?? 'bg-surface-2 text-ink'
-}
+// 标签本体抽成了 TypeTag / DifficultyTag 两个组件（错题本 / 收藏夹 / 记录页共用）。
 
 // ---------- 状态 ↔ 网址 ----------
 
@@ -799,13 +757,6 @@ function clearCategories() {
   state.categoryIds = []
 }
 
-const pageCount = computed(() => Math.max(1, Math.ceil(total.value / state.size)))
-
-function goPage(p: number) {
-  state.page = p
-  applyPage()
-}
-
 function onCreate() {
   editingId.value = null
   editVisible.value = true
@@ -870,14 +821,6 @@ async function download(path: string, filename: string) {
   link.download = filename
   link.click()
   window.URL.revokeObjectURL(url)
-}
-
-function typeLabel(type: string) {
-  return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
-}
-
-function difficultyLabel(level: string) {
-  return { EASY: '简单', MEDIUM: '中等', HARD: '困难' }[level] || level
 }
 
 onMounted(async () => {

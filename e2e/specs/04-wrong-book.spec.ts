@@ -30,10 +30,10 @@ test('错题本：答错进本，手动移出后消失', async ({ page }) => {
 
   // 进本了
   await page.goto('/wrong-book')
-  const wrongRow = page.locator('.el-table__row', { hasText: stem })
+  const wrongRow = page.locator('.wrong-row', { hasText: stem })
   await expect(wrongRow, '答错的题应当出现在错题本里').toHaveCount(1)
 
   // 手动移出 → 不再出现
   await wrongRow.getByRole('button', { name: '移出' }).click()
-  await expect(page.locator('.el-table__row', { hasText: stem }), '移出之后不该还在').toHaveCount(0)
+  await expect(page.locator('.wrong-row', { hasText: stem }), '移出之后不该还在').toHaveCount(0)
 })
