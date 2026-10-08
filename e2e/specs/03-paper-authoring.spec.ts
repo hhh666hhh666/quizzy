@@ -72,7 +72,7 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
   await paperDialog.getByRole('button', { name: '新建题目' }).click()
 
   // 建题表单是**另一层** dialog，嵌套在试卷抽屉里
-  const questionDialog = page.locator('.el-dialog:visible').last()
+  const questionDialog = page.getByRole('dialog', { name: '新建题目' })
   await questionDialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)
   const optionRows = questionDialog.locator('.option-row')
   await optionRows.nth(0).locator('.el-input__inner').fill('正确答案在这')
@@ -81,9 +81,8 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
   await questionDialog.getByRole('button', { name: '保存' }).click()
 
   await expect(lastMessage(page, 'success')).toContainText('已新建并加入试卷')
-  // ⚠️ 建题对话框是**嵌在试卷抽屉里**的（Element 的 `el-dialog` 默认不 teleport），
-  //    它关干净之前，`getByRole('button', { name: '保存' })` 会同时命中它的「保存」与试卷的「保存」
-  //    → 严格模式报错。所以先等它真的隐藏，再点试卷那颗。
+  // ⚠️ 建题弹窗与试卷弹窗会**同时可见**——它关干净之前，两个「保存」都在页上，
+  //    严格模式会双命中。所以先等它真的隐藏，再点试卷那颗。
   await expect(page.getByRole('dialog', { name: '新建题目' })).toBeHidden()
   await expect(paperDialog).toContainText('共 1 道')
 

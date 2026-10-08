@@ -69,11 +69,13 @@ async function openCategoryDropdown(page: import('@playwright/test').Page) {
 /**
  * 关掉当前打开的对话框。
  *
- * 弹窗已从 EP 迁到 reka——reka 的 Dialog **响应 Esc**（EP 那个不响应，当年只能点右上角 ×）。
- * 先按一次把可能还开着的分类下拉关掉，再按一次关弹窗。
+ * ⚠️ 不能只靠 Esc 连按两下：第一下关掉了分类下拉，但焦点还留在 EP 的 `el-select__input` 上，
+ * 而 EP 对 Esc 做了 `preventDefault`——reka 弹窗的关闭逻辑见到「已被处理过的 Esc」就不关
+ * （2026-10-08 在 CI 上实测到的）。所以先 Esc 收下拉，再点「取消」——确定性最高。
  */
 async function closeDialog(page: import('@playwright/test').Page) {
   await page.keyboard.press('Escape')
-  await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog', { name: '新建题目' })).toBeHidden()
+  const dialog = page.getByRole('dialog', { name: '新建题目' })
+  await dialog.getByRole('button', { name: '取消' }).click()
+  await expect(dialog).toBeHidden()
 }
