@@ -71,6 +71,7 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
+  --radius-2xl: 24px; /* 浮层（玻璃）用 —— 参照图给的就是 24 */
 
   /* ── 字体：先用系统栈；自托管中文子集是**后续增强**（见 docs/todo/）──
      ⚠️ 不要在这里引入 Web 字体：国内加载会失败，也会拖慢首屏。 */
@@ -100,6 +101,23 @@
   --shadow-xs: 0 1px 2px 0 oklch(30% 0.03 260 / 0.05);
   --shadow-sm: 0 2px 4px -1px oklch(30% 0.03 260 / 0.07), 0 1px 2px -1px oklch(30% 0.03 260 / 0.05);
   --shadow-md: 0 8px 20px -6px oklch(30% 0.03 260 / 0.12), 0 2px 6px -2px oklch(30% 0.03 260 / 0.07);
+
+  /* ── 玻璃：**第二套语言，专门给"浮层"** ────────────────────────────────
+     分工（硬规矩，别混）：
+       ① **铺底**（页面底 / 卡片 / 表格 / 表单）永远用上面的「面」，**不用玻璃**；
+       ② **浮层**（弹窗 / 抽屉 / 下拉 / 提示）**只用玻璃**——它们确实是"浮在页面之上"的，
+          玻璃的物理语义对得上；顶栏 / 侧栏用下面的"轻玻璃"（半透明、**不模糊**）。
+       ③ 同一类元素**只准用一种语言**——否则会像两个人做的。
+
+     ⚠️ 另外两条硬约束：
+       • 玻璃**背后必须有内容可透**；浮在纯白上几乎看不出来，等于白付性能代价。
+       • **玻璃上不许放长正文**（模糊让对比度不可控）——正文永远在 `--color-reader` 上。
+
+     ⚠️ 不透明度取 .68（参照图给的 .28 太透，文字压上去守不住 AA）。 */
+  --glass-surface: oklch(100% 0 0 / 0.68);
+  --glass-border:  oklch(100% 0 0 / 0.72);
+  --glass-blur:    18px;
+  --glass-shadow:  0 20px 55px -12px oklch(30% 0.05 285 / 0.22);
 
   /* ── 动效 ── */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
@@ -202,6 +220,35 @@ html.dark {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ── 浮层语言：只有"浮在页面之上"的东西才用这两个类 ────────────────────────── */
+@layer components {
+  /* 完整玻璃：弹窗 / 抽屉 / 下拉 / 提示 */
+  .glass {
+    background-color: var(--glass-surface);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* 轻玻璃：顶栏 / 侧栏 —— 半透明但**不模糊**（性能友好，滚动时仍看得到内容透过去） */
+  .glass-bar {
+    background-color: var(--glass-surface);
+    border-color: var(--glass-border);
+  }
+
+  /* 无障碍：系统开了"减少透明度"时，玻璃退化成实心面，别让文字压在不可控的底上 */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass,
+    .glass-bar {
+      background-color: var(--color-reader);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 }
 

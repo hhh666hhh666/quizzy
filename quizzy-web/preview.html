@@ -104,6 +104,38 @@
         </div>
       </section>
 
+      <!-- 浮层（玻璃） -->
+      <section class="mt-10">
+        <h2 class="text-lg font-medium">浮层（玻璃）</h2>
+        <p class="mt-1 text-ink-subtle text-sm">
+          玻璃是**第二套语言**，只用在「确实浮在页面之上」的东西：<b>弹窗 / 抽屉 / 下拉 / 提示</b>，
+          以及表达型页面（登录 / 结果 / 空态）。<b>铺底永远用上面的「面」，不用玻璃。</b>
+        </p>
+
+        <div class="relative mt-4 overflow-hidden rounded-xl bg-tint-violet p-8">
+          <p class="text-sm text-ink-muted">↑ 这是「页面内容」（一块有色的面）</p>
+
+          <div class="glass mt-6 max-w-md p-6">
+            <p class="text-base font-medium">这就是玻璃浮层</p>
+            <p class="mt-2 text-sm text-ink-muted">
+              注意它背后有东西可透，所以看得出是玻璃。若它浮在纯白上，就几乎看不出来——那是白付性能。
+            </p>
+            <div class="mt-4 flex gap-2">
+              <button class="rounded-md bg-brand px-3 py-1.5 text-sm text-brand-ink">确定</button>
+              <button class="rounded-md px-3 py-1.5 text-sm text-ink-muted">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-bar mt-3 rounded-lg border p-4">
+          <p class="text-sm">轻玻璃（<code class="font-mono text-xs">.glass-bar</code>）：顶栏 / 侧栏用——半透明但<b>不模糊</b>，滚动时看得到内容透过去。</p>
+        </div>
+
+        <p class="mt-2 text-2xs text-ink-subtle">
+          ⚠️ 玻璃上**只放短文字**（标题 / 按钮 / 标签）；题干与解析永远放在近白的「阅读面」上。
+        </p>
+      </section>
+
       <!-- 文字 -->
       <section class="mt-10">
         <h2 class="text-lg font-medium">字阶</h2>
