@@ -1,0 +1,25 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   主应用的样式入口（2026-10-08 起）
+
+   ⚠️ **过渡期契约**：只引 theme + utilities，**不引 preflight、不引 base.css**——
+   Element Plus 还没退场，preflight 的全局重置（margin/padding/box-sizing）
+   会打乱未迁移页面的既有样式。
+
+   摘完 Element Plus（ADR 0031 的迁移里程碑）之后，本文件换成：
+       @import "tailwindcss";
+       @import "tw-animate-css";
+       @import "./tokens.css";
+       @import "./base.css";
+   即可（与 preview.css 同构），那时 preflight 的收益才开始兑现。
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* shadcn 组件的进/出场动画工具类（纯 CSS，很小）。shadcn-vue 的组件依赖它。 */
+@import "tw-animate-css";
+
+/* 我们的 token（唯一真相源）。它不再自带 `@import "tailwindcss"`，见其文件头。 */
+@import "./tokens.css";

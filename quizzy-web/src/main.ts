@@ -5,6 +5,9 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import 'element-plus/dist/index.css'
 // 深色变量表：只在 `html.dark` 下生效，不影响浅色默认值
 import 'element-plus/theme-chalk/dark/css-vars.css'
+// 我们的设计系统入口（过渡期只引 theme + utilities，不引 preflight / base——
+// 原因见 src/styles/app.css 的注释与 docs/adr/0031 的迁移里程碑）
+import './styles/app.css'
 import App from './App.vue'
 import router from './router'
 import { useThemeStore } from './stores/theme'

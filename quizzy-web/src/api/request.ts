@@ -27,7 +27,7 @@ request.interceptors.response.use(
   }
 )
 
-export async function unwrap<T>(promise: Promise<{ data: Result<T> }>): Promise<T> {
+export async function unwrap<T>(promise: Promise<{ data: Result<T> }>, opts?: { silent?: boolean }): Promise<T> {
   const response = await promise
   const body = response.data
   if (body.code === 0) {
@@ -37,7 +37,10 @@ export async function unwrap<T>(promise: Promise<{ data: Result<T> }>): Promise<
     localStorage.removeItem('quizzy_token')
     router.push('/login')
   }
-  ElMessage.error(body.message || '请求失败')
+  // ⚠️ `silent`：错误由调用方自己呈现（如登录页的内联提示条），不弹全局 ElMessage。
+  if (!opts?.silent) {
+    ElMessage.error(body.message || '请求失败')
+  }
   return Promise.reject(new Error(body.message || '请求失败'))
 }
 

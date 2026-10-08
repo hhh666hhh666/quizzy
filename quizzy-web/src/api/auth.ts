@@ -1,12 +1,14 @@
 import request, { unwrap } from './request'
 import type { LoginVO, UserVO } from '@/types'
 
+/** 登录。`silent`：错误由登录页内联呈现，不弹全局 toast（见 request.ts 的 unwrap）。 */
 export function login(username: string, password: string) {
-  return unwrap<LoginVO>(request.post('/auth/login', { username, password }))
+  return unwrap<LoginVO>(request.post('/auth/login', { username, password }), { silent: true })
 }
 
+/** 注册。同上：错误由登录页内联呈现。 */
 export function register(username: string, password: string, nickname: string) {
-  return unwrap<LoginVO>(request.post('/auth/register', { username, password, nickname }))
+  return unwrap<LoginVO>(request.post('/auth/register', { username, password, nickname }), { silent: true })
 }
 
 export function fetchMe() {

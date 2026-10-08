@@ -25,7 +25,8 @@ export async function registerNewUser(page: Page): Promise<string> {
   const username = `e2e_${Date.now()}${Math.floor(Math.random() * 1000)}`
   await page.goto('/')
   await expect(page).toHaveURL(/\/login$/)
-  await page.getByRole('tab', { name: '注册' }).click()
+  // 登录 / 注册同卡两态：点「注册」链接切过去（role 定位，文案是页面级稳定标识）
+  await page.getByRole('button', { name: '注册' }).click()
   await page.getByTestId('register-username').fill(username)
   await page.getByTestId('register-password').fill('e2e-Passw0rd!')
   await page.getByTestId('register-submit').click()

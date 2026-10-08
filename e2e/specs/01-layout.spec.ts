@@ -14,9 +14,9 @@ test.describe('排版 · 几何事实', () => {
     test(`${width}px：登录页不横向溢出`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await page.goto('/login')
-      await expect(page.getByRole('tab', { name: '注册' })).toBeVisible()
+      await expect(page.getByRole('button', { name: '注册' })).toBeVisible()
       await expectNoHorizontalOverflow(page, '.login-card')
-      // 裁切是「点名式」的：只验登录卡片——它的内容（两个 Tab、输入框、按钮）
+      // 裁切是「点名式」的：只验登录卡片——它的内容（身份面、输入框、按钮）
       // 没有任何理由被裁掉。表格 / 代码块那种**本来就可滚动**的容器不在点名范围内。
       await expectNotClipped(page, '.login-card')
     })

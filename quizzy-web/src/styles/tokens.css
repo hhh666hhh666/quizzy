@@ -10,6 +10,15 @@
 
    ⚠️ **改颜色、改圆角、改字体 → 只改第一节。** 在第二节写死颜色 = 又造一份真相。
 
+   ── 引入方式（2026-10-08 起）──────────────────────────────────────────────
+   ⚠️ 本文件**不再自带 `@import "tailwindcss"`**——由入口决定引入哪几层：
+     · `src/styles/preview.css`：完整（theme + preflight + utilities + base）——预览页独立可用；
+     · `src/styles/app.css`：**过渡期**只引 theme + utilities（**不引 preflight / base**），
+       直到 Element Plus 退场（ADR 0031 的迁移里程碑）再换成完整引入。
+   理由：preflight 与 base 会全局重置，一进来就打乱未迁移的页面；拆开才能两套体系安全共存。
+   ⚠️ 另：shadcn-vue CLI 跑 `add` 会**回灌**「Inter 远程字体 + 文件尾 base 层」——跑完要手动删
+      （Web 字体禁引，见第一节；base 层归 `base.css`）。
+
    ── 第二版改了什么（依据主人在 2026-10-08 的口味四问 + 一次改口）────────────
      ① 冷中性：色相从暖（85）挪到冷（250–265）。
      ② 宽松：字阶**配了行高**（正文 1.75），圆角整体调大一档。
@@ -21,10 +30,7 @@
         主色**锁定蓝**；语义色补 **soft 浅底**三枚，状态色首次成对。
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import "tailwindcss";
-
-/* shadcn 组件的进/出场动画工具类（纯 CSS，很小）。shadcn-vue 的组件依赖它。 */
-@import "tw-animate-css";
+/* ⚠️ `tailwindcss` 与 `tw-animate-css` 的引入已移到入口文件（见文件头的「引入方式」）。 */
 
 /* shadcn 的 `dark:` 变体约定：认 `<html class="dark">` 之下的元素 */
 @custom-variant dark (&:is(.dark *));
@@ -224,15 +230,8 @@ html.dark {
   color-scheme: dark;
 }
 
-/* shadcn 的基础层：给所有元素一个默认边框色，并让 body 跟随主题变量 */
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* ⚠️ shadcn 的基础层（`*` 边框色 + `body` 跟随主题）已**拆到 `src/styles/base.css`**——
+   过渡期主应用不引它（会把未迁移页面的 body 底色一起换掉），preview 与迁移完成后的入口才引。 */
 
 /* ── 浮层语言：只有"浮在页面之上"的东西才用这两个类 ────────────────────────── */
 @layer components {

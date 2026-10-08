@@ -1,0 +1,17 @@
+/* shadcn 的基础层（2026-10-08 从 tokens.css 拆出）：
+   `*` 的默认边框色 + `body` 跟随主题变量。
+   （原实现用 `@apply border-border …`，这里换成等价的纯 CSS——不依赖工具类解析。）
+
+   ⚠️ 只在「完整引入」的入口里 import：preview 现在用；
+   **主应用要等 Element Plus 退场后再加**——它会把 body 的背景 / 文字色一并换掉，
+   过渡期引进来会波及未迁移页面（见 src/styles/app.css 的契约说明）。 */
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}

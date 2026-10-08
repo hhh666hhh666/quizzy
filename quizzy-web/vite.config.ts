@@ -13,8 +13,9 @@ const APP_COMMIT = process.env.APP_COMMIT ?? 'unknown'
 const APP_BUILD_TIME = process.env.APP_BUILD_TIME ?? 'unknown'
 
 export default defineConfig({
-  // Tailwind CSS v4：对现有页面**惰性**——只有 `@import "tailwindcss"` 的文件才会被它处理，
-  // 所以在迁移完成前，它不影响任何既有样式。
+  // Tailwind CSS v4：样式入口分两套（`styles/app.css` / `styles/preview.css`，见 tokens.css 文件头）。
+  // 主应用入口**过渡期不引 preflight / base**——未迁移的 Element Plus 页面不吃全局重置；
+  // 只有用到 Tailwind 的文件才会被插件处理，逐页迁移期间其余页面不受影响。
   plugins: [vue(), tailwindcss()],
   define: {
     __APP_VERSION__: JSON.stringify(APP_VERSION),
