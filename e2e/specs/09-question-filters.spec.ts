@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
+import { createQuestion, lastMessage, questionRow, registerNewUser } from './support/helpers'
 
 /**
  * 题库页的**筛选条件与网址同步**。
@@ -14,14 +14,7 @@ import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
  * </ul>
  */
 
-/**
- * 点查询区那颗按钮。
- *
- * <p>⚠️ 用正则容忍中间的空格：Element Plus 的按钮在 `autoInsertSpace` 打开时会把两个中文字
- * 渲染成「查 询」（<a href="https://element-plus.org/zh-CN/component/button.html">按钮文档</a>）。
- * 当前工程没套 `el-config-provider`，所以实际渲染是「查询」，但写死不带空格的话，
- * 哪天有人引入全局配置就会莫名其妙地红在这条定位上。
- */
+// 查询 / 重置按钮。正则容忍中间被插空格——EP 时代留下的习惯，新按钮没这个问题，容忍无害。
 const searchButton = (page: Page) => page.getByRole('button', { name: /查\s*询/ })
 const resetButton = (page: Page) => page.getByRole('button', { name: /重\s*置/ })
 
@@ -31,20 +24,20 @@ test('题库页默认范围是「我的题库」：空表给出引导，切到�
 
   await page.goto('/questions')
 
-  // 默认范围不是「全部」而是「我的题库」
-  await expect(page.locator('.el-form-item', { hasText: '范围' }).locator('.el-select')).toContainText('我的题库')
+  // 默认范围不是「全部」而是「我的题库」（单选下拉的触发钮直接显示当前项的文案）
+  await expect(page.getByTestId('filter-scope').getByRole('combobox')).toContainText('我的题库')
 
   // 新账号名下确实没有题（种子题库全是公开题），表格是空的
-  await expect(page.locator('.el-table__row')).toHaveCount(0)
+  await expect(page.locator('.qb-row')).toHaveCount(0)
 
   // 空表不该是「一片空白」——得告诉人题在哪儿。这是「默认值改成我的题库」这个决定的配套代价。
-  await expect(page.locator('.el-table__empty-block')).toContainText('我的题库里还没有题目')
-  await expect(page.locator('.el-table__empty-block')).toContainText('公开题库')
+  await expect(page.locator('.empty-hint')).toContainText('我的题库里还没有题目')
+  await expect(page.locator('.empty-hint')).toContainText('公开题库')
 
   // 把范围切到「全部」再查 → 种子题库出现
-  await pickOption(page, '范围', '全部')
+  await pickOption(page, 'scope', '全部')
   await searchButton(page).click()
-  await expect(page.locator('.el-table__row').first()).toBeVisible()
+  await expect(page.locator('.qb-row').first()).toBeVisible()
 })
 
 test('按分类筛选：只勾一个分类就只剩它，条件写进网址、刷新后还在、重置能清干净', async ({ page }) => {
@@ -64,16 +57,16 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
   await createQuestion(page, { stem: stemNoCategory, options: ['甲', '乙'], correct: ['A'] })
 
   await page.goto('/questions')
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(1)
+  await expect(questionRow(page, stemA)).toHaveCount(1)
+  await expect(questionRow(page, stemB)).toHaveCount(1)
 
   // ---------- 勾一个分类 ----------
   await pickCategory(page, categoryA)
   await searchButton(page).click()
 
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(0)
-  await expect(page.locator('.el-table__row', { hasText: stemNoCategory })).toHaveCount(0)
+  await expect(questionRow(page, stemA)).toHaveCount(1)
+  await expect(questionRow(page, stemB)).toHaveCount(0)
+  await expect(questionRow(page, stemNoCategory)).toHaveCount(0)
   // 条件写进了网址（默认值不写，所以只该有 categoryIds）。
   // ⚠️ 用 toHaveURL 而不是 expect(page.url())：后者只取一次值，会撞上 router.replace 还没写完
   //    的那一瞬间；toHaveURL 是会自动重试的。
@@ -82,24 +75,22 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
 
   // ---------- 刷新后条件还在 ----------
   await page.reload()
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(0)
+  await expect(questionRow(page, stemA)).toHaveCount(1)
+  await expect(questionRow(page, stemB)).toHaveCount(0)
 
   // ---------- 点「全部分类（点此清空）」，把勾上的分类清掉 ----------
-  // ⚠️ 这一步之后**必须**在下拉外面点一下（下面点的「查询」）才能再动别的下拉，
-  //    理由见 pickOption 的注释——这是本次在 CI 上真实踩过的坑。
   await clearCategories(page)
   await searchButton(page).click()
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(1)
+  await expect(questionRow(page, stemA)).toHaveCount(1)
+  await expect(questionRow(page, stemB)).toHaveCount(1)
   // 清空后网址也回到了干净状态
   await expect(page).toHaveURL(/\/questions$/)
 
   // ---------- 换成「未分类」 ----------
   await pickCategory(page, '未分类')
   await searchButton(page).click()
-  await expect(page.locator('.el-table__row', { hasText: stemNoCategory })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(0)
+  await expect(questionRow(page, stemNoCategory)).toHaveCount(1)
+  await expect(questionRow(page, stemA)).toHaveCount(0)
   // ⚠️ 网址里是**界面态**的写法：`categoryIds=none`（哨兵值），不是 `uncategorized=true`。
   //    后者是**接口**上的参数，只在 apiQuery() 那一处翻译出来——两者别混，第一版就混错了。
   await expect(page).toHaveURL(/categoryIds=none/)
@@ -108,8 +99,8 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
   await resetButton(page).click()
   // 网址清干净（等于回到了默认状态），三道题又都看得见
   await expect(page).toHaveURL(/\/questions$/)
-  await expect(page.locator('.el-table__row', { hasText: stemA })).toHaveCount(1)
-  await expect(page.locator('.el-table__row', { hasText: stemB })).toHaveCount(1)
+  await expect(questionRow(page, stemA)).toHaveCount(1)
+  await expect(questionRow(page, stemB)).toHaveCount(1)
 })
 
 /**
@@ -117,6 +108,7 @@ test('按分类筛选：只勾一个分类就只剩它，条件写进网址、�
  *
  * <p>分类下拉开了 `allow-create`，所以直接输入一个**还不存在**的名字 + 回车就能选中——
  * 后端会按名字把分类建出来。这比「先建分类再建题」少一步，而分类本来就没有独立的新建入口。
+ * （⚠️ 这个下拉在**新建题目对话框**里，对话框仍是 Element Plus——迁移按页推进，它还没轮到。）
  */
 async function createQuestionInCategory(page: Page, stem: string, category: string): Promise<void> {
   await page.goto('/questions')
@@ -142,36 +134,29 @@ async function createQuestionInCategory(page: Page, stem: string, category: stri
 }
 
 /**
- * 在查询区某个下拉里选中一项（按显示文字找）。
+ * 打开单个下拉筛选（题型 / 难度 / 范围）并选中一项。
  *
- * ⚠️ **进来时那个下拉必须是关着的。** 下拉若已经开着，这一下点击会把它**关掉**，
- * 紧接着找选项就一直找不到——报的是「element is not visible」，看着像元素凭空消失，
- * 其实是被自己上一步关掉的。所以**两次下拉操作之间必须先在下拉外面点一下**（点「查询」最自然）。
- *
- * ⚠️ **收尾不要用 Esc。** 点过下拉内部那几行（比如「全部分类（点此清空）」）之后焦点不在输入框上，
- * Escape 不一定会被 select 收到——这条在 CI 上实测踩过：下拉一直开着，于是下一次点击把它关掉。
+ * <p>2026-10-08 起筛选下拉换成了 reka 的 Select：点触发钮 → 点选项，选中即收起。
+ * Element Plus 时代那套「两次下拉之间必须先点空白处」「Esc 不一定收得掉」的坑，
+ * 随旧控件一起退场了——新控件的开关行为是确定的，不需要任何舞蹈。
  */
-async function pickOption(page: Page, formItemLabel: string, optionText: string): Promise<void> {
-  const select = page.locator('.el-form-item', { hasText: formItemLabel }).locator('.el-select')
-  await select.click()
-
-  const option = page
-    .locator('.el-select-dropdown:visible .el-select-dropdown__item', { hasText: optionText })
-    .first()
-  // 先等它可见再点：等不到的报错比 30 秒超时清楚得多
+async function pickOption(page: Page, filter: string, optionText: string): Promise<void> {
+  await page.getByTestId(`filter-${filter}`).getByRole('combobox').click()
+  const option = page.getByRole('option', { name: optionText })
   await expect(option).toBeVisible()
   await option.click()
 }
 
-/** 在「分类」多选里勾一个分类（可以是「未分类」）。 */
+/** 在「分类」多选面板里勾一个分类（可以是「未分类」）。面板保持开着，收尾用 Esc 收起。 */
 async function pickCategory(page: Page, optionText: string): Promise<void> {
-  await pickOption(page, '分类', optionText)
+  await page.getByTestId('filter-category').getByRole('button').click()
+  await page.getByRole('checkbox', { name: optionText }).click()
+  await page.keyboard.press('Escape')
 }
 
-/** 点「分类」下拉顶部那行「全部分类（点此清空）」，把已勾的分类清掉。下拉会保持开着。 */
+/** 点「分类」面板顶部那行「全部分类（点此清空）」，把已勾的分类清掉，然后 Esc 收起面板。 */
 async function clearCategories(page: Page): Promise<void> {
-  const select = page.locator('.el-form-item', { hasText: '分类' }).locator('.el-select')
-  await select.click()
-  // 点是那一行自己，不是它的外层容器——外层容器上没有点击处理
-  await page.locator('.el-select-dropdown:visible .select-header').click()
+  await page.getByTestId('filter-category').getByRole('button').click()
+  await page.getByText('全部分类（点此清空）').click()
+  await page.keyboard.press('Escape')
 }

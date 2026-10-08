@@ -1,98 +1,180 @@
 <template>
-  <div>
-    <el-card>
-      <el-form :inline="true" :model="state">
-        <el-form-item label="关键词">
-          <el-input v-model="state.keyword" clearable placeholder="搜索题干" @keyup.enter="applySearch" />
-        </el-form-item>
-        <el-form-item label="题型">
-          <el-select v-model="state.type" clearable style="width: 120px">
-            <el-option label="单选题" value="SINGLE" />
-            <el-option label="多选题" value="MULTI" />
-            <el-option label="判断题" value="JUDGE" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="难度">
-          <el-select v-model="state.difficulty" clearable style="width: 120px">
-            <el-option label="简单" value="EASY" />
-            <el-option label="中等" value="MEDIUM" />
-            <el-option label="困难" value="HARD" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="范围">
-          <el-select v-model="state.scope" style="width: 120px">
-            <el-option label="全部" value="all" />
-            <el-option label="我的题库" value="mine" />
-            <el-option label="公开题库" value="public" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="分类">
-          <el-select
-            v-model="state.categoryIds"
-            multiple
-            clearable
-            collapse-tags
-            collapse-tags-tooltip
-            placeholder="全部分类"
-            style="width: 200px"
+  <div class="font-sans text-base text-ink">
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <!-- ── 筛选区 ─────────────────────────────────────────────────────────── -->
+      <div class="flex flex-wrap items-end gap-x-4 gap-y-3">
+        <div class="flex flex-col gap-1" data-testid="filter-keyword">
+          <label for="filter-keyword-input" class="text-xs text-ink-muted">关键词</label>
+          <Input
+            id="filter-keyword-input"
+            v-model="state.keyword"
+            placeholder="搜索题干"
+            class="h-9 w-44 bg-reader"
+            @keyup.enter="applySearch"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1" data-testid="filter-type">
+          <span class="text-xs text-ink-muted">题型</span>
+          <Select :model-value="state.type ?? 'ALL'" @update:model-value="(v: unknown) => (state.type = v === 'ALL' ? undefined : (v as QuestionType))">
+            <SelectTrigger class="h-9 w-[130px] bg-reader">
+              <span>{{ typeFilterLabel }}</span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">不限</SelectItem>
+              <SelectItem value="SINGLE">单选题</SelectItem>
+              <SelectItem value="MULTI">多选题</SelectItem>
+              <SelectItem value="JUDGE">判断题</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div class="flex flex-col gap-1" data-testid="filter-difficulty">
+          <span class="text-xs text-ink-muted">难度</span>
+          <Select
+            :model-value="state.difficulty ?? 'ALL'"
+            @update:model-value="(v: unknown) => (state.difficulty = v === 'ALL' ? undefined : (v as Difficulty))"
           >
-            <!--
-              「全部分类」不做成一个可勾的选项，而是一行**清空动作**：多选项之间若要互斥
-              （勾「全部」就自动取消别的），界面就得自己发明一套规则去解释谁赢，
-              而那种状态最容易用出「看着没筛、题却少了」。
-            -->
-            <template #header>
-              <div class="select-header" @click="clearCategories">全部分类（点此清空）</div>
-            </template>
-            <el-option label="未分类" :value="UNCATEGORIZED" />
-            <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="标签">
-          <el-select
-            v-model="state.tagIds"
-            multiple
-            clearable
-            collapse-tags
-            collapse-tags-tooltip
-            placeholder="全部标签"
-            style="width: 200px"
-          >
-            <el-option v-for="t in tags" :key="t.id" :label="t.name" :value="t.id" />
-          </el-select>
-        </el-form-item>
+            <SelectTrigger class="h-9 w-[130px] bg-reader">
+              <span>{{ difficultyFilterLabel }}</span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">不限</SelectItem>
+              <SelectItem value="EASY">简单</SelectItem>
+              <SelectItem value="MEDIUM">中等</SelectItem>
+              <SelectItem value="HARD">困难</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div class="flex flex-col gap-1" data-testid="filter-scope">
+          <span class="text-xs text-ink-muted">范围</span>
+          <Select :model-value="state.scope" @update:model-value="(v: unknown) => (state.scope = v as string)">
+            <SelectTrigger class="h-9 w-[130px] bg-reader">
+              <span>{{ scopeFilterLabel }}</span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">全部</SelectItem>
+              <SelectItem value="mine">我的题库</SelectItem>
+              <SelectItem value="public">公开题库</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <!--
+          「全部分类」不做成一个可勾的选项，而是一行**清空动作**（面板顶部那行）：多选项之间若要互斥
+          （勾「全部」就自动取消别的），界面就得自己发明一套规则去解释谁赢，而那种状态最容易用出
+          「看着没筛、题却少了」。
+        -->
+        <div class="flex flex-col gap-1" data-testid="filter-category">
+          <span class="text-xs text-ink-muted">分类</span>
+          <Popover>
+            <PopoverTrigger as-child>
+              <button
+                type="button"
+                class="flex h-9 w-[200px] items-center justify-between rounded-md border border-line bg-reader px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span :class="state.categoryIds.length ? '' : 'text-ink-subtle'">{{ categoryTriggerLabel }}</span>
+                <ChevronDownIcon class="size-4 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" class="w-56 p-0">
+              <div
+                class="cursor-pointer border-b border-line-soft px-3 py-2 text-xs text-ink-muted hover:text-brand"
+                @click="clearCategories"
+              >
+                全部分类（点此清空）
+              </div>
+              <div class="max-h-60 overflow-y-auto py-1">
+                <label
+                  v-for="opt in categoryOptions"
+                  :key="String(opt.value)"
+                  class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-surface-2"
+                >
+                  <Checkbox :model-value="state.categoryIds.includes(opt.value)" @update:model-value="(v: unknown) => toggleCategory(opt.value, v === true)" />
+                  {{ opt.label }}
+                </label>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        <div class="flex flex-col gap-1" data-testid="filter-tag">
+          <span class="text-xs text-ink-muted">标签</span>
+          <Popover>
+            <PopoverTrigger as-child>
+              <button
+                type="button"
+                class="flex h-9 w-[200px] items-center justify-between rounded-md border border-line bg-reader px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span :class="state.tagIds.length ? '' : 'text-ink-subtle'">{{ tagTriggerLabel }}</span>
+                <ChevronDownIcon class="size-4 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" class="w-56 p-0">
+              <div class="max-h-60 overflow-y-auto py-1">
+                <label
+                  v-for="opt in tagOptions"
+                  :key="opt.value"
+                  class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-surface-2"
+                >
+                  <Checkbox :model-value="state.tagIds.includes(opt.value)" @update:model-value="(v: unknown) => toggleTag(opt.value, v === true)" />
+                  {{ opt.label }}
+                </label>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+
         <!--
           收藏夹筛选。⚠️ 与上面的分类不同，这里**把「全部收藏」做成一个可勾的选项**而不是顶部动作：
           后端的语义是「在任意夹里」**或**「在这些夹里」，两者是包含关系、不存在谁赢谁输，
           所以界面不需要发明任何互斥规则。分类那边做成顶部动作，是因为「全部分类」与具体分类
           之间的互斥规则不好解释——两处取舍不同，别照搬。
         -->
-        <el-form-item label="收藏夹">
-          <el-select
-            v-model="state.favoriteChoices"
-            multiple
-            clearable
-            collapse-tags
-            collapse-tags-tooltip
-            placeholder="全部收藏夹"
-            style="width: 200px"
-          >
-            <el-option label="全部收藏" :value="ALL_FAVORITES" />
-            <el-option v-for="f in favoriteFolders" :key="f.id" :label="f.name" :value="f.id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="applySearch">查询</el-button>
-          <el-button @click="onReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+        <div class="flex flex-col gap-1" data-testid="filter-favorite">
+          <span class="text-xs text-ink-muted">收藏夹</span>
+          <Popover>
+            <PopoverTrigger as-child>
+              <button
+                type="button"
+                class="flex h-9 w-[200px] items-center justify-between rounded-md border border-line bg-reader px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span :class="state.favoriteChoices.length ? '' : 'text-ink-subtle'">{{ favoriteTriggerLabel }}</span>
+                <ChevronDownIcon class="size-4 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" class="w-56 p-0">
+              <div class="max-h-60 overflow-y-auto py-1">
+                <label
+                  v-for="opt in favoriteOptions"
+                  :key="String(opt.value)"
+                  class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-surface-2"
+                >
+                  <Checkbox
+                    :model-value="state.favoriteChoices.includes(opt.value)"
+                    @update:model-value="(v: unknown) => toggleFavorite(opt.value, v === true)"
+                  />
+                  {{ opt.label }}
+                </label>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
 
-      <div class="toolbar">
-        <el-button type="primary" @click="onCreate">新建题目</el-button>
-        <el-button @click="importVisible = true">批量导入</el-button>
-        <el-button @click="onExport('excel')">导出 Excel</el-button>
-        <el-button @click="onExport('json')">导出 JSON</el-button>
-        <el-button @click="download(templatePath(), 'quizzy-template.xlsx')">下载导入模板</el-button>
+        <div class="flex gap-2">
+          <Button @click="applySearch">查询</Button>
+          <Button variant="outline" @click="onReset">重置</Button>
+        </div>
+      </div>
+
+      <!-- ── 动作区 ─────────────────────────────────────────────────────────── -->
+      <div class="mb-3 mt-5 flex flex-wrap gap-2">
+        <Button @click="onCreate">新建题目</Button>
+        <Button variant="outline" @click="importVisible = true">批量导入</Button>
+        <Button variant="outline" @click="onExport('excel')">导出 Excel</Button>
+        <Button variant="outline" @click="onExport('json')">导出 JSON</Button>
+        <Button variant="outline" @click="download(templatePath(), 'quizzy-template.xlsx')">下载导入模板</Button>
       </div>
 
       <!--
@@ -100,85 +182,130 @@
         ⚠️ 「已选」是**跨页**的——勾选状态自己记账（见脚本里的 selectedIds），翻页或改筛选都
         不会把之前勾的冲掉，所以这里必须把数量显式写出来，否则翻到第二页时会以为第一页白勾了。
       -->
-      <div v-if="selectedCount" class="batch-bar">
-        <span class="batch-count">已选 {{ selectedCount }} 道（可跨页）</span>
-        <el-button size="small" type="primary" data-testid="batch-add-to-paper" @click="openAddToPaper">加入试卷</el-button>
-        <el-button size="small" data-testid="batch-new-paper" @click="onCreatePaperFromSelection">用所选新建试卷</el-button>
-        <el-button size="small" data-testid="batch-add-to-favorite" @click="addToFavoriteVisible = true">加入收藏夹</el-button>
-        <el-button size="small" link @click="clearSelection">清空选择</el-button>
+      <div v-if="selectedCount" class="batch-bar mb-3 flex flex-wrap items-center gap-2 rounded-md border border-line bg-brand-soft/40 px-3 py-2">
+        <span class="text-sm">已选 {{ selectedCount }} 道（可跨页）</span>
+        <Button size="sm" data-testid="batch-add-to-paper" @click="openAddToPaper">加入试卷</Button>
+        <Button size="sm" variant="outline" data-testid="batch-new-paper" @click="onCreatePaperFromSelection">用所选新建试卷</Button>
+        <Button size="sm" variant="outline" data-testid="batch-add-to-favorite" @click="addToFavoriteVisible = true">加入收藏夹</Button>
+        <Button size="sm" variant="link" @click="clearSelection">清空选择</Button>
       </div>
 
-      <el-table :data="rows" v-loading="loading" border>
-        <el-table-column width="46">
-          <template #header>
-            <el-checkbox
-              :model-value="pageAllSelected"
-              :indeterminate="pageSomeSelected"
-              @change="(v: any) => togglePage(!!v)"
-            />
-          </template>
-          <template #default="{ row }">
-            <el-checkbox :model-value="selectedIds.has(row.id)" @change="(v: any) => toggleRow(row, !!v)" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="id" label="ID" width="70" />
-        <el-table-column label="题型" width="90">
-          <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-        </el-table-column>
-        <el-table-column prop="stem" label="题干" min-width="260" show-overflow-tooltip />
-        <el-table-column label="分类" width="120">
-          <template #default="{ row }">{{ row.categoryName || '未分类' }}</template>
-        </el-table-column>
-        <el-table-column label="难度" width="90">
-          <template #default="{ row }">{{ difficultyLabel(row.difficulty) }}</template>
-        </el-table-column>
-        <el-table-column prop="score" label="分值" width="70" />
-        <el-table-column label="归属" width="100">
-          <template #default="{ row }">{{ row.ownerId ? '我的' : '公开' }}</template>
-        </el-table-column>
-        <el-table-column label="收藏" width="60" align="center">
-          <template #default="{ row }">
-            <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange(row, $event)" />
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="220">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="onView(row)">查看</el-button>
-            <el-button link type="primary" :disabled="!row.editable" @click="onEdit(row)">编辑</el-button>
-            <el-button link type="danger" :disabled="!row.editable" @click="onDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
+      <!--
+        题目列表。⚠️ 表格本体**不铺玻璃、不上深色**：题干是要逐字读的东西，行面就是卡片自己的
+        近白面（surface），只以分隔线与 hover 区分行。
+      -->
+      <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+              <th class="w-12 px-3 py-2.5">
+                <Checkbox
+                  :model-value="pageAllSelected ? true : pageSomeSelected ? 'indeterminate' : false"
+                  aria-label="全选本页"
+                  @update:model-value="(v: unknown) => togglePage(v === true)"
+                />
+              </th>
+              <th class="px-3 py-2.5 font-medium">ID</th>
+              <th class="px-3 py-2.5 font-medium">题型</th>
+              <th class="px-3 py-2.5 font-medium">题干</th>
+              <th class="px-3 py-2.5 font-medium">分类</th>
+              <th class="px-3 py-2.5 font-medium">难度</th>
+              <th class="px-3 py-2.5 font-medium">分值</th>
+              <th class="px-3 py-2.5 font-medium">归属</th>
+              <th class="px-3 py-2.5 text-center font-medium">收藏</th>
+              <th class="px-3 py-2.5 font-medium">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows" :key="row.id" class="qb-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
+              <td class="px-3 py-2.5">
+                <Checkbox
+                  :model-value="selectedIds.has(row.id)"
+                  :aria-label="`选择第 ${row.id} 题`"
+                  @update:model-value="(v: unknown) => toggleRow(row, v === true)"
+                />
+              </td>
+              <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+              <td class="px-3 py-2.5">
+                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs" :class="typeTagClass(row.type)">
+                  {{ typeLabel(row.type) }}
+                </span>
+              </td>
+              <td class="max-w-0 px-3 py-2.5">
+                <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '未分类' }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5">{{ difficultyLabel(row.difficulty) }}</td>
+              <td class="px-3 py-2.5">{{ row.score }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5">{{ row.ownerId ? '我的' : '公开' }}</td>
+              <td class="px-3 py-2.5 text-center">
+                <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange(row, $event)" />
+              </td>
+              <td class="whitespace-nowrap px-3 py-2.5">
+                <button type="button" class="text-brand hover:underline" @click="onView(row)">查看</button>
+                <button type="button" class="ml-2 text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50" :disabled="!row.editable" @click="onEdit(row)">
+                  编辑
+                </button>
+                <button
+                  type="button"
+                  class="ml-2 text-danger hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                  :disabled="!row.editable"
+                  @click="onDelete(row)"
+                >
+                  删除
+                </button>
+              </td>
+            </tr>
 
-        <!--
-          空表提示。默认范围是「我的题库」，而种子题库全是公开题，所以刚注册的人一进来
-          必然看到空表——不解释一句的话，那看起来就像「题都丢了」或者导入失败。
-        -->
-        <template #empty>
-          <div class="empty-hint">
-            <template v-if="noFilterButMine">
-              我的题库里还没有题目。可以点「新建题目」自己建，或者把上面的「范围」切到
-              <b>全部</b> / <b>公开题库</b>，那里有系统自带的题。
-            </template>
-            <template v-else> 没有符合当前筛选条件的题目。试试放宽条件，或点「重置」回到默认状态。 </template>
-          </div>
-        </template>
-      </el-table>
+            <!--
+              空表提示。默认范围是「我的题库」，而种子题库全是公开题，所以刚注册的人一进来
+              必然看到空表——不解释一句的话，那看起来就像「题都丢了」或者导入失败。
+            -->
+            <tr v-if="!rows.length">
+              <td colspan="10">
+                <div class="empty-hint px-4 py-8 text-center text-sm leading-loose text-ink-muted">
+                  <template v-if="noFilterButMine">
+                    我的题库里还没有题目。可以点「新建题目」自己建，或者把上面的「范围」切到
+                    <b>全部</b> / <b>公开题库</b>，那里有系统自带的题。
+                  </template>
+                  <template v-else> 没有符合当前筛选条件的题目。试试放宽条件，或点「重置」回到默认状态。 </template>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <el-pagination
-        class="pagination"
-        layout="total, sizes, prev, pager, next"
-        :total="total"
-        v-model:current-page="state.page"
-        v-model:page-size="state.size"
-        @change="applyPage"
-      />
-    </el-card>
+      <!-- ── 分页 ───────────────────────────────────────────────────────────── -->
+      <div class="mt-4 flex items-center justify-end gap-3">
+        <span class="text-sm text-ink-muted">共 {{ total }} 条</span>
+        <Select :model-value="String(state.size)" @update:model-value="(v) => { state.size = Number(v); applyPage() }">
+          <SelectTrigger class="h-8 w-[100px]">
+            <span>{{ state.size }}条/页</span>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="s in [10, 20, 50]" :key="s" :value="String(s)">{{ s }}条/页</SelectItem>
+          </SelectContent>
+        </Select>
+        <div class="flex items-center gap-1">
+          <Button variant="outline" size="icon-sm" aria-label="上一页" :disabled="state.page <= 1" @click="goPage(state.page - 1)">
+            ‹
+          </Button>
+          <span class="px-2 text-sm text-ink-muted">第 {{ state.page }} / {{ pageCount }} 页</span>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            aria-label="下一页"
+            :disabled="state.page >= pageCount"
+            @click="goPage(state.page + 1)"
+          >
+            ›
+          </Button>
+        </div>
+      </div>
+    </div>
 
-    <QuestionDetailDialog
-      v-model:visible="detailVisible"
-      :question-id="viewingId"
-      @edit="onEditFromDetail"
-    />
+    <QuestionDetailDialog v-model:visible="detailVisible" :question-id="viewingId" @edit="onEditFromDetail" />
     <QuestionEditDialog v-model:visible="editVisible" :question-id="editingId" @saved="load" />
     <ImportDialog v-model:visible="importVisible" @done="load" />
 
@@ -222,12 +349,18 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { LocationQuery } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { ChevronDownIcon } from '@lucide/vue'
 import { deleteQuestion, listCategories, listTags, pageQuestions, toQueryParams } from '@/api/question'
 import { appendPaperQuestions, exportPath, pagePapers, savePaper, templatePath } from '@/api/paper'
 import { listFolders } from '@/api/favorite'
 import request from '@/api/request'
 import FavoriteStar from '@/components/FavoriteStar.vue'
 import FavoriteFoldersDialog from '@/components/FavoriteFoldersDialog.vue'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import QuestionDetailDialog from './QuestionDetailDialog.vue'
 import QuestionEditDialog from './QuestionEditDialog.vue'
 import ImportDialog from './ImportDialog.vue'
@@ -288,9 +421,8 @@ const editingId = ref<number | null>(null)
 
 // ---------- 批量选择与批量操作 ----------
 //
-// ⚠️ 勾选状态**自己记账**，不用 el-table 的 `type="selection"`：它的选中态在数据换了就重置，
-// 跨页勾选要靠 `reserve-selection` 才留得住，而「`selection-change` 到底带不带保留行」不够直观——
-// 一旦不带，翻到第二页再操作就会**静默丢掉第一页的选择**。同一取舍见 `PaperEditDialog` 的选题器。
+// ⚠️ 勾选状态**自己记账**：原来用 el-table 的 selection 是因为「选中态随数据重置」的坑，
+// 现在表格是自绘的、勾选本来就在行上，但记账方式不变——跨页勾选翻页 / 改筛选都不会丢。
 const selectedIds = ref(new Set<number>())
 const selectedCount = computed(() => selectedIds.value.size)
 /** 给「加入收藏夹」面板用：批量接口要的是一份 id 数组，不是 Set。 */
@@ -411,6 +543,72 @@ const noFilterButMine = computed(
     !state.tagIds.length &&
     !state.favoriteChoices.length
 )
+
+// ---------- 多选筛选的选项与触发钮文案 ----------
+
+const categoryOptions = computed(() => [
+  { label: '未分类', value: UNCATEGORIZED as CategoryChoice },
+  ...categories.value.map((c) => ({ label: c.name, value: c.id as CategoryChoice }))
+])
+const tagOptions = computed(() => tags.value.map((t) => ({ label: t.name, value: t.id })))
+const favoriteOptions = computed(() => [
+  { label: '全部收藏', value: ALL_FAVORITES as FavoriteChoice },
+  ...favoriteFolders.value.map((f) => ({ label: f.name, value: f.id as FavoriteChoice }))
+])
+
+function toggleCategory(value: CategoryChoice, checked: boolean) {
+  state.categoryIds = checked
+    ? [...state.categoryIds, value]
+    : state.categoryIds.filter((v) => v !== value)
+}
+
+function toggleTag(id: number, checked: boolean) {
+  state.tagIds = checked ? [...state.tagIds, id] : state.tagIds.filter((v) => v !== id)
+}
+
+function toggleFavorite(value: FavoriteChoice, checked: boolean) {
+  state.favoriteChoices = checked
+    ? [...state.favoriteChoices, value]
+    : state.favoriteChoices.filter((v) => v !== value)
+}
+
+/** 多选触发钮的文案：没选显示占位；选一个显示名字；多个显示「XX 等 N 项」。 */
+function multiTriggerLabel(
+  choices: (string | number)[],
+  options: { label: string; value: string | number }[],
+  placeholder: string
+) {
+  if (!choices.length) return placeholder
+  const first = options.find((o) => o.value === choices[0])
+  const firstLabel = first ? first.label : String(choices[0])
+  return choices.length === 1 ? firstLabel : `${firstLabel} 等 ${choices.length} 项`
+}
+
+const categoryTriggerLabel = computed(() => multiTriggerLabel(state.categoryIds, categoryOptions.value, '全部分类'))
+const tagTriggerLabel = computed(() => multiTriggerLabel(state.tagIds, tagOptions.value, '全部标签'))
+const favoriteTriggerLabel = computed(() => multiTriggerLabel(state.favoriteChoices, favoriteOptions.value, '全部收藏夹'))
+
+// ---------- 单选筛选的触发钮文案 ----------
+
+const FILTER_TYPE_LABELS: Record<QuestionType, string> = { SINGLE: '单选题', MULTI: '多选题', JUDGE: '判断题' }
+const FILTER_DIFFICULTY_LABELS: Record<Difficulty, string> = { EASY: '简单', MEDIUM: '中等', HARD: '困难' }
+const SCOPE_LABELS: Record<string, string> = { all: '全部', mine: '我的题库', public: '公开题库' }
+
+const typeFilterLabel = computed(() => (state.type ? FILTER_TYPE_LABELS[state.type] : '不限'))
+const difficultyFilterLabel = computed(() => (state.difficulty ? FILTER_DIFFICULTY_LABELS[state.difficulty] : '不限'))
+const scopeFilterLabel = computed(() => SCOPE_LABELS[state.scope] ?? '我的题库')
+
+// ---------- 题型标签（彩色小标签，用受控色板，2026-10-08 主人拍板顺手做） ----------
+
+const TYPE_TAG_CLASS: Record<QuestionType, string> = {
+  SINGLE: 'bg-tint-blue',
+  MULTI: 'bg-tint-violet',
+  JUDGE: 'bg-tint-green'
+}
+
+function typeTagClass(type: string) {
+  return TYPE_TAG_CLASS[type as QuestionType] ?? 'bg-surface-2'
+}
 
 // ---------- 状态 ↔ 网址 ----------
 
@@ -581,9 +779,16 @@ function onReset() {
   load()
 }
 
-/** 分类下拉顶部那行「全部分类」。 */
+/** 分类面板顶部那行「全部分类」。 */
 function clearCategories() {
   state.categoryIds = []
+}
+
+const pageCount = computed(() => Math.max(1, Math.ceil(total.value / state.size)))
+
+function goPage(p: number) {
+  state.page = p
+  applyPage()
 }
 
 function onCreate() {
@@ -670,30 +875,3 @@ onMounted(async () => {
   await load()
 })
 </script>
-
-<style scoped>
-.toolbar { margin-bottom: 12px; }
-.batch-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 4px;
-  background: var(--el-fill-color-light);
-}
-.batch-count { color: var(--el-text-color-regular); font-size: 13px; }
-.pagination { margin-top: 12px; justify-content: flex-end; }
-.add-hint { margin: 0 0 12px; color: var(--el-text-color-secondary); font-size: 13px; }
-.add-select { width: 100%; }
-.empty-hint { padding: 18px 12px; color: var(--el-text-color-secondary); line-height: 1.8; }
-.select-header {
-  padding: 3px 12px 6px;
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.select-header:hover { color: var(--el-color-primary); }
-</style>

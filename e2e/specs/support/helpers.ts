@@ -35,6 +35,16 @@ export async function registerNewUser(page: Page): Promise<string> {
 }
 
 /**
+ * 题库列表的一行（2026-10-08 起表格自绘，行类名是 `.qb-row`）。
+ *
+ * <p>按题干（或任意文本）找行——各 spec 里「表格里该有 / 不该有某题」的断言都走这里，
+ * 免得选择器散落一份份的。
+ */
+export function questionRow(page: Page, text: string) {
+  return page.locator('.qb-row', { hasText: text })
+}
+
+/**
  * 断言页面没有横向溢出，且（若存在）主内容区没有越出视口右边界。
  *
  * <p>只做这两类，是**刻意的**：

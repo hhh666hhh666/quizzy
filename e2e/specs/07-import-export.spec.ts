@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
-import { createQuestion, registerNewUser } from './support/helpers'
+import { createQuestion, questionRow, registerNewUser } from './support/helpers'
 
 /**
  * 导入与导出。
@@ -43,7 +43,7 @@ test('批量导入（JSON 粘贴）：题目入库、给出逐行报告、出现
   await dialog.locator('.el-dialog__footer').getByRole('button', { name: '关闭' }).click()
 
   // 真的进库了
-  await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
+  await expect(questionRow(page, stem)).toHaveCount(1)
 })
 
 test('批量导入并顺带建卷：卷出现在试卷列表、题就在里面', async ({ page }) => {

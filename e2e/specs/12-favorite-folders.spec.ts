@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createQuestion, expectDialogOnTop, lastMessage, registerNewUser } from './support/helpers'
+import { createQuestion, expectDialogOnTop, lastMessage, questionRow, registerNewUser } from './support/helpers'
 
 /**
  * 收藏夹的两条用户主路（模型见 docs/adr/0030）。
@@ -26,7 +26,7 @@ test('题库页收藏一道题后，打开「修改收藏夹」能列出收藏�
   }
 
   await page.goto('/questions')
-  const row = page.locator('.el-table__row', { hasText: stem })
+  const row = questionRow(page, stem)
   await expect(row).toHaveCount(1)
 
   // 短按星标 = 收藏（默认收藏夹按需创建，见 ADR 0030）
@@ -67,7 +67,7 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
   await expect(page.locator('.folder-item', { hasText: folder })).toHaveCount(1)
 
   await page.goto('/questions')
-  await page.locator('.el-table__row', { hasText: stem }).locator('.el-checkbox').first().click()
+  await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-favorite').click()
   const picker = page.locator('.el-dialog:visible').first()
   await picker.locator('.folder-row', { hasText: folder }).locator('.el-checkbox').click()
@@ -77,5 +77,5 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
   // 回收藏夹页面：选中那个夹，右列应当只有这一道题
   await page.goto('/favorites')
   await page.locator('.folder-item', { hasText: folder }).click()
-  await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
+  await expect(questionRow(page, stem)).toHaveCount(1)
 })

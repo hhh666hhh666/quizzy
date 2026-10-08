@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createQuestion, lastMessage, registerNewUser } from './support/helpers'
+import { createQuestion, lastMessage, questionRow, registerNewUser } from './support/helpers'
 
 /**
  * 题库页的批量操作：多选 → 「加入已有试卷」/「用所选新建试卷」。
@@ -25,9 +25,9 @@ test('题库页多选 → 用所选题目新建试卷', async ({ page }) => {
   await page.goto('/questions')
   // 默认范围是「我的题库」，刚建的两道就在第一页
   for (const stem of [stemA, stemB]) {
-    const row = page.locator('.el-table__row', { hasText: stem })
+    const row = questionRow(page, stem)
     await expect(row, `我的题库里应当有「${stem}」`).toHaveCount(1)
-    await row.locator('.el-checkbox').first().click()
+    await row.getByRole('checkbox').click()
   }
   await expect(page.locator('.batch-bar')).toContainText('已选 2 道')
 
@@ -67,7 +67,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
   await page.goto('/questions')
-  await page.locator('.el-table__row', { hasText: stem }).locator('.el-checkbox').first().click()
+  await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-paper').click()
   await page.getByTestId('batch-paper-select').click()
   await page.locator('.el-select-dropdown__item', { hasText: title }).click()
@@ -75,7 +75,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await expect(lastMessage(page, 'success')).toContainText('已加入 1 道')
 
   // 再把**同一道题**加一次：应当被忽略，而不是把卷变成两条重复关系
-  await page.locator('.el-table__row', { hasText: stem }).locator('.el-checkbox').first().click()
+  await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-paper').click()
   await page.getByTestId('batch-paper-select').click()
   await page.locator('.el-select-dropdown__item', { hasText: title }).click()

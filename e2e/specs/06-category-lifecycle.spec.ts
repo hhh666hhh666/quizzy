@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { lastMessage, registerNewUser } from './support/helpers'
+import { lastMessage, questionRow, registerNewUser } from './support/helpers'
 
 /**
  * 分类在**界面上**的完整生命周期：随题目诞生 → 无人引用时自动消失。
@@ -40,19 +40,19 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
   // **诞生的证据**：再打开对话框，分类下拉里能看到这个新名字
-  await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
+  await expect(questionRow(page, stem)).toHaveCount(1)
   await openCategoryDropdown(page)
   await expect(page.locator('.el-select-dropdown:visible')).toContainText(categoryName)
   await closeDialog(page)
 
   // ---------- 2. 删掉唯一引用它的那道题 ----------
-  await page.locator('.el-table__row', { hasText: stem })
+  await questionRow(page, stem)
     .getByRole('button', { name: '删除' })
     .click()
   // ⚠️ 不能按文案「确定」找按钮：Element Plus 会在两个中文字之间**自动插入空格**（渲染成「确 定」），
   //   所以按名字匹配不到。直接点确认框的主按钮——不受这个排版行为影响。
   await page.locator('.el-message-box__btns .el-button--primary').click()
-  await expect(page.locator('.el-table__row', { hasText: stem })).toHaveCount(0)
+  await expect(questionRow(page, stem)).toHaveCount(0)
 
   // **自动回收的证据**：没有人引用它了，下拉里不该再有
   await openCategoryDropdown(page)
