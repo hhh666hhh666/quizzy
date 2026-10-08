@@ -89,7 +89,7 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
 
   await paperDialog.getByRole('button', { name: '保存' }).click()
   await expect(lastMessage(page, 'success')).toContainText('保存成功')
-  await expect(page.locator('.el-table__row', { hasText: title })).toHaveCount(1)
+  await expect(page.locator('.paper-row', { hasText: title })).toHaveCount(1)
 })
 
 // 选题器：题一多，只靠「翻页找」根本找不到。关键词/筛选是这一步唯一的可用入口。

@@ -165,8 +165,9 @@ watch(
   //    组件每次重渲染都触发重置，用户刚打的字会被反复清空（真实踩过）。
   () => (props.visible ? `open:${props.questionId ?? 'new'}` : 'closed'),
   async (key) => {
-    if (key === 'closed' || initializedFor === key) return
+    if (initializedFor === key) return
     initializedFor = key
+    if (key === 'closed') return
     // 先同步清空（渲染前就绪），候选与详情异步随后——别让「打开后打的字」被请求完成后的重置抹掉
     form.value = emptyForm()
     tagNames.value = []
