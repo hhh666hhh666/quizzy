@@ -23,3 +23,31 @@
 
 /* 我们的 token（唯一真相源）。它不再自带 `@import "tailwindcss"`，见其文件头。 */
 @import "./tokens.css";
+
+/* ── 过渡期控件重置：preflight 缺席时的最小补丁（2026-10-08）────────────────
+   ⚠️ 为什么需要它：过渡期**不引 preflight**（见文件头），于是原生 `button` / `input`
+   还带着浏览器的 UA 样式——实测出的三个问题：
+     · input 是 `content-box`：`w-full` + padding + 边框会**撑破容器**
+       （登录页第一版因此红了 CI 的几何断言：密码框超界 27px）；
+     · 表单控件**不继承字体**：按钮 / 输入框的文字会退回 Arial；
+     · 按钮有 UA 灰底与 2px outset 边框：裸文字按钮会变成灰盒子。
+   安全性：这三条都是**元素级**规则、放在 `@layer base` 里——Element Plus 的样式全部走
+   类选择器，优先级更高、完全盖得住；实测仓库里的裸控件只有登录页与 ProfileView 的
+   头像文件输入（隐藏），不受影响。
+   ⚠️ 摘完 Element Plus、app 入口换成完整 preflight 后，**本块要整块删除**（preflight 已覆盖）。 */
+@layer base {
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    box-sizing: border-box;
+  }
+  button {
+    background-color: transparent;
+    border: 0 solid;
+    padding: 0;
+    cursor: pointer;
+  }
+}

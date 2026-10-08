@@ -37,7 +37,7 @@
               />
               <button
                 type="button"
-                class="absolute inset-y-0 right-3 rounded-sm text-xs text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
+                class="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-xs text-ink-muted outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-focus"
                 :aria-label="showPassword ? '隐藏密码' : '显示密码'"
                 @click="showPassword = !showPassword"
               >
