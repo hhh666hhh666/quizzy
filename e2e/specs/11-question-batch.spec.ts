@@ -70,7 +70,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-paper').click()
   await page.getByTestId('batch-paper-select').click()
-  await page.locator('.el-select-dropdown__item', { hasText: title }).click()
+  await page.getByRole('option').filter({ hasText: title }).click()
   await page.getByTestId('batch-add-confirm').click()
   await expect(lastMessage(page, 'success')).toContainText('已加入 1 道')
 
@@ -78,7 +78,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-paper').click()
   await page.getByTestId('batch-paper-select').click()
-  await page.locator('.el-select-dropdown__item', { hasText: title }).click()
+  await page.getByRole('option').filter({ hasText: title }).click()
   await page.getByTestId('batch-add-confirm').click()
   await expect(lastMessage(page, 'info')).toContainText('都已在卷中')
 

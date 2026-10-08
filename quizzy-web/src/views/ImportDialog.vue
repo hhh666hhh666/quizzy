@@ -1,69 +1,118 @@
 <template>
-  <el-dialog :model-value="visible" title="批量导入题目" width="640px" @update:model-value="(v: boolean) => emit('update:visible', v)">
-    <el-tabs v-model="tab">
-      <el-tab-pane label="Excel 导入" name="excel">
-        <el-alert type="info" :closable="false" title="列顺序：题型 | 题干 | 选项A-F | 答案 | 解析 | 难度 | 分值 | 分类 | 标签" />
-        <el-upload
-          class="upload"
-          drag
-          :auto-upload="false"
-          :limit="1"
-          accept=".xlsx,.xls"
-          :on-change="onFileChange"
-        >
-          <div class="upload-tip">把文件拖到这里，或点击选择</div>
-        </el-upload>
-      </el-tab-pane>
-      <el-tab-pane label="JSON 导入" name="json">
-        <el-input v-model="jsonText" type="textarea" :rows="12" placeholder='[{"type":"single","stem":"...","options":[{"label":"A","content":"..."}],"answer":["A"]}]' />
-      </el-tab-pane>
-    </el-tabs>
+  <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
+    <DialogContent class="flex max-h-[85vh] max-w-2xl flex-col gap-0 overflow-hidden p-0">
+      <DialogHeader class="border-b border-line-soft px-6 py-4">
+        <DialogTitle class="text-base font-medium">批量导入题目</DialogTitle>
+      </DialogHeader>
 
-    <!--
-      顺带建卷。**默认不勾**：不勾就还是老行为（只导入题目），要建卷才显式勾上并起个名字。
-      后端把「有没有卷名」当作建不建卷的开关，所以这里的标题只在勾上后才必填。
-    -->
-    <div class="paper-option">
-      <el-checkbox v-model="createPaper" data-testid="import-create-paper">同时把本次导入的题装进一张新试卷</el-checkbox>
-      <el-input
-        v-model="paperTitle"
-        :disabled="!createPaper"
-        placeholder="试卷标题（必填）"
-        data-testid="import-paper-title"
-        class="paper-title"
-      />
-    </div>
+      <div class="flex flex-col gap-4 overflow-y-auto px-6 py-5">
+        <!-- 页签：分段器（真按钮） -->
+        <div class="flex gap-1 self-start rounded-md bg-surface-2 p-1" role="group" aria-label="导入方式">
+          <button
+            v-for="opt in TABS"
+            :key="opt.value"
+            type="button"
+            class="rounded-sm px-3 py-1 text-sm transition-colors"
+            :class="tab === opt.value ? 'bg-surface font-medium text-ink shadow-sm' : 'text-ink-muted hover:text-ink'"
+            @click="tab = opt.value"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
 
-    <div v-if="result" class="report">
-      <p>
-        共 {{ result.total }} 条，成功
-        <el-text type="success">{{ result.successCount }}</el-text>
-        条，失败
-        <el-text type="danger">{{ result.failed.length }}</el-text>
-        条。失败的行会被跳过，其余正常入库。
-      </p>
-      <p v-if="result.paperId" class="paper-created">
-        已把成功的题装进新试卷「{{ paperTitle }}」。
-        <el-button link type="primary" data-testid="import-goto-papers" @click="goPapers">去试卷页看看</el-button>
-      </p>
-      <el-table v-if="result.failed.length" :data="result.failed" max-height="240" border>
-        <el-table-column prop="row" label="行号" width="70" />
-        <el-table-column prop="stem" label="题干" show-overflow-tooltip />
-        <el-table-column prop="reason" label="错误原因" min-width="200" />
-      </el-table>
-    </div>
+        <template v-if="tab === 'excel'">
+          <p class="rounded-md bg-tint-blue/60 px-3 py-2 text-sm">
+            列顺序：题型 | 题干 | 选项A-F | 答案 | 解析 | 难度 | 分值 | 分类 | 标签
+          </p>
+          <div
+            class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line bg-reader px-4 py-8 text-sm text-ink-muted transition-colors hover:border-brand hover:text-ink"
+            @click="fileInput?.click()"
+            @dragover.prevent
+            @drop.prevent="onDrop"
+          >
+            <input ref="fileInput" class="hidden" type="file" accept=".xlsx,.xls" @change="onPick" />
+            <span v-if="file" class="text-ink">已选择：{{ file.name }}</span>
+            <span v-else>把文件拖到这里，或点击选择（.xlsx / .xls）</span>
+          </div>
+        </template>
+        <template v-else>
+          <Textarea
+            v-model="jsonText"
+            :rows="12"
+            class="bg-reader font-mono text-xs"
+            placeholder='[{"type":"single","stem":"...","options":[{"label":"A","content":"..."}],"answer":["A"]}]'
+          />
+        </template>
 
-    <template #footer>
-      <el-button @click="emit('update:visible', false)">关闭</el-button>
-      <el-button type="primary" :loading="loading" @click="onImport">开始导入</el-button>
-    </template>
-  </el-dialog>
+        <!--
+          顺带建卷。**默认不勾**：不勾就还是老行为（只导入题目），要建卷才显式勾上并起个名字。
+          后端把「有没有卷名」当作建不建卷的开关，所以这里的标题只在勾上后才必填。
+        -->
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="flex cursor-pointer items-center gap-2 text-sm">
+            <input v-model="createPaper" data-testid="import-create-paper" type="checkbox" class="size-4 accent-brand" />
+            同时把本次导入的题装进一张新试卷
+          </label>
+          <Input
+            v-model="paperTitle"
+            :disabled="!createPaper"
+            placeholder="试卷标题（必填）"
+            data-testid="import-paper-title"
+            class="w-[240px] bg-reader"
+          />
+        </div>
+
+        <div v-if="result" class="report flex flex-col gap-3">
+          <p>
+            共 {{ result.total }} 条，成功
+            <span class="font-medium text-ink-green">{{ result.successCount }}</span>
+            条，失败
+            <span class="font-medium text-ink-red">{{ result.failed.length }}</span>
+            条。失败的行会被跳过，其余正常入库。
+          </p>
+          <p v-if="result.paperId" class="paper-created">
+            已把成功的题装进新试卷「{{ paperTitle }}」。
+            <button type="button" class="text-brand hover:underline" data-testid="import-goto-papers" @click="goPapers">
+              去试卷页看看
+            </button>
+          </p>
+          <div v-if="result.failed.length" class="max-h-60 overflow-y-auto rounded-lg border border-line-soft">
+            <table class="w-full border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+                  <th class="px-3 py-2 font-medium">行号</th>
+                  <th class="px-3 py-2 font-medium">题干</th>
+                  <th class="px-3 py-2 font-medium">错误原因</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in result.failed" :key="index" class="border-b border-line-soft last:border-b-0">
+                  <td class="px-3 py-2 text-ink-muted">{{ item.row }}</td>
+                  <td class="max-w-0 px-3 py-2"><span class="block truncate" :title="item.stem">{{ item.stem }}</span></td>
+                  <td class="px-3 py-2">{{ item.reason }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+        <Button variant="outline" @click="emit('update:visible', false)">关闭</Button>
+        <Button :disabled="loading" @click="onImport">开始导入</Button>
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { importExcel, importJson } from '@/api/paper'
 import type { ImportResultVO } from '@/types'
 
@@ -72,17 +121,35 @@ const emit = defineEmits(['update:visible', 'done'])
 
 const router = useRouter()
 
+const TABS: { value: string; label: string }[] = [
+  { value: 'excel', label: 'Excel 导入' },
+  { value: 'json', label: 'JSON 导入' }
+]
+
 const tab = ref('excel')
 const jsonText = ref('')
 const file = ref<File | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
 const loading = ref(false)
 const result = ref<ImportResultVO | null>(null)
 const createPaper = ref(false)
 const paperTitle = ref('')
 
-function onFileChange(uploadFile: any) {
-  file.value = uploadFile.raw as File
+function acceptFile(picked: File | undefined) {
+  if (!picked) return
+  file.value = picked
   result.value = null
+}
+
+function onPick(event: Event) {
+  const input = event.target as HTMLInputElement
+  acceptFile(input.files?.[0])
+  // 先取文件再清空，否则连续选同一个文件不会再触发 change
+  input.value = ''
+}
+
+function onDrop(event: DragEvent) {
+  acceptFile(event.dataTransfer?.files?.[0])
 }
 
 async function onImport() {
@@ -119,12 +186,3 @@ function goPapers() {
   router.push('/papers')
 }
 </script>
-
-<style scoped>
-.upload { margin-top: 12px; }
-.upload-tip { padding: 20px; color: var(--el-text-color-secondary); }
-.report { margin-top: 14px; }
-.paper-option { margin-top: 14px; display: flex; align-items: center; gap: 12px; }
-.paper-title { width: 220px; }
-.paper-created { color: var(--el-text-color-regular); }
-</style>

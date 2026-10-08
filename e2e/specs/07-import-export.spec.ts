@@ -29,18 +29,16 @@ test('批量导入（JSON 粘贴）：题目入库、给出逐行报告、出现
   await page.goto('/questions')
   await page.getByRole('button', { name: '批量导入' }).click()
 
-  const dialog = page.locator('.el-dialog:visible')
+  const dialog = page.getByRole('dialog', { name: '批量导入题目' })
   // 默认停在 Excel 页签，切到 JSON 页签——粘贴文本比造文件稳
-  await dialog.locator('.el-radio-button, .el-tabs__item', { hasText: 'JSON 导入' }).first().click()
+  await dialog.getByRole('button', { name: 'JSON 导入' }).click()
   await dialog.locator('textarea').fill(payload)
   await dialog.getByRole('button', { name: '开始导入' }).click()
 
   // 逐行报告：共 N 条 / 成功 M 条
   await expect(dialog.locator('.report')).toContainText('共 1 条')
-  // ⚠️ 必须限定在 footer 里：弹窗右上角那个 × 的 `aria-label` 在中文语言包下**也叫「关闭」**
-  //    （英文时是 "Close"，所以早先不限定也能过），不限定就会同时命中两个元素、严格模式报错。
-  //    要关弹窗请用 `.el-dialog__headerbtn`（按类找，不看文案），见 06 号用例的收尾写法。
-  await dialog.locator('.el-dialog__footer').getByRole('button', { name: '关闭' }).click()
+  // ⚠️ 关闭按钮按名字找即可：reka 弹窗右上角那个 × 的 aria-label 是英文 "Close"，不会撞名
+  await dialog.getByRole('button', { name: '关闭' }).click()
 
   // 真的进库了
   await expect(questionRow(page, stem)).toHaveCount(1)
@@ -68,8 +66,8 @@ test('批量导入并顺带建卷：卷出现在试卷列表、题就在里面',
   await page.goto('/questions')
   await page.getByRole('button', { name: '批量导入' }).click()
 
-  const dialog = page.locator('.el-dialog:visible')
-  await dialog.locator('.el-radio-button, .el-tabs__item', { hasText: 'JSON 导入' }).first().click()
+  const dialog = page.getByRole('dialog', { name: '批量导入题目' })
+  await dialog.getByRole('button', { name: 'JSON 导入' }).click()
   await dialog.locator('textarea').fill(payload)
   // 勾上才会建卷；标题是必填的
   await dialog.getByTestId('import-create-paper').click()

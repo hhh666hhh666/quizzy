@@ -1,63 +1,72 @@
 <template>
   <!--
-    ⚠️ `append-to-body` 必须留着，别删：这个面板挂在**表格单元格里的星标**上（`FavoriteStar` 每行一个），
-    不挂到 body 的话，它的遮罩与弹窗会被困在表格内部那层（`el-table` 里的 `el-scrollbar`），
-    结果是**表格的行盖到面板上来**——主人 2026-10-07 的原话是「题库的文字被渲染到了收藏夹的面板」。
-    ⚠️ 打开时加载数据也别挂 `el-dialog` 的 `@open`（首次挂载不触发，见下面的 watch）。
+    ⚠️ 数据加载绑在**自己的 visible** 上（见下面的 watch），不要改挂到第三方组件的事件上——
+    历史上 el-dialog 的 `@open` 在「首次挂载时 modelValue 已是 true」时不触发，导致首次打开
+    永远谎报「还没有收藏夹」（ADR 0030 的回归哨兵测试就钉着这条）。现在的 reka Dialog
+    默认走 portal，原来那段「必须 append-to-body，否则表格行会盖到面板上」的坑随组件一起退场。
   -->
-  <el-dialog
-    :model-value="visible"
-    :title="title"
-    width="440px"
-    append-to-body
-    @update:model-value="emit('update:visible', $event)"
-  >
-    <p class="hint">
-      {{ hint }}
-      <template v-if="mode === 'set' && defaultFolderName">
-        一个都不勾 = 收进「{{ defaultFolderName }}」，想彻底取消收藏请点星标。
-      </template>
-    </p>
+  <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
+    <DialogContent class="max-w-md">
+      <DialogHeader>
+        <DialogTitle class="text-base font-medium">{{ title }}</DialogTitle>
+      </DialogHeader>
 
-    <!--
-      只读的一行「现在在」。
-      ⚠️ 面板**不预勾**（ADR 0030：勾选要出于主人的主动表态），但**不预勾不等于对现状闭口不谈**——
-      一道明明已收藏的题打开面板看到一片空白，看着就像在说谎。所以这里把事实摆出来，勾选仍是纯粹的主动动作。
-    -->
-    <div v-if="mode === 'set'" class="current-row">
-      <span class="current-label">现在在</span>
-      <template v-if="currentNames.length">
-        <el-tag v-for="name in currentNames" :key="name" size="small" type="info">{{ name }}</el-tag>
-      </template>
-      <span v-else class="current-none">还没被收藏</span>
-    </div>
+      <p class="text-sm leading-relaxed text-ink">
+        {{ hint }}
+        <template v-if="mode === 'set' && defaultFolderName">
+          一个都不勾 = 收进「{{ defaultFolderName }}」，想彻底取消收藏请点星标。
+        </template>
+      </p>
 
-    <div v-loading="loading" class="folder-box">
-      <el-checkbox-group v-model="checked">
-        <div v-for="folder in folders" :key="folder.id" class="folder-row">
-          <el-checkbox :value="folder.id">{{ folder.name }}</el-checkbox>
-          <span v-if="folder.isDefault" class="tag">默认</span>
-        </div>
-      </el-checkbox-group>
-      <el-empty v-if="!loading && folders.length === 0" description="还没有收藏夹" :image-size="48" />
-    </div>
+      <!--
+        只读的一行「现在在」。
+        ⚠️ 面板**不预勾**（ADR 0030：勾选要出于主人的主动表态），但**不预勾不等于对现状闭口不谈**——
+        一道明明已收藏的题打开面板看到一片空白，看着就像在说谎。所以这里把事实摆出来，勾选仍是纯粹的主动动作。
+      -->
+      <div v-if="mode === 'set'" class="flex flex-wrap items-center gap-1.5 rounded-md bg-surface-2 px-3 py-2 text-sm">
+        <span class="text-ink-muted">现在在</span>
+        <template v-if="currentNames.length">
+          <span v-for="name in currentNames" :key="name" class="rounded-sm bg-surface px-2 py-0.5 text-xs text-ink">{{ name }}</span>
+        </template>
+        <span v-else class="text-ink-muted">还没被收藏</span>
+      </div>
 
-    <!--
-      ⚠️ 这个入口要**一直在**，不能在空态时才出现：「想归类时才发现没有合适的夹」正是最需要它的一刻，
-      而那一刻恰恰是**已经有别的夹**的时候（早先只在空态显示，等于把入口藏在了最不需要它的地方）。
-    -->
-    <el-button link type="primary" class="create-link" @click="onCreateQuick">＋ 新建收藏夹</el-button>
+      <div class="max-h-[300px] overflow-y-auto" :class="loading ? 'pointer-events-none opacity-60' : ''">
+        <label
+          v-for="folder in folders"
+          :key="folder.id"
+          class="folder-row flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1.5 hover:bg-surface-2"
+        >
+          <Checkbox
+            :model-value="checked.includes(folder.id)"
+            @update:model-value="(v: unknown) => toggleFolder(folder.id, v === true)"
+          />
+          <span>{{ folder.name }}</span>
+          <span v-if="folder.isDefault" class="rounded-sm bg-surface-2 px-1.5 py-0.5 text-xs text-ink-muted">默认</span>
+        </label>
+        <p v-if="!loading && folders.length === 0" class="px-2 py-4 text-center text-sm text-ink-muted">还没有收藏夹</p>
+      </div>
 
-    <template #footer>
-      <el-button @click="emit('update:visible', false)">取消</el-button>
-      <el-button type="primary" :loading="saving" @click="onConfirm">确定</el-button>
-    </template>
-  </el-dialog>
+      <!--
+        ⚠️ 这个入口要**一直在**，不能在空态时才出现：「想归类时才发现没有合适的夹」正是最需要它的一刻，
+        而那一刻恰恰是**已经有别的夹**的时候（早先只在空态显示，等于把入口藏在了最不需要它的地方）。
+      -->
+      <Button variant="link" size="sm" class="self-start" @click="onCreateQuick">＋ 新建收藏夹</Button>
+
+      <DialogFooter>
+        <Button variant="outline" @click="emit('update:visible', false)">取消</Button>
+        <Button :disabled="saving" @click="onConfirm">确定</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   addQuestionsToFolder,
   createFolder,
@@ -115,15 +124,7 @@ const hint = computed(() =>
     : '勾谁就属于谁（没勾的会被移出）。'
 )
 
-/**
- * 打开时加载。
- *
- * ⚠️ **不要改回 `el-dialog` 的 `@open`**：星标用 `v-if` 懒挂载本组件，首次打开时 el-dialog 的
- * `modelValue` 一上来就是 `true`，而 element-plus 只在 `modelValue` **变化**时才 emit `open`
- * （`element-plus/es/components/dialog/src/use-dialog.mjs` 里那个 watch 没有 `immediate`，
- * `onMounted` 那条只调 `open()`、不 emit）——于是首次打开永远不加载，面板会谎报「还没有收藏夹」。
- * 把加载时机绑在自己的 `visible` 上，就跟第三方组件的事件语义解耦了。
- */
+/** 打开时加载（绑定自己的 visible，别依赖第三方组件的事件语义——见模板顶部注释）。 */
 watch(() => props.visible, (visible) => {
   if (!visible) {
     return
@@ -131,6 +132,10 @@ watch(() => props.visible, (visible) => {
   checked.value = []
   void loadFolders()
 }, { immediate: true })
+
+function toggleFolder(id: number, isChecked: boolean) {
+  checked.value = isChecked ? [...checked.value, id] : checked.value.filter((v) => v !== id)
+}
 
 async function loadFolders() {
   loading.value = true
@@ -191,57 +196,3 @@ async function onCreateQuick() {
   }
 }
 </script>
-
-<style scoped>
-.hint {
-  margin: 0 0 10px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--el-text-color-regular);
-}
-
-.current-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-  padding: 8px 10px;
-  border-radius: 4px;
-  font-size: 13px;
-  background: var(--el-fill-color-light);
-}
-
-.current-label {
-  color: var(--el-text-color-secondary);
-}
-
-.current-none {
-  color: var(--el-text-color-secondary);
-}
-
-/* 夹多了要能滚，别把对话框顶成一整屏 */
-.folder-box {
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.folder-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 2px 0;
-}
-
-.tag {
-  font-size: 12px;
-  padding: 0 6px;
-  border-radius: 4px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color-light);
-}
-
-.create-link {
-  margin-top: 4px;
-}
-</style>

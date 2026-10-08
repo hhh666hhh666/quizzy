@@ -135,9 +135,8 @@
         </div>
 
         <!-- 内联新建：保存后自动加进当前卷，不必先跳去题库建完再回来选。
-             ⚠️ 必须留在 DialogContent 子树内：reka 的焦点陷阱会把「逃出焦点域」的输入框
-             焦点夺回（fill/type 全部落空）——EP 对话框渲染在这棵子树里才拿得到焦点。
-             （el-overlay 是 fixed + z-index 2002，视觉与点击仍在 reka 层之上。） -->
+             QuestionEditDialog 现在也是 reka 弹窗、自己 portal 到 body——层叠与焦点由 reka 的
+             嵌套 modal 机制处理，不再需要当年「塞进 DialogContent 子树躲焦点陷阱」的绕法。 -->
         <QuestionEditDialog v-model:visible="createQuestionVisible" :question-id="null" @saved="onQuestionCreated" />
       </DialogContent>
 

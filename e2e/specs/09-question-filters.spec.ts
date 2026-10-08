@@ -114,7 +114,7 @@ async function createQuestionInCategory(page: Page, stem: string, category: stri
   await page.goto('/questions')
   await page.getByRole('button', { name: '新建题目' }).click()
 
-  const dialog = page.locator('.el-dialog:visible')
+  const dialog = page.getByRole('dialog', { name: '新建题目' })
   await expect(dialog).toBeVisible()
 
   await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)

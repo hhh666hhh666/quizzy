@@ -1,11 +1,11 @@
 <template>
-  <el-dialog
-    :model-value="visible"
-    :title="form.id ? '编辑题目' : '新建题目'"
-    width="720px"
-    @update:model-value="(v: boolean) => emit('update:visible', v)"
-  >
-    <el-form :model="form" label-width="90px">
+  <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
+    <DialogContent class="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+      <DialogHeader class="border-b border-line-soft px-6 py-4">
+        <DialogTitle class="text-base font-medium">{{ form.id ? '编辑题目' : '新建题目' }}</DialogTitle>
+      </DialogHeader>
+      <div class="overflow-y-auto px-6 py-5">
+        <el-form :model="form" label-width="90px">
       <el-form-item label="题型">
         <el-radio-group v-model="form.type" @change="onTypeChange">
           <el-radio-button value="SINGLE">单选题</el-radio-button>
@@ -106,13 +106,15 @@
           <el-option v-for="t in tags" :key="t.id" :label="t.name" :value="t.name" />
         </el-select>
       </el-form-item>
-    </el-form>
+      </el-form>
+      </div>
 
-    <template #footer>
-      <el-button @click="emit('update:visible', false)">取消</el-button>
-      <el-button type="primary" :loading="saving" @click="onSave">保存</el-button>
-    </template>
-  </el-dialog>
+      <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+        <Button variant="outline" @click="emit('update:visible', false)">取消</Button>
+        <Button :disabled="saving" @click="onSave">保存</Button>
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -120,6 +122,8 @@ import { ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getQuestion, saveQuestion } from '@/api/question'
 import { listCategories, listTags, moveCategory } from '@/api/question'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { QuestionSaveDTO } from '@/types'
 
 const props = defineProps<{ visible: boolean; questionId: number | null }>()

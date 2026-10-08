@@ -100,7 +100,8 @@ export async function createQuestion(
   await page.goto('/questions')
   await page.getByRole('button', { name: '新建题目' }).click()
 
-  const dialog = page.locator('.el-dialog:visible')
+  // reka 弹窗：DialogTitle 即可访问名（新建题目 / 编辑题目）
+  const dialog = page.getByRole('dialog', { name: '新建题目' })
   await expect(dialog).toBeVisible()
 
   // 默认题型就是单选，只在不是单选时才点——顺带把「默认值能用」当成隐性断言。
@@ -191,42 +192,34 @@ export async function startPaperQuiz(page: Page, paperTitle: string): Promise<vo
 /**
  * 断言弹窗**真的浮在最上面**，不会被表格的行穿透。
  *
- * <p>为什么需要它：弹窗的层级不是天然就对的。把 `el-dialog` 写在「被表格 / 滚动容器包住」的位置
- * （2026-10-07 那次是挂在表格单元格里的星标上），它的遮罩与弹窗会被困在那一层，
- * 现象是**表格的行盖到弹窗上来**——肉眼一眼看得出，但**几何断言完全测不出来**
- * （它们只量位置尺寸，而位置尺寸都是对的）。
+ * <p>为什么需要它：弹窗的层级不是天然就对的。2026-10-07 那次是「挂在表格单元格里的星标上、
+ * 没 teleport」的弹窗被表格的行盖住——肉眼一眼看得出，但**几何断言完全测不出来**。
+ * 现在弹窗都是 reka Dialog（默认 portal 到 body），根因层面已结构性消除，但**兜底留着**：
+ * 2026-10-08 的「reka 模态给 body 挂 pointer-events:none」事故证明，命中层级仍会以
+ * 意想不到的方式坏掉（当时 fill 能过、click 全被顶层遮罩吃掉）。
  *
- * <p>两条判据**都要过**，各管一段：
+ * <p>两条判据**都要过**：
  * <ol>
- *   <li><b>根因</b>：遮罩不能落在 `.el-table` / `.el-scrollbar` 内部——中了就说明这个弹窗没写
- *       `append-to-body`，早晚要被穿透。这条是主力，稳定且换布局也不飘。</li>
- *   <li><b>现象</b>：身上撒九个点做命中测试，最上面都得是弹窗自己。
- *       ⚠️ 它没那么可靠：穿透只发生在「表格真的盖到弹窗」的那片区域上，表格不够高时一个点都碰不到
- *       （第一版就是因此假的绿）。留着是当兜底——它抓到的是**用户真正看到的那一层**。</li>
+ *   <li><b>根因</b>：弹窗内容不能落在 `.el-table` / `.el-scrollbar` 内部（reka 走 portal 时
+ *       天然不会，留着当回归网）。</li>
+ *   <li><b>现象</b>：身上撒九个点做命中测试，最上面都得是弹窗自己（或其子孙）。</li>
  * </ol>
- *
- * <p>⚠️ 只测**当前可见**的那个弹窗（取最后一个）：`el-dialog` 打开过就会留在 DOM 里，
- * 用 `querySelector` 会拿到先前打开过的那个隐藏弹窗。
  */
-export async function expectDialogOnTop(page: Page, dialogSelector = '.el-dialog'): Promise<void> {
-  const problems = await page.evaluate((sel) => {
-    const visible = Array.from(document.querySelectorAll(sel)).filter((el) => {
+export async function expectDialogOnTop(page: Page): Promise<void> {
+  const problems = await page.evaluate(() => {
+    const visible = Array.from(document.querySelectorAll('[data-slot="dialog-content"]')).filter((el) => {
       const r = el.getBoundingClientRect()
       return r.width > 0 && r.height > 0
     })
     const dialog = visible[visible.length - 1]
     if (!dialog) {
-      return ['找不到可见的 ' + sel]
+      return ['找不到可见的 dialog-content']
     }
     const problems: string[] = []
 
-    const overlay = dialog.closest('.el-overlay')
-    const trapped = overlay?.closest('.el-table, .el-scrollbar')
+    const trapped = dialog.closest('.el-table, .el-scrollbar')
     if (trapped) {
-      problems.push(
-        `弹窗的遮罩被渲染在 ${trapped.tagName}.${String(trapped.className).slice(0, 32)} 里` +
-          '——给 el-dialog 加 append-to-body，否则表格的行会盖到弹窗上'
-      )
+      problems.push(`弹窗被渲染在 ${trapped.tagName}.${String(trapped.className).slice(0, 32)} 里——表格行会盖到弹窗上`)
     }
 
     const r = dialog.getBoundingClientRect()
@@ -246,7 +239,7 @@ export async function expectDialogOnTop(page: Page, dialogSelector = '.el-dialog
       }
     }
     return problems
-  }, dialogSelector)
+  })
 
   expect(problems, '弹窗必须盖住它下方的一切（表格的行、卡片…）').toEqual([])
 }

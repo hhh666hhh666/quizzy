@@ -23,7 +23,7 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   await page.goto('/questions')
   await page.getByRole('button', { name: '新建题目' }).click()
 
-  const dialog = page.locator('.el-dialog:visible')
+  const dialog = page.getByRole('dialog', { name: '新建题目' })
   await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)
   const optionRows = dialog.locator('.option-row')
   await optionRows.nth(0).locator('.el-input__inner').fill('正确答案在这')
@@ -62,21 +62,18 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
 /** 打开「新建题目」对话框里的分类下拉。 */
 async function openCategoryDropdown(page: import('@playwright/test').Page) {
   await page.getByRole('button', { name: '新建题目' }).click()
-  const dialog = page.locator('.el-dialog:visible')
+  const dialog = page.getByRole('dialog', { name: '新建题目' })
   await dialog.locator('.el-form-item', { hasText: '分类' }).locator('.el-select').click()
 }
 
 /**
  * 关掉当前打开的对话框。
  *
- * ⚠️ 实测这个 el-dialog **不响应 Esc**（按两下它还开着），所以要点右上角的 ×。
- * 先按一次 Esc 只是为了把可能还开着的分类下拉关掉（免得它挡住点击）。
+ * 弹窗已从 EP 迁到 reka——reka 的 Dialog **响应 Esc**（EP 那个不响应，当年只能点右上角 ×）。
+ * 先按一次把可能还开着的分类下拉关掉，再按一次关弹窗。
  */
 async function closeDialog(page: import('@playwright/test').Page) {
   await page.keyboard.press('Escape')
-  const dialog = page.locator('.el-dialog:visible')
-  if ((await dialog.count()) > 0) {
-    await dialog.first().locator('.el-dialog__headerbtn').click()
-  }
-  await expect(page.locator('.el-dialog:visible')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: '新建题目' })).toBeHidden()
 }

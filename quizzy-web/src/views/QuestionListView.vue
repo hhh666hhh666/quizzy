@@ -296,29 +296,29 @@
     />
 
     <!-- 「加入已有试卷」：只列固定卷——规则卷没有题目列表，加不进去（后端也会拒） -->
-    <el-dialog v-model="addToPaperVisible" title="加入试卷" width="460px">
-      <p class="add-hint">只能加入<b>固定卷</b>；已在卷中的题会被自动忽略，不会重复。</p>
-      <el-select v-model="targetPaperId" placeholder="选择一张固定卷" class="add-select" data-testid="batch-paper-select">
-        <el-option
-          v-for="p in fixedPapers"
-          :key="p.id"
-          :label="`${p.title}（${p.questionCount} 道）`"
-          :value="p.id"
-        />
-      </el-select>
-      <template #footer>
-        <el-button @click="addToPaperVisible = false">取消</el-button>
-        <el-button
-          type="primary"
-          :disabled="!targetPaperId"
-          :loading="adding"
-          data-testid="batch-add-confirm"
-          @click="onAddToPaper"
+    <Dialog :open="addToPaperVisible" @update:open="(v: boolean) => (addToPaperVisible = v)">
+      <DialogContent class="max-w-md">
+        <DialogHeader>
+          <DialogTitle class="text-base font-medium">加入试卷</DialogTitle>
+        </DialogHeader>
+        <p class="text-sm leading-relaxed">只能加入<b>固定卷</b>；已在卷中的题会被自动忽略，不会重复。</p>
+        <Select
+          :model-value="targetPaperId === null ? undefined : String(targetPaperId)"
+          @update:model-value="(v: unknown) => (targetPaperId = Number(v))"
         >
-          加入
-        </el-button>
-      </template>
-    </el-dialog>
+          <SelectTrigger class="w-full bg-reader" data-testid="batch-paper-select">
+            <span>{{ targetPaperLabel }}</span>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="p in fixedPapers" :key="p.id" :value="String(p.id)">{{ p.title }}（{{ p.questionCount }} 道）</SelectItem>
+          </SelectContent>
+        </Select>
+        <DialogFooter>
+          <Button variant="outline" @click="addToPaperVisible = false">取消</Button>
+          <Button :disabled="!targetPaperId" data-testid="batch-add-confirm" @click="onAddToPaper">加入</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -336,6 +336,7 @@ import FavoriteStar from '@/components/FavoriteStar.vue'
 import FavoriteFoldersDialog from '@/components/FavoriteFoldersDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
@@ -419,6 +420,12 @@ const addToFavoriteVisible = ref(false)
 const fixedPapers = ref<{ id: number; title: string; questionCount: number }[]>([])
 const targetPaperId = ref<number | null>(null)
 const adding = ref(false)
+
+/** 加入试卷弹窗的触发钮文案（reka Select 的受控显示）。 */
+const targetPaperLabel = computed(() => {
+  const paper = fixedPapers.value.find((p) => p.id === targetPaperId.value)
+  return paper ? `${paper.title}（${paper.questionCount} 道）` : '选择一张固定卷'
+})
 
 function toggleRow(row: QuestionListItemVO, checked: boolean) {
   if (checked) selectedIds.value.add(row.id)

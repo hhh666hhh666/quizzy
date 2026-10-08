@@ -5,9 +5,10 @@ import { createQuestion, expectDialogOnTop, lastMessage, questionRow, registerNe
  * 收藏夹的两条用户主路（模型见 docs/adr/0030）。
  *
  * ⚠️ **第一条是回归哨兵，别删**：「修改收藏夹」面板曾经**首次打开永远谎报「还没有收藏夹」**——
- * 它的加载挂在 `el-dialog` 的 `@open` 上，而 element-plus 只在 `modelValue` **变化**时才 emit 这个事件
- * （那个 watch 没有 `immediate`，`onMounted` 那条只 `open()` 不 emit）；星标又用 `v-if` 懒挂载面板，
- * 于是首次打开时 `modelValue` 一上来就是 `true`，事件根本不触发。
+ * 当时它的加载挂在 `el-dialog` 的 `@open` 上（首次挂载时 modelValue 一上来就是 true，那个事件不触发），
+ * 而星标又用 `v-if` 懒挂载面板，于是首次打开不加载。现在加载改绑组件自己的 `visible`
+ * （与第三方组件的事件语义解耦），这条哨兵继续钉住「首次打开必须真的加载」——换个组件库，
+ * 「懒挂载 + 事件语义」这组坑照样会重来。
  *
  * <p>这类错误**只有端到端能挡**：接口层的数据全对，「还没有收藏夹」是**界面自己编的**。
  */
@@ -37,7 +38,7 @@ test('题库页收藏一道题后，打开「修改收藏夹」能列出收藏�
   // 面板的明路是横幅上那个按钮（长按只是快捷键，桌面端几乎没有可发现性）
   await banner.getByRole('button', { name: '修改收藏夹' }).click()
 
-  const dialog = page.locator('.el-dialog:visible').first()
+  const dialog = page.getByRole('dialog', { name: '修改收藏夹' })
   await expect(dialog).toContainText('现在在')
   // 前面刚收藏过，默认夹必然存在——此时说「还没有收藏夹」就是谎报
   await expect(dialog).not.toContainText('还没有收藏夹')
@@ -69,9 +70,9 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
   await page.goto('/questions')
   await questionRow(page, stem).getByRole('checkbox').click()
   await page.getByTestId('batch-add-to-favorite').click()
-  const picker = page.locator('.el-dialog:visible').first()
-  await picker.locator('.folder-row', { hasText: folder }).locator('.el-checkbox').click()
-  await picker.locator('.el-dialog__footer .el-button--primary').click()
+  const picker = page.getByRole('dialog', { name: '加入收藏夹' })
+  await picker.locator('.folder-row', { hasText: folder }).getByRole('checkbox').click()
+  await picker.getByRole('button', { name: '确定' }).click()
   await expect(lastMessage(page, 'success')).toContainText('加入')
 
   // 回收藏夹页面：选中那个夹，右列应当只有这一道题（收藏夹页已迁移，行钩子是 .fav-row）
