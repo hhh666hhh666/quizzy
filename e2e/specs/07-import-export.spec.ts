@@ -83,12 +83,12 @@ test('批量导入并顺带建卷：卷出现在试卷列表、题就在里面',
   // 真的建出来了，而且题在里面
   await dialog.getByTestId('import-goto-papers').click()
   await expect(page).toHaveURL(/\/papers$/)
-  const row = page.locator('.el-table__row', { hasText: title })
+  const row = page.locator('.paper-row', { hasText: title })
   await expect(row).toHaveCount(1)
   await row.getByRole('button', { name: '编辑' }).click()
-  const editDialog = page.locator('.el-dialog:visible').first()
+  const editDialog = page.getByRole('dialog', { name: '编辑试卷' })
   await expect(editDialog).toContainText('共 1 道')
-  await expect(editDialog.locator('.el-table__row', { hasText: stem })).toHaveCount(1)
+  await expect(editDialog.locator('.picked-row', { hasText: stem })).toHaveCount(1)
 })
 
 test('导出 JSON：真的下载到文件，且内容里带得刚才那道题', async ({ page }) => {

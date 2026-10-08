@@ -145,17 +145,17 @@ export async function createFixedPaper(page: Page, title: string, pickStems: str
   await page.goto('/papers')
   await page.getByRole('button', { name: '新建试卷' }).click()
 
-  const dialog = page.locator('.el-dialog:visible').first()
+  const dialog = page.getByRole('dialog', { name: '新建试卷' })
   await expect(dialog).toBeVisible()
-  await dialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
+  await dialog.getByLabel('标题').fill(title)
   // 模式默认就是固定卷，不点它
 
   await dialog.getByRole('button', { name: '选择题库题目' }).click()
-  const selector = page.locator('.el-dialog:visible').last()
+  const selector = page.getByRole('dialog', { name: '选择题库题目' })
   for (const stem of pickStems) {
-    const row = selector.locator('.el-table__row', { hasText: stem })
+    const row = selector.locator('.selector-row', { hasText: stem })
     await expect(row, `题库里应当能找到「${stem}」`).toHaveCount(1)
-    await row.locator('.el-checkbox').first().click()
+    await row.getByRole('checkbox').click()
   }
   await selector.getByRole('button', { name: '加入试卷' }).click()
 
@@ -182,7 +182,7 @@ export function lastMessage(page: Page, type: 'success' | 'info' | 'warning' | '
 /** 从试卷列表里找到这张卷，点「开始作答」，并等到答题页。 */
 export async function startPaperQuiz(page: Page, paperTitle: string): Promise<void> {
   await page.goto('/papers')
-  const row = page.locator('.el-table__row', { hasText: paperTitle })
+  const row = page.locator('.paper-row', { hasText: paperTitle })
   await expect(row).toHaveCount(1)
   await row.getByRole('button', { name: '开始作答' }).click()
   await expect(page).toHaveURL(/\/quiz\/\d+$/)

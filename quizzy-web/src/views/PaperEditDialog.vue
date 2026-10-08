@@ -1,178 +1,295 @@
 <template>
-  <el-dialog
-    :model-value="visible"
-    :title="form.id ? '编辑试卷' : '新建试卷'"
-    width="760px"
-    @update:model-value="(v: boolean) => emit('update:visible', v)"
-  >
-    <el-form :model="form" label-width="80px">
-      <el-form-item label="标题">
-        <el-input v-model="form.title" />
-      </el-form-item>
-      <el-form-item label="说明">
-        <el-input v-model="form.description" type="textarea" :rows="2" />
-      </el-form-item>
-      <el-form-item label="模式">
-        <el-radio-group v-model="form.mode">
-          <el-radio-button value="FIXED">固定卷</el-radio-button>
-          <el-radio-button value="RULE">规则卷</el-radio-button>
-        </el-radio-group>
-        <span class="hint">
-          {{ form.mode === 'FIXED' ? '题目固定，每次作答都是同一批题' : '每次作答按规则现场抽题' }}
-        </span>
-      </el-form-item>
+  <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
+    <DialogContent class="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+      <DialogHeader class="border-b border-line-soft px-6 py-4">
+        <DialogTitle class="text-base font-medium">{{ form.id ? '编辑试卷' : '新建试卷' }}</DialogTitle>
+      </DialogHeader>
 
-      <template v-if="form.mode === 'FIXED'">
-        <el-form-item label="已选题目">
-          <span>共 {{ form.questionIds.length }} 道</span>
-          <el-button link type="primary" @click="selectorVisible = true">选择题库题目</el-button>
-          <el-button link type="primary" @click="createQuestionVisible = true">新建题目</el-button>
-        </el-form-item>
-        <el-alert
-          v-if="!form.questionIds.length"
-          class="empty-hint"
-          type="info"
-          :closable="false"
-          show-icon
-          title="空卷可以先保存，之后再往里加题；空卷不能发起作答。"
-        />
-        <el-table :data="selectedQuestions" max-height="220" border>
-          <el-table-column label="题型" width="80">
-            <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-          </el-table-column>
-          <el-table-column prop="stem" label="题干" show-overflow-tooltip />
-          <el-table-column label="操作" width="80">
-            <template #default="{ row }">
-              <el-button link type="danger" @click="removeQuestion(row.id)">移除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </template>
+      <div class="flex flex-col gap-4 overflow-y-auto px-6 py-5">
+        <div class="flex flex-col gap-1">
+          <label for="paper-title" class="text-xs text-ink-muted">标题</label>
+          <Input id="paper-title" v-model="form.title" class="bg-reader" />
+        </div>
 
-      <template v-else>
-        <el-row :gutter="12">
-          <el-col :span="12">
-            <el-form-item label="分类">
-              <el-select v-model="form.rule.categoryId" clearable>
-                <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="题量">
-              <el-input-number v-model="form.rule.count" :min="1" :max="200" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="题型">
-          <el-checkbox-group v-model="form.rule.types">
-            <el-checkbox value="SINGLE" label="单选题" />
-            <el-checkbox value="MULTI" label="多选题" />
-            <el-checkbox value="JUDGE" label="判断题" />
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="难度">
-          <el-checkbox-group v-model="form.rule.difficulties">
-            <el-checkbox value="EASY" label="简单" />
-            <el-checkbox value="MEDIUM" label="中等" />
-            <el-checkbox value="HARD" label="困难" />
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="排除近期">
-          <el-input-number v-model="form.rule.excludeRecentDays" :min="0" :max="365" />
-          <span class="hint">排除最近 N 天已作答过的题目，0 表示不排除</span>
-        </el-form-item>
-        <el-button link type="primary" :loading="previewing" @click="onPreview">预览抽题结果</el-button>
-        <el-table v-if="preview.length" :data="preview" max-height="220" border>
-          <el-table-column label="题型" width="80">
-            <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-          </el-table-column>
-          <el-table-column prop="stem" label="题干" show-overflow-tooltip />
-        </el-table>
-      </template>
-    </el-form>
+        <div class="flex flex-col gap-1">
+          <label for="paper-description" class="text-xs text-ink-muted">说明</label>
+          <Textarea id="paper-description" v-model="form.description" :rows="2" class="bg-reader" />
+        </div>
 
-    <template #footer>
-      <el-button @click="emit('update:visible', false)">取消</el-button>
-      <el-button type="primary" :loading="saving" @click="onSave">保存</el-button>
-    </template>
+        <div class="flex flex-col gap-1.5">
+          <span class="text-xs text-ink-muted">模式</span>
+          <div class="flex gap-1 self-start rounded-md bg-surface-2 p-1">
+            <button
+              v-for="m in MODES"
+              :key="m.value"
+              type="button"
+              class="rounded-sm px-3 py-1 text-sm transition-colors"
+              :class="form.mode === m.value ? 'bg-surface font-medium text-ink shadow-sm' : 'text-ink-muted hover:text-ink'"
+              @click="form.mode = m.value"
+            >
+              {{ m.label }}
+            </button>
+          </div>
+          <span class="text-xs text-ink-muted">
+            {{ form.mode === 'FIXED' ? '题目固定，每次作答都是同一批题' : '每次作答按规则现场抽题' }}
+          </span>
+        </div>
 
-    <el-dialog v-model="selectorVisible" title="选择题库题目" width="880px" append-to-body>
-      <div class="selector-filters">
-        <el-input
-          v-model="selectorQuery.keyword"
-          placeholder="按题干搜索"
-          clearable
-          class="f-keyword"
-          @keyup.enter="searchCandidates"
-        />
-        <el-select v-model="selectorQuery.categoryIds" multiple collapse-tags clearable placeholder="分类" class="f-cate">
-          <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
-        </el-select>
-        <el-select v-model="selectorQuery.type" clearable placeholder="题型" class="f-type">
-          <el-option label="单选题" value="SINGLE" />
-          <el-option label="多选题" value="MULTI" />
-          <el-option label="判断题" value="JUDGE" />
-        </el-select>
-        <el-select v-model="selectorQuery.difficulty" clearable placeholder="难度" class="f-diff">
-          <el-option label="简单" value="EASY" />
-          <el-option label="中等" value="MEDIUM" />
-          <el-option label="困难" value="HARD" />
-        </el-select>
-        <el-button type="primary" @click="searchCandidates">查询</el-button>
-        <el-button @click="resetSelectorFilters">重置</el-button>
+        <template v-if="form.mode === 'FIXED'">
+          <div class="flex items-center gap-3">
+            <span class="text-sm">已选题目：共 {{ form.questionIds.length }} 道</span>
+            <Button variant="link" size="sm" @click="selectorVisible = true">选择题库题目</Button>
+            <Button variant="link" size="sm" @click="createQuestionVisible = true">新建题目</Button>
+          </div>
+
+          <p
+            v-if="!form.questionIds.length"
+            class="rounded-md bg-tint-amber/50 px-3 py-2 text-sm"
+          >
+            空卷可以先保存，之后再往里加题；空卷不能发起作答。
+          </p>
+
+          <div v-if="selectedQuestions.length" class="overflow-hidden rounded-lg border border-line-soft">
+            <table class="w-full border-collapse text-sm">
+              <tbody>
+                <tr v-for="q in selectedQuestions" :key="q.id" class="picked-row border-b border-line-soft last:border-b-0">
+                  <td class="px-3 py-2"><TypeTag :type="q.type" /></td>
+                  <td class="max-w-0 px-3 py-2">
+                    <span class="block truncate" :title="q.stem">{{ q.stem }}</span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2 text-right">
+                    <button type="button" class="text-danger hover:underline" @click="removeQuestion(q.id)">移除</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-ink-muted">分类</span>
+            <Select :model-value="form.rule.categoryId ?? 'ALL'" @update:model-value="(v: unknown) => (form.rule.categoryId = v === 'ALL' ? null : (v as number))">
+              <SelectTrigger class="w-[220px] bg-reader">
+                <span>{{ ruleCategoryLabel }}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">不限</SelectItem>
+                <SelectItem v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="rule-count" class="text-xs text-ink-muted">题量</label>
+            <Input id="rule-count" v-model.number="form.rule.count" type="number" min="1" max="200" class="w-28 bg-reader" />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <span class="text-xs text-ink-muted">题型</span>
+            <div class="flex gap-4">
+              <label v-for="t in ['SINGLE', 'MULTI', 'JUDGE']" :key="t" class="flex cursor-pointer items-center gap-2 text-sm">
+                <input v-model="form.rule.types" type="checkbox" :value="t" class="size-4 accent-brand" />
+                {{ { SINGLE: '单选题', MULTI: '多选题', JUDGE: '判断题' }[t as QuestionType] }}
+              </label>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <span class="text-xs text-ink-muted">难度</span>
+            <div class="flex gap-4">
+              <label v-for="d in ['EASY', 'MEDIUM', 'HARD']" :key="d" class="flex cursor-pointer items-center gap-2 text-sm">
+                <input v-model="form.rule.difficulties" type="checkbox" :value="d" class="size-4 accent-brand" />
+                {{ { EASY: '简单', MEDIUM: '中等', HARD: '困难' }[d as Difficulty] }}
+              </label>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="rule-exclude" class="text-xs text-ink-muted">排除近期</label>
+            <div class="flex items-center gap-3">
+              <Input id="rule-exclude" v-model.number="form.rule.excludeRecentDays" type="number" min="0" max="365" class="w-28 bg-reader" />
+              <span class="text-xs text-ink-muted">排除最近 N 天已作答过的题目，0 表示不排除</span>
+            </div>
+          </div>
+
+          <Button variant="link" size="sm" class="self-start" :disabled="previewing" @click="onPreview">预览抽题结果</Button>
+          <div v-if="preview.length" class="overflow-hidden rounded-lg border border-line-soft">
+            <table class="w-full border-collapse text-sm">
+              <tbody>
+                <tr v-for="q in preview" :key="q.id" class="border-b border-line-soft last:border-b-0">
+                  <td class="px-3 py-2"><TypeTag :type="q.type" /></td>
+                  <td class="max-w-0 px-3 py-2">
+                    <span class="block truncate" :title="q.stem">{{ q.stem }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
       </div>
 
-      <el-table :data="candidates" v-loading="loadingCandidates" border max-height="360">
-        <el-table-column width="50">
-          <template #header>
-            <el-checkbox
-              :model-value="pageAllSelected"
-              :indeterminate="pageSomeSelected"
-              @change="(v: any) => togglePage(!!v)"
+      <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+        <Button variant="outline" @click="emit('update:visible', false)">取消</Button>
+        <Button :disabled="saving" @click="onSave">保存</Button>
+      </div>
+    </DialogContent>
+
+    <!-- ── 选题器（嵌套对话框）───────────────────────────────────────────── -->
+    <Dialog :open="selectorVisible" @update:open="(v: boolean) => (selectorVisible = v)">
+      <DialogContent class="flex max-h-[85vh] max-w-4xl flex-col gap-0 overflow-hidden p-0">
+        <DialogHeader class="border-b border-line-soft px-6 py-4">
+          <DialogTitle class="text-base font-medium">选择题库题目</DialogTitle>
+        </DialogHeader>
+
+        <div class="flex flex-col gap-4 overflow-y-auto px-6 py-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <Input
+              v-model="selectorQuery.keyword"
+              placeholder="按题干搜索"
+              class="h-9 w-48 bg-reader"
+              @keyup.enter="searchCandidates"
             />
-          </template>
-          <template #default="{ row }">
-            <el-checkbox :model-value="selectedMap.has(row.id)" @change="(v: any) => toggleCandidate(row, !!v)" />
-          </template>
-        </el-table-column>
-        <el-table-column label="题型" width="80">
-          <template #default="{ row }">{{ typeLabel(row.type) }}</template>
-        </el-table-column>
-        <el-table-column prop="stem" label="题干" show-overflow-tooltip />
-        <el-table-column label="状态" width="90">
-          <template #default="{ row }">
-            <el-tag v-if="form.questionIds.includes(row.id)" size="small" type="info">已在卷中</el-tag>
-          </template>
-        </el-table-column>
-      </el-table>
+            <Popover>
+              <PopoverTrigger as-child>
+                <button
+                  type="button"
+                  class="flex h-9 w-44 items-center justify-between rounded-md border border-line bg-reader px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                >
+                  <span :class="selectorQuery.categoryIds.length ? '' : 'text-ink-subtle'">{{ selectorCategoryLabel }}</span>
+                  <ChevronDownIcon class="size-4 opacity-50" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start" class="w-56 p-0">
+                <div class="max-h-60 overflow-y-auto py-1">
+                  <label
+                    v-for="c in categories"
+                    :key="c.id"
+                    class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-surface-2"
+                  >
+                    <Checkbox
+                      :model-value="selectorQuery.categoryIds.includes(c.id)"
+                      @update:model-value="(v: unknown) => toggleSelectorCategory(c.id, v === true)"
+                    />
+                    {{ c.name }}
+                  </label>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Select :model-value="selectorQuery.type || 'ALL'" @update:model-value="(v: unknown) => (selectorQuery.type = v === 'ALL' ? '' : (v as QuestionType))">
+              <SelectTrigger class="h-9 w-[130px] bg-reader">
+                <span>{{ selectorQuery.type ? { SINGLE: '单选题', MULTI: '多选题', JUDGE: '判断题' }[selectorQuery.type as QuestionType] : '题型' }}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">不限</SelectItem>
+                <SelectItem value="SINGLE">单选题</SelectItem>
+                <SelectItem value="MULTI">多选题</SelectItem>
+                <SelectItem value="JUDGE">判断题</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              :model-value="selectorQuery.difficulty || 'ALL'"
+              @update:model-value="(v: unknown) => (selectorQuery.difficulty = v === 'ALL' ? '' : (v as Difficulty))"
+            >
+              <SelectTrigger class="h-9 w-[130px] bg-reader">
+                <span>{{ selectorQuery.difficulty ? { EASY: '简单', MEDIUM: '中等', HARD: '困难' }[selectorQuery.difficulty as Difficulty] : '难度' }}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">不限</SelectItem>
+                <SelectItem value="EASY">简单</SelectItem>
+                <SelectItem value="MEDIUM">中等</SelectItem>
+                <SelectItem value="HARD">困难</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button size="sm" @click="searchCandidates">查询</Button>
+            <Button size="sm" variant="outline" @click="resetSelectorFilters">重置</Button>
+          </div>
 
-      <el-pagination
-        class="selector-pagination"
-        layout="total, prev, pager, next"
-        :total="candidateTotal"
-        v-model:current-page="selectorQuery.page"
-        v-model:page-size="selectorQuery.size"
-        @change="loadCandidates"
-      />
+          <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loadingCandidates ? 'pointer-events-none opacity-60' : ''">
+            <table class="w-full border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+                  <th class="w-12 px-3 py-2.5">
+                    <Checkbox
+                      :model-value="pageAllSelected ? true : pageSomeSelected ? 'indeterminate' : false"
+                      aria-label="全选本页"
+                      @update:model-value="(v: unknown) => togglePage(v === true)"
+                    />
+                  </th>
+                  <th class="px-3 py-2.5 font-medium">题型</th>
+                  <th class="px-3 py-2.5 font-medium">题干</th>
+                  <th class="px-3 py-2.5 font-medium">状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in candidates" :key="row.id" class="selector-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
+                  <td class="px-3 py-2.5">
+                    <Checkbox
+                      :model-value="selectedMap.has(row.id)"
+                      :aria-label="`选择第 ${row.id} 题`"
+                      @update:model-value="(v: unknown) => toggleCandidate(row, v === true)"
+                    />
+                  </td>
+                  <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
+                  <td class="max-w-0 px-3 py-2.5">
+                    <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
+                  </td>
+                  <td class="whitespace-nowrap px-3 py-2.5">
+                    <span
+                      v-if="form.questionIds.includes(row.id)"
+                      class="inline-flex items-center rounded-sm bg-surface-2 px-2 py-0.5 text-xs text-ink-muted"
+                    >
+                      已在卷中
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-      <template #footer>
-        <span class="selector-count">已选 {{ selectedMap.size }} 道</span>
-        <el-button @click="selectorVisible = false">取消</el-button>
-        <el-button type="primary" :disabled="!selectedMap.size" @click="confirmSelection">加入试卷</el-button>
-      </template>
-    </el-dialog>
+          <TablePagination
+            :total="candidateTotal"
+            :page="selectorQuery.page"
+            :size="selectorQuery.size"
+            @update:page="(p) => { selectorQuery.page = p; loadCandidates() }"
+          />
+        </div>
+
+        <div class="flex items-center justify-between gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+          <span class="text-sm text-ink-muted">已选 {{ selectedMap.size }} 道</span>
+          <div class="flex gap-2">
+            <Button variant="outline" @click="selectorVisible = false">取消</Button>
+            <Button :disabled="!selectedMap.size" @click="confirmSelection">加入试卷</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
 
     <!-- 内联新建：保存后自动加进当前卷，不必先跳去题库建完再回来选 -->
     <QuestionEditDialog v-model:visible="createQuestionVisible" :question-id="null" @saved="onQuestionCreated" />
-  </el-dialog>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import { ChevronDownIcon } from '@lucide/vue'
 import { getQuestion, listCategories, pageQuestions } from '@/api/question'
 import { getPaper, previewRule, savePaper } from '@/api/paper'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
+import TablePagination from '@/components/TablePagination.vue'
+import TypeTag from '@/components/TypeTag.vue'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import QuestionEditDialog from './QuestionEditDialog.vue'
 import type { Difficulty, PaperRuleDTO, QuestionListItemVO, QuestionQuery, QuestionType } from '@/types'
 
@@ -215,6 +332,18 @@ const selectorQuery = ref({
   size: 20
 })
 
+const selectorCategoryLabel = computed(() =>
+  selectorQuery.value.categoryIds.length
+    ? `已选 ${selectorQuery.value.categoryIds.length} 个分类`
+    : '分类'
+)
+
+function toggleSelectorCategory(id: number, checked: boolean) {
+  selectorQuery.value.categoryIds = checked
+    ? [...selectorQuery.value.categoryIds, id]
+    : selectorQuery.value.categoryIds.filter((v) => v !== id)
+}
+
 const emptyRule = (): PaperRuleDTO => ({
   categoryId: null,
   tagIds: [],
@@ -225,6 +354,16 @@ const emptyRule = (): PaperRuleDTO => ({
 })
 
 const form = ref<any>({ id: null, title: '', description: '', mode: 'FIXED', questionIds: [], rule: emptyRule() })
+
+const MODES: { value: string; label: string }[] = [
+  { value: 'FIXED', label: '固定卷' },
+  { value: 'RULE', label: '规则卷' }
+]
+
+const ruleCategoryLabel = computed(() => {
+  if (form.value.rule.categoryId === null) return '不限'
+  return categories.value.find((c) => c.id === form.value.rule.categoryId)?.name || '不限'
+})
 
 watch(
   () => [props.visible, props.paperId],
@@ -392,19 +531,4 @@ async function onSave() {
     saving.value = false
   }
 }
-
-function typeLabel(type: string) {
-  return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
-}
 </script>
-
-<style scoped>
-.hint { margin-left: 12px; color: var(--el-text-color-secondary); font-size: 12px; }
-.empty-hint { margin-bottom: 12px; }
-.selector-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.f-keyword { width: 200px; }
-.f-cate { width: 190px; }
-.f-type, .f-diff { width: 110px; }
-.selector-pagination { margin-top: 12px; justify-content: flex-end; }
-.selector-count { margin-right: auto; color: var(--el-text-color-secondary); font-size: 13px; }
-</style>

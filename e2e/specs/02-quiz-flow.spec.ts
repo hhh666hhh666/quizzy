@@ -28,7 +28,7 @@ test('核心链路：快速练习 → 答题 → 结算 → 结果页', async ({
 
   // 判分反馈必须立刻出现，并带上正确答案——这是「练习语义」的核心，
   // 两端曾经都因为刷新逻辑把反馈清掉而看不见（见 CHANGELOG 里那条修复）。
-  const feedback = page.locator('.el-alert')
+  const feedback = page.locator('.feedback')
   await expect(feedback).toBeVisible()
   await expect(feedback).toContainText('正确答案')
   await expect(feedback).toContainText(/回答正确|回答错误/)
@@ -56,13 +56,13 @@ test('断点续答：答完一题后刷新，位置继续在未作答的题上',
 
   await page.locator('.option').first().locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
-  await expect(page.locator('.el-alert')).toBeVisible()
+  await expect(page.locator('.feedback')).toBeVisible()
 
   // 刷新——位置是服务端给的，不是本地状态
   await page.reload()
 
-  // 表头显示「第 X / Y 题」：应当是第 2 题（第一道已作答），而不是回到第 1 题
-  await expect(page.locator('.el-card__header')).toContainText('第 2 / 2 题')
+  // 头部显示「第 X / Y 题」：应当是第 2 题（第一道已作答），而不是回到第 1 题
+  await expect(page.locator('.quiz-header')).toContainText('第 2 / 2 题')
   // 而且第一道题的作答仍然在（会话没丢）
-  await expect(page.locator('.el-progress')).toBeVisible()
+  await expect(page.locator('.quiz-progress')).toBeVisible()
 })

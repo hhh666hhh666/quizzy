@@ -1,69 +1,97 @@
 <template>
-  <el-card v-if="session" v-loading="loading">
-    <template #header>
-      <div class="header">
-        <span>{{ session.title }}</span>
-        <span>第 {{ current + 1 }} / {{ questions.length }} 题 · 已得 {{ session.obtainedScore }} 分</span>
-        <el-button link type="danger" @click="onAbandon">放弃本次</el-button>
-      </div>
-      <el-progress :percentage="answeredPercent" :stroke-width="8" />
-    </template>
-
-    <div v-if="currentQuestion">
-      <div class="stem">
-        <el-tag size="small">{{ typeLabel(currentQuestion.type) }}</el-tag>
-        <el-tag size="small" type="info">{{ currentQuestion.score }} 分</el-tag>
-        <MarkdownRenderer :source="currentQuestion.stem" />
+  <div class="font-sans text-base text-ink">
+    <div v-if="session" class="rounded-xl bg-surface p-6 shadow-sm" :class="loading ? 'pointer-events-none opacity-60' : ''">
+      <!-- 头部：标题 + 进度文字 + 放弃；e2e 钩子 .quiz-header（02 号 spec 断言「第 X / Y 题」） -->
+      <div class="quiz-header flex flex-wrap items-center justify-between gap-3">
+        <h1 class="text-base font-medium">{{ session.title }}</h1>
+        <span class="text-sm text-ink-muted">第 {{ current + 1 }} / {{ questions.length }} 题 · 已得 {{ session.obtainedScore }} 分</span>
+        <button type="button" class="text-sm text-danger hover:underline" @click="onAbandon">放弃本次</button>
       </div>
 
-      <el-alert
-        v-if="reviewing"
-        class="locked-tip"
-        type="info"
-        :closable="false"
-        title="本题已作答，答案不可修改；想重做可以另开一次练习。"
-      />
-
-      <div class="options">
-        <el-checkbox-group v-if="currentQuestion.type === 'MULTI'" v-model="picked" :disabled="submitted">
-          <div v-for="option in currentQuestion.options" :key="option.label" class="option">
-            <el-checkbox :value="option.label">
-              <span class="label">{{ option.label }}.</span>
-              <MarkdownRenderer :source="option.content" />
-            </el-checkbox>
-          </div>
-        </el-checkbox-group>
-        <el-radio-group v-else v-model="pickedRadio" :disabled="submitted">
-          <div v-for="option in currentQuestion.options" :key="option.label" class="option">
-            <el-radio :value="option.label">
-              <span class="label">{{ option.label }}.</span>
-              <MarkdownRenderer :source="option.content" />
-            </el-radio>
-          </div>
-        </el-radio-group>
+      <!-- 进度条：细条 + 品牌填充 -->
+      <div class="quiz-progress mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
+        <div class="h-full rounded-full bg-brand transition-all" :style="{ width: answeredPercent + '%' }" />
       </div>
 
-      <div class="actions">
-        <el-button :disabled="current === 0" @click="go(current - 1)">上一题</el-button>
-        <el-button v-if="!submitted" type="primary" :loading="submitting" @click="onSubmit">提交本题</el-button>
-        <el-button v-else @click="go(current + 1)">下一题</el-button>
-        <el-button v-if="current === questions.length - 1" type="success" @click="onFinish">结束并查看结果</el-button>
-      </div>
-
-      <el-alert
-        v-if="showVerdict"
-        class="feedback"
-        :type="verdictCorrect ? 'success' : 'error'"
-        :title="verdictCorrect ? '回答正确' : '回答错误'"
-        :closable="false"
-      >
-        <div>正确答案：{{ verdictAnswers.join(', ') }}</div>
-        <div v-if="verdictAnalysis">
-          <MarkdownRenderer :source="verdictAnalysis" />
+      <div v-if="currentQuestion" class="mt-5">
+        <div class="flex items-center gap-2">
+          <TypeTag :type="currentQuestion.type" />
+          <span class="inline-flex items-center rounded-sm bg-surface-2 px-2 py-0.5 text-xs text-ink-muted">{{ currentQuestion.score }} 分</span>
         </div>
-      </el-alert>
+
+        <!-- 题干是「读」的内容：近白阅读面 -->
+        <div class="reader mt-3 rounded-lg border border-line-soft bg-reader p-5">
+          <MarkdownRenderer :source="currentQuestion.stem" />
+        </div>
+
+        <p
+          v-if="reviewing"
+          class="locked-tip mt-3 rounded-md bg-surface-2 px-3 py-2 text-sm text-ink-muted"
+        >
+          本题已作答，答案不可修改；想重做可以另开一次练习。
+        </p>
+
+        <!--
+          选项：一行一张可点卡片。原生 radio / checkbox 藏在 label 里（label 就是点击目标，
+          e2e 沿用 `.option → label` 的点法），选中态用 has-[:checked] 上底色——
+          无 preflight 过渡期里这比 reka 控件更可控，键盘 / 读屏行为也由原生元素兜底。
+        -->
+        <div class="options mt-4 flex flex-col gap-3">
+          <div v-for="option in currentQuestion.options" :key="option.label" class="option">
+            <label
+              class="flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors has-[:checked]:border-brand has-[:checked]:bg-tint-blue/40"
+              :class="submitted ? 'cursor-default' : ''"
+            >
+              <input
+                v-if="currentQuestion.type === 'MULTI'"
+                v-model="picked"
+                type="checkbox"
+                :value="option.label"
+                :disabled="submitted"
+                class="mt-1 size-4 shrink-0 accent-brand"
+              />
+              <input
+                v-else
+                v-model="pickedRadio"
+                type="radio"
+                name="quiz-option"
+                :value="option.label"
+                :disabled="submitted"
+                class="mt-1 size-4 shrink-0 accent-brand"
+              />
+              <span class="font-semibold">{{ option.label }}.</span>
+              <span class="min-w-0 flex-1"><MarkdownRenderer :source="option.content" /></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="actions mt-4 flex gap-2">
+          <Button variant="outline" :disabled="current === 0" @click="go(current - 1)">上一题</Button>
+          <Button v-if="!submitted" :disabled="submitting" @click="onSubmit">提交本题</Button>
+          <Button v-else variant="outline" @click="go(current + 1)">下一题</Button>
+          <Button v-if="current === questions.length - 1" class="bg-ok text-white hover:opacity-90" @click="onFinish">
+            结束并查看结果
+          </Button>
+        </div>
+
+        <!-- 判分反馈：绿底对 / 红底错（tint 底 + 深字色，状态色不做大色块） -->
+        <div
+          v-if="showVerdict"
+          class="feedback mt-4 rounded-md p-4"
+          role="alert"
+          :class="verdictCorrect ? 'bg-tint-green/60' : 'bg-danger-soft/60'"
+        >
+          <p class="text-sm font-medium" :class="verdictCorrect ? 'text-ink-green' : 'text-ink-red'">
+            {{ verdictCorrect ? '回答正确' : '回答错误' }}
+          </p>
+          <p class="mt-1 text-sm">正确答案：{{ verdictAnswers.join(', ') }}</p>
+          <div v-if="verdictAnalysis" class="mt-1 text-sm">
+            <MarkdownRenderer :source="verdictAnalysis" />
+          </div>
+        </div>
+      </div>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -71,6 +99,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
+import TypeTag from '@/components/TypeTag.vue'
+import { Button } from '@/components/ui/button'
 import { abandonSession, finishSession, getSession, submitAnswer } from '@/api/quiz'
 import type { AnswerResultVO, QuizQuestionVO, SessionVO } from '@/types'
 
@@ -173,65 +203,5 @@ async function onAbandon() {
   router.push('/history')
 }
 
-function typeLabel(type: string) {
-  return { SINGLE: '单选', MULTI: '多选', JUDGE: '判断' }[type] || type
-}
-
 onMounted(load)
 </script>
-
-<style scoped>
-.header { display: flex; align-items: center; justify-content: space-between; }
-.stem { font-size: 15px; margin: 12px 0; }
-.stem :deep(.el-tag) { margin-right: 6px; }
-.locked-tip { margin-bottom: 12px; }
-.options { margin: 16px 0; }
-
-/* 选项一律逐行纵排：Element Plus 的 radio-group 出厂是 inline-flex + flex-wrap，
-   宽屏下会把选项横排成一行（多选题的 checkbox-group 本身没有 flex，所以一直是纵排）。
-   两个 group 统一改回块级，选项自然上下堆叠。 */
-.options :deep(.el-radio-group),
-.options :deep(.el-checkbox-group) { display: block; }
-
-.option { display: flex; align-items: flex-start; margin: 10px 0; }
-
-/* 控件自身撑满整行、高度自适应、允许长文本换行
-   （Element Plus 出厂是 inline-flex + height:32px + white-space:nowrap）。 */
-.options :deep(.el-radio),
-.options :deep(.el-checkbox) {
-  display: flex;
-  align-items: flex-start;
-  width: 100%;
-  height: auto;
-  margin-right: 0;
-  white-space: normal;
-}
-
-/* 圈 / 勾选框与首行文字视觉居中对齐（首行行高 1.7×14px≈23.8px，(23.8-14)/2≈5px）。 */
-.options :deep(.el-radio__input),
-.options :deep(.el-checkbox__input) { flex-shrink: 0; margin-top: 5px; }
-
-/* 标号与文字同行：选项文字由 MarkdownRenderer 渲染，其根节点是块级 div，会把行内标号挤到上一行；
-   把承接插槽的 label 容器改成横向 flex，标号与正文就成了同一行的两个弹性项。
-   结构与题目详情弹窗的 .option-row、移动 H5 的 .option-body 一致。 */
-.options :deep(.el-radio__label),
-.options :deep(.el-checkbox__label) {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-  padding-left: 8px;
-  line-height: 1.7;
-}
-.label { font-weight: 600; flex-shrink: 0; }
-.options :deep(.markdown-body) { flex: 1; min-width: 0; }
-
-/* MarkdownRenderer 给段落加了 6px 上下外边距，选项里首段的上外边距会把正文顶下去，
-   与标号「A.」错开一截（实测低 6px）。去掉首尾段的外边距，标号与正文首行才真正齐平。 */
-.options :deep(.markdown-body > :first-child) { margin-top: 0; }
-.options :deep(.markdown-body > :last-child) { margin-bottom: 0; }
-
-.actions { display: flex; gap: 10px; }
-.feedback { margin-top: 16px; }
-</style>

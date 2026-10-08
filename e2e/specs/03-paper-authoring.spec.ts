@@ -26,7 +26,7 @@ test('建题 → 组固定卷 → 用这张卷作答', async ({ page }) => {
   // 这张卷只有一道题，所以答完就能结算
   await page.locator('.option').first().locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
-  await expect(page.locator('.el-alert')).toContainText('正确答案')
+  await expect(page.locator('.feedback')).toContainText('正确答案')
 
   await page.getByRole('button', { name: '结束并查看结果' }).click()
   await expect(page).toHaveURL(/\/quiz\/\d+\/result$/)
@@ -43,14 +43,14 @@ test('空固定卷能保存，但「开始作答」是灰的', async ({ page }) 
 
   await page.goto('/papers')
   await page.getByRole('button', { name: '新建试卷' }).click()
-  const dialog = page.locator('.el-dialog:visible').first()
-  await dialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
+  const dialog = page.getByRole('dialog', { name: '新建试卷' })
+  await dialog.getByLabel('标题').fill(title)
   // 一道题都没选也该能保存——拦在保存这一步就会让「先建卷、后加题」这条动线走不通
   await expect(dialog).toContainText('空卷可以先保存')
   await dialog.getByRole('button', { name: '保存' }).click()
   await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
-  const row = page.locator('.el-table__row', { hasText: title })
+  const row = page.locator('.paper-row', { hasText: title })
   await expect(row).toHaveCount(1)
   await expect(row.getByRole('button', { name: '开始作答' })).toBeDisabled()
 })
@@ -67,8 +67,8 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
 
   await page.goto('/papers')
   await page.getByRole('button', { name: '新建试卷' }).click()
-  const paperDialog = page.locator('.el-dialog:visible').first()
-  await paperDialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
+  const paperDialog = page.getByRole('dialog', { name: '新建试卷' })
+  await paperDialog.getByLabel('标题').fill(title)
   await paperDialog.getByRole('button', { name: '新建题目' }).click()
 
   // 建题表单是**另一层** dialog，嵌套在试卷抽屉里
@@ -103,17 +103,17 @@ test('试卷选题器能按关键词筛题', async ({ page }) => {
 
   await page.goto('/papers')
   await page.getByRole('button', { name: '新建试卷' }).click()
-  const dialog = page.locator('.el-dialog:visible').first()
+  const dialog = page.getByRole('dialog', { name: '新建试卷' })
   await dialog.getByRole('button', { name: '选择题库题目' }).click()
 
-  const selector = page.locator('.el-dialog:visible').last()
+  const selector = page.getByRole('dialog', { name: '选择题库题目' })
   await selector.getByPlaceholder('按题干搜索').fill(stem)
   await selector.getByRole('button', { name: '查询' }).click()
 
   // 筛到只剩这一道——否则「按题干搜」只是摆设
-  await expect(selector.locator('.el-table__row')).toHaveCount(1)
-  const row = selector.locator('.el-table__row', { hasText: stem })
-  await row.locator('.el-checkbox').first().click()
+  await expect(selector.locator('.selector-row')).toHaveCount(1)
+  const row = selector.locator('.selector-row', { hasText: stem })
+  await row.getByRole('checkbox').click()
   // 选中数必须跟着走：跨页勾选是自己记账的，计数是它唯一的外在证据
   await expect(selector).toContainText('已选 1 道')
 

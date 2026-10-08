@@ -1,39 +1,72 @@
 <template>
-  <el-card>
-    <template #header>快速练习：按条件随机抽题</template>
-    <el-form :model="rule" label-width="100px" style="max-width: 560px">
-      <el-form-item label="分类">
-        <el-select v-model="rule.categoryId" clearable>
-          <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="题型">
-        <el-checkbox-group v-model="rule.types">
-          <el-checkbox value="SINGLE" label="单选题" />
-          <el-checkbox value="MULTI" label="多选题" />
-          <el-checkbox value="JUDGE" label="判断题" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="难度">
-        <el-checkbox-group v-model="rule.difficulties">
-          <el-checkbox value="EASY" label="简单" />
-          <el-checkbox value="MEDIUM" label="中等" />
-          <el-checkbox value="HARD" label="困难" />
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="题量">
-        <!-- 同一页有两个 el-input-number（题量 / 排除近期），按组件类型定位会撞名，所以加 testid -->
-        <el-input-number v-model="rule.count" data-testid="quick-count" :min="1" :max="200" />
-      </el-form-item>
-      <el-form-item label="排除近期">
-        <el-input-number v-model="rule.excludeRecentDays" :min="0" :max="365" />
-        <span class="hint">排除最近 N 天已做过的题，0 表示不排除</span>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" :loading="starting" @click="onStart">开始练习</el-button>
-      </el-form-item>
-    </el-form>
-  </el-card>
+  <div class="font-sans text-base text-ink">
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <h1 class="text-base font-medium">快速练习：按条件随机抽题</h1>
+
+      <div class="mt-5 flex max-w-[560px] flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs text-ink-muted">分类</span>
+          <Select :model-value="rule.categoryId ?? 'ALL'" @update:model-value="(v: unknown) => (rule.categoryId = v === 'ALL' ? null : (v as number))">
+            <SelectTrigger class="w-[240px] bg-reader">
+              <span>{{ rule.categoryId === null ? '不限' : (categories.find((c) => c.id === rule.categoryId)?.name || '不限') }}</span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">不限</SelectItem>
+              <SelectItem v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <span class="text-xs text-ink-muted">题型</span>
+          <div class="flex gap-4">
+            <label v-for="t in ['SINGLE', 'MULTI', 'JUDGE']" :key="t" class="flex cursor-pointer items-center gap-2 text-sm">
+              <input v-model="rule.types" type="checkbox" :value="t" class="size-4 accent-brand" />
+              {{ { SINGLE: '单选题', MULTI: '多选题', JUDGE: '判断题' }[t as QuestionType] }}
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <span class="text-xs text-ink-muted">难度</span>
+          <div class="flex gap-4">
+            <label v-for="d in ['EASY', 'MEDIUM', 'HARD']" :key="d" class="flex cursor-pointer items-center gap-2 text-sm">
+              <input v-model="rule.difficulties" type="checkbox" :value="d" class="size-4 accent-brand" />
+              {{ { EASY: '简单', MEDIUM: '中等', HARD: '困难' }[d as Difficulty] }}
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="quick-count-inner" class="text-xs text-ink-muted">题量</label>
+          <!-- ⚠️ data-testid 在外层包裹上：08/02 号 spec 以「testid 内找 input」定位（沿用旧约定） -->
+          <div data-testid="quick-count">
+            <Input id="quick-count-inner" v-model.number="rule.count" type="number" min="1" max="200" class="w-28 bg-reader" />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="quick-exclude" class="text-xs text-ink-muted">排除近期</label>
+          <div class="flex items-center gap-3">
+            <Input
+              id="quick-exclude"
+              :model-value="rule.excludeRecentDays ?? ''"
+              type="number"
+              min="0"
+              max="365"
+              class="w-28 bg-reader"
+              @update:model-value="(v: unknown) => (rule.excludeRecentDays = Number(v) || 0)"
+            />
+            <span class="text-xs text-ink-muted">排除最近 N 天已做过的题，0 表示不排除</span>
+          </div>
+        </div>
+
+        <div>
+          <Button :disabled="starting" @click="onStart">开始练习</Button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -42,7 +75,10 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { listCategories } from '@/api/question'
 import { startQuiz } from '@/api/quiz'
-import type { PaperRuleDTO } from '@/types'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
+import type { PaperRuleDTO, QuestionType, Difficulty } from '@/types'
 
 const router = useRouter()
 const categories = ref<any[]>([])
@@ -75,7 +111,3 @@ onMounted(async () => {
   categories.value = await listCategories()
 })
 </script>
-
-<style scoped>
-.hint { margin-left: 12px; color: var(--el-text-color-secondary); font-size: 12px; }
-</style>

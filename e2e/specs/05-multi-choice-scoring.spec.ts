@@ -26,14 +26,14 @@ test('多选题：少选不得分，全选才得分（ADR 0004）', async ({ pag
   // 第 1 题：只选 A（少选一个）→ 判错
   await page.locator('.option').nth(0).locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
-  await expect(page.locator('.el-alert')).toContainText('回答错误')
+  await expect(page.locator('.feedback')).toContainText('回答错误')
 
   // 第 2 题：A + B 全选 → 判对
   await page.getByRole('button', { name: '下一题' }).click()
   await page.locator('.option').nth(0).locator('label').first().click()
   await page.locator('.option').nth(1).locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
-  await expect(page.locator('.el-alert')).toContainText('回答正确')
+  await expect(page.locator('.feedback')).toContainText('回答正确')
 
   await page.getByRole('button', { name: '结束并查看结果' }).click()
   await expect(page).toHaveURL(/\/quiz\/\d+\/result$/)

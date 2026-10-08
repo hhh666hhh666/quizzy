@@ -1,90 +1,102 @@
 <template>
-  <div class="profile">
-    <el-card class="block">
-      <template #header>资料</template>
+  <div class="max-w-[720px] font-sans text-base text-ink">
+    <!-- 资料 -->
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <h1 class="text-base font-medium">资料</h1>
 
-      <div class="avatar-row">
+      <div class="mt-4 flex items-center gap-5">
         <UserAvatar :user="previewUser" :size="80" />
-        <div class="avatar-side">
-          <p class="hint">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs leading-relaxed text-ink-muted">
             没设头像时用按用户 id 生成的方块图，同一个账号每次生成的都是同一张。
             图片会在上传前压到最长边 {{ MAX_EDGE }}px，所以随便选一张原图即可。
           </p>
-          <div class="avatar-buttons">
-            <input ref="fileInput" class="file-input" type="file" accept="image/*" @change="onPickFile" />
-            <el-button :loading="uploading" @click="fileInput?.click()">选择图片</el-button>
-            <el-button :disabled="!avatar" @click="onUseDefaultAvatar">用默认头像</el-button>
+          <div class="mt-3 flex gap-2">
+            <input ref="fileInput" class="hidden" type="file" accept="image/*" @change="onPickFile" />
+            <Button variant="outline" :disabled="uploading" @click="fileInput?.click()">选择图片</Button>
+            <Button variant="outline" :disabled="!avatar" @click="onUseDefaultAvatar">用默认头像</Button>
           </div>
         </div>
       </div>
 
-      <el-form label-width="72px" @submit.prevent>
-        <el-form-item label="昵称">
-          <el-input v-model="nickname" maxlength="32" show-word-limit placeholder="昵称" />
-        </el-form-item>
-        <el-form-item label="登录名">
-          <el-input :model-value="store.user?.username" disabled />
-          <p class="hint">登录名不可修改——它和「以后可能改成邮箱作登录名」这件事绑在一起。</p>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :loading="savingProfile" @click="onSaveProfile">保存资料</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+      <div class="mt-5 flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <label for="profile-nickname" class="text-xs text-ink-muted">昵称</label>
+          <Input id="profile-nickname" v-model="nickname" maxlength="32" placeholder="昵称" class="bg-reader" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="profile-username" class="text-xs text-ink-muted">登录名</label>
+          <Input id="profile-username" :model-value="store.user?.username" disabled class="bg-surface-2" />
+          <p class="text-xs leading-relaxed text-ink-muted">
+            登录名不可修改——它和「以后可能改成邮箱作登录名」这件事绑在一起。
+          </p>
+        </div>
+        <div>
+          <Button :disabled="savingProfile" @click="onSaveProfile">保存资料</Button>
+        </div>
+      </div>
+    </div>
 
-    <el-card class="block">
-      <template #header>安全</template>
+    <!-- 安全 -->
+    <div class="mt-4 rounded-xl bg-surface p-6 shadow-sm">
+      <h1 class="text-base font-medium">安全</h1>
 
-      <el-form label-width="72px" @submit.prevent>
-        <el-form-item label="原密码">
-          <el-input
+      <div class="mt-4 flex max-w-[460px] flex-col gap-4">
+        <div class="flex flex-col gap-1">
+          <label for="pw-old" class="text-xs text-ink-muted">原密码</label>
+          <Input
+            id="pw-old"
             v-model="passwordForm.oldPassword"
             type="password"
-            show-password
             autocomplete="current-password"
+            class="bg-reader"
           />
-        </el-form-item>
-        <el-form-item label="新密码">
-          <el-input
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="pw-new" class="text-xs text-ink-muted">新密码</label>
+          <Input
+            id="pw-new"
             v-model="passwordForm.newPassword"
             type="password"
-            show-password
             autocomplete="new-password"
             placeholder="6-64 位"
+            class="bg-reader"
           />
-        </el-form-item>
-        <el-form-item label="确认新密码">
-          <el-input
+        </div>
+        <div class="flex flex-col gap-1">
+          <label for="pw-confirm" class="text-xs text-ink-muted">确认新密码</label>
+          <Input
+            id="pw-confirm"
             v-model="passwordForm.confirmPassword"
             type="password"
-            show-password
             autocomplete="new-password"
+            class="bg-reader"
           />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :loading="changingPassword" @click="onChangePassword">修改密码</el-button>
-          <span class="hint">改完密码，其他设备会被要求重新登录，这台设备不受影响。</span>
-        </el-form-item>
-      </el-form>
-
-      <el-divider />
-
-      <div class="action-row">
-        <div>
-          <div class="action-title">退出所有设备</div>
-          <p class="hint">包括这一台。用于「怀疑有别的设备拿着登录凭据」时。</p>
         </div>
-        <el-button @click="onLogoutAll">退出所有设备</el-button>
+        <div class="flex items-center gap-3">
+          <Button :disabled="changingPassword" @click="onChangePassword">修改密码</Button>
+          <span class="text-xs text-ink-muted">改完密码，其他设备会被要求重新登录，这台设备不受影响。</span>
+        </div>
       </div>
 
-      <div class="action-row">
+      <div class="my-5 border-t border-line-soft" />
+
+      <div class="flex items-center justify-between gap-4">
         <div>
-          <div class="action-title danger">注销账号</div>
-          <p class="hint">永久删除账号、全部题目、试卷与作答记录，且不可恢复。</p>
+          <div class="text-sm font-medium">退出所有设备</div>
+          <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">包括这一台。用于「怀疑有别的设备拿着登录凭据」时。</p>
         </div>
-        <el-button type="danger" @click="onDeleteAccount">注销账号</el-button>
+        <Button variant="outline" @click="onLogoutAll">退出所有设备</Button>
       </div>
-    </el-card>
+
+      <div class="mt-4 flex items-center justify-between gap-4 border-t border-line-soft pt-4">
+        <div>
+          <div class="text-sm font-medium text-ink-red">注销账号</div>
+          <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">永久删除账号、全部题目、试卷与作答记录，且不可恢复。</p>
+        </div>
+        <Button variant="destructive" :disabled="deleting" @click="onDeleteAccount">注销账号</Button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -93,6 +105,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import UserAvatar from '@/components/UserAvatar.vue'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { changePassword, deleteAccount, logoutAllDevices, updateProfile } from '@/api/auth'
 import { useUserStore } from '@/stores/user'
 import { toAvatarDataUrl } from '@/utils/avatar'
@@ -254,66 +268,3 @@ async function onDeleteAccount() {
   }
 }
 </script>
-
-<style scoped>
-.profile {
-  max-width: 720px;
-}
-
-.block + .block {
-  margin-top: 16px;
-}
-
-.avatar-row {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.avatar-side {
-  flex: 1;
-  min-width: 0;
-}
-
-.avatar-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.file-input {
-  display: none;
-}
-
-.hint {
-  margin: 4px 0 0;
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--el-text-color-secondary);
-}
-
-.avatar-side .hint {
-  margin-top: 0;
-}
-
-.action-row {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.action-row + .action-row {
-  margin-top: 16px;
-}
-
-.action-title {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.action-title.danger {
-  color: var(--el-color-danger);
-}
-</style>

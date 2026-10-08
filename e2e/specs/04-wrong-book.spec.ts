@@ -23,7 +23,7 @@ test('错题本：答错进本，手动移出后消失', async ({ page }) => {
   // 故意选第二个选项（B），必定判错
   await page.locator('.option').nth(1).locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
-  await expect(page.locator('.el-alert')).toContainText('回答错误')
+  await expect(page.locator('.feedback')).toContainText('回答错误')
 
   await page.getByRole('button', { name: '结束并查看结果' }).click()
   await expect(page).toHaveURL(/\/quiz\/\d+\/result$/)

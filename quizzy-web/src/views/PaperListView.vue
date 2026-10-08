@@ -1,37 +1,57 @@
 <template>
-  <el-card>
-    <div class="toolbar">
-      <el-button type="primary" @click="onCreate">新建试卷</el-button>
+  <div class="font-sans text-base text-ink">
+    <div class="rounded-xl bg-surface p-6 shadow-sm">
+      <Button @click="onCreate">新建试卷</Button>
+
+      <div class="mt-4 overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+              <th class="px-3 py-2.5 font-medium">ID</th>
+              <th class="px-3 py-2.5 font-medium">标题</th>
+              <th class="px-3 py-2.5 font-medium">模式</th>
+              <th class="px-3 py-2.5 font-medium">题量</th>
+              <th class="px-3 py-2.5 font-medium">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in rows" :key="row.id" class="paper-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
+              <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+              <td class="max-w-0 px-3 py-2.5">
+                <span class="block truncate" :title="row.title">{{ row.title }}</span>
+              </td>
+              <td class="whitespace-nowrap px-3 py-2.5">{{ row.mode === 'FIXED' ? '固定卷' : '规则卷' }}</td>
+              <td class="px-3 py-2.5">{{ row.questionCount }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5">
+                <!-- 空卷不能发起作答：置灰 + 悬浮说明（title 即可，这是一句话的事） -->
+                <span :title="isEmptyPaper(row) ? '这张试卷还没有题目' : undefined">
+                  <button
+                    type="button"
+                    class="text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                    :disabled="isEmptyPaper(row)"
+                    @click="onStart(row.id)"
+                  >
+                    开始作答
+                  </button>
+                </span>
+                <button type="button" class="ml-3 text-ink hover:underline" @click="onEdit(row)">编辑</button>
+                <button type="button" class="ml-3 text-danger hover:underline" @click="onDelete(row)">删除</button>
+              </td>
+            </tr>
+            <tr v-if="!rows.length">
+              <td colspan="5" class="px-4 py-8 text-center text-sm leading-loose text-ink-muted">
+                还没有试卷。点「新建试卷」组一张固定卷或规则卷。
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; load() }" />
     </div>
-    <el-table :data="rows" v-loading="loading" border>
-      <el-table-column prop="id" label="ID" width="70" />
-      <el-table-column prop="title" label="标题" min-width="200" />
-      <el-table-column label="模式" width="90">
-        <template #default="{ row }">{{ row.mode === 'FIXED' ? '固定卷' : '规则卷' }}</template>
-      </el-table-column>
-      <el-table-column prop="questionCount" label="题量" width="80" />
-      <el-table-column label="操作" width="210">
-        <template #default="{ row }">
-          <el-tooltip :disabled="!isEmptyPaper(row)" content="这张试卷还没有题目" placement="top">
-            <span>
-              <el-button link type="primary" :disabled="isEmptyPaper(row)" @click="onStart(row.id)">开始作答</el-button>
-            </span>
-          </el-tooltip>
-          <el-button link @click="onEdit(row)">编辑</el-button>
-          <el-button link type="danger" @click="onDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      class="pagination"
-      layout="total, prev, pager, next"
-      :total="total"
-      v-model:current-page="page"
-      v-model:page-size="size"
-      @change="load"
-    />
+
     <PaperEditDialog v-model:visible="editVisible" :paper-id="editingId" @saved="load" />
-  </el-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -40,6 +60,8 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deletePaper, pagePapers } from '@/api/paper'
 import { startQuiz } from '@/api/quiz'
+import { Button } from '@/components/ui/button'
+import TablePagination from '@/components/TablePagination.vue'
 import PaperEditDialog from './PaperEditDialog.vue'
 import type { PaperVO } from '@/types'
 
@@ -95,8 +117,3 @@ async function onDelete(row: PaperVO) {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.toolbar { margin-bottom: 12px; }
-.pagination { margin-top: 12px; justify-content: flex-end; }
-</style>
