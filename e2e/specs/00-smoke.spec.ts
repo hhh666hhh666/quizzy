@@ -30,11 +30,11 @@ test('冒烟：注册一个新账号，登录态能撑过刷新', async ({ page 
 
   // 注册成功 → 跳到题库页，并出现侧边栏。
   await expect(page).toHaveURL(/\/questions$/)
-  await expect(page.getByRole('menuitem', { name: '题库' })).toBeVisible()
+  await expect(page.getByRole('link', { name: '题库' })).toBeVisible()
 
   // 刷新一次：这一步才真正验证了「token 落 localStorage + 后端能凭 token 认出人」，
   // 而不只是「前端内存里的状态看着对」。
   await page.reload()
   await expect(page).toHaveURL(/\/questions$/)
-  await expect(page.getByRole('menuitem', { name: '题库' })).toBeVisible()
+  await expect(page.getByRole('link', { name: '题库' })).toBeVisible()
 })

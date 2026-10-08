@@ -26,10 +26,10 @@ test.describe('排版 · 几何事实', () => {
       await registerNewUser(page)
       for (const path of PAGES_WITH_LAYOUT) {
         await page.goto(path)
-        await expect(page.locator('.el-main')).toBeVisible()
-        await expectNoHorizontalOverflow(page, '.el-main')
+        await expect(page.locator('.app-main')).toBeVisible()
+        await expectNoHorizontalOverflow(page, '.app-main')
         // 侧边菜单是固定的几条，同样没有理由被裁掉
-        await expectNotClipped(page, '.el-aside')
+        await expectNotClipped(page, '.app-aside')
       }
     })
   }

@@ -47,7 +47,7 @@ export async function registerNewUser(page: Page): Promise<string> {
  *       {@link expectNotClipped} 显式点名元素——「哪些容器允许滚动」只有人知道，机器猜不出来。
  * </ul>
  */
-export async function expectNoHorizontalOverflow(page: Page, containerSelector = '.el-main'): Promise<void> {
+export async function expectNoHorizontalOverflow(page: Page, containerSelector = '.app-main'): Promise<void> {
   const doc = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth

@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lucide/vue": "^1.52.0",
+    "@lucide/vue": "^1.53.0",
     "@vueuse/core": "^15.0.0",
     "axios": "^1.8.0",
     "class-variance-authority": "^0.7.1",

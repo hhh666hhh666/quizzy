@@ -1,52 +1,67 @@
 <template>
-  <el-container class="layout">
-    <el-aside width="200px" class="aside">
-      <div class="logo">Quizzy</div>
-      <el-menu :default-active="active" router>
-        <el-menu-item index="/questions">题库</el-menu-item>
-        <el-menu-item index="/papers">试卷</el-menu-item>
-        <el-menu-item index="/quiz/quick">快速练习</el-menu-item>
-        <el-menu-item index="/wrong-book">错题本</el-menu-item>
-        <el-menu-item index="/favorites">收藏夹</el-menu-item>
-        <el-menu-item index="/history">答题记录</el-menu-item>
-      </el-menu>
-    </el-aside>
-    <el-container>
-      <el-header class="header">
-        <span class="title">{{ route.meta.title || '' }}</span>
-        <div class="user-area">
-          <el-dropdown trigger="click" @command="onUserCommand">
-            <span class="user-trigger">
-              <UserAvatar :user="store.user" :size="28" />
-              <span>{{ store.user?.nickname || '未登录' }}</span>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="profile">我的账户</el-dropdown-item>
-                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-dropdown trigger="click" @command="onTheme">
-            <el-button link type="primary">外观：{{ modeLabel }}</el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item v-for="opt in THEME_OPTIONS" :key="opt.value" :command="opt.value">
-                  {{ themeStore.mode === opt.value ? '✓ ' : '' }}{{ opt.label }}
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-button link type="primary" @click="aboutVisible = true">关于</el-button>
+  <div class="flex h-full">
+    <!-- 侧栏：实心有色面（surface-2）。⚠️ 它后面没有可透的内容，按「两层语言」的规矩②不用玻璃 -->
+    <aside class="app-aside flex w-[200px] shrink-0 flex-col border-r border-line bg-surface-2 font-sans text-base text-ink">
+      <div class="px-5 pb-2 pt-5 text-xl font-semibold tracking-tight text-brand">quizzy</div>
+      <nav class="flex flex-col gap-1 px-3 py-2">
+        <RouterLink
+          v-for="item in NAV_ITEMS"
+          :key="item.to"
+          :to="item.to"
+          class="rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus"
+          :class="isActive(item.to) ? 'bg-brand-soft font-medium text-ink' : 'text-ink hover:bg-surface'"
+        >
+          {{ item.label }}
+        </RouterLink>
+      </nav>
+    </aside>
+
+    <!-- 右列：主内容从顶栏下面穿过——顶栏的玻璃才有东西可透 -->
+    <div class="relative h-full min-w-0 flex-1">
+      <main class="app-main absolute inset-0 overflow-y-auto pt-14">
+        <div class="p-5">
+          <router-view />
         </div>
-      </el-header>
-      <el-main>
-        <router-view />
-      </el-main>
-    </el-container>
+      </main>
+
+      <header class="app-header glass-bar absolute inset-x-0 top-0 z-10 flex h-14 items-center justify-between border-b px-4 font-sans text-base text-ink">
+        <span class="text-sm font-medium">{{ route.meta.title || '' }}</span>
+        <div class="flex items-center gap-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <button
+                type="button"
+                class="flex items-center gap-2 rounded-md px-2 py-1 outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <UserAvatar :user="store.user" :size="28" />
+                <span>{{ store.user?.nickname || '未登录' }}</span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" class="w-40">
+              <DropdownMenuItem @click="router.push('/profile')">我的账户</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem class="text-danger" @click="onLogout">退出登录</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="link">外观：{{ modeLabel }}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem v-for="opt in THEME_OPTIONS" :key="opt.value" @click="onTheme(opt.value)">
+                {{ themeStore.mode === opt.value ? '✓ ' : '' }}{{ opt.label }}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button variant="link" @click="aboutVisible = true">关于</Button>
+        </div>
+      </header>
+    </div>
 
     <AboutDialog v-model:visible="aboutVisible" />
-  </el-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -56,6 +71,14 @@ import { useUserStore } from '@/stores/user'
 import { useThemeStore, type ThemeMode } from '@/stores/theme'
 import UserAvatar from '@/components/UserAvatar.vue'
 import AboutDialog from '@/views/AboutDialog.vue'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 const route = useRoute()
 const router = useRouter()
@@ -63,6 +86,20 @@ const store = useUserStore()
 const themeStore = useThemeStore()
 
 const aboutVisible = ref(false)
+
+const NAV_ITEMS: { to: string; label: string }[] = [
+  { to: '/questions', label: '题库' },
+  { to: '/papers', label: '试卷' },
+  { to: '/quiz/quick', label: '快速练习' },
+  { to: '/wrong-book', label: '错题本' },
+  { to: '/favorites', label: '收藏夹' },
+  { to: '/history', label: '答题记录' }
+]
+
+/** 侧栏高亮：当前路径等于该项、或在其子路径下（/quiz/quick 精确匹配；/questions 含子页）。 */
+function isActive(to: string) {
+  return route.path === to || route.path.startsWith(to + '/')
+}
 
 // 顶栏常驻，所以外观切换放在这里（登录页没有顶栏，只能跟随已存的偏好）
 const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
@@ -79,8 +116,6 @@ function onTheme(command: ThemeMode) {
   themeStore.setMode(command)
 }
 
-const active = computed(() => '/' + (route.path.split('/')[1] || 'questions'))
-
 onMounted(() => {
   if (!store.user) store.loadUser()
 })
@@ -89,25 +124,4 @@ function onLogout() {
   store.logout()
   router.push('/login')
 }
-
-/** 顶栏用户区的下拉：资料入口与登出都收在这儿，避免顶栏平铺太多按钮。 */
-function onUserCommand(command: string) {
-  if (command === 'profile') {
-    router.push('/profile')
-    return
-  }
-  if (command === 'logout') {
-    onLogout()
-  }
-}
 </script>
-
-<style scoped>
-.layout { height: 100%; }
-.aside { background: var(--el-bg-color); border-right: 1px solid var(--el-border-color-lighter); }
-.logo { padding: 18px 20px; font-size: 20px; font-weight: 600; color: var(--el-color-primary); }
-.header { display: flex; align-items: center; justify-content: space-between; background: var(--el-bg-color); border-bottom: 1px solid var(--el-border-color-lighter); }
-.title { font-size: 16px; font-weight: 500; }
-.user-area { display: flex; align-items: center; gap: 12px; }
-.user-trigger { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; outline: none; }
-</style>
