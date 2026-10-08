@@ -127,9 +127,9 @@ function isActive(to: string) {
   return route.path === to || route.path.startsWith(to + '/')
 }
 
-/** 导航图标的颜色：收藏夹的星标恒为琥珀（参考样式）；其余随选中态走深蓝 / 灰。 */
+/** 导航图标的颜色：收藏夹的星标恒为琥珀 #F59E0B（主人指定色，token --color-amber）；其余随选中态走深蓝 / 灰。 */
 function navIconClass(item: { accent?: boolean }, active: boolean) {
-  if (item.accent) return 'fill-warn text-warn'
+  if (item.accent) return 'fill-amber text-amber'
   return active ? 'text-ink-blue' : 'text-ink-muted'
 }
 

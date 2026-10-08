@@ -190,7 +190,8 @@ function notifyUnfavorited(removedFolderIds: number[]) {
 
 .favorite-star:hover,
 .favorite-star.is-favorited {
-  color: var(--el-color-warning);
+  /* 收藏星标的颜色（主人 2026-10-08 指定）：金黄 --color-star，不再是 EP warning */
+  color: var(--color-star);
 }
 
 .favorite-star.is-holding {

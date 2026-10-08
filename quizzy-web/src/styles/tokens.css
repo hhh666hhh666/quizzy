@@ -95,6 +95,12 @@
   --color-ink-amber:   oklch(46% 0.12 75);
   --color-ink-red:     oklch(46% 0.16 25);
 
+  /* ── 收藏两枚（主人 2026-10-08 指定色，非主题派生）──────────────────────
+     用途：favorite-star 星标 + 侧栏「收藏夹」导航图标。都是身份色（"收藏"这件事的色），
+     与主题语义色（warn/danger 等）无关，别拿它们互相替换。 */
+  --color-star:  #EAC54F; /* 收藏星标（favorite-star 的 hover / 已收藏态） */
+  --color-amber: #F59E0B; /* 侧栏「收藏夹」图标 */
+
   /* ── 形状：宽松感的一部分——圆角整体比第一版大一档 ── */
   --radius-xs: 5px;
   --radius-sm: 8px;
