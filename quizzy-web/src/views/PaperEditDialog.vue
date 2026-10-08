@@ -129,11 +129,17 @@
         </template>
       </div>
 
-      <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
-        <Button variant="outline" @click="emit('update:visible', false)">取消</Button>
-        <Button :disabled="saving" @click="onSave">保存</Button>
-      </div>
-    </DialogContent>
+        <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+          <Button variant="outline" @click="emit('update:visible', false)">取消</Button>
+          <Button :disabled="saving" @click="onSave">保存</Button>
+        </div>
+
+        <!-- 内联新建：保存后自动加进当前卷，不必先跳去题库建完再回来选。
+             ⚠️ 必须留在 DialogContent 子树内：reka 的焦点陷阱会把「逃出焦点域」的输入框
+             焦点夺回（fill/type 全部落空）——EP 对话框渲染在这棵子树里才拿得到焦点。
+             （el-overlay 是 fixed + z-index 2002，视觉与点击仍在 reka 层之上。） -->
+        <QuestionEditDialog v-model:visible="createQuestionVisible" :question-id="null" @saved="onQuestionCreated" />
+      </DialogContent>
 
     <!-- ── 选题器（嵌套对话框）───────────────────────────────────────────── -->
     <Dialog :open="selectorVisible" @update:open="(v: boolean) => (selectorVisible = v)">
@@ -264,9 +270,6 @@
         </div>
       </DialogContent>
     </Dialog>
-
-    <!-- 内联新建：保存后自动加进当前卷，不必先跳去题库建完再回来选 -->
-    <QuestionEditDialog v-model:visible="createQuestionVisible" :question-id="null" @saved="onQuestionCreated" />
   </Dialog>
 </template>
 
