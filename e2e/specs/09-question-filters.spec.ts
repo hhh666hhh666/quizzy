@@ -117,15 +117,15 @@ async function createQuestionInCategory(page: Page, stem: string, category: stri
   const dialog = page.getByRole('dialog', { name: '新建题目' })
   await expect(dialog).toBeVisible()
 
-  await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)
+  await dialog.getByLabel('题干').fill(stem)
   const rows = dialog.locator('.option-row')
-  await rows.nth(0).locator('.el-input__inner').fill('甲')
-  await rows.nth(1).locator('.el-input__inner').fill('乙')
-  await rows.nth(0).locator('.el-radio').click()
+  await rows.nth(0).getByRole('textbox').fill('甲')
+  await rows.nth(1).getByRole('textbox').fill('乙')
+  await rows.nth(0).getByRole('radio').click()
 
-  const select = dialog.locator('.el-form-item', { hasText: '分类' }).locator('.el-select')
+  const select = dialog.getByLabel('分类')
   await select.click()
-  await select.locator('input').fill(category)
+  await select.fill(category)
   await page.keyboard.press('Enter')
 
   await dialog.getByRole('button', { name: '保存' }).click()

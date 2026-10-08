@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { toast } from '@/lib/toast'
 import { listCategories } from '@/api/question'
 import { startQuiz } from '@/api/quiz'
 import { Button } from '@/components/ui/button'
@@ -101,7 +101,7 @@ async function onStart() {
     const sessionId = await startQuiz({ sourceType: 'QUICK', rule })
     router.push(`/quiz/${sessionId}`)
   } catch (e: any) {
-    ElMessage.error(e.message || '没有符合要求的题目')
+    toast.error(e.message || '没有符合要求的题目')
   } finally {
     starting.value = false
   }

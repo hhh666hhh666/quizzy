@@ -21,8 +21,8 @@ test('核心链路：快速练习 → 答题 → 结算 → 结果页', async ({
 
   await expect(page).toHaveURL(/\/quiz\/\d+$/)
 
-  // 选第一个选项：单选/判断渲染成 el-radio、多选渲染成 el-checkbox，
-  // 两者外层都是 `<label class="el-radio|el-checkbox">`，点 label 对两种都成立。
+  // 选第一个选项：单选/判断是原生 radio、多选是原生 checkbox，
+  // 两者外层都是 `<label>`，点 label 对两种都成立。
   await page.locator('.option').first().locator('label').first().click()
   await page.getByRole('button', { name: '提交本题' }).click()
 

@@ -46,8 +46,8 @@ const rendered = computed(() => md.render(props.source || ''))
 
 <style scoped>
 .markdown-body { line-height: 1.7; word-break: break-word; }
-.markdown-body :deep(code) { background: var(--el-fill-color-light); padding: 2px 4px; border-radius: 3px; font-size: 13px; }
-.markdown-body :deep(pre) { background: var(--el-fill-color-light); padding: 12px; border-radius: 6px; overflow-x: auto; }
+.markdown-body :deep(code) { background: var(--color-surface-2); padding: 2px 4px; border-radius: 3px; font-size: 13px; }
+.markdown-body :deep(pre) { background: var(--color-surface-2); padding: 12px; border-radius: 6px; overflow-x: auto; }
 .markdown-body :deep(p) { margin: 6px 0; }
 </style>
 

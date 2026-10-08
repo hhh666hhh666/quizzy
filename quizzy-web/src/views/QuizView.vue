@@ -97,7 +97,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
 import TypeTag from '@/components/TypeTag.vue'
 import { Button } from '@/components/ui/button'
@@ -172,7 +173,7 @@ async function onSubmit() {
   if (!question) return
   const answer = question.type === 'MULTI' ? picked.value : pickedRadio.value ? [pickedRadio.value] : []
   if (!answer.length) {
-    ElMessage.warning('请先选择答案')
+    toast.warning('请先选择答案')
     return
   }
   submitting.value = true
@@ -198,7 +199,8 @@ async function onFinish() {
 }
 
 async function onAbandon() {
-  await ElMessageBox.confirm('放弃后本次答题不会再出现在未完成列表，确认放弃？', '提示', { type: 'warning' })
+  const ok = await confirmBox({ title: '提示', message: '放弃后本次答题不会再出现在未完成列表，确认放弃？', confirmText: '放弃', danger: true })
+  if (!ok) return
   await abandonSession(sessionId)
   router.push('/history')
 }

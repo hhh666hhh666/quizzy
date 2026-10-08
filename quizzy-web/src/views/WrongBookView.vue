@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { toast } from '@/lib/toast'
 import { pageWrongBook, practiceWrongBook, removeFromWrongBook } from '@/api/quiz'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -92,7 +92,7 @@ async function onPractice() {
     const sessionId = await practiceWrongBook(count.value)
     router.push(`/quiz/${sessionId}`)
   } catch (e: any) {
-    ElMessage.error(e.message || '错题本暂时是空的')
+    toast.error(e.message || '错题本暂时是空的')
   } finally {
     starting.value = false
   }
@@ -100,7 +100,7 @@ async function onPractice() {
 
 async function onRemove(row: any) {
   await removeFromWrongBook(row.id)
-  ElMessage.success('已移出错题本')
+  toast.success('已移出错题本')
   load()
 }
 

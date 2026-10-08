@@ -108,7 +108,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -155,27 +155,27 @@ function onDrop(event: DragEvent) {
 async function onImport() {
   const title = createPaper.value ? paperTitle.value.trim() : undefined
   if (createPaper.value && !title) {
-    ElMessage.warning('请填写试卷标题')
+    toast.warning('请填写试卷标题')
     return
   }
   loading.value = true
   try {
     if (tab.value === 'excel') {
       if (!file.value) {
-        ElMessage.warning('请先选择文件')
+        toast.warning('请先选择文件')
         return
       }
       result.value = await importExcel(file.value, title)
     } else {
       if (!jsonText.value.trim()) {
-        ElMessage.warning('请填写 JSON 内容')
+        toast.warning('请填写 JSON 内容')
         return
       }
       result.value = await importJson(JSON.parse(jsonText.value), title)
     }
     emit('done')
   } catch (e: any) {
-    ElMessage.error('导入失败：' + (e.message || '内容格式不正确'))
+    toast.error('导入失败：' + (e.message || '内容格式不正确'))
   } finally {
     loading.value = false
   }

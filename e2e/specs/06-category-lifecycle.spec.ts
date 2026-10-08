@@ -24,16 +24,16 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   await page.getByRole('button', { name: '新建题目' }).click()
 
   const dialog = page.getByRole('dialog', { name: '新建题目' })
-  await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)
+  await dialog.getByLabel('题干').fill(stem)
   const optionRows = dialog.locator('.option-row')
-  await optionRows.nth(0).locator('.el-input__inner').fill('正确答案在这')
-  await optionRows.nth(1).locator('.el-input__inner').fill('干扰项')
-  await optionRows.nth(0).locator('.el-radio').click()
+  await optionRows.nth(0).getByRole('textbox').fill('正确答案在这')
+  await optionRows.nth(1).getByRole('textbox').fill('干扰项')
+  await optionRows.nth(0).getByRole('radio').click()
 
   // allow-create：直接输入一个新名字，回车即选中（不需要先有这个分类）
-  const categorySelect = dialog.locator('.el-form-item', { hasText: '分类' }).locator('.el-select')
+  const categorySelect = dialog.getByLabel('分类')
   await categorySelect.click()
-  await categorySelect.locator('input').fill(categoryName)
+  await categorySelect.fill(categoryName)
   await page.keyboard.press('Enter')
 
   await dialog.getByRole('button', { name: '保存' }).click()
@@ -42,39 +42,36 @@ test('分类随题目诞生：输入新名字即建出，删掉唯一的题后�
   // **诞生的证据**：再打开对话框，分类下拉里能看到这个新名字
   await expect(questionRow(page, stem)).toHaveCount(1)
   await openCategoryDropdown(page)
-  await expect(page.locator('.el-select-dropdown:visible')).toContainText(categoryName)
+  await expect(page.locator('.create-select-panel:visible')).toContainText(categoryName)
   await closeDialog(page)
 
   // ---------- 2. 删掉唯一引用它的那道题 ----------
   await questionRow(page, stem)
     .getByRole('button', { name: '删除' })
     .click()
-  // ⚠️ 不能按文案「确定」找按钮：Element Plus 会在两个中文字之间**自动插入空格**（渲染成「确 定」），
-  //   所以按名字匹配不到。直接点确认框的主按钮——不受这个排版行为影响。
-  await page.locator('.el-message-box__btns .el-button--primary').click()
+  // 自建确认框：按标题找到它，再点「删除」
+  await page.getByRole('dialog', { name: '提示' }).getByRole('button', { name: '删除' }).click()
   await expect(questionRow(page, stem)).toHaveCount(0)
 
   // **自动回收的证据**：没有人引用它了，下拉里不该再有
   await openCategoryDropdown(page)
-  await expect(page.locator('.el-select-dropdown:visible')).not.toContainText(categoryName)
+  await expect(page.locator('.create-select-panel:visible')).not.toContainText(categoryName)
 })
 
 /** 打开「新建题目」对话框里的分类下拉。 */
 async function openCategoryDropdown(page: import('@playwright/test').Page) {
   await page.getByRole('button', { name: '新建题目' }).click()
   const dialog = page.getByRole('dialog', { name: '新建题目' })
-  await dialog.locator('.el-form-item', { hasText: '分类' }).locator('.el-select').click()
+  await dialog.getByLabel('分类').click()
 }
 
 /**
  * 关掉当前打开的对话框。
  *
- * ⚠️ 不能只靠 Esc 连按两下：第一下关掉了分类下拉，但焦点还留在 EP 的 `el-select__input` 上，
- * 而 EP 对 Esc 做了 `preventDefault`——reka 弹窗的关闭逻辑见到「已被处理过的 Esc」就不关
- * （2026-10-08 在 CI 上实测到的）。所以先 Esc 收下拉，再点「取消」——确定性最高。
+ * 直接点「取消」——面板（分类下拉）会在 mousedown 的外点判断里自行收起，比和键盘事件较劲稳得多
+ * （历史上被 EP 的 Esc `preventDefault` 坑过一次）。
  */
 async function closeDialog(page: import('@playwright/test').Page) {
-  await page.keyboard.press('Escape')
   const dialog = page.getByRole('dialog', { name: '新建题目' })
   await dialog.getByRole('button', { name: '取消' }).click()
   await expect(dialog).toBeHidden()

@@ -63,7 +63,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { promptBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -159,16 +160,16 @@ async function onConfirm() {
     if (props.mode === 'add') {
       const ids = props.questionIds ?? []
       if (!checked.value.length) {
-        ElMessage.warning('请先勾一个收藏夹')
+        toast.warning('请先勾一个收藏夹')
         return
       }
       for (const folderId of checked.value) {
         await addQuestionsToFolder(folderId, ids)
       }
-      ElMessage.success(`已把 ${ids.length} 道题加入 ${checked.value.length} 个收藏夹`)
+      toast.success(`已把 ${ids.length} 道题加入 ${checked.value.length} 个收藏夹`)
     } else if (props.questionId != null) {
       await setQuestionFolders(props.questionId, checked.value)
-      ElMessage.success(checked.value.length ? '已改好所属收藏夹' : '已留在默认收藏夹')
+      toast.success(checked.value.length ? '已改好所属收藏夹' : '已留在默认收藏夹')
     }
     emit('update:visible', false)
     emit('saved')
@@ -181,18 +182,16 @@ async function onConfirm() {
 
 /** 面板里顺手建一个夹——「想归类时才发现没有合适的夹」正是最常发生的一刻。 */
 async function onCreateQuick() {
-  try {
-    const { value } = await ElMessageBox.prompt('给新收藏夹起个名字', '新建收藏夹', {
-      confirmButtonText: '新建',
-      cancelButtonText: '取消',
-      inputPlaceholder: '最多 20 个字',
-      inputValidator: (input: string) => (input && input.trim() ? true : '名字不能为空')
-    })
-    const folder = await createFolder(value.trim())
-    folders.value = [...folders.value, folder]
-    checked.value = [...checked.value, folder.id]
-  } catch {
-    // 取消或失败都不影响面板
-  }
+  const name = await promptBox({
+    title: '新建收藏夹',
+    message: '给新收藏夹起个名字',
+    confirmText: '新建',
+    placeholder: '最多 20 个字',
+    validator: (v) => (v.trim() ? true : '名字不能为空')
+  })
+  if (name === null) return
+  const folder = await createFolder(name)
+  folders.value = [...folders.value, folder]
+  checked.value = [...checked.value, folder.id]
 }
 </script>

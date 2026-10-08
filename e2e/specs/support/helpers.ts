@@ -105,13 +105,11 @@ export async function createQuestion(
   await expect(dialog).toBeVisible()
 
   // 默认题型就是单选，只在不是单选时才点——顺带把「默认值能用」当成隐性断言。
-  // ⚠️ el-radio-button 的 <input> 拿不到可访问名（用 getByRole('radio') 定不到），
-  //    直接点它外面那层 label，与「点选项 label」的做法一致。
   if (type !== 'SINGLE') {
-    await dialog.locator('.el-radio-button', { hasText: type === 'MULTI' ? '多选题' : '判断题' }).click()
+    await dialog.getByRole('button', { name: type === 'MULTI' ? '多选题' : '判断题' }).click()
   }
 
-  await dialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(opts.stem)
+  await dialog.getByLabel('题干').fill(opts.stem)
 
   // 对话框默认只给两个选项，不够就点「+ 增加选项」
   const rows = dialog.locator('.option-row')
@@ -119,16 +117,16 @@ export async function createQuestion(
     await dialog.getByRole('button', { name: '+ 增加选项' }).click()
   }
   for (let i = 0; i < opts.options.length; i++) {
-    await rows.nth(i).locator('.el-input__inner').fill(opts.options[i])
+    await rows.nth(i).getByRole('textbox').fill(opts.options[i])
   }
 
-  // 标记正确项：单选/判断渲染成 el-radio，多选渲染成 el-checkbox
-  const marker = type === 'MULTI' ? '.el-checkbox' : '.el-radio'
+  // 标记正确项：单选/判断是原生 radio，多选是原生 checkbox
+  const marker: 'checkbox' | 'radio' = type === 'MULTI' ? 'checkbox' : 'radio'
   const rowCount = await rows.count()
   for (let i = 0; i < rowCount; i++) {
     const letter = (await rows.nth(i).locator('.label').innerText()).trim()
     if (opts.correct.includes(letter)) {
-      await rows.nth(i).locator(marker).click()
+      await rows.nth(i).getByRole(marker).click()
     }
   }
 
@@ -168,16 +166,16 @@ export async function createFixedPaper(page: Page, title: string, pickStems: str
 /**
  * 断言「最近一条」消息提示，取 `.last()`。
  *
- * <p>⚠️ 这个 `.last()` 不是洁癖，是**必需**：`el-message` 是**堆叠**的——上一步的提示
+ * <p>⚠️ 这个 `.last()` 不是洁癖，是**必需**：`toast` 是**堆叠**的——上一步的提示
  * 3 秒后才消失；而 Playwright 的 `toContainText` 在定位到**多个元素**时是**严格模式报错**
  * （不是「任一匹配」）。2026-10-06 就栽在这上面：选题器「加入试卷」多了一条成功提示，
  * 于是 `createFixedPaper` 里那句「点保存后断言保存成功」撞上两条堆叠消息，
  * **4 条本来无关的用例一起红了**。
  *
- * <p>所以**所有**消息断言都走这个函数，别再手写 `.locator('.el-message--x')`。
+ * <p>所以**所有**消息断言都走这个函数，别再手写 `.locator('.toast--x')`。
  */
 export function lastMessage(page: Page, type: 'success' | 'info' | 'warning' | 'error') {
-  return page.locator(`.el-message--${type}`).last()
+  return page.locator(`.toast--${type}`).last()
 }
 
 /** 从试卷列表里找到这张卷，点「开始作答」，并等到答题页。 */

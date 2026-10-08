@@ -1,67 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   主应用的样式入口（2026-10-08 起）
+   主应用的样式入口
 
-   ⚠️ **过渡期契约**：只引 theme + utilities，**不引 preflight、不引 base.css**——
-   Element Plus 还没退场，preflight 的全局重置（margin/padding/box-sizing）
-   会打乱未迁移页面的既有样式。
+   **Element Plus 已于 2026-10-08 退场**——「过渡期契约」（只引 theme + utilities、
+   不引 preflight）到此结束，本文件换成完整引入，与 preview.css 同构：
+   preflight 的全局重置（margin / padding / box-sizing / 表单控件继承字体…）
+   不再有未迁移页面可打乱，那些过渡期的补丁（控件重置、EP 浮层指针事件恢复）
+   也随 Element Plus 一起删除。
 
-   摘完 Element Plus（ADR 0031 的迁移里程碑）之后，本文件换成：
-       @import "tailwindcss";
-       @import "tw-animate-css";
-       @import "./tokens.css";
-       @import "./base.css";
-   即可（与 preview.css 同构），那时 preflight 的收益才开始兑现。
+   改这块之前先看 docs/adr/0031 的迁移里程碑。
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@layer theme, base, components, utilities;
-
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
-
-/* shadcn 组件的进/出场动画工具类（纯 CSS，很小）。shadcn-vue 的组件依赖它。 */
+@import "tailwindcss";
 @import "tw-animate-css";
-
-/* 我们的 token（唯一真相源）。它不再自带 `@import "tailwindcss"`，见其文件头。 */
 @import "./tokens.css";
-
-/* ── 过渡期控件重置：preflight 缺席时的最小补丁（2026-10-08）────────────────
-   ⚠️ 为什么需要它：过渡期**不引 preflight**（见文件头），于是原生 `button` / `input`
-   还带着浏览器的 UA 样式——实测出的三个问题：
-     · input 是 `content-box`：`w-full` + padding + 边框会**撑破容器**
-       （登录页第一版因此红了 CI 的几何断言：密码框超界 27px）；
-     · 表单控件**不继承字体**：按钮 / 输入框的文字会退回 Arial；
-     · 按钮有 UA 灰底与 2px outset 边框：裸文字按钮会变成灰盒子。
-   安全性：这三条都是**元素级**规则、放在 `@layer base` 里——Element Plus 的样式全部走
-   类选择器，优先级更高、完全盖得住；实测仓库里的裸控件只有登录页与 ProfileView 的
-   头像文件输入（隐藏），不受影响。
-   ⚠️ 摘完 Element Plus、app 入口换成完整 preflight 后，**本块要整块删除**（preflight 已覆盖）。 */
-@layer base {
-  button,
-  input,
-  select,
-  textarea {
-    font: inherit;
-    color: inherit;
-    box-sizing: border-box;
-  }
-  button {
-    background-color: transparent;
-    border: 0 solid;
-    padding: 0;
-    cursor: pointer;
-  }
-}
-
-/* ── 过渡期：EP 浮层在 reka 模态弹窗内的指针事件恢复（2026-10-08）──────────
-   ⚠️ reka 的模态 Dialog 打开时会给 body 挂 `pointer-events: none`（把弹窗外的一切
-   交互关掉）——实测探针：body=none、EP 的 .el-dialog / .el-radio 全是 none。
-   - `.el-overlay`：EP 对话框 / ElMessageBox 的遮罩层（MessageBox 还在用）；
-   - `.el-popper`：EP 下拉 / 气泡（新建题目里的「分类」「标签」仍是 EP el-select）。
-   两者在 reka 模态开着时恢复指针事件；EP 的 z-index(2000+) 本来就高于 reka 的 z-50。
-   ⚠️ EP el-select 全部迁完后，本块随上面那段一起删除。 */
-body:has([data-slot="dialog-overlay"][data-state="open"]) .el-overlay,
-body:has([data-slot="dialog-overlay"][data-state="open"]) .el-overlay *,
-body:has([data-slot="dialog-overlay"][data-state="open"]) .el-popper,
-body:has([data-slot="dialog-overlay"][data-state="open"]) .el-popper * {
-  pointer-events: auto;
-}
+@import "./base.css";

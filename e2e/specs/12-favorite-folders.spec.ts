@@ -32,7 +32,7 @@ test('题库页收藏一道题后，打开「修改收藏夹」能列出收藏�
 
   // 短按星标 = 收藏（默认收藏夹按需创建，见 ADR 0030）
   await row.locator('.favorite-star').click()
-  const banner = page.locator('.el-notification').first()
+  const banner = page.locator('.toast').first()
   await expect(banner).toContainText('已加入')
 
   // 面板的明路是横幅上那个按钮（长按只是快捷键，桌面端几乎没有可发现性）
@@ -61,10 +61,9 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
 
   await page.goto('/favorites')
   await page.getByRole('button', { name: '新建收藏夹' }).click()
-  const prompt = page.locator('.el-message-box')
-  await prompt.locator('input').fill(folder)
-  // ⚠️ 不按文案点「确定」：两个中文字的按钮可能被插空格，直接点主按钮更稳
-  await prompt.locator('.el-message-box__btns .el-button--primary').click()
+  const prompt = page.getByRole('dialog', { name: '新建收藏夹' })
+  await prompt.getByRole('textbox').fill(folder)
+  await prompt.getByRole('button', { name: '新建' }).click()
   await expect(page.locator('.folder-item', { hasText: folder })).toHaveCount(1)
 
   await page.goto('/questions')

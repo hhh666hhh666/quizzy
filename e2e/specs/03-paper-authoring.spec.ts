@@ -73,11 +73,11 @@ test('在试卷抽屉里内联新建题目，保存后自动进卷', async ({ pa
 
   // 建题表单是**另一层** dialog，嵌套在试卷抽屉里
   const questionDialog = page.getByRole('dialog', { name: '新建题目' })
-  await questionDialog.locator('.el-form-item', { hasText: '题干' }).locator('textarea').fill(stem)
+  await questionDialog.getByLabel('题干').fill(stem)
   const optionRows = questionDialog.locator('.option-row')
-  await optionRows.nth(0).locator('.el-input__inner').fill('正确答案在这')
-  await optionRows.nth(1).locator('.el-input__inner').fill('这是干扰项')
-  await optionRows.nth(0).locator('.el-radio').click()
+  await optionRows.nth(0).getByRole('textbox').fill('正确答案在这')
+  await optionRows.nth(1).getByRole('textbox').fill('这是干扰项')
+  await optionRows.nth(0).getByRole('radio').click()
   await questionDialog.getByRole('button', { name: '保存' }).click()
 
   await expect(lastMessage(page, 'success')).toContainText('已新建并加入试卷')

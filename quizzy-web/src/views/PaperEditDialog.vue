@@ -274,7 +274,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
+import { toast } from '@/lib/toast'
 import { ChevronDownIcon } from '@lucide/vue'
 import { getQuestion, listCategories, pageQuestions } from '@/api/question'
 import { getPaper, previewRule, savePaper } from '@/api/paper'
@@ -481,11 +481,11 @@ function confirmSelection() {
     added++
   }
   if (!added) {
-    ElMessage.warning('所选题目都已在卷中')
+    toast.warning('所选题目都已在卷中')
   } else if (ignored) {
-    ElMessage.success(`加入 ${added} 道（${ignored} 道已在卷中，已跳过）`)
+    toast.success(`加入 ${added} 道（${ignored} 道已在卷中，已跳过）`)
   } else {
-    ElMessage.success(`加入 ${added} 道`)
+    toast.success(`加入 ${added} 道`)
   }
   selectorVisible.value = false
 }
@@ -498,7 +498,7 @@ async function onQuestionCreated(id: unknown) {
   form.value.questionIds.push(id)
   selectedQuestions.value.push(detail)
   createQuestionVisible.value = false
-  ElMessage.success('已新建并加入试卷')
+  toast.success('已新建并加入试卷')
 }
 
 function removeQuestion(id: number) {
@@ -510,7 +510,7 @@ async function onPreview() {
   previewing.value = true
   try {
     preview.value = await previewRule(form.value.rule)
-    if (!preview.value.length) ElMessage.warning('没有符合规则的题目')
+    if (!preview.value.length) toast.warning('没有符合规则的题目')
   } finally {
     previewing.value = false
   }
@@ -518,7 +518,7 @@ async function onPreview() {
 
 async function onSave() {
   if (!form.value.title.trim()) {
-    ElMessage.warning('请填写试卷标题')
+    toast.warning('请填写试卷标题')
     return
   }
   // ⚠️ 固定卷**允许没有题目**（先建卷、后加题，见 ADR 0026）：空卷只是不能发起作答，
@@ -526,7 +526,7 @@ async function onSave() {
   saving.value = true
   try {
     await savePaper(form.value)
-    ElMessage.success('保存成功')
+    toast.success('保存成功')
     emit('saved')
     emit('update:visible', false)
   } finally {

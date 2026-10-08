@@ -112,7 +112,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmBox, promptBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -171,7 +172,7 @@ async function onPickFile(event: Event) {
   try {
     avatar.value = await toAvatarDataUrl(file)
   } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '图片处理失败')
+    toast.error(error instanceof Error ? error.message : '图片处理失败')
   } finally {
     uploading.value = false
   }
@@ -180,7 +181,7 @@ async function onPickFile(event: Event) {
 async function onSaveProfile() {
   const trimmed = nickname.value.trim()
   if (!trimmed) {
-    ElMessage.error('昵称不能为空')
+    toast.error('昵称不能为空')
     return
   }
   savingProfile.value = true
@@ -188,7 +189,7 @@ async function onSaveProfile() {
     const updated = await updateProfile(trimmed, avatar.value)
     store.setUser(updated)
     avatar.value = updated.avatar ?? null
-    ElMessage.success('资料已保存')
+    toast.success('资料已保存')
   } catch {
     // 失败提示已由 api/request 的 unwrap 统一弹出，这里不重复报。
   } finally {
@@ -199,15 +200,15 @@ async function onSaveProfile() {
 async function onChangePassword() {
   const { oldPassword, newPassword, confirmPassword } = passwordForm.value
   if (!oldPassword) {
-    ElMessage.error('请输入原密码')
+    toast.error('请输入原密码')
     return
   }
   if (newPassword.length < 6 || newPassword.length > 64) {
-    ElMessage.error('新密码长度为 6-64 个字符')
+    toast.error('新密码长度为 6-64 个字符')
     return
   }
   if (newPassword !== confirmPassword) {
-    ElMessage.error('两次输入的新密码不一致')
+    toast.error('两次输入的新密码不一致')
     return
   }
   changingPassword.value = true
@@ -217,7 +218,7 @@ async function onChangePassword() {
     store.applyToken(result.token)
     store.setUser(result.user)
     passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
-    ElMessage.success('密码已修改，其他设备需要重新登录')
+    toast.success('密码已修改，其他设备需要重新登录')
   } catch {
     // 同上：提示已统一弹出。
   } finally {
@@ -231,15 +232,13 @@ async function onLogout() {
 }
 
 async function onLogoutAll() {
-  try {
-    await ElMessageBox.confirm('所有设备（包括这一台）都会被退出，之后需要重新登录。继续吗？', '退出所有设备', {
-      confirmButtonText: '退出所有设备',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-  } catch {
-    return
-  }
+  const ok = await confirmBox({
+    title: '退出所有设备',
+    message: '所有设备（包括这一台）都会被退出，之后需要重新登录。继续吗？',
+    confirmText: '退出所有设备',
+    danger: true
+  })
+  if (!ok) return
   try {
     await logoutAllDevices()
   } catch {
@@ -250,30 +249,22 @@ async function onLogoutAll() {
 }
 
 async function onDeleteAccount() {
-  let password = ''
-  try {
-    const result = await ElMessageBox.prompt(
-      '注销会永久删除账号、全部题目、试卷与作答记录，且无法撤销。请输入当前密码确认。',
-      '注销账号',
-      {
-        confirmButtonText: '永久注销',
-        cancelButtonText: '取消',
-        inputType: 'password',
-        inputPlaceholder: '当前密码',
-        inputValidator: (value: string) => (value ? true : '请输入当前密码'),
-        type: 'warning'
-      }
-    )
-    password = result.value
-  } catch {
-    return
-  }
+  const password = await promptBox({
+    title: '注销账号',
+    message: '注销会永久删除账号、全部题目、试卷与作答记录，且无法撤销。请输入当前密码确认。',
+    confirmText: '永久注销',
+    inputType: 'password',
+    placeholder: '当前密码',
+    validator: (v) => (v ? true : '请输入当前密码'),
+    danger: true
+  })
+  if (password === null) return
 
   deleting.value = true
   try {
     await deleteAccount(password)
     store.logout()
-    ElMessage.success('账号已注销')
+    toast.success('账号已注销')
     router.push('/login')
   } catch {
     // 密码不对等失败情形：提示已弹出，留在原页让他重试。

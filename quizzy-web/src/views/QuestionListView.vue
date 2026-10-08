@@ -326,7 +326,8 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { LocationQuery } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmBox, promptBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import { ChevronDownIcon, DownloadIcon, FileDownIcon, PlusIcon, UploadIcon } from '@lucide/vue'
 import { deleteQuestion, listCategories, listTags, pageQuestions, toQueryParams } from '@/api/question'
 import { appendPaperQuestions, exportPath, pagePapers, savePaper, templatePath } from '@/api/paper'
@@ -449,7 +450,7 @@ async function openAddToPaper() {
   // 只取固定卷：规则卷没有题目列表，「加入」对它没有意义（后端也会以业务错误拒绝）
   fixedPapers.value = (await pagePapers(1, 100)).list.filter((paper) => paper.mode === 'FIXED')
   if (!fixedPapers.value.length) {
-    ElMessage.warning('还没有固定卷。先用「用所选新建试卷」建一张吧。')
+    toast.warning('还没有固定卷。先用「用所选新建试卷」建一张吧。')
     return
   }
   addToPaperVisible.value = true
@@ -461,9 +462,9 @@ async function onAddToPaper() {
   try {
     const result = await appendPaperQuestions(targetPaperId.value, [...selectedIds.value])
     if (result.added) {
-      ElMessage.success(`已加入 ${result.added} 道，该卷现有 ${result.total} 道`)
+      toast.success(`已加入 ${result.added} 道，该卷现有 ${result.total} 道`)
     } else {
-      ElMessage.info(`所选题目都已在卷中，该卷现有 ${result.total} 道`)
+      toast.info(`所选题目都已在卷中，该卷现有 ${result.total} 道`)
     }
     addToPaperVisible.value = false
     clearSelection()
@@ -489,17 +490,15 @@ function onBatchFavoriteSaved() {
 }
 
 async function onCreatePaperFromSelection() {
-  try {
-    const { value } = await ElMessageBox.prompt('新试卷的标题', '用所选题目新建试卷', {
-      inputValidator: (v: string) => (v && v.trim().length > 0 ? true : '标题不能为空')
-    })
-    await savePaper({ title: String(value).trim(), mode: 'FIXED', questionIds: [...selectedIds.value] })
-    ElMessage.success(`已新建试卷（${selectedCount.value} 道题）`)
-    clearSelection()
-  } catch (e: any) {
-    // 点取消也会 reject，别当成错误提示
-    if (e !== 'cancel') ElMessage.error(e?.message || '新建试卷失败')
-  }
+  const title = await promptBox({
+    title: '用所选题目新建试卷',
+    message: '新试卷的标题',
+    validator: (v) => (v && v.trim().length > 0 ? true : '标题不能为空')
+  })
+  if (title === null) return
+  await savePaper({ title: title.trim(), mode: 'FIXED', questionIds: [...selectedIds.value] })
+  toast.success(`已新建试卷（${selectedCount.value} 道题）`)
+  clearSelection()
 }
 
 /**
@@ -785,9 +784,10 @@ function onEditFromDetail(id: number) {
 }
 
 async function onDelete(row: QuestionListItemVO) {
-  await ElMessageBox.confirm('删除后不可恢复，确认删除？', '提示', { type: 'warning' })
+  const ok = await confirmBox({ title: '提示', message: '删除后不可恢复，确认删除？', confirmText: '删除', danger: true })
+  if (!ok) return
   await deleteQuestion(row.id)
-  ElMessage.success('已删除')
+  toast.success('已删除')
   // 条件与页码都不动，只把当前这一页重新取一遍（页码若因此越界，load 会自己退回第 1 页）
   load()
 }

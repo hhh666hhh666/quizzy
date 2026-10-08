@@ -33,9 +33,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref } from 'vue'
-import { ElButton, ElNotification } from 'element-plus'
+import { computed, ref } from 'vue'
 import FavoriteFoldersDialog from './FavoriteFoldersDialog.vue'
+import { toast } from '@/lib/toast'
 import { favorite, setQuestionFolders, unfavorite } from '@/api/favorite'
 import type { FavoriteFolderVO } from '@/types'
 
@@ -127,17 +127,8 @@ async function onClick() {
  * ⚠️ 夹名必须用**接口返回的那个**：默认收藏夹可以被改名，界面上任何地方都不许写死这几个字。
  */
 function notifyFavorited(folder: FavoriteFolderVO) {
-  ElNotification({
-    title: '已加入收藏夹',
-    message: h('div', { style: 'display:flex;align-items:center;gap:12px;' }, [
-      h('span', null, `已加入「${folder.name}」`),
-      h(ElButton, { link: true, type: 'primary', size: 'small', onClick: openDialog }, {
-        default: () => '修改收藏夹'
-      })
-    ]),
-    type: 'success',
-    duration: 4000,
-    position: 'bottom-right'
+  toast.success(`已加入「${folder.name}」`, {
+    action: { label: '修改收藏夹', onClick: () => openDialog() }
   })
 }
 
@@ -150,28 +141,19 @@ function notifyUnfavorited(removedFolderIds: number[]) {
   if (removedFolderIds.length === 0) {
     return
   }
-  const notification = ElNotification({
-    title: '已取消收藏',
-    message: h('div', { style: 'display:flex;align-items:center;gap:12px;' }, [
-      h('span', null, `已从 ${removedFolderIds.length} 个收藏夹移出`),
-      h(ElButton, {
-        link: true,
-        type: 'primary',
-        size: 'small',
-        onClick: async () => {
-          try {
-            await setQuestionFolders(props.questionId, removedFolderIds)
-            emit('change', true)
-            notification.close()
-          } catch {
-            // 失败提示已由 unwrap 统一弹出
-          }
+  toast.info(`已从 ${removedFolderIds.length} 个收藏夹移出`, {
+    action: {
+      label: '撤销',
+      onClick: async (close) => {
+        try {
+          await setQuestionFolders(props.questionId, removedFolderIds)
+          emit('change', true)
+          close()
+        } catch {
+          // 失败提示已由 unwrap 统一弹出
         }
-      }, { default: () => '撤销' })
-    ]),
-    type: 'info',
-    duration: 6000,
-    position: 'bottom-right'
+      }
+    }
   })
 }
 </script>
@@ -182,7 +164,7 @@ function notifyUnfavorited(removedFolderIds: number[]) {
   align-items: center;
   cursor: pointer;
   outline: none;
-  color: var(--el-text-color-placeholder);
+  color: var(--color-ink-subtle);
   /* 长按不该把同一行里的题干选中 */
   user-select: none;
   transition: color 0.15s, transform 0.15s;

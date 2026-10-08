@@ -57,7 +57,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import { deletePaper, pagePapers } from '@/api/paper'
 import { startQuiz } from '@/api/quiz'
 import { Button } from '@/components/ui/button'
@@ -109,9 +110,10 @@ async function onStart(paperId: number) {
 }
 
 async function onDelete(row: PaperVO) {
-  await ElMessageBox.confirm('确认删除该试卷？', '提示', { type: 'warning' })
+  const ok = await confirmBox({ title: '提示', message: '确认删除该试卷？', confirmText: '删除', danger: true })
+  if (!ok) return
   await deletePaper(row.id)
-  ElMessage.success('已删除')
+  toast.success('已删除')
   load()
 }
 

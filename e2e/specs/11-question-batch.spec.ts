@@ -8,7 +8,7 @@ import { createQuestion, lastMessage, questionRow, registerNewUser } from './sup
  * 接口层能验 `POST /api/papers/{id}/questions` 的去重与越权，验不到
  * 「勾了两道题、点一下，卷里真的多了这两道」。
  *
- * <p>⚠️ 断言消息一律走 `lastMessage()`：`el-message` 是**堆叠**的，前一步的「保存成功」可能还没消失，
+ * <p>⚠️ 断言消息一律走 `lastMessage()`：`toast` 是**堆叠**的，前一步的「保存成功」可能还没消失，
  * 而多元素下 `toContainText` 是**严格模式报错**（不是「任一匹配」）——第一版就是因此红了 4 条。
  */
 
@@ -33,10 +33,9 @@ test('题库页多选 → 用所选题目新建试卷', async ({ page }) => {
 
   const title = `E2E 批量卷 ${stamp}`
   await page.getByTestId('batch-new-paper').click()
-  const box = page.locator('.el-message-box')
-  await box.locator('input').fill(title)
-  // ⚠️ 不按文案点「确定」：两个中文字的按钮可能被插空格。直接点主按钮。
-  await box.locator('.el-message-box__btns .el-button--primary').click()
+  const box = page.getByRole('dialog', { name: '用所选题目新建试卷' })
+  await box.getByRole('textbox').fill(title)
+  await box.getByRole('button', { name: '确定' }).click()
 
   await expect(lastMessage(page, 'success')).toContainText('已新建试卷')
   // 批量条该收起来：选中的题已经用完，留着会让人以为还得再来一次

@@ -99,7 +99,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { confirmBox, promptBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
 import FavoriteStar from '@/components/FavoriteStar.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -178,48 +179,43 @@ function select(folderId: number | null) {
 }
 
 async function onCreateFolder() {
-  try {
-    const { value } = await ElMessageBox.prompt('给新收藏夹起个名字', '新建收藏夹', {
-      confirmButtonText: '新建',
-      cancelButtonText: '取消',
-      inputPlaceholder: '最多 20 个字',
-      inputValidator: (input: string) => (input && input.trim() ? true : '名字不能为空')
-    })
-    await createFolder(value.trim())
-    await loadFolders()
-  } catch {
-    // 取消或失败都不影响页面
-  }
+  const name = await promptBox({
+    title: '新建收藏夹',
+    message: '给新收藏夹起个名字',
+    confirmText: '新建',
+    placeholder: '最多 20 个字',
+    validator: (v) => (v.trim() ? true : '名字不能为空')
+  })
+  if (name === null) return
+  await createFolder(name)
+  await loadFolders()
 }
 
 async function onRenameFolder(folder: FavoriteFolderVO) {
-  try {
-    const { value } = await ElMessageBox.prompt('改成什么名字？', '收藏夹改名', {
-      confirmButtonText: '改名',
-      cancelButtonText: '取消',
-      inputValue: folder.name,
-      inputValidator: (input: string) => (input && input.trim() ? true : '名字不能为空')
-    })
-    await renameFolder(folder.id, value.trim())
-    await loadFolders()
-  } catch {
-    // 取消或失败都不影响页面
-  }
+  const name = await promptBox({
+    title: '收藏夹改名',
+    message: '改成什么名字？',
+    confirmText: '改名',
+    defaultValue: folder.name,
+    validator: (v) => (v.trim() ? true : '名字不能为空')
+  })
+  if (name === null) return
+  await renameFolder(folder.id, name)
+  await loadFolders()
 }
 
 async function onDeleteFolder(folder: FavoriteFolderVO) {
-  try {
-    await ElMessageBox.confirm(
+  const ok = await confirmBox({
+    title: '删除收藏夹',
+    message:
       `删除「${folder.name}」后，里面的题会从它这里移出；` +
-        '如果某道题不再属于任何收藏夹，它就不再是收藏了。继续吗？',
-      '删除收藏夹',
-      { confirmButtonText: '删除', cancelButtonText: '取消', type: 'warning' }
-    )
-  } catch {
-    return
-  }
+      '如果某道题不再属于任何收藏夹，它就不再是收藏了。继续吗？',
+    confirmText: '删除',
+    danger: true
+  })
+  if (!ok) return
   await deleteFolder(folder.id)
-  ElMessage.success('已删除收藏夹')
+  toast.success('已删除收藏夹')
   await loadAll()
 }
 
@@ -239,7 +235,7 @@ async function onRemoveFromFolder(row: QuestionListItemVO) {
     return
   }
   await removeFromFolder(selected.value, row.id)
-  ElMessage.success('已移出这个收藏夹')
+  toast.success('已移出这个收藏夹')
   await onStarChange()
 }
 
@@ -249,7 +245,7 @@ async function onPractice() {
     const sessionId = await practiceFavorites(selected.value, count.value)
     router.push(`/quiz/${sessionId}`)
   } catch (e: any) {
-    ElMessage.error(e.message || '这个收藏夹里还没有题')
+    toast.error(e.message || '这个收藏夹里还没有题')
   } finally {
     starting.value = false
   }
