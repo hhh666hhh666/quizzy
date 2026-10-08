@@ -31,3 +31,8 @@ PC 端（`quizzy-web`）**原地重建**：组件基座由 Element Plus 换成 *
 - 属破坏性大改，按 ADR 0023 **单独发版**。
 
 > ⚠️ **后续（2026-10-07）**：Impeccable 的 `scripts/` **已装**。它的启动器会在**首次调用**时从 GitHub Releases 按版本锁定拉取平台二进制（本机落在 `~/.impeccable/bin/0.1.11/impeccable.exe`，探针实测返回 `impeccable-engine 0.1.11`）——这是本仓库**唯一一处"运行期拉取并执行外部二进制"**，故在此记明来历。**hooks 仍未装**：探测器只在我们主动调用时才跑。回退方式：删 `~/.impeccable` 与该 skill 下的 `scripts/`，即回到只用 guidance。
+
+> **Amendment 1（2026-10-08）：重建收官。** 三条里程碑全部兑现——① **Element Plus 彻底退场**（`8887fa6`，全站 reka-ui + 自建件，`<el-*>` 全仓清零）；② **`DESIGN.md` 已由 `impeccable document` 生成并入库**（`design.json` 边车按本文继续忽略）；③ 全站规范审查（Vercel Web Interface Guidelines）**整改完成**（键盘可达性、URL 状态铺开、theme-color/favicon、tabular-nums 等，详见 CHANGELOG 的 [Unreleased] 段）。与本文记录的两处现实差异，记录在案：
+> - **主题最终是三档**（跟随系统 / 浅色 / 深色），比 Consequences 写的「两档」多一档；**深色色板本身尚未落地**（当前只切 `color-scheme` 与少数组件变体），属后续功能。
+> - **浮层材质定为「练习纸实底 + 1px 描边 + 遮罩压暗」**而非模糊玻璃（弹窗里表单与正文占大头，实底保对比度）；轻玻璃只服务顶栏。tokens 注释与 `DESIGN.md` 均已按此对齐。
+> Consequences 里「代码落地时同步的文档」清单（README / `前端.md` / `移动端.md` / CHANGELOG）**已全部结算**；「组件测试重评」也已按承诺兑现——结论见 [《测试系统说明》](../testing/系统说明.md)（继续暂缓，理由改写）。

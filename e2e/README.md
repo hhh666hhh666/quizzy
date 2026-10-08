@@ -52,6 +52,9 @@ QUIZZY_JWT_SECRET='<32 字节以上的随机串>' mvn spring-boot:run
 - **workers 固定 1**：用例共享同一个库与同一个后端进程，并行会互相踩。要并行得先做数据隔离，那是另一个决定。
 - **账号名带时间戳**：每次跑新建，避免与上次残留撞名。
 - **断言优先语义定位**（`getByRole`），只在「同一页重复出现或文案会变」的元素上用 `data-testid`。
+- **重复行用稳定类名钩子**（`.qb-row` / `.paper-row` / `.his-row` / `.wrong-row` / `.fav-row`）：
+  同一页重复出现、文案会变的列表行，语义定位不可靠——这是这几处**唯一**的定位契约，
+  改类名要全局搜（含 `support/helpers.ts`）。轻提示同理：`.toast--success` 等类名即断言钩子。
 - **失败留证据**：`trace` 与截图（`trace: 'retain-on-failure'`）。不录视频——代价大而排查价值与 trace 重叠。
 - **只跑桌面 Chromium**：跨浏览器矩阵与移动视口都是明确不做 / 后置。
 

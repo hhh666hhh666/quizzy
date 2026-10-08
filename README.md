@@ -31,7 +31,7 @@
 | 层 | 选型 |
 |----|------|
 | 后端 | Spring Boot 3.5 · Java 21 · MyBatis-Plus · MySQL 8.4 · Flyway · springdoc-openapi |
-| 前端（PC） | Vue 3 · Vite · TypeScript · Pinia · Element Plus |
+| 前端（PC） | Vue 3 · Vite · TypeScript · Pinia · shadcn-vue（Tailwind v4，组件源码入库） |
 | 移动端 | uni-app · Vue 3 · TypeScript · Pinia · wot-design-uni（**当前只出 H5**，小程序待备案与 AppID） |
 | 运行 | Docker Compose：**本机只跑 dev**（只起数据库，前后端在宿主机跑）；prod 在阿里云轻量服务器上，由 CI 构建镜像推 ACR 后自动部署 |
 | 测试 | 后端单元测试（纯 JUnit，不碰库）· 端到端（Playwright，跑在 CI 的一次性全栈上，见 [e2e/](./e2e/README.md)） |
