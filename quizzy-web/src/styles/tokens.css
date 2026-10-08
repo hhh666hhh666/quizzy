@@ -84,6 +84,16 @@
   --color-danger-ink:  oklch(100% 0 0);      /* danger 实底上的文字（白） */
   --color-focus:       oklch(55% 0.18 262);
 
+  /* ── 深字色：tint 底上的「彩色文字 / 图标」用（2026-10-08）──────────────────
+     题型 / 难度小标签、侧栏高亮项这类「浅底 + 彩字」的组合，语义色本体达不到
+     小字 AA（见 ink-subtle 的口径注释），所以每个色相配一枚**加深档**。
+     ⚠️ 每枚都在对应 tint 底上实测 ≥4.5（小字 AA）；加第 6 个 tint 时要照此补一枚。 */
+  --color-ink-blue:    oklch(46% 0.15 262);
+  --color-ink-green:   oklch(46% 0.13 155);
+  --color-ink-violet:  oklch(46% 0.14 300);
+  --color-ink-amber:   oklch(46% 0.12 75);
+  --color-ink-red:     oklch(46% 0.16 25);
+
   /* ── 形状：宽松感的一部分——圆角整体比第一版大一档 ── */
   --radius-xs: 5px;
   --radius-sm: 8px;

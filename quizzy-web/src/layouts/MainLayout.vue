@@ -2,16 +2,26 @@
   <div class="flex h-full">
     <!-- 侧栏：实心有色面（surface-2）。⚠️ 它后面没有可透的内容，按「两层语言」的规矩②不用玻璃 -->
     <aside class="app-aside flex w-[200px] shrink-0 flex-col border-r border-line bg-surface-2 font-sans text-base text-ink">
-      <div class="px-5 pb-2 pt-5 text-xl font-semibold tracking-tight text-brand">quizzy</div>
+      <!-- 产品标识：图标块 + 双行字标（2026-10-08 主人给的参考样式） -->
+      <div class="flex items-center gap-2.5 px-4 pb-3 pt-5">
+        <div class="grid size-9 shrink-0 place-items-center rounded-lg bg-brand shadow-sm">
+          <ClipboardListIcon class="size-5 text-white" />
+        </div>
+        <div class="leading-tight">
+          <div class="text-lg font-semibold tracking-tight text-brand">Quizzy</div>
+          <div class="text-2xs font-medium tracking-[0.2em] text-ink-subtle">PRO STUDIO</div>
+        </div>
+      </div>
       <nav class="flex flex-col gap-1 px-3 py-2">
         <RouterLink
           v-for="item in NAV_ITEMS"
           :key="item.to"
           :to="item.to"
-          class="rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus"
-          :class="isActive(item.to) ? 'bg-brand-soft font-medium text-ink' : 'text-ink hover:bg-surface'"
+          class="flex items-center gap-2.5 rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus"
+          :class="isActive(item.to) ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
         >
-          {{ item.label }}
+          <component :is="item.icon" class="size-4 shrink-0" :class="navIconClass(item, isActive(item.to))" />
+          <span>{{ item.label }}</span>
         </RouterLink>
       </nav>
     </aside>
@@ -65,8 +75,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, type Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import {
+  ArchiveIcon,
+  ClipboardListIcon,
+  ClockIcon,
+  FileTextIcon,
+  StarIcon,
+  TriangleAlertIcon,
+  ZapIcon,
+} from '@lucide/vue'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore, type ThemeMode } from '@/stores/theme'
 import UserAvatar from '@/components/UserAvatar.vue'
@@ -87,18 +106,24 @@ const themeStore = useThemeStore()
 
 const aboutVisible = ref(false)
 
-const NAV_ITEMS: { to: string; label: string }[] = [
-  { to: '/questions', label: '题库' },
-  { to: '/papers', label: '试卷' },
-  { to: '/quiz/quick', label: '快速练习' },
-  { to: '/wrong-book', label: '错题本' },
-  { to: '/favorites', label: '收藏夹' },
-  { to: '/history', label: '答题记录' }
+const NAV_ITEMS: { to: string; label: string; icon: Component; accent?: boolean }[] = [
+  { to: '/questions', label: '题库', icon: ArchiveIcon },
+  { to: '/papers', label: '试卷', icon: FileTextIcon },
+  { to: '/quiz/quick', label: '快速练习', icon: ZapIcon },
+  { to: '/wrong-book', label: '错题本', icon: TriangleAlertIcon },
+  { to: '/favorites', label: '收藏夹', icon: StarIcon, accent: true },
+  { to: '/history', label: '答题记录', icon: ClockIcon }
 ]
 
 /** 侧栏高亮：当前路径等于该项、或在其子路径下（/quiz/quick 精确匹配；/questions 含子页）。 */
 function isActive(to: string) {
   return route.path === to || route.path.startsWith(to + '/')
+}
+
+/** 导航图标的颜色：收藏夹的星标恒为琥珀（参考样式）；其余随选中态走深蓝 / 灰。 */
+function navIconClass(item: { accent?: boolean }, active: boolean) {
+  if (item.accent) return 'fill-warn text-warn'
+  return active ? 'text-ink-blue' : 'text-ink-muted'
 }
 
 // 顶栏常驻，所以外观切换放在这里（登录页没有顶栏，只能跟随已存的偏好）

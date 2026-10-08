@@ -170,11 +170,11 @@
 
       <!-- ── 动作区 ─────────────────────────────────────────────────────────── -->
       <div class="mb-3 mt-5 flex flex-wrap gap-2">
-        <Button @click="onCreate">新建题目</Button>
-        <Button variant="outline" @click="importVisible = true">批量导入</Button>
-        <Button variant="outline" @click="onExport('excel')">导出 Excel</Button>
-        <Button variant="outline" @click="onExport('json')">导出 JSON</Button>
-        <Button variant="outline" @click="download(templatePath(), 'quizzy-template.xlsx')">下载导入模板</Button>
+        <Button @click="onCreate"><PlusIcon class="size-4" />新建题目</Button>
+        <Button variant="outline" @click="importVisible = true"><UploadIcon class="size-4" />批量导入</Button>
+        <Button variant="outline" @click="onExport('excel')"><DownloadIcon class="size-4 text-ok" />导出 Excel</Button>
+        <Button variant="outline" @click="onExport('json')"><DownloadIcon class="size-4 text-brand" />导出 JSON</Button>
+        <Button variant="outline" @click="download(templatePath(), 'quizzy-template.xlsx')"><FileDownIcon class="size-4" />下载导入模板</Button>
       </div>
 
       <!--
@@ -227,7 +227,7 @@
               </td>
               <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
               <td class="px-3 py-2.5">
-                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs" :class="typeTagClass(row.type)">
+                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium" :class="typeTagClass(row.type)">
                   {{ typeLabel(row.type) }}
                 </span>
               </td>
@@ -235,7 +235,11 @@
                 <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
               </td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '未分类' }}</td>
-              <td class="whitespace-nowrap px-3 py-2.5">{{ difficultyLabel(row.difficulty) }}</td>
+              <td class="whitespace-nowrap px-3 py-2.5">
+                <span class="inline-flex items-center rounded-sm px-2 py-0.5 text-xs font-medium" :class="difficultyTagClass(row.difficulty)">
+                  {{ difficultyLabel(row.difficulty) }}
+                </span>
+              </td>
               <td class="px-3 py-2.5">{{ row.score }}</td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ row.ownerId ? '我的' : '公开' }}</td>
               <td class="px-3 py-2.5 text-center">
@@ -349,7 +353,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { LocationQuery } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ChevronDownIcon } from '@lucide/vue'
+import { ChevronDownIcon, DownloadIcon, FileDownIcon, PlusIcon, UploadIcon } from '@lucide/vue'
 import { deleteQuestion, listCategories, listTags, pageQuestions, toQueryParams } from '@/api/question'
 import { appendPaperQuestions, exportPath, pagePapers, savePaper, templatePath } from '@/api/paper'
 import { listFolders } from '@/api/favorite'
@@ -598,16 +602,27 @@ const typeFilterLabel = computed(() => (state.type ? FILTER_TYPE_LABELS[state.ty
 const difficultyFilterLabel = computed(() => (state.difficulty ? FILTER_DIFFICULTY_LABELS[state.difficulty] : '不限'))
 const scopeFilterLabel = computed(() => SCOPE_LABELS[state.scope] ?? '我的题库')
 
-// ---------- 题型标签（彩色小标签，用受控色板，2026-10-08 主人拍板顺手做） ----------
+// ---------- 题型 / 难度标签（彩色小标签：tint 底 + 深字色，2026-10-08 主人拍板） ----------
+// 色相映射按主人给的参考图：单选=蓝、多选=绿、判断=紫；简单=绿、中等=琥珀、困难=红。
 
 const TYPE_TAG_CLASS: Record<QuestionType, string> = {
-  SINGLE: 'bg-tint-blue',
-  MULTI: 'bg-tint-violet',
-  JUDGE: 'bg-tint-green'
+  SINGLE: 'bg-tint-blue text-ink-blue',
+  MULTI: 'bg-tint-green text-ink-green',
+  JUDGE: 'bg-tint-violet text-ink-violet'
+}
+
+const DIFFICULTY_TAG_CLASS: Record<Difficulty, string> = {
+  EASY: 'bg-tint-green text-ink-green',
+  MEDIUM: 'bg-tint-amber text-ink-amber',
+  HARD: 'bg-danger-soft text-ink-red'
 }
 
 function typeTagClass(type: string) {
-  return TYPE_TAG_CLASS[type as QuestionType] ?? 'bg-surface-2'
+  return TYPE_TAG_CLASS[type as QuestionType] ?? 'bg-surface-2 text-ink'
+}
+
+function difficultyTagClass(level: string) {
+  return DIFFICULTY_TAG_CLASS[level as Difficulty] ?? 'bg-surface-2 text-ink'
 }
 
 // ---------- 状态 ↔ 网址 ----------
