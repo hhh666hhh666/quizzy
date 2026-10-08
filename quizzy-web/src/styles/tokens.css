@@ -1,30 +1,22 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Quizzy 设计 token（唯一真相源 · 第一版，2026-10-08 荧 起草）
+   Quizzy 设计 token（唯一真相源 · 第二版，2026-10-08）
 
    本文件分**两节**，读的时候别混：
 
-     第一节 `@theme static { … }`  —— **我们的 token**。作者：荧/主人。
-                                     颜色 / 形状 / 字体 / 字阶 / 阴影 / 动效的真实值都在这。
+     第一节 `@theme static { … }`  —— **我们的 token**。颜色 / 形状 / 字体 / 字阶 /
+                                     阴影 / 动效的真实值都在这。
+     第二节 `:root { … }` + `@theme inline`  —— **翻译给 shadcn-vue 的组件用**，
+                                     只做映射、不写颜色值。
 
-     第二节 `:root { … }`          —— **翻译给 shadcn-vue 的组件用**。
-                                     shadcn 的组件认的是它自己那套名字
-                                     （`--primary` / `--background` / `--border` …），
-                                     这一节**只做映射、不写颜色值**。
+   ⚠️ **改颜色、改圆角、改字体 → 只改第一节。** 在第二节写死颜色 = 又造一份真相。
 
-   ⚠️ **改颜色、改圆角、改字体 → 只改第一节。**
-      在第二节写死颜色 = 又造一份真相，改了不会同步（这正是本仓库删过一次
-      `DESIGN.md` 的原因，见 docs/README.md 的「单一信息源纪律」）。
-
-   ⚠️ **换 shadcn 的 preset 时**：新版 CLI 会重写第二节那一套变量——
-      只要第一节不动，主人的调色板就不会被它带走。若它又往第二节写了硬值，
-      把它改回 `var(--color-…)` 即可。
-
-   ⚠️ 主题：现在只出**浅色**。深色的结构已预留（`html.dark` 那一块）——
-      所有"深浅本质不同"的点都已建模成 token（阴影 / 描边 / color-scheme），
-      要开深色时把值填进去、并给 `<html>` 加 `dark` 类即可。见 docs/adr/0031。
-
-   ⚠️ 首版数值是荧 起草的：走"克制"路线——**精美来自尺度与留白，不来自花哨**。
-      数值全部可改，**改这里，全站跟着变**。调色板若要动，优先动 `--color-brand`。
+   ── 第二版改了什么（依据主人在 2026-10-08 的口味四问 + 一次改口）────────────
+     ① 冷中性：色相从暖（85）挪到冷（250–265）。
+     ② 宽松：字阶**配了行高**（正文 1.75），圆角整体调大一档。
+     ③ **L3 大面积彩色面**：页面底、区块、卡片**都带颜色**（新增 `--color-tint-*`）。
+        ⚠️ 但**留一处近白** —— `--color-reader`，专门给"读长文字的那块"（题干 / 解析）。
+        它是有意命名的：**以后谁也别把那一层上色**。
+     ④ 柔和阴影：不透明度提高、扩散加大，且**用冷调色相**（不是纯黑）。
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @import "tailwindcss";
@@ -37,30 +29,48 @@
 
 /* ═══════════════════════ 第一节 · 我们的 token（唯一真相源）═══════════════════ */
 @theme static {
-  /* ── 颜色：语义名 → 工具类 `bg-canvas` / `text-ink` / `border-line` / `bg-brand` … ── */
-  --color-canvas:     oklch(98.2% 0.004 85); /* 页面底：暖白 */
-  --color-surface:    oklch(100% 0 0);       /* 卡片 / 内容面：纯白 */
-  --color-surface-2:  oklch(96.8% 0.005 85); /* 次级面：悬停 / 交替带 */
-  --color-line:       oklch(91.5% 0.004 85); /* 结构边框 / 分隔线 */
-  --color-line-soft:  oklch(94.5% 0.003 85); /* 更弱的分隔 */
-  --color-ink:        oklch(24% 0.006 85);   /* 正文 / 标题 */
-  --color-ink-muted:  oklch(50% 0.008 85);   /* 次要文字 */
-  --color-ink-subtle: oklch(64% 0.007 85);   /* 占位符 / 辅助说明 */
-  --color-brand:      oklch(54% 0.17 258);   /* 主色：**唯一的强调色**，克制使用 */
-  --color-brand-soft: oklch(95% 0.03 258);   /* 主色的浅底（选中 / 高亮背景） */
-  --color-brand-ink:  oklch(100% 0 0);       /* 主色之上的文字 */
-  --color-ok:         oklch(55% 0.13 155);
-  --color-warn:       oklch(66% 0.14 75);
-  --color-danger:     oklch(56% 0.18 25);
-  --color-danger-ink: oklch(100% 0 0);       /* 危险色之上的文字 */
-  --color-focus:      oklch(54% 0.17 258);   /* 焦点环 */
+  /* ── 面（L3：这些层**都带颜色**，但都保持高亮度、低彩度——有颜色而不打架）── */
+  --color-canvas:     oklch(96.5% 0.012 250); /* 页面底：冷调浅面 */
+  --color-surface:    oklch(99% 0.005 250);   /* 卡片 / 内容面：近白冷调 */
+  --color-surface-2:  oklch(94% 0.02 250);    /* 次级面：悬停 / 交替带 */
 
-  /* ── 形状：同心圆角的外层 = 内层 + padding（见 make-interfaces-feel-better 第 1 条）── */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* **有色区块面**：给不同区块上色（分类 / 分区 / 强调块）。这是"受控色板"——
+     5 个固定色，不许随手再加第 6 个。 */
+  --color-tint-blue:   oklch(94.5% 0.035 255);
+  --color-tint-cyan:   oklch(95% 0.035 205);
+  --color-tint-violet: oklch(94.5% 0.035 300);
+  --color-tint-green:  oklch(95% 0.035 155);
+  --color-tint-amber:  oklch(96% 0.04 85);
+
+  /* ⚠️ **阅读面**：读长文字的那一层（题干 / 解析）。**有意留近白、不许上色**——
+     刷题时绝大多数时间在盯它，那是唯一该"干净"的地方。 */
+  --color-reader: oklch(100% 0 0);
+
+  /* ── 线 ── */
+  --color-line:      oklch(89% 0.015 250); /* 结构边框 / 分隔线 */
+  --color-line-soft: oklch(93% 0.01 250);  /* 更弱的分隔 */
+
+  /* ── 字 ── */
+  --color-ink:        oklch(23% 0.025 265); /* 正文 / 标题 */
+  --color-ink-muted:  oklch(48% 0.025 265); /* 次要文字 */
+  --color-ink-subtle: oklch(62% 0.02 265);  /* 占位符 / 辅助说明 */
+
+  /* ── 主色与语义色 ── */
+  --color-brand:      oklch(55% 0.18 262); /* 主色 */
+  --color-brand-soft: oklch(93% 0.045 262);/* 主色的浅底 */
+  --color-brand-ink:  oklch(100% 0 0);     /* 主色之上的文字 */
+  --color-ok:         oklch(55% 0.14 155);
+  --color-warn:       oklch(66% 0.15 75);
+  --color-danger:     oklch(56% 0.19 25);
+  --color-danger-ink: oklch(100% 0 0);
+  --color-focus:      oklch(55% 0.18 262);
+
+  /* ── 形状：宽松感的一部分——圆角整体比第一版大一档 ── */
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
   /* ── 字体：先用系统栈；自托管中文子集是**后续增强**（见 docs/todo/）──
      ⚠️ 不要在这里引入 Web 字体：国内加载会失败，也会拖慢首屏。 */
@@ -68,38 +78,44 @@
     "Noto Sans SC", "Source Han Sans SC", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
 
-  /* ── 字阶：工具型界面，正文 14px；行高比默认略松一点，中文更好读 ── */
+  /* ── 字阶 + 行高：**行高是"宽松"的主要杠杆**（中文尤其需要）── */
   --text-2xs:  0.6875rem; /* 11px */
+  --text-2xs--line-height: 1.45;
   --text-xs:   0.75rem;   /* 12px */
+  --text-xs--line-height: 1.55;
   --text-sm:   0.8125rem; /* 13px */
+  --text-sm--line-height: 1.65;
   --text-base: 0.875rem;  /* 14px —— 正文 */
+  --text-base--line-height: 1.75;
   --text-md:   1rem;      /* 16px */
+  --text-md--line-height: 1.75;
   --text-lg:   1.125rem;  /* 18px */
+  --text-lg--line-height: 1.6;
   --text-xl:   1.375rem;  /* 22px */
+  --text-xl--line-height: 1.4;
   --text-2xl:  1.75rem;   /* 28px */
+  --text-2xl--line-height: 1.3;
 
-  /* ── 阴影：低不透明度、多层 —— 要"嵌入感"，不要"悬浮感"（Notion 式）── */
-  --shadow-xs: 0 1px 0 0 oklch(0% 0 0 / 0.03);
-  --shadow-sm: 0 1px 2px -1px oklch(0% 0 0 / 0.06), 0 1px 0 0 oklch(0% 0 0 / 0.03);
-  --shadow-md: 0 4px 12px -4px oklch(0% 0 0 / 0.08), 0 1px 3px -1px oklch(0% 0 0 / 0.05);
+  /* ── 阴影：更柔、更明显，且**用冷调色相**（不是纯黑）——"浮起来"但不脏 ── */
+  --shadow-xs: 0 1px 2px 0 oklch(30% 0.03 260 / 0.05);
+  --shadow-sm: 0 2px 4px -1px oklch(30% 0.03 260 / 0.07), 0 1px 2px -1px oklch(30% 0.03 260 / 0.05);
+  --shadow-md: 0 8px 20px -6px oklch(30% 0.03 260 / 0.12), 0 2px 6px -2px oklch(30% 0.03 260 / 0.07);
 
-  /* ── 动效：时长与缓动也 token 化，统一调整 ── */
+  /* ── 动效 ── */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* ═══════════════ 第二节 · 映射给 shadcn-vue 的组件（只翻译，不写值）═══════════════ */
 :root {
-  color-scheme: light; /* 让滚动条与原生控件跟随主题 */
+  color-scheme: light;
 
-  /* shadcn 的全局圆角：它内部会由 `--radius` 推出 sm/md/lg。
-     这里指向我们自己的档位，避免出现第二套圆角标尺。 */
   --radius: var(--radius-lg);
 
   --background: var(--color-canvas);
   --foreground: var(--color-ink);
   --card: var(--color-surface);
   --card-foreground: var(--color-ink);
-  --popover: var(--color-surface);
+  --popover: var(--color-reader); /* 浮层也是"读文字"的场景 —— 用阅读面，不上色 */
   --popover-foreground: var(--color-ink);
   --primary: var(--color-brand);
   --primary-foreground: var(--color-brand-ink);
@@ -123,12 +139,12 @@
   --chart-4: var(--color-danger);
   --chart-5: var(--color-ink-subtle);
 
-  /* 侧栏（我们的 MainLayout 有侧栏，shadcn 也有 Sidebar 组件） */
-  --sidebar: var(--color-surface);
+  /* 侧栏（我们的 MainLayout 有侧栏）——给它一个有色面，与页面底区分开 */
+  --sidebar: var(--color-surface-2);
   --sidebar-foreground: var(--color-ink);
   --sidebar-primary: var(--color-brand);
   --sidebar-primary-foreground: var(--color-brand-ink);
-  --sidebar-accent: var(--color-surface-2);
+  --sidebar-accent: var(--color-surface);
   --sidebar-accent-foreground: var(--color-ink);
   --sidebar-border: var(--color-line);
   --sidebar-ring: var(--color-focus);
@@ -174,7 +190,7 @@
 
 /* ── 深色：**目前不启用** ────────────────────────────────────────────────────
    启用时照第一节的办法补深色值，并在这一节把上面那套映射再写一遍（指向深色 token）。
-   CLI 生成时这里是一组写死的深色值，已被删除——留着一份写死的深色 = 第二套真相。 */
+   ⚠️ L3 下深色的成本更高：**那一组面部色每一个都要重调**（浅色面在深底上完全是另一回事）。 */
 html.dark {
   color-scheme: dark;
 }
