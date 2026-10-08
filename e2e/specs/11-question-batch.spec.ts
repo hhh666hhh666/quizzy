@@ -43,10 +43,10 @@ test('题库页多选 → 用所选题目新建试卷', async ({ page }) => {
   await expect(page.locator('.batch-bar')).toHaveCount(0)
 
   await page.goto('/papers')
-  const paperRow = page.locator('.el-table__row', { hasText: title })
+  const paperRow = page.locator('.paper-row', { hasText: title })
   await expect(paperRow).toHaveCount(1)
   await paperRow.getByRole('button', { name: '编辑' }).click()
-  await expect(page.locator('.el-dialog:visible').first()).toContainText('共 2 道')
+  await expect(page.getByRole('dialog', { name: '编辑试卷' })).toContainText('共 2 道')
 })
 
 test('题库页多选 → 加入已有试卷；重复加入的题被忽略', async ({ page }) => {
@@ -61,8 +61,8 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   // 先建一张空卷当目标——顺带又走了一遍「空卷可保存」
   await page.goto('/papers')
   await page.getByRole('button', { name: '新建试卷' }).click()
-  const dialog = page.locator('.el-dialog:visible').first()
-  await dialog.locator('.el-form-item', { hasText: '标题' }).locator('.el-input__inner').fill(title)
+  const dialog = page.getByRole('dialog', { name: '新建试卷' })
+  await dialog.getByLabel('标题').fill(title)
   await dialog.getByRole('button', { name: '保存' }).click()
   await expect(lastMessage(page, 'success')).toContainText('保存成功')
 
@@ -83,7 +83,7 @@ test('题库页多选 → 加入已有试卷；重复加入的题被忽略', asy
   await expect(lastMessage(page, 'info')).toContainText('都已在卷中')
 
   await page.goto('/papers')
-  await page.locator('.el-table__row', { hasText: title }).getByRole('button', { name: '编辑' }).click()
+  await page.locator('.paper-row', { hasText: title }).getByRole('button', { name: '编辑' }).click()
   // 加两次也还是一道
-  await expect(page.locator('.el-dialog:visible').first()).toContainText('共 1 道')
+  await expect(page.getByRole('dialog', { name: '编辑试卷' })).toContainText('共 1 道')
 })

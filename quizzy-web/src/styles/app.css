@@ -51,3 +51,15 @@
     cursor: pointer;
   }
 }
+
+/* ── 过渡期：EP 浮层在 reka 模态弹窗内的指针事件恢复（2026-10-08）──────────
+   ⚠️ reka 的模态 Dialog 打开时会给 body 挂 `pointer-events: none`（把弹窗外的一切
+   交互关掉）——实测探针：body=none、EP 的 .el-dialog / .el-radio 全是 none。
+   嵌在组卷对话框里的「新建题目」（EP，尚未迁移）因此整个点不动（CI 03 号红过）。
+   下面这条在「reka 模态开着」时恢复 EP 浮层子树的指针事件；EP 的 z-index(2000+)
+   高于 reka 的 z-50，视觉本来就在上层，恢复后点击层级也是对的。
+   ⚠️ EP 对话框全部迁到 reka 后，本块随上面那段一起删除。 */
+body:has([data-slot="dialog-overlay"][data-state="open"]) .el-overlay,
+body:has([data-slot="dialog-overlay"][data-state="open"]) .el-overlay * {
+  pointer-events: auto;
+}

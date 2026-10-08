@@ -148,10 +148,28 @@ const emptyForm = (): QuestionSaveDTO => ({
 
 const form = ref<QuestionSaveDTO>(emptyForm())
 
+/**
+ * 打开时初始化表单。
+ *
+ * ⚠️ 这里有两个坑，都是真实踩过的：
+ * 1. getter 每次返回**新数组**，Vue 按引用比较 → 组件每次重渲染都会触发本 watcher——
+ *    不加守卫的话，打开后用户刚打的字会被「异步请求完成后的重置」反复抹掉。
+ *    用 `initializedFor` 记住「这次打开已经初始化过」，同一次打开只走一遍。
+ * 2. 重置发生在**两个候选请求之后**（await listCategories/listTags），窗口期内
+ *    「打开 → 打字 → 被清」的竞争真实存在（直驱脚本与真实快速打字都能踩到）。
+ *    所以**先同步重置表单**，候选列表异步随后到。
+ */
+let initializedFor: string | null = null
 watch(
-  () => [props.visible, props.questionId],
-  async () => {
-    if (!props.visible) return
+  // ⚠️ source 必须返回**稳定值**（字符串）：返回新数组会被 Vue 按引用判定变化，
+  //    组件每次重渲染都触发重置，用户刚打的字会被反复清空（真实踩过）。
+  () => (props.visible ? `open:${props.questionId ?? 'new'}` : 'closed'),
+  async (key) => {
+    if (key === 'closed' || initializedFor === key) return
+    initializedFor = key
+    // 先同步清空（渲染前就绪），候选与详情异步随后——别让「打开后打的字」被请求完成后的重置抹掉
+    form.value = emptyForm()
+    tagNames.value = []
     categories.value = await listCategories()
     tags.value = await listTags()
     if (props.questionId) {
@@ -169,9 +187,6 @@ watch(
         tags: []
       }
       tagNames.value = detail.tags.map((t) => t.name)
-    } else {
-      form.value = emptyForm()
-      tagNames.value = []
     }
   },
   { immediate: true }
