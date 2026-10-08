@@ -17,7 +17,7 @@
           v-for="item in NAV_ITEMS"
           :key="item.to"
           :to="item.to"
-          class="flex items-center gap-2.5 rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus"
+          class="no-underline flex items-center gap-2.5 rounded-md px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-focus"
           :class="isActive(item.to) ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
         >
           <component :is="item.icon" class="size-4 shrink-0" :class="navIconClass(item, isActive(item.to))" />
