@@ -36,3 +36,11 @@ Status: accepted
 改成**路由**：每条纪律只留一句话结论 + 指向规则全文的路径，细节（文件命名格式、索引表、归档三步、`git grep` 全仓搜）一律不抄。对不读 `.codebuddy/` 的工具依然可用——它会按路径去读原文，与 `docs/testing/agent-exploration.md` 开篇「不要假设能自动读到规则文件，把该读的显式列出来」是同一套做法。`AGENTS.md` 因此从 44 行压到约 24 行。
 
 **另记一条调试提示**：官方文档写「规则只在会话开头注入一次」——**改完规则要新开对话才生效**，别误判成规则写错了。
+
+## Amendment 2（2026-10-09）：规则条数 3 → 4；`docs/design/前端.md` 让出 skill 调度权
+
+**一、规则条数 3 → 4。** 新增 `.codebuddy/rules/design-skills.md`。它是**工作方式类**规则（不是纪律三件套那类），管外部设计 skill 的**用途、禁区与安装口径**——核心是一条硬约束：`ui-ux-pro-max` 的 `--persist` 会往仓库根写 `design-system/<slug>/MASTER.md` 并自称 "Global Source of Truth"，与本仓「设计真相源 = `quizzy-web/src/styles/tokens.css`」冲突，**禁用 `--persist` / `--force`**；`.gitignore` 加 `design-system/` 兜底。常驻规则现为 4 条，仍在官方建议的 3～5 条之内。
+
+**二、调度权的归属变了。** 原先把「改 UI 时用哪些 skill」的表放在 `docs/design/前端.md`，但**规则只在会话开头注入一次、每次会话都付税，文档则要主动去读**——「开工前就该知道」的内容放规则更对位。于是 `前端.md` 只留**文档域的事实**（skill 装在用户级、屏幕工具属一次性参照），**表与禁区不再复述**，避免两处真相。`AGENTS.md` 的路由与 `docs/development/contributing.md` 的规则条数同步改。
+
+依 Amendment 1 的「只追加不改」，正文与 Amendment 1 原文保留；`contributing.md` 与 `AGENTS.md` 里「三条规则」的表述按本 Amendment 更新。
