@@ -32,6 +32,7 @@
 | [design/API.md](./design/API.md) | 怎么看真实接口、通用响应与错误约定 | 对接接口或改 Controller 的人 | springdoc 与各 Controller |
 | [design/前端.md](./design/前端.md) | **PC 端**（`quizzy-web`）页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
 | [design/移动端.md](./design/移动端.md) | 移动端 / 小程序的页面流、编译目标与后端边界 | 改移动端的人 | `quizzy-mobile/src/` |
+| [design/设计skill清单.md](./design/设计skill清单.md) | 外部设计 skill 的角色、安装完整性与舍弃项（档案；速查在 `.codebuddy/rules/design-skills.md`） | 改前端 UI 的人 / AI | 本文件 |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
 | [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/server-deploy.sh` 与 [../.github/workflows/release.yml](../.github/workflows/release.yml) |
