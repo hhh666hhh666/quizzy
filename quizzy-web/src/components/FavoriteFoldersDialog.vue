@@ -6,7 +6,7 @@
     默认走 portal，原来那段「必须 append-to-body，否则表格行会盖到面板上」的坑随组件一起退场。
   -->
   <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle class="text-base font-medium">{{ title }}</DialogTitle>
       </DialogHeader>

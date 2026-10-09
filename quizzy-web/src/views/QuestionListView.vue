@@ -299,7 +299,7 @@
 
     <!-- 「加入已有试卷」：只列固定卷——规则卷没有题目列表，加不进去（后端也会拒） -->
     <Dialog :open="addToPaperVisible" @update:open="(v: boolean) => (addToPaperVisible = v)">
-      <DialogContent class="max-w-md">
+      <DialogContent class="sm:max-w-md">
         <DialogHeader>
           <DialogTitle class="text-base font-medium">加入试卷</DialogTitle>
         </DialogHeader>

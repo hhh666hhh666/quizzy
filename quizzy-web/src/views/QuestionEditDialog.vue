@@ -1,6 +1,8 @@
 <template>
   <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
-    <DialogContent class="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+    <!-- ⚠️ 宽度必须连 `sm:max-w-*` 一起写：DialogContent 内置 `sm:max-w-sm`，只写无前缀
+         `max-w-3xl` 与之不同断点、twMerge 不合并，≥640px 视口下媒体查询赢 → 实际只有 384px。 -->
+    <DialogContent class="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
       <DialogHeader class="border-b border-line-soft px-6 py-4">
         <DialogTitle class="text-base font-medium">{{ form.id ? '编辑题目' : '新建题目' }}</DialogTitle>
       </DialogHeader>
@@ -24,7 +26,7 @@
 
         <div class="flex flex-col gap-1">
           <label for="q-stem" class="text-xs text-ink-muted">题干</label>
-          <Textarea id="q-stem" v-model="form.stem" :rows="3" placeholder="支持 Markdown，代码块请用 ``` 包裹" class="bg-reader" />
+          <Textarea id="q-stem" v-model="form.stem" :rows="4" placeholder="支持 Markdown，代码块请用 ``` 包裹" class="bg-reader" />
         </div>
 
         <div class="flex flex-col gap-1.5">
@@ -77,7 +79,7 @@
 
         <div class="flex flex-col gap-1">
           <label for="q-analysis" class="text-xs text-ink-muted">解析</label>
-          <Textarea id="q-analysis" v-model="form.analysis" :rows="3" placeholder="支持 Markdown" class="bg-reader" />
+          <Textarea id="q-analysis" v-model="form.analysis" :rows="4" placeholder="支持 Markdown" class="bg-reader" />
         </div>
 
         <div class="grid grid-cols-3 gap-3">

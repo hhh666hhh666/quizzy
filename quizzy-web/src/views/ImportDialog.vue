@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
-    <DialogContent class="flex max-h-[85vh] max-w-2xl flex-col gap-0 overflow-hidden p-0">
+    <DialogContent class="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl">
       <DialogHeader class="border-b border-line-soft px-6 py-4">
         <DialogTitle class="text-base font-medium">批量导入题目</DialogTitle>
       </DialogHeader>

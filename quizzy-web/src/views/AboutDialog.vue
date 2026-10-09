@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
-    <DialogContent class="max-w-md">
+    <DialogContent class="sm:max-w-md">
       <DialogHeader>
         <DialogTitle class="text-center text-2xl font-semibold text-brand">Quizzy</DialogTitle>
         <DialogDescription class="text-center text-sm text-ink-muted">

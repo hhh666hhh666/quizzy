@@ -1,6 +1,6 @@
 <template>
   <Dialog :open="visible" @update:open="(v: boolean) => emit('update:visible', v)">
-    <DialogContent class="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+    <DialogContent class="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
       <DialogHeader class="border-b border-line-soft px-6 py-4">
         <DialogTitle class="text-base font-medium">{{ form.id ? '编辑试卷' : '新建试卷' }}</DialogTitle>
       </DialogHeader>
@@ -142,7 +142,7 @@
 
     <!-- ── 选题器（嵌套对话框）───────────────────────────────────────────── -->
     <Dialog :open="selectorVisible" @update:open="(v: boolean) => (selectorVisible = v)">
-      <DialogContent class="flex max-h-[85vh] max-w-4xl flex-col gap-0 overflow-hidden p-0">
+      <DialogContent class="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
         <DialogHeader class="border-b border-line-soft px-6 py-4">
           <DialogTitle class="text-base font-medium">选择题库题目</DialogTitle>
         </DialogHeader>
