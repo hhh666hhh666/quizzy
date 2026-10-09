@@ -22,7 +22,7 @@
       <div class="mt-5 flex flex-col gap-4">
         <div class="flex flex-col gap-1">
           <label for="profile-nickname" class="text-xs text-ink-muted">昵称</label>
-          <Input id="profile-nickname" v-model="nickname" maxlength="32" placeholder="昵称" class="bg-reader" />
+          <Input id="profile-nickname" v-model="nickname" maxlength="32" placeholder="昵称" class="bg-reader" @update:model-value="markDirty" />
         </div>
         <div class="flex flex-col gap-1">
           <label for="profile-username" class="text-xs text-ink-muted">登录名</label>
@@ -148,18 +148,34 @@ onMounted(() => {
   if (!store.user) store.loadUser()
 })
 
+/**
+ * 表单只在「还没被动过」时跟随 store 回填。
+ *
+ * ⚠️ 这里必须防竞态：进入本页时 `store.user` 往往已有旧值（登录/注册时存下的），
+ * 于是下面的 watch 会立刻用旧值填一次；随后 `loadUser()` 的响应回来、`store.user`
+ * 换了新对象，watch 再填一次——**这次会把用户已经敲进去的内容冲掉**。
+ * 表现为：打开资料页、手快开始改昵称，几百毫秒后输入框自己弹回原值。
+ * 所以一旦用户编辑过（`dirty`），就不再回填。保存成功后由 save 自己重置 dirty。
+ */
+const dirty = ref(false)
+
 watch(
   () => store.user,
   (user) => {
-    if (!user) return
+    if (!user || dirty.value) return
     nickname.value = user.nickname
     avatar.value = user.avatar ?? null
   },
   { immediate: true }
 )
 
+function markDirty() {
+  dirty.value = true
+}
+
 function onUseDefaultAvatar() {
   avatar.value = null
+  markDirty()
 }
 
 async function onPickFile(event: Event) {
@@ -171,6 +187,7 @@ async function onPickFile(event: Event) {
   uploading.value = true
   try {
     avatar.value = await toAvatarDataUrl(file)
+    markDirty()
   } catch (error) {
     toast.error(error instanceof Error ? error.message : '图片处理失败')
   } finally {
@@ -188,7 +205,10 @@ async function onSaveProfile() {
   try {
     const updated = await updateProfile(trimmed, avatar.value)
     store.setUser(updated)
+    nickname.value = updated.nickname
     avatar.value = updated.avatar ?? null
+    // 存下来的这份就是新的基线，之后的 store 回填可以重新生效。
+    dirty.value = false
     toast.success('资料已保存')
   } catch {
     // 失败提示已由 api/request 的 unwrap 统一弹出，这里不重复报。
