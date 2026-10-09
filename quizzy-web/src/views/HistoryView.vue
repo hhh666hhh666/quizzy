@@ -18,8 +18,18 @@
         </div>
       </div>
 
+      <!-- table-fixed + colgroup 定比例：自动列宽会被操作列的内容宽度牵着走（加一个按钮就把中列往左挤），固定后各列位置稳定；标题列吃剩余空间，超长截断 -->
       <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
-        <table class="w-full border-collapse text-sm">
+        <table class="w-full min-w-[880px] table-fixed border-collapse text-sm">
+          <colgroup>
+            <col class="w-[7%]" />
+            <col />
+            <col class="w-[10%]" />
+            <col class="w-[10%]" />
+            <col class="w-[10%]" />
+            <col class="w-[17%]" />
+            <col class="w-[19%]" />
+          </colgroup>
           <thead>
             <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
               <th class="px-3 py-2.5 font-medium">ID</th>
@@ -34,7 +44,7 @@
           <tbody>
             <tr v-for="row in rows" :key="row.id" class="his-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
               <td class="px-3 py-2.5 tabular-nums text-ink-muted">{{ row.id }}</td>
-              <td class="max-w-0 px-3 py-2.5">
+              <td class="px-3 py-2.5">
                 <span class="block truncate" :title="row.title">{{ row.title }}</span>
               </td>
               <td class="whitespace-nowrap px-3 py-2.5">{{ sourceLabel(row.sourceType) }}</td>
@@ -46,14 +56,12 @@
               <td class="whitespace-nowrap px-3 py-2.5 tabular-nums">{{ row.obtainedScore }} / {{ row.totalScore }}</td>
               <td class="whitespace-nowrap px-3 py-2.5 text-ink-muted">{{ formatTime(row.startTime) }}</td>
               <td class="whitespace-nowrap px-3 py-2.5">
-                <button
-                  v-if="row.status === 'IN_PROGRESS'"
-                  type="button"
-                  class="link-button text-brand hover:underline"
-                  @click="router.push(`/quiz/${row.id}`)"
-                >
-                  继续作答
-                </button>
+                <template v-if="row.status === 'IN_PROGRESS'">
+                  <button type="button" class="link-button text-brand hover:underline" @click="router.push(`/quiz/${row.id}`)">
+                    继续作答
+                  </button>
+                  <button type="button" class="link-button ml-3 text-danger hover:underline" @click="onAbandon(row)">放弃作答</button>
+                </template>
                 <button v-else type="button" class="link-button text-brand hover:underline" @click="router.push(`/quiz/${row.id}/result`)">
                   查看结果
                 </button>
@@ -76,7 +84,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { listSessions } from '@/api/quiz'
+import { confirmBox } from '@/lib/box'
+import { toast } from '@/lib/toast'
+import { abandonSession, listSessions } from '@/api/quiz'
 import TablePagination from '@/components/TablePagination.vue'
 import type { SessionVO } from '@/types'
 
@@ -112,6 +122,21 @@ async function load() {
   } finally {
     loading.value = false
   }
+}
+
+/** 放弃作答：与答题页 onAbandon 同款文案语言（QuizView.vue），确认后置 ABANDONED 并刷新列表。 */
+async function onAbandon(row: SessionVO) {
+  const ok = await confirmBox({ title: '提示', message: '放弃后本次答题不会再出现在未完成列表，确认放弃？', confirmText: '放弃', danger: true })
+  if (!ok) return
+  await abandonSession(row.id)
+  toast.success('已放弃本次作答')
+  // 若当前筛着「进行中」，该行会消失；退回「全部」并把状态写回网址
+  if (status.value && status.value !== 'ABANDONED') {
+    status.value = ''
+    page.value = 1
+    writeStateToRoute()
+  }
+  await load()
 }
 
 function sourceLabel(type: string) {
