@@ -161,7 +161,9 @@ jobs:
           context: ./quizzy-web
           # 移动端 H5 与 PC 端打进同一个镜像（同域子路径 /m/，见 docs/design/移动端.md）：
           # web 的 context 是单目录、够不到同级 quizzy-mobile → 以命名 context 送进 Dockerfile。
-          contexts: |
+          # ⚠️ 参数名是 **build-contexts**，不是 `contexts`（后者是 bake-action 的叫法）。
+          #    写错的症状：buildx 把 `mobile` 当成 Docker Hub 镜像去拉（mobile:latest pull access denied）。
+          build-contexts: |
             mobile=./quizzy-mobile
           push: true
           # 同后端：ACR 个人版对 attestation manifest 的兼容性未验证
