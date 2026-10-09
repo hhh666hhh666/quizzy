@@ -4,19 +4,21 @@
       ⚠️ 宽度必须连 `sm:max-w-*` 一起写。DialogContent 内置了 `sm:max-w-sm`（384px），
       它带 `sm:` 修饰符、与本地的 `max-w-3xl` 不同组，twMerge 不会合并掉它；
       而在 ≥640px 视口下媒体查询的优先级更高 → 只写 `max-w-3xl` 实际只有 384px 宽。
-      宽度改由 JS 内联 style 给（可拖动调整），所以这里只用 max-w 兜底一个上限。
+      宽高都改由 JS 内联 style 给（可拖动调整），所以这里不再写任何 max-w / max-h——
+      `max-h-[85vh]` 会和「主人手动拖出来的高度」打架（拖高了也被 85vh 卡住）。
+      溢出控制交给内部滚动区 + `.detail-body` 的滚动条样式。
     -->
     <DialogContent
-      class="flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-none"
+      class="detail-shell flex flex-col gap-0 overflow-hidden p-0 sm:max-w-none"
       :style="shellStyle"
     >
-      <DialogHeader class="border-b border-line-soft px-6 py-4">
+      <DialogHeader class="shrink-0 border-b border-line-soft px-6 py-4">
         <DialogTitle class="text-base font-medium">题目详情</DialogTitle>
       </DialogHeader>
 
       <div
         v-if="detail"
-        class="flex flex-col gap-4 overflow-y-auto px-6 py-5"
+        class="detail-body flex flex-1 flex-col gap-4 overflow-y-auto px-6 py-5"
         :class="loading ? 'pointer-events-none opacity-60' : ''"
       >
         <div class="flex flex-wrap items-center gap-2">
@@ -88,28 +90,31 @@
           </span>
         </div>
       </div>
-      <div v-else class="px-6 py-10 text-center text-sm text-ink-muted">加载中…</div>
+      <div v-else class="flex flex-1 items-center justify-center text-sm text-ink-muted">加载中…</div>
 
-      <div class="flex justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
+      <div class="flex shrink-0 justify-end gap-2 border-t border-line-soft bg-surface-2/50 px-6 py-3">
         <Button variant="outline" @click="emit('update:visible', false)">关闭</Button>
         <Button v-if="detail?.editable" @click="onEdit">编辑此题</Button>
       </div>
 
       <!--
-        拖拽调宽手柄：贴右边缘、竖条热区 12px（视觉上只有 2px 线）。
-        「自由调节宽度」只做横向——纵向已有 max-h-[85vh] + 内部滚动，再给纵拖会两头打架。
+        三个拖拽热区（都不画任何线，靠光标提示；对照实测：右边缘曾经同时有
+        15px 浏览器默认滚动条 + 一根 2px 手柄淡线，两条竖线贴着同一侧很脏）。
+        `dir` 决定这条热区改哪个方向：x = 只调宽、y = 只调高、both = 右下角斜拖。
+        双击任一热区复位默认尺寸。
       -->
       <div
-        class="absolute inset-y-0 right-0 z-10 hidden w-3 cursor-ew-resize select-none sm:block"
+        v-for="h in HANDLES"
+        :key="h.dir"
+        class="absolute z-10 hidden select-none sm:block"
+        :class="h.cls"
         role="separator"
-        aria-orientation="vertical"
-        aria-label="拖动调整题目详情宽度"
-        data-testid="detail-resize-handle"
-        @pointerdown="startResize"
-        @dblclick="resetWidth"
-      >
-        <span class="pointer-events-none absolute inset-y-2 right-1 w-0.5 rounded-full bg-line transition-colors" :class="resizing ? 'bg-brand' : ''" />
-      </div>
+        :aria-orientation="h.dir === 'x' ? 'vertical' : 'horizontal'"
+        :aria-label="h.label"
+        :data-testid="`detail-resize-handle-${h.dir}`"
+        @pointerdown="(e: PointerEvent) => startResize(e, h.dir)"
+        @dblclick="resetSize"
+      />
     </DialogContent>
   </Dialog>
 </template>
@@ -131,75 +136,117 @@ const emit = defineEmits(['update:visible', 'edit'])
 const detail = ref<QuestionVO | null>(null)
 const loading = ref(false)
 
-/* ---------- 可拖动调宽 ---------- */
-// 宽度是「居中卡片」的宽度：拖动时按住的是右边缘，卡片中心不动，
-// 所以宽度变化 = 指针位移 × 2。这样手感与直觉一致（往右拖两头同时张开）。
+/* ---------- 可拖动调整尺寸 ---------- */
+// 卡片是**水平 + 垂直双向居中**的（DialogContent 内置 top-1/2 left-1/2 + 位移 -50%），
+// 所以拖任一边时是「两头一起张开」：尺寸变化 = 指针位移 × 2。
+// 两个方向共用同一口径，手感一致（往右拖变宽、往下拖变高）。
 const MIN_W = 480
+const MIN_H = 320
 const DEFAULT_W = 960
-const STORAGE_KEY = 'quizzy:detail-dialog-width'
+const DEFAULT_H = 640
+const KEY_W = 'quizzy:detail-dialog-width'
+const KEY_H = 'quizzy:detail-dialog-height'
 
-/** 上限取视口宽 - 32px，给遮罩留边；低于 MIN_W 的视口直接钉在 MIN_W。 */
-function maxWidth() {
-  return Math.max(MIN_W, window.innerWidth - 32)
+/** 上限各留 32px 给遮罩，不至于顶到视口边。 */
+const maxWidth = () => Math.max(MIN_W, window.innerWidth - 32)
+const maxHeight = () => Math.max(MIN_H, window.innerHeight - 32)
+
+const readDim = (key: string, def: number, min: number, max: number) => {
+  const raw = Number(localStorage.getItem(key))
+  if (!Number.isFinite(raw) || raw <= 0) return def
+  return Math.min(Math.max(raw, min), max)
 }
 
-const width = ref(loadWidth())
-const resizing = ref(false)
+const width = ref(readDim(KEY_W, DEFAULT_W, MIN_W, maxWidth()))
+const height = ref(readDim(KEY_H, DEFAULT_H, MIN_H, maxHeight()))
 
-function loadWidth(): number {
-  const raw = Number(localStorage.getItem(STORAGE_KEY))
-  if (!Number.isFinite(raw) || raw <= 0) return DEFAULT_W
-  return Math.min(Math.max(raw, MIN_W), maxWidth())
-}
+/** 拖动方向：x = 只调宽、y = 只调高、both = 右下角斜拖。 */
+type Dir = 'x' | 'y' | 'both'
+const resizing = ref<Dir | null>(null)
 
-const shellStyle = computed(() => ({ width: `${width.value}px` }))
+const HANDLES: { dir: Dir; cls: string; label: string }[] = [
+  { dir: 'x', cls: 'inset-y-0 right-0 w-2 cursor-ew-resize', label: '拖动调整题目详情宽度' },
+  { dir: 'y', cls: 'inset-x-0 bottom-0 h-2 cursor-ns-resize', label: '拖动调整题目详情高度' },
+  { dir: 'both', cls: 'bottom-0 right-0 size-4 cursor-nwse-resize', label: '拖动调整题目详情宽高' },
+]
+
+// ⚠️ 高度写死（而不是 max-height）：主人选了「钉住给的高度」——
+// 拖多少就是多少，内容不够高就留白，所见即所得。内容超出则在内部滚动。
+const shellStyle = computed(() => ({
+  width: `${width.value}px`,
+  height: `${height.value}px`,
+}))
 
 let startX = 0
+let startY = 0
 let startW = 0
+let startH = 0
+// ⚠️ 必须自己记住「是哪个元素捕获了指针」。
+// 早先写成 `e.currentTarget.releasePointerCapture()`，但 endResize 是绑在 **window** 上的，
+// 事件冒到 window 时 `e.currentTarget === window`，而 window 没有这个方法 →
+// 可选链 `.?.` 静默跳过 → **capture 永远没释放**。
+// 后果：拖过手柄之后，浏览器把后续指针事件都投给那个手柄，
+// 页面上其它元素的 :hover 不再更新（实测：拖完后滚动条拇指怎么也 hover 不出来）。
+let captureEl: HTMLElement | null = null
 
-function startResize(e: PointerEvent) {
+function startResize(e: PointerEvent, dir: Dir) {
   if (e.button !== 0) return
-  resizing.value = true
+  resizing.value = dir
   startX = e.clientX
+  startY = e.clientY
   startW = width.value
-  // 指针可能移出手柄，用 pointer capture 保证后续 move 仍然回到这里
-  ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  startH = height.value
+  // 指针可能移出热区，用 pointer capture 保证后续 move 仍然回到这里
+  captureEl = e.currentTarget as HTMLElement
+  captureEl.setPointerCapture(e.pointerId)
   window.addEventListener('pointermove', onResizeMove)
   window.addEventListener('pointerup', endResize)
   window.addEventListener('pointercancel', endResize)
 }
 
 function onResizeMove(e: PointerEvent) {
-  if (!resizing.value) return
-  const next = startW + (e.clientX - startX) * 2
-  width.value = Math.round(Math.min(Math.max(next, MIN_W), maxWidth()))
+  const dir = resizing.value
+  if (!dir) return
+  if (dir === 'x' || dir === 'both') {
+    width.value = Math.round(Math.min(Math.max(startW + (e.clientX - startX) * 2, MIN_W), maxWidth()))
+  }
+  if (dir === 'y' || dir === 'both') {
+    height.value = Math.round(Math.min(Math.max(startH + (e.clientY - startY) * 2, MIN_H), maxHeight()))
+  }
 }
 
 function endResize(e: PointerEvent) {
   if (!resizing.value) return
-  resizing.value = false
-  ;(e.currentTarget as HTMLElement)?.releasePointerCapture?.(e.pointerId)
+  resizing.value = null
+  // 释放捕获要用**当初捕获的那个元素**，不能用 e.currentTarget（那是 window）
+  if (captureEl?.hasPointerCapture?.(e.pointerId)) captureEl.releasePointerCapture(e.pointerId)
+  captureEl = null
   window.removeEventListener('pointermove', onResizeMove)
   window.removeEventListener('pointerup', endResize)
   window.removeEventListener('pointercancel', endResize)
-  localStorage.setItem(STORAGE_KEY, String(width.value))
+  localStorage.setItem(KEY_W, String(width.value))
+  localStorage.setItem(KEY_H, String(height.value))
 }
 
-/** 双击手柄复位——拖歪了不用靠手拖回去。 */
-function resetWidth() {
+/** 双击热区复位——拖歪了不用靠手拖回去。 */
+function resetSize() {
   width.value = Math.min(DEFAULT_W, maxWidth())
-  localStorage.setItem(STORAGE_KEY, String(width.value))
+  height.value = Math.min(DEFAULT_H, maxHeight())
+  localStorage.setItem(KEY_W, String(width.value))
+  localStorage.setItem(KEY_H, String(height.value))
 }
 
-/** 视口变窄时把已存的宽度收回来，避免卡片横向溢出。 */
+/** 视口变小/变矮时把已存的尺寸收回来，避免卡片溢出。 */
 function onWindowResize() {
   width.value = Math.min(width.value, maxWidth())
+  height.value = Math.min(height.value, maxHeight())
 }
 
-watch(resizing, (on) => {
-  document.body.style.cursor = on ? 'ew-resize' : ''
-  document.body.style.userSelect = on ? 'none' : ''
-  if (on) window.addEventListener('resize', onWindowResize)
+watch(resizing, (dir) => {
+  const cursor = dir === 'x' ? 'ew-resize' : dir === 'y' ? 'ns-resize' : dir ? 'nwse-resize' : ''
+  document.body.style.cursor = cursor
+  document.body.style.userSelect = dir ? 'none' : ''
+  if (dir) window.addEventListener('resize', onWindowResize)
   else window.removeEventListener('resize', onWindowResize)
 })
 
@@ -208,6 +255,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('pointerup', endResize)
   window.removeEventListener('pointercancel', endResize)
   window.removeEventListener('resize', onWindowResize)
+  captureEl = null
   document.body.style.cursor = ''
   document.body.style.userSelect = ''
 })
@@ -271,10 +319,62 @@ function onStarChange(favorited: boolean) {
 .option-body :deep(.markdown-body p:last-child) {
   margin-bottom: 0;
 }
+</style>
 
-/* 手柄拖动时给整个卡片一个明确的可拖拽提示（浏览器会带光标，这里补个视觉反馈） */
-[data-testid='detail-resize-handle']:hover span,
-[data-testid='detail-resize-handle']:focus-visible span {
-  background: var(--color-brand);
+<style>
+/* ---------- 滚动条：不占位、平时隐形、悬停才浮出 ---------- */
+/*
+  ⚠️ 实测过：默认滚动条在 Windows/Chrome 上是 **15px 常驻灰条**，
+  它和右边缘的拖拽热区贴在**同一条边**上，看起来就是「一条多余的竖线」。
+  主人要求右边缘干净，所以改成 overlay 式细条：不显形，指针进入才浮出。
+
+  ⚠️⚠️ 两个坑，都是实测出来的（.workbuddy/lab-scrollbar*.mjs）：
+
+  1. **不能在 scoped 块里写 `:deep(::-webkit-scrollbar)`**——Vue 会编译成
+     `.detail-body[data-v-x] ::-webkit-scrollbar`，中间那个**空格是后代选择器**，
+     意思变成「.detail-body 的子孙元素的滚动条」；而滚动条伪元素必须**直接**挂在
+     `.detail-body` 自己身上 → 一条都不生效（实测：拇指始终透明、且仍占 15px）。
+     所以另开**全局** style 块，靠 `.detail-body` 类名限定范围。
+
+  2. **`:hover` 不能挂在同一个元素上**：`.detail-body:hover::-webkit-scrollbar-thumb`
+     在 Chrome 里**不生效**（实测三组写法全部失败）。必须把 hover 提到**祖先**上：
+     `.detail-shell:hover .detail-body::-webkit-scrollbar-thumb`（实测生效，
+     截图字节 154B → 208B）。
+*/
+.detail-body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+/* 轨道透明 → 平时看不见；拇指也默认透明 → 完全隐形 */
+.detail-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.detail-body::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 999px;
+}
+/* ⚠️ hover 挂在外壳（祖先）上，不是 .detail-body 自己——理由见上面第 2 条 */
+.detail-shell:hover .detail-body::-webkit-scrollbar-thumb {
+  background-color: var(--color-line);
+}
+.detail-shell .detail-body::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ink-subtle);
+}
+
+/*
+  Firefox 走标准属性——**必须包在 `@supports not selector(::-webkit-scrollbar)` 里**。
+  ⚠️⚠️ 实测（.workbuddy/lab-scrollbar3.mjs）：一旦无条件写 `scrollbar-width: thin`，
+  Chrome 会**直接禁用**所有 `::-webkit-scrollbar-*` 自定义（组 x 悬停 149B→410B 生效，
+  组 y 加上 scrollbar-width 后恒为 462B、完全失效）。标准属性与私有伪元素是互斥的，
+  所以只能给「不支持 webkit 伪元素」的浏览器用。
+*/
+@supports not selector(::-webkit-scrollbar) {
+  .detail-body {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .detail-shell:hover .detail-body {
+    scrollbar-color: var(--color-line) transparent;
+  }
 }
 </style>
