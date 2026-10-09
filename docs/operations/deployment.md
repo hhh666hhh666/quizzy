@@ -61,6 +61,8 @@ bash server-compose.sh ps
 
 > 前端现在带了正确的 `Cache-Control`（`index.html` 不缓存、带内容 hash 的 `assets/` 长缓存），**不再需要硬刷新**。
 
+移动端 H5 挂在同域子路径 `/m/`（与 PC 端打进**同一个** web 镜像，宿主 nginx 无需改动）：上线后探 `https://<主域名>/m/` 应返回 200。构建侧口径见 [../design/移动端.md](../design/移动端.md) 的部署节。
+
 ## 回滚
 
 镜像按版本 tag 保留在 ACR，所以回滚**不需要重新构建**，在服务器上跑：

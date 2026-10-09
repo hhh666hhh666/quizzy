@@ -383,8 +383,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # web 镜像含两个前端（PC + 移动端 H5）：移动端源码以**命名 build context** 送进去，
+      # 与 release.yml 的 contexts 参数一致；漏传它 Dockerfile 的 COPY --from=mobile 会直接失败。
       - name: docker build（npm 走官方源）
-        run: docker build --build-arg NPM_REGISTRY=https://registry.npmjs.org ./quizzy-web
+        run: docker build --build-context mobile=./quizzy-mobile --build-arg NPM_REGISTRY=https://registry.npmjs.org ./quizzy-web
 
   # 注意：这里刻意不 docker compose up。仓库里没有 .env，而
 # ${QUIZZY_JWT_SECRET:?...} 是 ADR 0011 刻意设的必填语法，缺变量时 compose 在

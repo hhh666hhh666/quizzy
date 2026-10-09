@@ -10,7 +10,7 @@
     "title": "Quizzy",
     "router": {
       "mode": "hash",
-      "base": "/"
+      "base": "/m/"
     }
   },
   "mp-weixin": {

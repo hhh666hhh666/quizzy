@@ -26,6 +26,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- **移动端 H5 挂上同域子路径 `/m/`**（[ADR 0019](./docs/adr/0019-mobile-clients-with-uniapp.md)）：`quizzy-mobile` 的产物打进
+  web 镜像（Dockerfile 以命名 build context 取源码构建），由容器内 nginx 的 `/m/` 段托管，**宿主 nginx 零改动**；
+  缓存口径与 PC 一致（入口不缓存、带内容 hash 的 `assets/` 长缓存）。小程序编译目标仍未接入（等 AppID）。
+
 ### Fixed
 
 - 弹窗宽度失效：`DialogContent` 内置 `sm:max-w-sm`（384px）会压掉调用方写的无前缀 `max-w-*`

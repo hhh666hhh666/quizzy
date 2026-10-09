@@ -1,0 +1,13 @@
+# 与 quizzy-web/.dockerignore 同样的理由：node_modules 必须排除。
+# 宿主是 Windows，node_modules 里只有 win32 平台的 esbuild/rollup 二进制，
+# 打进构建 context 会覆盖容器内 npm ci 装的 Linux 版本，构建直接失败。
+# 注意：quizzy-mobile 是**命名 build context**（release.yml 的 contexts: mobile=...），
+# BuildKit 对命名 context 同样应用它自己目录下的本文件。
+node_modules/
+dist/
+dist.*
+.git/
+.gitignore
+*.log
+.idea/
+.vscode/
