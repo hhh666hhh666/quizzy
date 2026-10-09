@@ -34,7 +34,7 @@ git tag v1.2.0 && git push origin v1.2.0
 1. **配 GitHub Secrets**：`ACR_USERNAME`（阿里云账号全名）、`ACR_PASSWORD`（ACR 固定密码，**不是 AccessKey**——个人版不支持 AccessKey 推送）、`DEPLOY_SSH_KEY`、`DEPLOY_SSH_KNOWN_HOSTS`（可选 `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN`，用来提升基础镜像的拉取配额）
 2. **云端 `.env`**：按 [deploy/.env.cloud.example](../../deploy/.env.cloud.example) 填好，放到服务器 `/srv/quizzy/.env`（`chmod 600`）
 3. **把 MySQL 交给 compose 管**：它是先期用 `docker run` 起的、**没有 compose 标签**，直接 `up -d` 会报容器名冲突。停掉并删除那个容器，让 compose 用**同一个绑定挂载目录**重建——数据在宿主机目录上，不受影响
-4. **宿主 nginx 站点**：在宝塔面板建站并配反向代理到 `127.0.0.1:8081`。仓库里的 [deploy/nginx/quizzy-site.conf](../../deploy/nginx/quizzy-site.conf) 是**对照模板**，真正生效的那份归宝塔管。备案期间 `server_name` 填服务器 IP；备案通过后改填域名，并由宝塔申请 Let's Encrypt 证书
+4. **宿主 nginx 站点**：在宝塔面板建站并配反向代理到 `127.0.0.1:8081`。仓库里的 [deploy/nginx/quizzy-site.conf](../../deploy/nginx/quizzy-site.conf) 是**对照模板**，真正生效的那份归宝塔管。2026-10-09 ICP 备案通过后已切到正式形态：`server_name` 填主域名、宝塔申请 Let's Encrypt 证书、开「强制 HTTPS」（80 强制 301 到 443），对应模板中「备案之后」段；证书续期归宝塔计划任务
 
 > ⚠️ 第 3 步的红线：**只 `docker rm` 容器**。永远不要 `docker compose down -v`，也永远不要删 `MYSQL_DATA_DIR` 指向的目录——那是数据本体。
 
