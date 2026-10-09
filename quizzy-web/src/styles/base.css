@@ -15,3 +15,18 @@
     color: var(--foreground);
   }
 }
+
+/* ── 全局滚动条颜色（2026-10-09，主人指定 rgb(233, 233, 233)）─────────────
+   用**标准属性** scrollbar-color（拇指 233 / 轨道透明），挂在 html 上全站继承。
+
+   ⚠️⚠️ 为什么不用 ::-webkit-scrollbar-*（2026-10-09 实测翻车）：
+   Windows 11 的 Chrome 默认启用 **Fluent overlay 滚动条**（细、圆角、半透明、
+   自动隐藏），此模式下 Chrome **直接忽略所有 ::-webkit-scrollbar-* 自定义**
+   ——伪元素写了对主人环境毫无作用（像素实测 thumb 是 Fluent 默认的半透明深灰，
+   不是规则里的颜色）。标准属性 scrollbar-color 优先级更高，一写即接管渲染
+   （Chrome 121+ / Firefox 全支持；Safari < 18.2 忽略它，仍走系统样式，可接受）。
+   题目详情弹窗的隐形滚动条因此在它自己的样式里显式声明 scrollbar-color
+   （防止被这里继承成常驻淡条），见 QuestionDetailDialog.vue。 */
+html {
+  scrollbar-color: rgb(233, 233, 233) transparent;
+}

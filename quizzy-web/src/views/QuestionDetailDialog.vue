@@ -353,28 +353,34 @@ function onStarChange(favorited: boolean) {
   background-color: transparent;
   border-radius: 999px;
 }
-/* ⚠️ hover 挂在外壳（祖先）上，不是 .detail-body 自己——理由见上面第 2 条 */
+/* ⚠️ hover 挂在外壳（祖先）上，不是 .detail-body 自己——理由见上面第 2 条。
+   浮出色 rgb(233,233,233) = 全站滚动条统一色（主人指定，2026-10-09）。 */
 .detail-shell:hover .detail-body::-webkit-scrollbar-thumb {
-  background-color: var(--color-line);
+  background-color: rgb(233, 233, 233);
 }
 .detail-shell .detail-body::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-ink-subtle);
 }
 
 /*
-  Firefox 走标准属性——**必须包在 `@supports not selector(::-webkit-scrollbar)` 里**。
-  ⚠️⚠️ 实测（.workbuddy/lab-scrollbar3.mjs）：一旦无条件写 `scrollbar-width: thin`，
-  Chrome 会**直接禁用**所有 `::-webkit-scrollbar-*` 自定义（组 x 悬停 149B→410B 生效，
-  组 y 加上 scrollbar-width 后恒为 462B、完全失效）。标准属性与私有伪元素是互斥的，
-  所以只能给「不支持 webkit 伪元素」的浏览器用。
+  标准属性（2026-10-09 修正，推翻下面 @supports 时代结论的前提）：
+  Windows 11 的 Chrome 默认启用 **Fluent overlay 滚动条**，此模式下
+  Chrome **忽略一切 ::-webkit-scrollbar-* 自定义**——上面伪元素块在主人的
+  环境里从未真正生效过（此前像素验证的「空闲隐藏/悬停浮出」实为 Fluent
+  默认行为的巧合，见 base.css 全局滚动条注释）。能接管它的是标准属性
+  scrollbar-color / scrollbar-width（Chrome 121+ / Firefox 支持）。
+
+  所以这里**无条件**显式声明（不能再包 @supports）：
+  - 不声明会被 base.css 的 html 规则**继承**成 233 常驻淡条，
+    「平时隐形、悬停才浮出」的设计就没了；
+  - 声明后 Chrome（121+）走标准渲染，上面的伪元素块对该浏览器失效——
+    正好；旧 Chrome / Safari 忽略标准属性、继续走伪元素，也正好。
 */
-@supports not selector(::-webkit-scrollbar) {
-  .detail-body {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-  }
-  .detail-shell:hover .detail-body {
-    scrollbar-color: var(--color-line) transparent;
-  }
+.detail-body {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.detail-shell:hover .detail-body {
+  scrollbar-color: rgb(233, 233, 233) transparent;
 }
 </style>
