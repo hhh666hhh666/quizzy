@@ -1,35 +1,47 @@
 <template>
   <view class="page">
     <view class="card">
-      <view class="brand">Quizzy</view>
+      <view class="brand">quizzy</view>
+      <view class="sub">一道题反复练到会</view>
 
-      <view class="tabs">
-        <view :class="['tab', tab === 'login' ? 'active' : '']" @click="tab = 'login'">登录</view>
-        <view :class="['tab', tab === 'register' ? 'active' : '']" @click="tab = 'register'">注册</view>
+      <!-- 登录 / 注册两段切换：自绘（wot 的 tabs 视觉与我们这套不是一个调） -->
+      <view class="seg">
+        <view :class="['seg-item', tab === 'login' ? 'on' : '']" @click="tab = 'login'">登录</view>
+        <view :class="['seg-item', tab === 'register' ? 'on' : '']" @click="tab = 'register'">注册</view>
       </view>
 
-      <view class="form">
-        <wd-input v-model="form.username" label="用户名" placeholder="请输入用户名" no-border clearable />
-        <wd-input
+      <view class="field">
+        <text class="label">用户名</text>
+        <input
+          class="input"
+          v-model="form.username"
+          placeholder="请输入用户名"
+          placeholder-class="ph"
+        />
+      </view>
+      <view class="field">
+        <text class="label">密码</text>
+        <input
+          class="input"
           v-model="form.password"
-          label="密码"
+          password
           placeholder="请输入密码"
-          show-password
-          no-border
+          placeholder-class="ph"
         />
-        <wd-input
-          v-if="tab === 'register'"
+      </view>
+      <view class="field" v-if="tab === 'register'">
+        <text class="label">昵称</text>
+        <input
+          class="input"
           v-model="form.nickname"
-          label="昵称"
           placeholder="可留空"
-          no-border
-          clearable
+          placeholder-class="ph"
         />
       </view>
 
-      <wd-button type="primary" block :loading="loading" @click="onSubmit">
-        {{ tab === 'login' ? '登录' : '注册并登录' }}
-      </wd-button>
+      <view class="qz-btn qz-btn--primary qz-btn--block" @click="onSubmit">
+        {{ tab === 'login' ? (loading ? '登录中…' : '登录') : (loading ? '提交中…' : '注册并登录') }}
+      </view>
 
       <view class="hint">登录后即可刷题；题库与组卷在 PC 端维护。</view>
     </view>
@@ -85,40 +97,75 @@ async function onSubmit() {
 .card {
   width: 100%;
   max-width: 640rpx;
-  background: #fff;
-  border-radius: 20rpx;
+  background: $app-surface;
+  border-radius: $radius-xl;
   padding: 48rpx 40rpx;
   box-sizing: border-box;
+  box-shadow: $shadow-md;
 }
 .brand {
   text-align: center;
-  font-size: 44rpx;
-  font-weight: 600;
-  color: $app-primary;
-  margin-bottom: 32rpx;
+  font-size: $text-2xl;
+  font-weight: 500;
+  color: $app-brand;
+  letter-spacing: 2rpx;
 }
-.tabs {
+.sub {
+  text-align: center;
+  margin-top: 8rpx;
+  font-size: $text-sm;
+  color: $app-ink-muted;
+}
+
+.seg {
   display: flex;
-  margin-bottom: 24rpx;
+  gap: 8rpx;
+  margin: 36rpx 0 28rpx;
+  padding: 6rpx;
+  background: $app-surface-2;
+  border-radius: $radius-md;
 }
-.tab {
+.seg-item {
   flex: 1;
   text-align: center;
-  padding: 20rpx 0;
-  color: $app-text-secondary;
-  border-bottom: 4rpx solid transparent;
+  padding: 16rpx 0;
+  border-radius: $radius-sm;
+  font-size: $text-md;
+  color: $app-ink-muted;
 }
-.tab.active {
-  color: $app-primary;
-  border-bottom-color: $app-primary;
+.seg-item.on {
+  background: $app-reader;
+  color: $app-ink;
+  font-weight: 500;
 }
-.form {
-  margin-bottom: 32rpx;
+
+.field {
+  margin-bottom: 24rpx;
 }
+.label {
+  display: block;
+  margin-bottom: 10rpx;
+  font-size: $text-sm;
+  color: $app-ink-muted;
+}
+.input {
+  height: 88rpx;
+  padding: 0 24rpx;
+  background: $app-reader;
+  border: 1rpx solid $app-line;
+  border-radius: $radius-md;
+  font-size: $text-md;
+  color: $app-ink;
+  box-sizing: border-box;
+}
+.ph {
+  color: $app-ink-subtle;
+}
+
 .hint {
-  margin-top: 24rpx;
-  font-size: 24rpx;
-  color: $app-text-secondary;
+  margin-top: 28rpx;
+  font-size: $text-sm;
+  color: $app-ink-muted;
   text-align: center;
 }
 </style>

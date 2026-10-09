@@ -1,7 +1,7 @@
 <template>
   <view class="page">
     <template v-if="result">
-      <view class="card summary">
+      <view class="qz-card summary">
         <view class="stat">
           <view class="num">{{ result.obtainedScore }} / {{ result.totalScore }}</view>
           <view class="lbl">得分</view>
@@ -24,17 +24,21 @@
         还有 {{ result.unansweredCount }} 道题没有作答，正确率只统计已作答的题目。
       </view>
 
-      <view class="card item" v-for="item in result.items" :key="item.questionId">
+      <view class="qz-card item" v-for="item in result.items" :key="item.questionId">
         <view class="item-head">
           <text class="index">第 {{ item.index + 1 }} 题</text>
-          <wd-tag type="primary">{{ typeLabel(item.type) }}</wd-tag>
-          <wd-tag :type="item.correct ? 'success' : item.answered ? 'danger' : 'default'">
+          <text class="qz-tag">{{ typeLabel(item.type) }}</text>
+          <text
+            :class="['qz-tag', item.correct ? 'qz-tag--ok' : item.answered ? 'qz-tag--danger' : 'qz-tag--warn']"
+          >
             {{ item.correct ? '正确' : item.answered ? '错误' : '未作答' }}
-          </wd-tag>
+          </text>
           <text class="score">{{ item.correct ? item.score : 0 }} / {{ item.score }} 分</text>
         </view>
 
-        <MarkdownRenderer :source="item.stem" />
+        <view class="qz-reader stem-box">
+          <MarkdownRenderer :source="item.stem" />
+        </view>
 
         <view class="option-list">
           <view
@@ -53,18 +57,16 @@
           }}
         </view>
 
-        <view class="analysis" v-if="item.analysis">
+        <view class="qz-reader analysis" v-if="item.analysis">
           <view class="analysis-title">解析</view>
           <MarkdownRenderer :source="item.analysis" />
         </view>
       </view>
 
-      <view class="actions">
-        <wd-button type="primary" block @click="goHome">返回首页</wd-button>
-      </view>
+      <view class="qz-btn qz-btn--primary qz-btn--block" @click="goHome">返回首页</view>
     </template>
 
-    <view v-else class="loading">加载中…</view>
+    <view v-else class="qz-loading">加载中…</view>
   </view>
 </template>
 
@@ -90,6 +92,10 @@ onLoad(async (query) => {
   }
 })
 
+/**
+ * 与答题页同一套口径：正确答案是绿的，用户选错的那项是红的。
+ * ⚠️ 颜色从不单独表意——同一屏还有「正确 / 错误 / 未作答」文字标签与「正确答案」一行。
+ */
 function optionClass(item: QuizResultItemVO, label: string) {
   if (item.correctAnswers.includes(label)) return 'correct'
   if (item.userAnswers.includes(label)) return 'wrong'
@@ -107,91 +113,98 @@ function typeLabel(type: string) {
 
 <style lang="scss" scoped>
 .page {
-  padding: 24rpx;
+  padding: 24rpx 24rpx 48rpx;
 }
-.card {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 24rpx;
-  margin-bottom: 24rpx;
-}
+
 .summary {
-  display: flex;
-  margin-bottom: 16rpx;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24rpx 16rpx;
+  padding: 32rpx 28rpx;
 }
 .stat {
-  flex: 1;
   text-align: center;
 }
 .num {
-  font-size: 32rpx;
-  font-weight: 600;
+  font-size: $text-xl;
+  font-weight: 500;
+  color: $app-ink;
 }
 .lbl {
   margin-top: 4rpx;
-  font-size: 24rpx;
-  color: $app-text-secondary;
+  font-size: $text-sm;
+  color: $app-ink-muted;
 }
+
 .tip {
   padding: 20rpx 24rpx;
   margin-bottom: 24rpx;
-  background: #fdf6ec;
-  color: #e6a23c;
-  border-radius: 12rpx;
-  font-size: 26rpx;
+  background: $app-warn-soft;
+  color: $app-ink;
+  border-radius: $radius-md;
+  font-size: $text-base;
+}
+
+.item {
+  padding: 24rpx 28rpx;
 }
 .item-head {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
 }
 .index {
-  font-weight: 600;
+  font-weight: 500;
+  color: $app-ink;
 }
 .score {
-  font-size: 24rpx;
-  color: $app-text-secondary;
+  font-size: $text-sm;
+  color: $app-ink-muted;
 }
+
+.stem-box {
+  padding: 20rpx 24rpx;
+  margin-bottom: 16rpx;
+  font-size: $text-md;
+  line-height: 1.7;
+}
+
 .option-list {
   margin: 16rpx 0;
 }
 .option {
-  padding: 8rpx 12rpx;
-  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  border-radius: $radius-sm;
   margin: 8rpx 0;
+  color: $app-ink;
 }
 .option.correct {
-  background: #f0f9eb;
-  color: #67c23a;
+  background: $app-ok-soft;
+  color: $app-ink-green;
 }
 .option.wrong {
-  background: #fef0f0;
-  color: #f56c6c;
+  background: $app-danger-soft;
+  color: $app-danger;
 }
 .opt-label {
-  font-weight: 600;
+  font-weight: 500;
   margin-right: 8rpx;
 }
+
 .answers {
-  font-size: 26rpx;
-  color: $app-text-secondary;
+  font-size: $text-base;
+  color: $app-ink-muted;
 }
+
 .analysis {
-  margin-top: 16rpx;
-  padding-top: 16rpx;
-  border-top: 1rpx solid #ebeef5;
+  margin-top: 20rpx;
+  padding: 20rpx 24rpx;
 }
 .analysis-title {
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 8rpx;
-}
-.actions {
-  margin: 32rpx 0 48rpx;
-}
-.loading {
-  padding: 80rpx 0;
-  text-align: center;
-  color: $app-text-secondary;
+  color: $app-ink;
 }
 </style>

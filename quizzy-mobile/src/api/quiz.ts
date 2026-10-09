@@ -1,5 +1,5 @@
 import request, { unwrap } from './request'
-import type { AnswerResultVO, PaperRuleDTO, SessionResultVO, SessionVO } from '@/types'
+import type { AnswerResultVO, PageResult, PaperRuleDTO, SessionResultVO, SessionVO } from '@/types'
 
 export function startQuiz(payload: {
   sourceType: string
@@ -30,4 +30,9 @@ export function abandonSession(id: number) {
 
 export function getSessionResult(id: number) {
   return unwrap<SessionResultVO>(request.get(`/quiz/sessions/${id}/result`))
+}
+
+/** 答题记录列表。`status` 不传＝全部；传 IN_PROGRESS / COMPLETED / ABANDONED 可筛。 */
+export function listSessions(page: number, size: number, status?: string) {
+  return unwrap<PageResult<SessionVO>>(request.get('/quiz/sessions', { params: { page, size, status } }))
 }

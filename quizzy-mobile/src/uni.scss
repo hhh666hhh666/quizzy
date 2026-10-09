@@ -1,7 +1,68 @@
 // 全局 scss 变量（uni-app 会把本文件注入到每个组件的样式里）。
 // ⚠️ 这里刻意不 import wot-design-uni 的任何文件：它的组件各自 import 自己的样式，
 // 是自洽的；在此再引一次只会多一个失败点。
-$app-primary: #409eff;
-$app-bg: #f5f7fa;
-$app-text: #303133;
-$app-text-secondary: #909399;
+
+// ── 色板（2026-10-09 起与 PC 端同一套，见 docs/adr/0033-mobile-visual-unification.md）──
+// ⚠️ 移动端写不了 oklch：微信小程序内置浏览器不一定认，所以这里落的是
+//    `quizzy-web/src/styles/tokens.css` 里 oklch 值的 **hex 换算结果**。
+//    换算表在 `.workbuddy/stitch/tokens-hex.json`（不入库，可重算）。
+//    改颜色的顺序：先改 PC 端 tokens.css → 按表换算 → 抄到这里。
+//
+// 面：三层都带颜色，但都保持高亮度、低彩度（L3：有色而不打架）
+$app-canvas: #eef4fb; // 页面底：冷调浅面
+$app-surface: #f9fcff; // 卡片面：近白
+$app-surface-2: #e2edf8; // 次级面：交替带 / 输入框底
+$app-reader: #ffffff; // ⚠️ 阅读面：读长文字的那层（题干 / 解析），有意留近白，不许上色
+$app-tint-blue: #deefff; // 受控色板：蓝（默认容器色）
+$app-tint-green: #ddf6e4;
+$app-tint-amber: #fef0d4;
+
+// 线
+$app-line: #d4dce5;
+$app-line-soft: #e3e8ee;
+
+// 字（四档）
+$app-ink-strong: #090d16; // 最重的强调
+$app-ink: #171d29; // 正文 / 标题
+$app-ink-muted: #575e6c; // 次要文字
+$app-ink-subtle: #808693; // 占位符 / 装饰。⚠️ 有信息量的小字一律用 muted，本档达不到小字 AA
+
+// 主色与语义色（各配一枚 soft 浅底）
+$app-brand: #326ad9; // 主色：全站唯一的强调色
+$app-brand-soft: #d8e9ff;
+$app-ok: #00884b;
+$app-ok-soft: #d4f7de;
+$app-warn: #c78200;
+$app-warn-soft: #ffeaca;
+$app-danger: #cc3336;
+$app-danger-soft: #ffe4df;
+
+// 深字色：tint / soft 底上的彩字用（语义色本体在浅底上达不到小字 AA）
+$app-ink-blue: #2552aa;
+$app-ink-green: #006c35;
+
+// ── 形状：圆角整体偏大一档（宽松感的一部分）──
+$radius-xs: 10rpx; // 5px
+$radius-sm: 16rpx; // 8px
+$radius-md: 20rpx; // 10px
+$radius-lg: 28rpx; // 14px
+$radius-xl: 40rpx; // 20px
+
+// ── 阴影：柔和、扩散大、冷调色相（不是纯黑）──
+$shadow-sm: 0 4rpx 8rpx -2rpx rgba(43, 42, 70, 0.07), 0 2rpx 4rpx -2rpx rgba(43, 42, 70, 0.05);
+$shadow-md: 0 16rpx 40rpx -12rpx rgba(43, 42, 70, 0.12), 0 4rpx 12rpx -4rpx rgba(43, 42, 70, 0.07);
+
+// ── 字阶（rpx：750rpx = 375px，即 1px = 2rpx）──
+$text-xs: 22rpx; // 11px
+$text-sm: 24rpx; // 12px
+$text-base: 26rpx; // 13px
+$text-md: 28rpx; // 14px —— 正文
+$text-lg: 32rpx; // 16px
+$text-xl: 40rpx; // 20px
+$text-2xl: 48rpx; // 24px
+
+// 兼容旧名（早期页面用过；新代码请用上面的语义名）
+$app-primary: $app-brand;
+$app-bg: $app-canvas;
+$app-text: $app-ink;
+$app-text-secondary: $app-ink-muted;

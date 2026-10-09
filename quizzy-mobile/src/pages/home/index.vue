@@ -5,19 +5,41 @@
       <view class="sub">今天也来练几道吧</view>
     </view>
 
-    <view class="card">
-      <wd-cell title="快速练习" label="按分类 / 题型 / 难度随机抽题" is-link @click="goQuick" />
+    <view class="entries">
+      <view class="entry" @click="go('/pages/quick/index')">
+        <view class="entry-main">
+          <text class="entry-title">快速练习</text>
+          <text class="entry-sub">按分类 / 题型 / 难度随机抽题</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+
+      <view class="entry" @click="go('/pages/wrongbook/index')">
+        <view class="entry-main">
+          <text class="entry-title">错题本</text>
+          <text class="entry-sub">答错的题，连续答对后自动移出</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+
+      <view class="entry" @click="go('/pages/history/index')">
+        <view class="entry-main">
+          <text class="entry-title">答题记录</text>
+          <text class="entry-sub">看每次练习的结果与解析</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+
+      <view class="entry" @click="go('/pages/paper/index')">
+        <view class="entry-main">
+          <text class="entry-title">试卷</text>
+          <text class="entry-sub">从已有试卷开始答题（只读）</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
     </view>
 
-    <view class="card">
-      <wd-cell title="错题本" value="下一轮" />
-      <wd-cell title="答题记录" value="下一轮" />
-      <wd-cell title="试卷" value="下一轮" />
-    </view>
-
-    <view class="actions">
-      <wd-button type="error" plain block @click="onLogout">退出登录</wd-button>
-    </view>
+    <view class="logout" @click="onLogout">退出登录</view>
   </view>
 </template>
 
@@ -37,38 +59,83 @@ onShow(async () => {
   }
 })
 
-function goQuick() {
-  uni.navigateTo({ url: '/pages/quick/index' })
+function go(url: string) {
+  uni.navigateTo({ url })
 }
 
 function onLogout() {
-  store.logout()
-  uni.reLaunch({ url: '/pages/login/index' })
+  uni.showModal({
+    title: '提示',
+    content: '确定退出登录？',
+    success: (res) => {
+      if (!res.confirm) return
+      store.logout()
+      uni.reLaunch({ url: '/pages/login/index' })
+    }
+  })
 }
 </script>
 
 <style lang="scss" scoped>
 .page {
-  padding: 24rpx;
+  padding: 24rpx 24rpx 48rpx;
 }
 .hero {
-  padding: 32rpx 16rpx 40rpx;
+  padding: 32rpx 8rpx 36rpx;
 }
 .hello {
-  font-size: 44rpx;
-  font-weight: 600;
+  font-size: $text-2xl;
+  font-weight: 500;
+  color: $app-ink-strong;
 }
 .sub {
   margin-top: 8rpx;
-  color: $app-text-secondary;
+  font-size: $text-md;
+  color: $app-ink-muted;
 }
-.card {
-  background: #fff;
-  border-radius: 16rpx;
+
+.entries {
+  background: $app-surface;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
   overflow: hidden;
-  margin-bottom: 24rpx;
 }
-.actions {
+.entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx;
+  border-bottom: 1rpx solid $app-line-soft;
+}
+.entry:last-child {
+  border-bottom: none;
+}
+.entry-main {
+  flex: 1;
+}
+.entry-title {
+  display: block;
+  font-size: $text-lg;
+  color: $app-ink;
+}
+.entry-sub {
+  display: block;
+  margin-top: 4rpx;
+  font-size: $text-sm;
+  color: $app-ink-muted;
+}
+.arrow {
+  flex: none;
+  margin-left: 16rpx;
+  font-size: 36rpx;
+  color: $app-ink-subtle;
+}
+
+/* 退出是低频且不可逆的操作，降级为文字链，不再用整块危险色按钮抢视觉重心 */
+.logout {
   margin-top: 40rpx;
+  text-align: center;
+  font-size: $text-sm;
+  color: $app-ink-subtle;
 }
 </style>

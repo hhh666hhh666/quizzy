@@ -2,35 +2,43 @@
   <view class="page">
     <template v-if="session">
       <view class="head">
-        <view class="title">{{ session.title }}</view>
-        <view class="meta">
-          第 {{ current + 1 }} / {{ questions.length }} 题 · 已得 {{ session.obtainedScore }} 分
+        <view class="head-main">
+          <text class="counter">第 {{ current + 1 }} / {{ questions.length }} 题</text>
+          <text class="head-score">已得 {{ session.obtainedScore }} 分</text>
+        </view>
+        <view class="head-right">
+          <text class="percent">{{ percent }}%</text>
+          <text class="abandon" @click="onAbandon">放弃本次</text>
         </view>
       </view>
-      <progress :percent="answeredPercent" stroke-width="6" activeColor="#409eff" />
 
-      <view class="card" v-if="currentQuestion">
-        <view class="tags">
-          <wd-tag type="primary">{{ typeLabel(currentQuestion.type) }}</wd-tag>
-          <wd-tag>{{ currentQuestion.score }} 分</wd-tag>
-        </view>
+      <view class="progress">
+        <view class="progress-fill" :style="{ width: percent + '%' }" />
+      </view>
 
-        <view class="stem">
-          <MarkdownRenderer :source="currentQuestion.stem" />
-        </view>
-
-        <!-- 选项自己排：整行可点、内容多行自适应。
-             组件库的 radio / checkbox 会把块级内容排成居中文本（选项一多就参差不齐），
-             而且点击落在行内元素上不一定触发选中。 -->
-        <view class="locked-tip" v-if="reviewing">
-          本题已作答，答案不可修改；想重做可以另开一次练习。
+      <template v-if="currentQuestion">
+        <view class="qz-reader stem-card">
+          <view class="tags">
+            <text class="qz-tag qz-tag--brand">{{ typeLabel(currentQuestion.type) }}</text>
+            <text class="qz-tag">{{ currentQuestion.score }} 分</text>
+          </view>
+          <view class="stem">
+            <MarkdownRenderer :source="currentQuestion.stem" />
+          </view>
         </view>
 
         <view class="options">
+          <view class="locked-tip" v-if="reviewing">
+            本题已作答，答案不可修改；想重做可以另开一次练习。
+          </view>
+
+          <!-- 选项自己排：整行可点、内容多行自适应。
+               组件库的 radio / checkbox 会把块级内容排成居中文本（选项一多就参差不齐），
+               而且点击落在行内元素上不一定触发选中。 -->
           <view
             v-for="option in currentQuestion.options"
             :key="option.label"
-            :class="['option', { picked: isPicked(option.label), locked: submitted }]"
+            :class="['option', optionState(option.label)]"
             @click="onPick(option.label)"
           >
             <view :class="['marker', currentQuestion.type === 'MULTI' ? 'marker--square' : '']">
@@ -50,30 +58,34 @@
             {{ verdictCorrect ? '回答正确' : '回答错误' }}
           </view>
           <view class="fb-answer">正确答案：{{ verdictAnswers.join(', ') }}</view>
-          <view class="fb-analysis" v-if="verdictAnalysis">
-            <MarkdownRenderer :source="verdictAnalysis" />
-          </view>
         </view>
-      </view>
 
-      <view class="actions">
-        <wd-button :disabled="current === 0" plain @click="go(current - 1)">上一题</wd-button>
-        <wd-button v-if="!submitted" type="primary" :loading="submitting" @click="onSubmit">
-          提交本题
-        </wd-button>
-        <wd-button v-else type="primary" @click="go(current + 1)">下一题</wd-button>
-      </view>
-      <view class="actions">
-        <wd-button v-if="current === questions.length - 1" type="success" block @click="onFinish">
-          结束并查看结果
-        </wd-button>
-      </view>
-      <view class="actions">
-        <wd-button type="error" plain block @click="onAbandon">放弃本次</wd-button>
-      </view>
+        <view class="qz-reader analysis" v-if="verdictAnalysis">
+          <view class="analysis-title">解析</view>
+          <MarkdownRenderer :source="verdictAnalysis" />
+        </view>
+      </template>
     </template>
 
-    <view v-else class="loading">加载中…</view>
+    <view v-else class="qz-loading">加载中…</view>
+
+    <!-- 底部操作条：一屏只留一个主按钮，「放弃」已降级为顶部文字链 -->
+    <view class="actionbar" v-if="session">
+      <view class="action-inner">
+        <view
+          :class="['qz-btn', 'qz-btn--ghost', 'btn-prev', current === 0 ? 'qz-btn--disabled' : '']"
+          @click="go(current - 1)"
+        >
+          上一题
+        </view>
+        <view v-if="!submitted" class="qz-btn qz-btn--primary btn-main" @click="onSubmit">
+          {{ submitting ? '提交中…' : '提交本题' }}
+        </view>
+        <view v-else class="qz-btn qz-btn--primary btn-main" @click="onNext">
+          {{ current === questions.length - 1 ? '结束并查看结果' : '下一题' }}
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -96,9 +108,9 @@ const submitting = ref(false)
 const questions = computed<QuizQuestionVO[]>(() => session.value?.questions || [])
 const currentQuestion = computed<QuizQuestionVO | null>(() => questions.value[current.value] || null)
 const submitted = computed(() => Boolean(currentQuestion.value?.answered) || feedback.value !== null)
-const answeredPercent = computed(() => {
+const percent = computed(() => {
   if (!questions.value.length) return 0
-  return Math.round((questions.value.filter((q) => q.answered).length * 100) / questions.value.length)
+  return Math.round(((current.value + 1) * 100) / questions.value.length)
 })
 
 // 「刚提交那一刻」的反馈来自接口的返回体；「回看一道已作答的题」时则要读题目本身——
@@ -114,6 +126,22 @@ const verdictCorrect = computed(() =>
   feedback.value ? feedback.value.isCorrect : currentQuestion.value?.isCorrect === true)
 // 有答案就显示：未作答时两者皆空，于是自然不显示
 const showVerdict = computed(() => verdictAnswers.value.length > 0 || verdictAnalysis.value !== '')
+
+/**
+ * 选项的三种结果态（主人 2026-10-09 定）：
+ *   picked  未作答时的选中——主色
+ *   correct 已作答，且该选项是正确答案——绿
+ *   wrong   已作答，且该选项是用户选错的——红
+ * ⚠️ 颜色从不单独表意：绿 / 红同时配有「回答正确 / 回答错误」标题与「正确答案」一行，
+ *    色盲与高对比模式下照样读得出来。
+ */
+function optionState(label: string): string {
+  if (!submitted.value) return isPicked(label) ? 'picked' : ''
+  const isRightAnswer = verdictAnswers.value.includes(label)
+  if (isPicked(label)) return isRightAnswer ? 'correct' : 'wrong'
+  // 用户没选、但确实是正确答案——一并染绿，指明「该选的是这个」
+  return isRightAnswer ? 'correct' : ''
+}
 
 onShow(() => {
   ensureLogin()
@@ -169,6 +197,14 @@ function go(index: number) {
   if (index < 0 || index >= questions.value.length) return
   current.value = index
   syncPicked()
+}
+
+function onNext() {
+  if (current.value === questions.value.length - 1) {
+    onFinish()
+    return
+  }
+  go(current.value + 1)
 }
 
 async function onSubmit() {
@@ -229,26 +265,57 @@ function typeLabel(type: string) {
 
 <style lang="scss" scoped>
 .page {
-  padding: 24rpx;
+  padding: 24rpx 24rpx 200rpx;
 }
+
 .head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 12rpx;
+  margin-bottom: 16rpx;
 }
-.title {
-  font-size: 32rpx;
-  font-weight: 600;
+.head-main {
+  display: flex;
+  align-items: baseline;
 }
-.meta {
-  font-size: 24rpx;
-  color: $app-text-secondary;
+.counter {
+  font-size: $text-md;
+  font-weight: 500;
+  color: $app-ink;
 }
-.card {
-  background: #fff;
-  border-radius: 16rpx;
-  padding: 24rpx;
+.head-score {
+  margin-left: 16rpx;
+  font-size: $text-sm;
+  color: $app-ink-muted;
+}
+.head-right {
+  display: flex;
+  align-items: baseline;
+}
+.percent {
+  font-size: $text-sm;
+  color: $app-ink-muted;
+}
+.abandon {
+  margin-left: 20rpx;
+  font-size: $text-sm;
+  color: $app-ink-subtle;
+}
+
+.progress {
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: $app-line-soft;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4rpx;
+  background: $app-brand;
+}
+
+.stem-card {
+  padding: 28rpx;
   margin-top: 24rpx;
 }
 .tags {
@@ -257,39 +324,53 @@ function typeLabel(type: string) {
   margin-bottom: 16rpx;
 }
 .stem {
-  margin-bottom: 16rpx;
+  font-size: $text-lg;
+  line-height: 1.75;
+  color: $app-ink;
+}
+
+.options {
+  margin-top: 24rpx;
 }
 .locked-tip {
-  margin-top: 8rpx;
   padding: 16rpx 20rpx;
-  border-radius: 12rpx;
-  background: #f4f4f5;
-  color: $app-text-secondary;
-  font-size: 24rpx;
+  border-radius: $radius-md;
+  background: $app-surface-2;
+  color: $app-ink-muted;
+  font-size: $text-sm;
   line-height: 1.5;
 }
-.options {
-  margin-top: 8rpx;
-}
+
 .option {
   display: flex;
   align-items: flex-start;
-  padding: 20rpx 16rpx;
+  padding: 20rpx;
   margin: 12rpx 0;
-  border-radius: 12rpx;
-  background: #f7f8fa;
+  border-radius: $radius-md;
+  background: $app-surface;
+  border: 1rpx solid $app-line-soft;
 }
 .option.picked {
-  background: #ecf5ff;
+  background: $app-brand-soft;
+  border-color: $app-brand;
 }
+.option.correct {
+  background: $app-ok-soft;
+  border-color: $app-ok;
+}
+.option.wrong {
+  background: $app-danger-soft;
+  border-color: $app-danger;
+}
+
 .marker {
   flex: none;
-  width: 40rpx;
-  height: 40rpx;
-  margin: 4rpx 16rpx 0 0;
-  border: 2rpx solid #c8c9cc;
+  width: 36rpx;
+  height: 36rpx;
+  margin: 6rpx 16rpx 0 0;
+  border: 2rpx solid $app-line;
   border-radius: 50%;
-  background: #fff;
+  background: $app-reader;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -299,14 +380,23 @@ function typeLabel(type: string) {
   border-radius: 8rpx;
 }
 .option.picked .marker {
-  background: $app-primary;
-  border-color: $app-primary;
+  background: $app-brand;
+  border-color: $app-brand;
+}
+.option.correct .marker {
+  background: $app-ok;
+  border-color: $app-ok;
+}
+.option.wrong .marker {
+  background: $app-danger;
+  border-color: $app-danger;
 }
 .marker-tick {
   color: #fff;
-  font-size: 24rpx;
+  font-size: 22rpx;
   line-height: 1;
 }
+
 .option-body {
   flex: 1;
   display: flex;
@@ -314,45 +404,73 @@ function typeLabel(type: string) {
 }
 .opt-label {
   flex: none;
-  font-weight: 600;
+  font-weight: 500;
   margin-right: 8rpx;
+  color: $app-ink;
+}
+.option.correct .opt-label {
+  color: $app-ink-green;
+}
+.option.wrong .opt-label {
+  color: $app-danger;
 }
 .option-content {
   flex: 1;
 }
+
 .feedback {
   margin-top: 24rpx;
-  padding-top: 24rpx;
-  border-top: 1rpx solid #ebeef5;
+  padding: 24rpx 28rpx;
+  border-radius: $radius-lg;
+  background: $app-surface;
 }
 .fb-title {
-  font-weight: 600;
+  font-size: $text-lg;
+  font-weight: 500;
   margin-bottom: 8rpx;
 }
 .fb-title.ok {
-  color: #34d19d;
+  color: $app-ok;
 }
 .fb-title.bad {
-  color: #fa4350;
+  color: $app-danger;
 }
 .fb-answer {
-  font-size: 26rpx;
-  color: $app-text-secondary;
+  font-size: $text-base;
+  color: $app-ink-muted;
 }
-.fb-analysis {
-  margin-top: 12rpx;
-}
-.actions {
+
+.analysis {
   margin-top: 24rpx;
+  padding: 24rpx 28rpx;
+}
+.analysis-title {
+  font-size: $text-md;
+  font-weight: 500;
+  color: $app-ink;
+  margin-bottom: 8rpx;
+}
+
+.actionbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: $app-reader;
+  border-top: 1rpx solid $app-line;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.action-inner {
   display: flex;
+  align-items: center;
   gap: 16rpx;
+  padding: 16rpx 24rpx;
 }
-.actions > * {
+.btn-prev {
+  flex: none;
+  width: 200rpx;
+}
+.btn-main {
   flex: 1;
-}
-.loading {
-  padding: 80rpx 0;
-  text-align: center;
-  color: $app-text-secondary;
 }
 </style>

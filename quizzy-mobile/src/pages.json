@@ -25,12 +25,24 @@
     {
       "path": "pages/result/index",
       "style": { "navigationBarTitleText": "答题结果" }
+    },
+    {
+      "path": "pages/wrongbook/index",
+      "style": { "navigationBarTitleText": "错题本" }
+    },
+    {
+      "path": "pages/history/index",
+      "style": { "navigationBarTitleText": "答题记录" }
+    },
+    {
+      "path": "pages/paper/index",
+      "style": { "navigationBarTitleText": "试卷" }
     }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "Quizzy",
-    "navigationBarBackgroundColor": "#409EFF",
-    "backgroundColor": "#F5F7FA"
+    "navigationBarBackgroundColor": "#326AD9",
+    "backgroundColor": "#EEF4FB"
   }
 }
