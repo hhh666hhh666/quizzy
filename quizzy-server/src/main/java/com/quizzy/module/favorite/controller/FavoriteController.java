@@ -58,13 +58,15 @@ public class FavoriteController {
     @Operation(summary = "新建收藏夹")
     @PostMapping("/folders")
     public Result<FavoriteFolderVO> createFolder(@Valid @RequestBody FavoriteFolderSaveDTO dto) {
-        return Result.success(favoriteService.createFolder(dto.getName(), UserContext.requireUserId()));
+        return Result.success(favoriteService.createFolder(
+                dto.getName(), dto.getIntro(), dto.getIsPublic(), UserContext.requireUserId()));
     }
 
-    @Operation(summary = "收藏夹改名（默认收藏夹也可以改）")
+    @Operation(summary = "编辑收藏夹（名字 / 简介 / 是否公开；默认收藏夹也可以改）")
     @PutMapping("/folders/{folderId}")
-    public Result<Void> renameFolder(@PathVariable Long folderId, @Valid @RequestBody FavoriteFolderSaveDTO dto) {
-        favoriteService.renameFolder(folderId, dto.getName(), UserContext.requireUserId());
+    public Result<Void> updateFolder(@PathVariable Long folderId, @Valid @RequestBody FavoriteFolderSaveDTO dto) {
+        favoriteService.updateFolder(
+                folderId, dto.getName(), dto.getIntro(), dto.getIsPublic(), UserContext.requireUserId());
         return Result.success();
     }
 

@@ -20,13 +20,15 @@ public interface FavoriteFolderMapper extends BaseMapper<FavoriteFolder> {
     @Select("""
             select f.id                 as id,
                    f.name               as name,
+                   f.intro              as intro,
                    f.is_default         as isDefault,
+                   f.is_public          as isPublic,
                    count(fq.question_id) as questionCount,
                    max(fq.create_time)   as lastAddedTime
             from favorite_folder f
             left join favorite_folder_question fq on fq.folder_id = f.id
             where f.user_id = #{userId}
-            group by f.id, f.name, f.is_default, f.create_time
+            group by f.id, f.name, f.intro, f.is_default, f.is_public, f.create_time
             order by max(fq.create_time) desc, f.create_time desc
             """)
     List<FavoriteFolderVO> selectFoldersWithStat(@Param("userId") Long userId);

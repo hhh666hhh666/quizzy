@@ -62,8 +62,10 @@ test('收藏夹页面：新建夹 → 题库批量加入 → 夹里能看到这�
   await page.goto('/favorites')
   await page.getByRole('button', { name: '新建收藏夹' }).click()
   const prompt = page.getByRole('dialog', { name: '新建收藏夹' })
-  await prompt.getByRole('textbox').fill(folder)
-  await prompt.getByRole('button', { name: '新建' }).click()
+  // ⚠️ 用 `#folder-info-name` 而不是 `getByRole('textbox')`：这个面板里现在有三个字段，
+  //    简介那一格也是 textbox → 光靠 role 定位会撞到 strict mode 违规。
+  await prompt.locator('#folder-info-name').fill(folder)
+  await prompt.getByRole('button', { name: '创建' }).click()
   await expect(page.locator('.folder-item', { hasText: folder })).toHaveCount(1)
 
   await page.goto('/questions')

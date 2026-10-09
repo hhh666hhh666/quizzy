@@ -13,13 +13,25 @@ export function listFolders() {
   return unwrap<FavoriteFolderVO[]>(request.get('/favorites/folders'))
 }
 
-export function createFolder(name: string) {
-  return unwrap<FavoriteFolderVO>(request.post('/favorites/folders', { name }))
+/**
+ * 新建 / 编辑收藏夹的请求体。
+ *
+ * ⚠️ `intro` / `isPublic` **不许做成可选发送**：编辑面板里三个字段永远一起提交，
+ * 后端也按整体覆盖写回——不发某个字段等于把它清掉，这正是「能清空简介」的实现方式。
+ */
+export interface FavoriteFolderSavePayload {
+  name: string
+  intro?: string
+  isPublic?: boolean
 }
 
-/** 改名。默认收藏夹也走这个接口——它不可删，但可以改名。 */
-export function renameFolder(folderId: number, name: string) {
-  return unwrap<void>(request.put(`/favorites/folders/${folderId}`, { name }))
+export function createFolder(name: string, intro?: string, isPublic?: boolean) {
+  return unwrap<FavoriteFolderVO>(request.post('/favorites/folders', { name, intro, isPublic }))
+}
+
+/** 编辑。默认收藏夹也走这个接口——它不可删，但可以改名。 */
+export function updateFolder(folderId: number, payload: FavoriteFolderSavePayload) {
+  return unwrap<void>(request.put(`/favorites/folders/${folderId}`, payload))
 }
 
 /** 删夹只把题从它里面移出；题若因此不属于任何夹，就不再是收藏。默认夹删不了（后端会拒）。 */

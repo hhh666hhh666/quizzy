@@ -17,8 +17,19 @@ public class FavoriteFolderVO {
 
     private String name;
 
+    /** 简介；没填时后端不返回（全局 `non_null` 序列化策略），前端按空串处理 */
+    private String intro;
+
     /** 默认收藏夹不可删除、可改名，界面据此决定「删除」按钮是否隐藏 */
     private Boolean isDefault;
+
+    /**
+     * 是否公开。
+     *
+     * <p>⚠️ **目前只是回显**（docs/adr/0032）：公开的收藏夹别人看不到，界面文案不许暗示
+     * 「公开后别人能看」。
+     */
+    private Boolean isPublic;
 
     private Long questionCount;
 

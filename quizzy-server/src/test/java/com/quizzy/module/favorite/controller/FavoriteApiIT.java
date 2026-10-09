@@ -130,6 +130,16 @@ class FavoriteApiIT extends ApiTestBase {
         return null;
     }
 
+    /** 列表接口里那个夹的完整 JSON（null 表示列表里没有它）。 */
+    private JsonNode folderOf(String token, long folderId) throws Exception {
+        for (JsonNode folder : folders(token)) {
+            if (folder.path("id").asLong() == folderId) {
+                return folder;
+            }
+        }
+        throw new AssertionError("收藏夹列表里没有 id=" + folderId);
+    }
+
     /**
      * 收藏夹页面右列的题 id，**按后端给的顺序**（不传 {@code folderId} 表示「全部收藏」）。
      *
@@ -184,6 +194,61 @@ class FavoriteApiIT extends ApiTestBase {
                 .path("data").path("list").get(0).path("favorited").asBoolean()).isTrue();
         assertThat(apiGet("/api/questions/" + questionId, token).path("data").path("favorited").asBoolean())
                 .isTrue();
+    }
+
+    @Test
+    @DisplayName("简介与公开开关：建夹带回、编辑能改，且**简介能清空**（不是只有「改得动」）")
+    void introAndPublicCanBeSetAndCleared() throws Exception {
+        JsonNode account = newAccount();
+        String token = tokenOf(account);
+
+        // 建：三个字段一起传
+        JsonNode created = apiPost("/api/favorites/folders", token,
+                payload("name", "三角洲", "intro", "考公行测真题", "isPublic", true));
+        assertThat(created.path("code").asInt()).as("建夹应当成功，实际响应：%s", created).isZero();
+        long folderId = created.path("data").path("id").asLong();
+        assertThat(created.path("data").path("intro").asText()).isEqualTo("考公行测真题");
+        assertThat(created.path("data").path("isPublic").asBoolean()).isTrue();
+
+        // 列表（走的另一条 SQL：selectFoldersWithStat 的 group by 也得带上这两列）也要回显
+        JsonNode listed = folderOf(token, folderId);
+        assertThat(listed.path("intro").asText()).as("列表接口也得带简介").isEqualTo("考公行测真题");
+        assertThat(listed.path("isPublic").asBoolean()).as("列表接口也得带公开标记").isTrue();
+
+        // 改：改名 + 改简介 + 关公开
+        assertThat(apiPut("/api/favorites/folders/" + folderId, token,
+                payload("name", "三角洲行动", "intro", "改过的简介", "isPublic", false))
+                .path("code").asInt()).isZero();
+        assertThat(folderOf(token, folderId).path("intro").asText()).isEqualTo("改过的简介");
+        assertThat(folderOf(token, folderId).path("isPublic").asBoolean()).isFalse();
+
+        // ⚠️ 关键回归：清空简介。全局 update-strategy=not_null 会让 updateById 跳过 null 字段，
+        //    这条用例就是钉着「必须用 LambdaUpdateWrapper.set()」的那个决定（曾经真实失效过）。
+        assertThat(apiPut("/api/favorites/folders/" + folderId, token,
+                payload("name", "三角洲行动", "intro", "", "isPublic", false))
+                .path("code").asInt()).isZero();
+        assertThat(folderOf(token, folderId).hasNonNull("intro"))
+                .as("清空简介后不应再返回 intro 字段（non_null 序列化下 null 就是不出现）")
+                .isFalse();
+    }
+
+    @Test
+    @DisplayName("默认收藏夹也能改简介 / 公开（它不可删，但可改）")
+    void defaultFolderIntroIsEditable() throws Exception {
+        JsonNode account = newAccount();
+        String token = tokenOf(account);
+        long userId = idOf(account);
+        long questionId = newQuestion(userId, asciiStem("dfl"));
+
+        long defaultId = favorite(token, questionId);  // 收藏一下，默认夹按需诞生
+
+        assertThat(apiPut("/api/favorites/folders/" + defaultId, token,
+                payload("name", defaultFolderName(token), "intro", "随手收的题", "isPublic", true))
+                .path("code").asInt()).isZero();
+        JsonNode after = folderOf(token, defaultId);
+        assertThat(after.path("intro").asText()).isEqualTo("随手收的题");
+        assertThat(after.path("isPublic").asBoolean()).isTrue();
+        assertThat(after.path("isDefault").asBoolean()).as("改信息不该丢掉默认标记").isTrue();
     }
 
     @Test

@@ -1,5 +1,5 @@
 ---
-description: 改代码必须同步改文档；移动/删除/重命名文件后必须全仓搜引用（含注释与脚本），提交前跑 scripts/check-doc-links.sh。
+description: 改代码必须同步改文档；改 ADR 后必须同步核对 docs/requirements/scope.md 的范围口径；移动/删除/重命名文件后必须全仓搜引用（含注释与脚本），提交前跑 scripts/check-doc-links.sh。
 alwaysApply: true
 ---
 
@@ -26,6 +26,7 @@ alwaysApply: true
 | 测试策略 | `docs/testing/`（现状看 README，设计看系统说明） |
 | CI / 镜像构建 | `.github/workflows/` + ADR 0010 / 0016 |
 | 领域词汇 | `CONTEXT.md` |
+| ADR（新卡 / 改结论 / 推翻与收窄） | `docs/requirements/scope.md`——核对**「已定范围与约束」表与「明确不做」清单**要不要跟着改：scope 是范围的真相源、ADR 是「为什么」，约束表里的 ADR 链接必须指向**当前**结论，漏改 = 索引指旧话 |
 | 受众 / 语气 / 定位（产品真相） | 根 `PRODUCT.md` |
 | 本次迭代交付项 | `CHANGELOG.md` |
 | 面向用户的功能、页面流、可用操作 | `docs/requirements/功能展望.md`——只**核对并修正**「现状缺口」列，**别新增条目当待办**（那些归 `docs/todo/`） |
@@ -45,5 +46,6 @@ alwaysApply: true
 ## 收尾
 
 - 结构性决策：结论进 `docs/adr/00NN-*.md`，**被否的选项写进同一张卡的 Considered Options**。不另设「决策过程」文档类别（原 `docs/decisions/` 已于 2026-10-06 取消，见 ADR 0024）；没结论的过程记录留在 `docs/worklog/`。
+- **改完 ADR 必须同步 `docs/requirements/scope.md`**：新结论属范围口径 → 进「已定范围与约束」表；被推翻 / 收窄 → 对应行与「明确不做」条目一起改掉。与范围无关的纯内部决策可不入表，但**核对本身不可跳**——结论会变的 ADR（如 2026-10-09 ADR 0032 玻璃口径一天改两次），引用处必须跟到最后一版。
 - 新的未决事项**不许**写在任何文档正文里 → `docs/todo/`（见 `todo-discipline` 规则）。
 - 提交前跑 `bash scripts/check-doc-links.sh`，全绿再 commit。

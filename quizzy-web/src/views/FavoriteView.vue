@@ -1,130 +1,183 @@
 <template>
   <div class="font-sans text-base text-ink">
-    <div class="rounded-xl bg-surface p-6 shadow-sm">
-      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h1 class="text-base font-medium">收藏夹</h1>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-ink-muted">将练习：{{ currentName }}</span>
-          <Input v-model.number="count" type="number" min="1" max="100" aria-label="练习题数" class="h-8 w-20 bg-reader" />
-          <Button size="sm" :disabled="starting" @click="onPractice">用收藏的题练习</Button>
+    <!--
+      两块面 + 两块面之间留一条**页面底色**的缝（v3 构图）：
+      左 = 蓝调面板（**按内容自然高度**，不铺满），右 = 近白卡片（吃满剩余高度）。
+      ⚠️ 别用 items-stretch——那样左栏会被拉到与右卡等高，正是要避免的。
+    -->
+    <div class="flex items-start gap-6">
+      <!--
+        左：夹列表。
+        ⚠️ `.folder-item` 是 e2e 的钩子，别改名（12 号 spec 在用）。
+        ⚠️ 面板背景是 `bg-tint-blue`（品牌浅蓝面），**不是** `bg-surface`——它是「有色区块」，与右卡等地位。
+      -->
+      <aside class="w-[240px] shrink-0 rounded-xl bg-tint-blue p-3">
+        <div class="mb-2 flex items-center justify-between gap-2 px-1">
+          <h1 class="text-sm font-medium">收藏夹</h1>
+          <!-- ⚠️ 新建入口是「静的次要控件」，**不是**实色主按钮：一页只有一个主色实底（右上的「用收藏的题练习」）。 -->
+          <Button variant="outline" size="xs" class="bg-surface/70" @click="onCreateFolder">
+            <PlusIcon class="size-3" />
+            新建收藏夹
+          </Button>
         </div>
-      </div>
 
-      <div class="flex items-start gap-4">
-        <!-- 左：夹列表。⚠️ `.folder-item` 是 e2e 的钩子，别改名（12 号 spec 在用） -->
-        <aside class="w-[220px] shrink-0">
-          <Button variant="outline" class="mb-2 w-full" @click="onCreateFolder">新建收藏夹</Button>
-          <ul class="overflow-hidden rounded-lg border border-line-soft py-1">
-            <li
-              class="folder-item group flex cursor-pointer items-center gap-1.5 px-3 py-2 text-sm"
-              :class="selected === null ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
-              @click="select(null)"
-            >
-              <span class="min-w-0 flex-1 truncate">全部收藏</span>
-            </li>
-            <li
-              v-for="folder in folders"
-              :key="folder.id"
-              class="folder-item group flex cursor-pointer items-center gap-1.5 px-3 py-2 text-sm"
-              :class="selected === folder.id ? 'bg-brand-soft font-medium text-ink-blue' : 'text-ink hover:bg-surface'"
-              @click="select(folder.id)"
-            >
-              <span class="min-w-0 flex-1 truncate" :title="folder.name">
-                {{ folder.name }}
-                <span v-if="folder.isDefault" class="ml-1 rounded-sm bg-surface-2 px-1 py-0.5 text-2xs text-ink-muted">默认</span>
-              </span>
-              <span class="shrink-0 text-xs tabular-nums text-ink-muted">{{ folder.questionCount }}</span>
-              <span class="hidden shrink-0 items-center gap-1.5 group-hover:flex group-focus-within:flex">
-                <button type="button" class="link-button text-xs text-brand hover:underline" @click.stop="onRenameFolder(folder)">改名</button>
+        <ul class="flex flex-col gap-0.5">
+          <li
+            v-for="item in folderItems"
+            :key="item.key"
+            class="folder-item group relative flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-2 text-sm"
+            :class="
+              selected === item.id
+                ? 'bg-surface font-medium text-ink-blue shadow-sm before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-brand'
+                : 'text-ink hover:bg-surface/50'
+            "
+            @click="select(item.id)"
+          >
+            <span class="min-w-0 flex-1 truncate" :title="item.name">
+              {{ item.name }}
+              <span
+                v-if="item.isDefault"
+                class="ml-1 rounded-sm bg-surface/70 px-1 py-0.5 text-2xs text-ink-muted"
+              >默认</span>
+            </span>
+            <span class="shrink-0 text-xs tabular-nums text-ink-muted">{{ item.questionCount }}</span>
+
+            <!--
+              ⚠️ ⋯ 触发键**不能只在 hover 时才出现**：只有鼠标的人 hover 得到，键盘与触屏的用户够不着。
+              做法 = 常驻 DOM（保证可聚焦、可被读屏读到），但**平时透明度为 0**，hover / focus-within / 触摸
+              （`@media (hover: none)` 下由 CSS 强制常显）才浮现。`全部收藏`不是真实的夹，不给 ⋯。
+            -->
+            <DropdownMenu v-if="item.id !== null">
+              <DropdownMenuTrigger as-child>
                 <button
-                  v-if="!folder.isDefault"
                   type="button"
-                  class="link-button text-xs text-danger hover:underline"
-                  @click.stop="onDeleteFolder(folder)"
+                  class="fav-more shrink-0 rounded-sm p-0.5 text-ink-subtle opacity-0 transition-opacity hover:text-ink focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-focus group-hover:opacity-100"
+                  :aria-label="`${item.name} 的操作`"
+                  @click.stop
                 >
-                  删除
+                  <MoreHorizontalIcon class="size-4" />
                 </button>
-              </span>
-            </li>
-          </ul>
-        </aside>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" class="w-32">
+                <DropdownMenuItem @click="onEditFolder(item.raw!)">编辑信息</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" @click="onDeleteFolder(item.raw!)">删除</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </li>
+        </ul>
 
-        <!-- 右：这个夹里的题 -->
-        <div class="min-w-0 flex-1">
-          <div class="overflow-x-auto rounded-lg border border-line-soft" :class="loading ? 'pointer-events-none opacity-60' : ''">
-            <table class="w-full border-collapse text-sm">
-              <thead>
-                <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
-                  <th class="px-3 py-2.5 font-medium">ID</th>
-                  <th class="px-3 py-2.5 font-medium">题型</th>
-                  <th class="px-3 py-2.5 font-medium">题干</th>
-                  <th class="px-3 py-2.5 font-medium">分类</th>
-                  <th class="px-3 py-2.5 font-medium">收藏时间</th>
-                  <th class="px-3 py-2.5 text-center font-medium">收藏</th>
-                  <th v-if="selected !== null" class="px-3 py-2.5 font-medium">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in rows" :key="row.id" class="fav-row border-b border-line-soft transition-colors hover:bg-surface-2/50">
-                  <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
-                  <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
-                  <td class="max-w-0 px-3 py-2.5">
-                    <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '-' }}</td>
-                  <td class="whitespace-nowrap px-3 py-2.5 text-ink-muted">{{ formatTime(row.favoritedAt) }}</td>
-                  <td class="px-3 py-2.5 text-center">
-                    <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
-                  </td>
-                  <td v-if="selected !== null" class="whitespace-nowrap px-3 py-2.5">
-                    <button type="button" class="link-button text-danger hover:underline" @click="onRemoveFromFolder(row)">移出此夹</button>
-                  </td>
-                </tr>
-                <tr v-if="!rows.length">
-                  <td :colspan="selected !== null ? 7 : 6" class="px-4 py-8 text-center text-sm leading-loose text-ink-muted">
-                    这个收藏夹里还没有题。去「题库」用星标或「加入收藏夹」把题收进来吧。
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <!-- 一个夹都没有时的空态：面板还是要给「新建」这个出口，否则整块是死的 -->
+        <p v-if="!folders.length" class="px-1 py-2 text-xs leading-relaxed text-ink-muted">
+          还没有自己的收藏夹。点上面的「新建收藏夹」建一个吧。
+        </p>
+      </aside>
+
+      <!-- 右：这个夹里的题。这块吃满剩余宽度与高度，与左栏的「自然高度」形成对比 -->
+      <div class="flex min-h-[calc(100vh-9.5rem)] min-w-0 flex-1 flex-col rounded-xl bg-surface p-5 shadow-sm">
+        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-sm font-medium">{{ currentName }}</h2>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-ink-muted">将练习：{{ currentName }}</span>
+            <Input v-model.number="count" type="number" min="1" max="100" aria-label="练习题数" class="h-8 w-20 bg-reader" />
+            <Button size="sm" :disabled="starting" @click="onPractice">用收藏的题练习</Button>
           </div>
-
-          <TablePagination :total="total" :page="page" :size="size" @update:page="(p) => { page = p; loadQuestions() }" />
         </div>
+
+        <div
+          class="overflow-x-auto rounded-lg border border-line-soft"
+          :class="loading ? 'pointer-events-none opacity-60' : ''"
+        >
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="border-b border-line bg-surface-2/60 text-left text-xs text-ink-muted">
+                <th class="px-3 py-2.5 font-medium">ID</th>
+                <th class="px-3 py-2.5 font-medium">题型</th>
+                <th class="px-3 py-2.5 font-medium">题干</th>
+                <th class="px-3 py-2.5 font-medium">分类</th>
+                <th class="px-3 py-2.5 font-medium">收藏时间</th>
+                <th class="px-3 py-2.5 text-center font-medium">收藏</th>
+                <th v-if="selected !== null" class="px-3 py-2.5 font-medium">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="row in rows"
+                :key="row.id"
+                class="fav-row border-b border-line-soft transition-colors hover:bg-surface-2/50"
+              >
+                <td class="px-3 py-2.5 text-ink-muted">{{ row.id }}</td>
+                <td class="px-3 py-2.5"><TypeTag :type="row.type" /></td>
+                <td class="max-w-0 px-3 py-2.5">
+                  <span class="block truncate" :title="row.stem">{{ row.stem }}</span>
+                </td>
+                <td class="whitespace-nowrap px-3 py-2.5">{{ row.categoryName || '-' }}</td>
+                <td class="whitespace-nowrap px-3 py-2.5 text-ink-muted">{{ formatTime(row.favoritedAt) }}</td>
+                <td class="px-3 py-2.5 text-center">
+                  <FavoriteStar :question-id="row.id" :favorited="row.favorited" @change="onStarChange" />
+                </td>
+                <td v-if="selected !== null" class="whitespace-nowrap px-3 py-2.5">
+                  <button type="button" class="link-button text-danger hover:underline" @click="onRemoveFromFolder(row)">
+                    移出此夹
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="!rows.length">
+                <td :colspan="selected !== null ? 7 : 6" class="px-4 py-8 text-center text-sm leading-loose text-ink-muted">
+                  这个收藏夹里还没有题。去「题库」用星标或「加入收藏夹」把题收进来吧。
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <TablePagination
+          :total="total"
+          :page="page"
+          :size="size"
+          class="mt-auto pt-4"
+          @update:page="(p: number) => { page = p; loadQuestions() }"
+        />
       </div>
     </div>
+
+    <!-- 收藏夹信息面板（新建 / 编辑共用，玻璃浮层） -->
+    <FolderInfoDialog v-model:visible="infoVisible" :folder="editingFolder" @saved="onFolderSaved" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { confirmBox, promptBox } from '@/lib/box'
+import { MoreHorizontalIcon, PlusIcon } from '@lucide/vue'
+import { confirmBox } from '@/lib/box'
 import { toast } from '@/lib/toast'
 import FavoriteStar from '@/components/FavoriteStar.vue'
+import FolderInfoDialog from '@/components/FolderInfoDialog.vue'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import TablePagination from '@/components/TablePagination.vue'
 import TypeTag from '@/components/TypeTag.vue'
-import {
-  createFolder,
-  deleteFolder,
-  listFolders,
-  pageFavoriteQuestions,
-  practiceFavorites,
-  removeFromFolder,
-  renameFolder
-} from '@/api/favorite'
+import { deleteFolder, listFolders, pageFavoriteQuestions, practiceFavorites, removeFromFolder } from '@/api/favorite'
 import type { FavoriteFolderVO, QuestionListItemVO } from '@/types'
 
 /**
- * 收藏夹页面：左边是夹、右边是这个夹里的题。
+ * 收藏夹页面（v3 构图）：左边是蓝调面板里的夹、右边是近白卡片里这个夹的题。
  *
  * 三条与状态有关的取值，改之前先看 `docs/adr/0030`：
  * - `selected === null` 表示**「全部收藏」**（跨夹、不重复计），它不是一个真实的夹；
  * - 夹列表的顺序由后端给（按「最近有新题进来」倒序），前端不再排一次；
  * - 右列的题也由后端按**最近收藏的排最前**给（`GET /api/favorites/questions`，不是题库列表接口），
  *   前端同样不再排一次——**别在这张表上加 `sortable`**，那只会排当前这一页，与服务端排序打架。
+ *
+ * 浮层材质见 `docs/adr/0032`：这里是**玻璃**（.glass），不是实底。
  */
 const router = useRouter()
 
@@ -137,6 +190,36 @@ const size = ref(10)
 const count = ref(20)
 const loading = ref(false)
 const starting = ref(false)
+const infoVisible = ref(false)
+const editingFolder = ref<FavoriteFolderVO | null>(null)
+
+/**
+ * 左栏渲染用的行。第一行是**虚拟的**「全部收藏」（`id === null`），后面才是真实的夹——
+ * 前端不再手拼三处 `folder.id !== null` 判断，统一在这里摊平成一份。
+ * `raw` 携带原始夹对象，供 ⋯ 菜单用（「全部收藏」没有 raw，也不画 ⋯）。
+ */
+const folderItems = computed(() =>
+  [
+    { key: 'all', id: null as number | null, name: '全部收藏', questionCount: allCount.value, isDefault: false, raw: null as FavoriteFolderVO | null },
+    ...folders.value.map((folder) => ({
+      key: `f-${folder.id}`,
+      id: folder.id as number | null,
+      name: folder.name,
+      questionCount: folder.questionCount,
+      isDefault: folder.isDefault,
+      raw: folder
+    }))
+  ]
+)
+
+/**
+ * 「全部收藏」的计数。
+ *
+ * ⚠️ 它是各夹计数之和（后端给的是「每个夹里有多少题」），**不是**去重后的总数——
+ * 一道题可以同时躺在两个夹里。后端没有提供「去重总数」的端点，这里就先如实标注成合计。
+ * 真要精确值，得后端加字段，别在前端拍一个数出来。
+ */
+const allCount = computed(() => folders.value.reduce((sum, folder) => sum + (folder.questionCount ?? 0), 0))
 
 const currentName = computed(() => {
   if (selected.value === null) {
@@ -178,29 +261,19 @@ function select(folderId: number | null) {
   loadQuestions()
 }
 
-async function onCreateFolder() {
-  const name = await promptBox({
-    title: '新建收藏夹',
-    message: '给新收藏夹起个名字',
-    confirmText: '新建',
-    placeholder: '最多 20 个字',
-    validator: (v) => (v.trim() ? true : '名字不能为空')
-  })
-  if (name === null) return
-  await createFolder(name)
-  await loadFolders()
+/** 新建：打开空白的信息面板（`editingFolder` 置空 = 面板走 POST 分支）。 */
+function onCreateFolder() {
+  editingFolder.value = null
+  infoVisible.value = true
 }
 
-async function onRenameFolder(folder: FavoriteFolderVO) {
-  const name = await promptBox({
-    title: '收藏夹改名',
-    message: '改成什么名字？',
-    confirmText: '改名',
-    defaultValue: folder.name,
-    validator: (v) => (v.trim() ? true : '名字不能为空')
-  })
-  if (name === null) return
-  await renameFolder(folder.id, name)
+/** 编辑：把整个夹交给面板去回填三个字段。默认夹也走这条——它不可删但可以改。 */
+function onEditFolder(folder: FavoriteFolderVO) {
+  editingFolder.value = folder
+  infoVisible.value = true
+}
+
+async function onFolderSaved() {
   await loadFolders()
 }
 
@@ -273,3 +346,16 @@ function formatTime(value?: string) {
 
 onMounted(loadAll)
 </script>
+
+<style scoped>
+/*
+  ⚠️ 触屏（无 hover 能力）上，⋯ 按钮必须**常显**：只靠 `group-hover:opacity-100` 的话，
+  触屏设备根本不会触发 hover，按钮就永远隐身、功能够不着。
+  用 `@media (hover: none)` 而不是 `any-pointer`，语义更直接（「这台设备没有真正的悬停」）。
+*/
+@media (hover: none) {
+  .fav-more {
+    opacity: 1;
+  }
+}
+</style>

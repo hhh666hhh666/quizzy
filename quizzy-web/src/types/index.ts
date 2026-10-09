@@ -25,8 +25,12 @@ export interface PageResult<T> {
 export interface FavoriteFolderVO {
   id: number
   name: string
+  /** 简介，最多 200 字；没填时后端不返回这个字段 */
+  intro?: string
   /** 默认收藏夹不可删除（但可改名），界面据此决定要不要显示「删除」 */
   isDefault: boolean
+  /** ⚠️ 目前只回显：公开的夹别人看不到，界面文案不许暗示「公开后别人能看」（ADR 0032） */
+  isPublic: boolean
   questionCount: number
   /** 该夹最近一次有新题进来的时间；空夹时后端不返回这个字段 */
   lastAddedTime?: string

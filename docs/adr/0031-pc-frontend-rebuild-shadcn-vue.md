@@ -35,4 +35,5 @@ PC 端（`quizzy-web`）**原地重建**：组件基座由 Element Plus 换成 *
 > **Amendment 1（2026-10-08）：重建收官。** 三条里程碑全部兑现——① **Element Plus 彻底退场**（`8887fa6`，全站 reka-ui + 自建件，`<el-*>` 全仓清零）；② **`DESIGN.md` 已由 `impeccable document` 生成并入库**（`design.json` 边车按本文继续忽略）；③ 全站规范审查（Vercel Web Interface Guidelines）**整改完成**（键盘可达性、URL 状态铺开、theme-color/favicon、tabular-nums 等，详见 CHANGELOG 的 [Unreleased] 段）。与本文记录的两处现实差异，记录在案：
 > - **主题最终是三档**（跟随系统 / 浅色 / 深色），比 Consequences 写的「两档」多一档；**深色色板本身尚未落地**（当前只切 `color-scheme` 与少数组件变体），属后续功能。
 > - **浮层材质定为「练习纸实底 + 1px 描边 + 遮罩压暗」**而非模糊玻璃（弹窗里表单与正文占大头，实底保对比度）；轻玻璃只服务顶栏。tokens 注释与 `DESIGN.md` 均已按此对齐。
+>   ⚠️ 2026-10-09 [ADR 0032](0032-glass-overlays-and-folder-intro.md) 对这条口径两次修订后定案：**玻璃改为逐件可选材质，唯一硬禁令是答题页面不用玻璃**；「一律实底」与「一律玻璃」两个方向的一刀切都被否。此处保留原文仅作历史记录。
 > Consequences 里「代码落地时同步的文档」清单（README / `前端.md` / `移动端.md` / CHANGELOG）**已全部结算**；「组件测试重评」也已按承诺兑现——结论见 [《测试系统说明》](../testing/系统说明.md)（继续暂缓，理由改写）。

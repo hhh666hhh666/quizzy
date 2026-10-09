@@ -1,6 +1,8 @@
 package com.quizzy.module.favorite.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.quizzy.common.BusinessException;
 import com.quizzy.common.PageResult;
 import com.quizzy.common.ResultCode;
@@ -103,25 +105,44 @@ public class FavoriteService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public FavoriteFolderVO createFolder(String rawName, Long userId) {
+    public FavoriteFolderVO createFolder(String rawName, String rawIntro, Boolean isPublic, Long userId) {
         String name = normalizeName(rawName);
         assertNameAvailable(userId, name, null);
         FavoriteFolder folder = new FavoriteFolder();
         folder.setUserId(userId);
         folder.setName(name);
+        folder.setIntro(normalizeIntro(rawIntro));
         folder.setIsDefault(0);
+        folder.setIsPublic(flag(isPublic));
         folderMapper.insert(folder);
         return toVO(folder);
     }
 
-    /** 改名。**默认收藏夹也允许改**——所以「默认收藏夹」这五个字不进界面文案。 */
+    /**
+     * 改名 / 改简介 / 改公开开关。
+     *
+     * <p>**默认收藏夹也允许改**——所以「默认收藏夹」这五个字不进界面文案。
+     *
+     * <p>⚠️ **必须用 `LambdaUpdateWrapper.set()`，不能用 `updateById`**：全局配了
+     * {@code mybatis-plus.global-config.db-config.update-strategy: not_null}，`updateById` 会
+     * **跳过所有 null 字段**（见实体注释）。而「清空简介」正好就是要把 `intro` 写成 null——
+     * 用 `updateById` 的话请求返回成功、库里却纹丝不动（实测复现过）。同一个坑头像那边也踩过。
+     *
+     * <p>三个字段**整体覆盖**：调用方不传的字段按默认值写回（`intro` 为 null、`isPublic` 为 false），
+     * 这正是编辑面板的语义——面板里三个字段永远一起提交。别把某个字段改成「不传就不动」，
+     * 那会让「清空简介」变成一个做不到的操作。
+     */
     @Transactional(rollbackFor = Exception.class)
-    public void renameFolder(Long folderId, String rawName, Long userId) {
-        FavoriteFolder folder = requireFolder(folderId, userId);
+    public void updateFolder(Long folderId, String rawName, String rawIntro, Boolean isPublic, Long userId) {
+        requireFolder(folderId, userId);
         String name = normalizeName(rawName);
         assertNameAvailable(userId, name, folderId);
-        folder.setName(name);
-        folderMapper.updateById(folder);
+        LambdaUpdateWrapper<FavoriteFolder> update = Wrappers.<FavoriteFolder>lambdaUpdate()
+                .eq(FavoriteFolder::getId, folderId)
+                .set(FavoriteFolder::getName, name)
+                .set(FavoriteFolder::getIntro, normalizeIntro(rawIntro))  // ⚠️ 可能是 null，见上面的 not_null 说明
+                .set(FavoriteFolder::getIsPublic, flag(isPublic));
+        folderMapper.update(null, update);
     }
 
     /**
@@ -317,6 +338,16 @@ public class FavoriteService {
         return rawName.trim();
     }
 
+    /** 简介没填就存 null（`''` 与「没填」在我们这里是一回事，不区分）。 */
+    private String normalizeIntro(String rawIntro) {
+        return StringUtils.hasText(rawIntro) ? rawIntro.trim() : null;
+    }
+
+    /** 布尔开关落库成 0 / 1；null（调用方没传）按「关」处理。 */
+    private Integer flag(Boolean value) {
+        return Boolean.TRUE.equals(value) ? 1 : 0;
+    }
+
     private boolean isDefault(FavoriteFolder folder) {
         return folder.getIsDefault() != null && folder.getIsDefault() == 1;
     }
@@ -325,7 +356,9 @@ public class FavoriteService {
         FavoriteFolderVO vo = new FavoriteFolderVO();
         vo.setId(folder.getId());
         vo.setName(folder.getName());
+        vo.setIntro(folder.getIntro());
         vo.setIsDefault(isDefault(folder));
+        vo.setIsPublic(folder.getIsPublic() != null && folder.getIsPublic() == 1);
         return vo;
     }
 }

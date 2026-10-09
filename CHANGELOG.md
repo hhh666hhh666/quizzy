@@ -41,6 +41,13 @@
   - 题库页新增「收藏夹」筛选（含「全部收藏」）、批量「加入收藏夹」与行内星标；题目详情与答题结果页也有星标
   - 后端：Flyway `V4__question_favorites.sql`（`favorite_folder` + `favorite_folder_question` 两张表）；
     「来源」新增第四种 `FAVORITE`
+  - **收藏夹可填简介与公开开关**（[ADR 0032](./docs/adr/0032-glass-overlays-and-folder-intro.md)）：
+    夹新增 `intro`（≤200 字）与 `is_public` 两列（Flyway `V5__folder_intro_and_public.sql`）；
+    建夹 / 编辑走同一个「收藏夹信息」面板，**三字段整体覆盖**（清空简介 = 写 null，
+    后端因此必须用 `LambdaUpdateWrapper.set()`——全局 `update-strategy: not_null` 会让
+    `updateById` 静默跳过 null 字段）。⚠️ `is_public` 目前**存而不用**：界面文案不许暗示「公开后别人能看」；
+    默认收藏夹也可改这三样（仍不可删）。收藏夹页按 v3 构图重构：左侧蓝调面板**按内容自然高度**、
+    夹行操作收进「⋯」菜单（编辑信息 / 删除；触屏常显、键盘可达），右列保持近白卡片
 
 ### Changed
 
