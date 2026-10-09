@@ -26,6 +26,8 @@
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-10-09
+
 ### Added
 
 - **收藏夹**（[ADR 0030](./docs/adr/0030-favorites-as-named-folders.md)）：可以把题目收进**自己命名的多个收藏夹**，
@@ -75,6 +77,8 @@
   因此**每个请求多一次查库**。这是换「改密码即全场下线」的代价，理由与被否的替代方案见
   [ADR 0027](./docs/adr/0027-token-version-invalidates-all-devices.md)
 - **`CONTEXT.md` 的「收藏夹」不再是错题本的禁用别名**：它现在指自己的收藏功能（[ADR 0030](./docs/adr/0030-favorites-as-named-folders.md)）
+- **部署入口切到正式形态**（2026-10-09）：ICP 备案通过后 `server_name` 换成主域名、宝塔签发 Let's Encrypt 证书并开启
+  强制 HTTPS（80 → 443），备案待办结案归档；正式形态以 [《部署》](./docs/operations/deployment.md) 为准
 
 ### Fixed
 
@@ -494,6 +498,7 @@
 - 许可证见 [LICENSE](./LICENSE)。
 
 [Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...HEAD
+[1.6.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.1...v1.3.2
