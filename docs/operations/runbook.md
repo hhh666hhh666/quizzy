@@ -95,7 +95,7 @@ bash server-compose.sh logs --tail=100 <服务名>
 - **一直是 `starting`**：还在等 MySQL。正常冷启动是十几秒量级；超过健康检查的等待上限就去看日志。
 - **`unhealthy` 且稳定**：应用上下文没起来。看后端容器报错，最常见的是数据库连不上（见下节）或必填配置缺失。
 - **后端 `healthy` 但接口 5xx**：去 [deployment.md](./deployment.md) 的「回滚」一节——版本引入的问题就回滚。
-- **怀疑内存不够**（2C2G 的硬约束）：`free -m` 与 `docker stats --no-stream` 一起看；JVM 堆是 `docker-compose.prod.yml` 里 `JAVA_TOOL_OPTIONS` 的 `-Xmx512m`，吃紧时第一手段是降到 384m。
+- **怀疑内存不够**（2C2G 的硬约束）：`free -m`、`docker stats --no-stream`、`swapon --show` 三个一起看——swap 有占用不必然出事，关键看它**涨不涨**。各服务的参数取值、上限模型与止损线见 [内存策略.md](./内存策略.md)；先判断是哪一块在涨（某个容器 / 主机侧 / 内核），再对症下药。
 
 ## 场景 · 站点打不开
 
