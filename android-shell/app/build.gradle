@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+}
+
+// 签名配置从 local.properties 读（Android 惯例文件，不入库；见 .gitignore）。
+// 密码的真相源只在构建机本地，不写进仓库、不进对话。
+def secrets = new Properties()
+def secretsFile = rootProject.file('local.properties')
+if (secretsFile.exists()) {
+    secretsFile.withInputStream { secrets.load(it) }
+}
+
+android {
+    namespace 'com.quizzy.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.quizzy.app"
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    signingConfigs {
+        release {
+            storeFile secrets['quizzy.storeFile'] ? file(secrets['quizzy.storeFile']) : null
+            storePassword secrets['quizzy.storePassword']
+            keyAlias secrets['quizzy.keyAlias']
+            keyPassword secrets['quizzy.keyPassword']
+        }
+    }
+
+    buildTypes {
+        release {
+            // 壳应用不做混淆（全部代码就是这个 WebView Activity）
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
