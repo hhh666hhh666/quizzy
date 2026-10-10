@@ -2,7 +2,9 @@
 
 这份索引只回答一个问题：**东西在哪**。内容本身一律留在各自的文件里，这里不复述。
 
-> **根目录的 `DESIGN.md` 已于 2026-09-26 删除**——它先是转发页，后来彻底没用了。原设计内容现在在 [design/](./design/) 与 [requirements/scope.md](./requirements/scope.md)；历史版本看 git。
+> **关于根目录的 [`DESIGN.md`](../DESIGN.md)**：它曾在 2026-09-26 被删除（当时只是个转发页），
+> 2026-10-07 前端重构时**以新的形态重新入库**——现在是视觉系统「安静的练习室」的**可读快照**，
+> 从 `quizzy-web/src/styles/tokens.css` 派生。旧的删除说明见 git 历史。
 
 ## 文档地图
 
@@ -14,14 +16,19 @@
 | [../README.md](../README.md) | 5 分钟上手：定位、功能、跑起来、配置要点、CI 与部署 | 所有人 | 代码与脚本 |
 | [../CONTEXT.md](../CONTEXT.md) | 领域术语表（题目 / 会话 / 错题本…纯词汇，不含实现） | 读代码的人 | 本文件 |
 | [../PRODUCT.md](../PRODUCT.md) | 产品真相：受众 / 用途 / 定位 / 语气 / 约束（**不复制范围清单**，指 `scope.md`） | 判断"某个设计对不对"的人 | 本文件（范围与能力见 `scope.md`） |
+| [../DESIGN.md](../DESIGN.md) | 视觉系统「安静的练习室」的**可读快照**（色板 / 排版 / 材质口径） | 改前端视觉的人 | **从 `quizzy-web/src/styles/tokens.css` 派生**；过时了用 `impeccable document` 重新生成 |
 | [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
 | [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.codebuddy/rules/` |
 | [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
+| [../.codebuddy/commands/wrap-up.md](../.codebuddy/commands/wrap-up.md) | `/wrap-up` 收尾自检：把未决事项落 `docs/todo/`、补文档与引用、跑断链检查 | AI / 收尾时 | 本文件 |
 | [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
 | [../scripts/check-module-tests.sh](../scripts/check-module-tests.sh) | 断言每个带 Controller 的模块都配了测试类（ADR 0021 的机械守卫，CI 上跑） | 加新模块的人 / CI | 文件系统 |
 | [../scripts/check-todo-archive.sh](../scripts/check-todo-archive.sh) | 断言已结案的待办都已移入 `docs/todo/archive/`（ADR 0025 的机械守卫，CI 上跑） | 结案待办的人 / CI | 文件系统 |
 | [../scripts/check-version.sh](../scripts/check-version.sh) | 版本号与 `git tag` 对齐自检；非 tag 提交上自动跳过 | 要打 tag 的人 / CI | `git tag` |
 | [../scripts/server-deploy.sh](../scripts/server-deploy.sh) | 服务器上的部署与回滚脚本（CI 经 SSH 调用） | 要上线或回滚的人 | 脚本自身 |
+| [../scripts/server-rollback.sh](../scripts/server-rollback.sh) | 服务器上的单独回滚入口（切回上一个镜像 tag） | 要回滚的人 | 脚本自身 |
+| [../scripts/server-compose.sh](../scripts/server-compose.sh) | 服务器上的 compose 薄封装（起停 / 拉取 / 查看） | 在服务器上操作容器的人 | 脚本自身 |
+| [../scripts/backup-mysql.sh](../scripts/backup-mysql.sh) | MySQL 备份脚本（现状与手动跑法见 `operations/backup.md`） | 担心数据丢的人 | 脚本自身 |
 | [../deploy/](../deploy/) | 要放到服务器上的部署侧配置模板（宿主 nginx 站点、云端 `.env`） | 传部署的人 | 各文件自身 |
 | [../LICENSE](../LICENSE) | MIT 许可证 | 想复用代码的人 | 本文件 |
 | [requirements/scope.md](./requirements/scope.md) | 定位、范围、**明确不做**、已定约束 | 判断某个改动越没越界的人 | 本文件 + 各条 ADR |
@@ -43,7 +50,8 @@
 | [testing/系统说明.md](./testing/系统说明.md) | 测试系统为什么分层、每层保证什么、加功能时怎么同步 | 想知道「这次改动要补哪层测试」的人 | 本文件 |
 | [testing/agent-exploration.md](./testing/agent-exploration.md) | AI 探索测试的任务书（手动触发、产出报告） | 要跑一次探索测试的那次会话 | 本文件 |
 | [../e2e/README.md](../e2e/README.md) | 端到端测试怎么跑、有哪些约定、新用例放哪 | 要跑端到端或加用例的人 | 该工程自身与 `.github/workflows/ci.yml` |
-| [目录结构.md](./目录结构.md) | `docs/` 的带注释目录树（看形状；用途与真相源仍看本表） | 新人 / 冷启动的 AI，想一眼看清文档都在哪 | 文件系统 |
+| [../android-shell/README.md](../android-shell/README.md) | Android WebView 壳的路线、构建与已知边界（加载线上 `/m/`，自用可安装） | 要构建 / 改安卓壳的人 | 该工程自身 |
+| [目录结构.md](./目录结构.md) | **两棵带注释目录树**：① 仓库根的文档散在哪 ② `docs/` 体系内部（看形状；用途与真相源仍看本表） | 新人 / 冷启动的 AI，想一眼看清文档都在哪 | 文件系统 |
 | [development/contributing.md](./development/contributing.md) | 分支 / 提交 / PR 约定与文档纪律 | 要提交代码的人 | `git log` |
 | [todo/](./todo/) | **未决事项唯一入口** | 想知道「还有什么没定」的人 | 各待办文件 |
 | [worklog/](./worklog/) | AI **会话**的实时进度（正在做什么 / 接下来 / 已做完） | 只对创建它的那次会话与当时的用户有意义，**其他会话不必读** | 各文件自身 |
