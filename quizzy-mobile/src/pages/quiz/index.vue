@@ -1,15 +1,18 @@
 <template>
   <view class="page">
     <template v-if="session">
+      <!-- 顶栏自绘（本页 navigationStyle: custom，没有系统导航栏）：浅色品牌头，对齐 Stitch V1 -->
+      <view class="qz-nav">
+        <text class="brand">quizzy</text>
+        <text class="quit" @click="onAbandon">放弃本次</text>
+      </view>
+
       <view class="head">
-        <view class="head-main">
+        <view class="head-left">
           <text class="counter">第 {{ current + 1 }} / {{ questions.length }} 题</text>
-          <text class="head-score">已得 {{ session.obtainedScore }} 分</text>
+          <text class="percent-chip">{{ percent }}%</text>
         </view>
-        <view class="head-right">
-          <text class="percent">{{ percent }}%</text>
-          <text class="abandon" @click="onAbandon">放弃本次</text>
-        </view>
+        <text class="head-score">已得 {{ session.obtainedScore }} 分</text>
       </view>
 
       <view class="progress">
@@ -17,19 +20,16 @@
       </view>
 
       <template v-if="currentQuestion">
-        <view class="qz-reader stem-card">
-          <view class="tags">
-            <text class="qz-tag qz-tag--brand">{{ typeLabel(currentQuestion.type) }}</text>
-            <text class="qz-tag">{{ currentQuestion.score }} 分</text>
-          </view>
-          <view class="stem">
-            <MarkdownRenderer :source="currentQuestion.stem" />
-          </view>
-        </view>
-
-        <view class="options">
-          <view class="locked-tip" v-if="reviewing">
-            本题已作答，答案不可修改；想重做可以另开一次练习。
+        <!-- 题干与选项同卡（V1：一张问卷面，选项间细分割线；选中 / 对 / 错整行染色） -->
+        <view class="qcard">
+          <view class="stem-block">
+            <view class="tags">
+              <text class="qz-tag qz-tag--brand">{{ typeLabel(currentQuestion.type) }}</text>
+              <text class="qz-tag">{{ currentQuestion.score }} 分</text>
+            </view>
+            <view class="stem">
+              <MarkdownRenderer :source="currentQuestion.stem" />
+            </view>
           </view>
 
           <!-- 选项自己排：整行可点、内容多行自适应。
@@ -42,7 +42,10 @@
             @click="onPick(option.label)"
           >
             <view :class="['marker', currentQuestion.type === 'MULTI' ? 'marker--square' : '']">
-              <text v-if="isPicked(option.label)" class="marker-tick">✓</text>
+              <view v-if="showPickDot(option.label)" class="marker-dot" />
+              <text v-else-if="markerGlyph(option.label)" class="marker-glyph">
+                {{ markerGlyph(option.label) }}
+              </text>
             </view>
             <view class="option-body">
               <text class="opt-label">{{ option.label }}.</text>
@@ -53,16 +56,21 @@
           </view>
         </view>
 
-        <view class="feedback" v-if="showVerdict">
-          <view :class="['fb-title', verdictCorrect ? 'ok' : 'bad']">
-            {{ verdictCorrect ? '回答正确' : '回答错误' }}
-          </view>
-          <view class="fb-answer">正确答案：{{ verdictAnswers.join(', ') }}</view>
+        <!-- 作答提示在选项卡下方（V1 位置）；提交那一刻起就显示 -->
+        <view class="locked-tip" v-if="submitted">
+          本题已作答，答案不可修改；想重做可以另开一次练习。
         </view>
 
-        <view class="qz-reader analysis" v-if="verdictAnalysis">
-          <view class="analysis-title">解析</view>
-          <MarkdownRenderer :source="verdictAnalysis" />
+        <view class="feedback" v-if="showVerdict">
+          <view class="fb-row">
+            <text :class="['fb-badge', verdictCorrect ? 'ok' : 'bad']">
+              {{ verdictCorrect ? '回答正确' : '回答错误' }}
+            </text>
+            <text class="fb-answer">正确答案：{{ verdictAnswers.join(', ') }}</text>
+          </view>
+          <view class="fb-analysis" v-if="verdictAnalysis">
+            <MarkdownRenderer :source="analysisSource" />
+          </view>
         </view>
       </template>
     </template>
@@ -73,7 +81,7 @@
     <view class="actionbar" v-if="session">
       <view class="action-inner">
         <view
-          :class="['qz-btn', 'qz-btn--ghost', 'btn-prev', current === 0 ? 'qz-btn--disabled' : '']"
+          :class="['qz-btn', 'btn-prev', current === 0 ? 'qz-btn--disabled' : '']"
           @click="go(current - 1)"
         >
           上一题
@@ -117,7 +125,6 @@ const percent = computed(() => {
 // detail 接口在已作答时才会下发 correctAnswers / analysis（未作答时不下发，
 // 见后端 QuizService#detail 与 QuizApiIT#unansweredQuestionsDoNotLeakAnswers）。
 // 两个来源在这里合流，模板只认下面这几个名字，免得同一块反馈分两处渲染。
-const reviewing = computed(() => currentQuestion.value?.answered === true && feedback.value === null)
 const verdictAnswers = computed<string[]>(() =>
   feedback.value ? feedback.value.correctAnswers : currentQuestion.value?.correctAnswers || [])
 const verdictAnalysis = computed(() =>
@@ -127,12 +134,20 @@ const verdictCorrect = computed(() =>
 // 有答案就显示：未作答时两者皆空，于是自然不显示
 const showVerdict = computed(() => verdictAnswers.value.length > 0 || verdictAnalysis.value !== '')
 
+// V1 设计稿里解析以「解析：」直接起段（没有单独的小标题），这里补上前缀；
+// 题库数据若已自带前缀则不重复加。
+const analysisSource = computed(() => {
+  const text = verdictAnalysis.value
+  if (!text) return ''
+  return text.startsWith('解析') ? text : `解析：${text}`
+})
+
 /**
- * 选项的三种结果态（主人 2026-10-09 定）：
- *   picked  未作答时的选中——主色
- *   correct 已作答，且该选项是正确答案——绿
- *   wrong   已作答，且该选项是用户选错的——红
- * ⚠️ 颜色从不单独表意：绿 / 红同时配有「回答正确 / 回答错误」标题与「正确答案」一行，
+ * 选项的三种结果态（2026-10-09 定口径，2026-10-10 按 V1 设计稿改样式）：
+ *   picked  未作答时的选中——浅蓝洗底 + 蓝底白点（**选中不画勾**，勾只表「对」）
+ *   correct 已作答，且该选项是正确答案——绿底 + 白勾
+ *   wrong   已作答，且该选项是用户选错的——红底 + 白叉
+ * ⚠️ 颜色从不单独表意：绿 / 红同时配有「回答正确 / 回答错误」徽章与「正确答案」一行，
  *    色盲与高对比模式下照样读得出来。
  */
 function optionState(label: string): string {
@@ -141,6 +156,18 @@ function optionState(label: string): string {
   if (isPicked(label)) return isRightAnswer ? 'correct' : 'wrong'
   // 用户没选、但确实是正确答案——一并染绿，指明「该选的是这个」
   return isRightAnswer ? 'correct' : ''
+}
+
+// 未判分时的「已选」标记：白点；判分后才换成勾 / 叉
+function showPickDot(label: string): boolean {
+  return !submitted.value && isPicked(label)
+}
+
+// 勾 / 叉只表达对错：正确答案画勾，选错的画叉（主人 2026-10-10 明示）
+function markerGlyph(label: string): string {
+  if (!submitted.value) return ''
+  if (verdictAnswers.value.includes(label)) return '✓'
+  return isPicked(label) ? '✗' : ''
 }
 
 onShow(() => {
@@ -265,44 +292,63 @@ function typeLabel(type: string) {
 
 <style lang="scss" scoped>
 .page {
-  padding: 24rpx 24rpx 200rpx;
+  padding: 0 32rpx 220rpx;
+}
+
+/* 浅色品牌顶栏（本页 navigationStyle: custom，没有系统导航栏；
+   小程序端状态栏高度由 --status-bar-height 提供，H5 端为 0） */
+.qz-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: calc(var(--status-bar-height, 0px) + 24rpx);
+  /* #ifdef MP-WEIXIN */
+  /* 小程序右上角有胶囊按钮，给「放弃本次」让出位置 */
+  padding-right: 200rpx;
+  /* #endif */
+}
+.brand {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: $app-ink-strong;
+}
+.quit {
+  font-size: $text-sm;
+  color: $app-ink-muted;
 }
 
 .head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-top: 24rpx;
 }
-.head-main {
+.head-left {
   display: flex;
-  align-items: baseline;
+  align-items: center;
 }
 .counter {
   font-size: $text-md;
   font-weight: 500;
   color: $app-ink;
 }
+.percent-chip {
+  margin-left: 12rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  background: #ffffff;
+  font-size: $text-xs;
+  font-weight: 500;
+  line-height: 1.4;
+  color: $app-brand;
+}
 .head-score {
-  margin-left: 16rpx;
-  font-size: $text-sm;
+  font-size: $text-base;
   color: $app-ink-muted;
-}
-.head-right {
-  display: flex;
-  align-items: baseline;
-}
-.percent {
-  font-size: $text-sm;
-  color: $app-ink-muted;
-}
-.abandon {
-  margin-left: 20rpx;
-  font-size: $text-sm;
-  color: $app-ink-subtle;
 }
 
 .progress {
+  margin-top: 14rpx;
   height: 8rpx;
   border-radius: 4rpx;
   background: $app-line-soft;
@@ -314,9 +360,18 @@ function typeLabel(type: string) {
   background: $app-brand;
 }
 
-.stem-card {
-  padding: 28rpx;
-  margin-top: 24rpx;
+/* 题干 + 选项的统一问卷卡（V1）：选项行不出卡、整行染色 */
+.qcard {
+  margin-top: 32rpx;
+  background: $app-reader;
+  border: 1rpx solid $app-line-soft;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+.stem-block {
+  padding: 32rpx 28rpx;
+  border-bottom: 1rpx solid $app-divider;
 }
 .tags {
   display: flex;
@@ -329,38 +384,22 @@ function typeLabel(type: string) {
   color: $app-ink;
 }
 
-.options {
-  margin-top: 24rpx;
-}
-.locked-tip {
-  padding: 16rpx 20rpx;
-  border-radius: $radius-md;
-  background: $app-surface-2;
-  color: $app-ink-muted;
-  font-size: $text-sm;
-  line-height: 1.5;
-}
-
 .option {
   display: flex;
   align-items: flex-start;
-  padding: 20rpx;
-  margin: 12rpx 0;
-  border-radius: $radius-md;
-  background: $app-surface;
-  border: 1rpx solid $app-line-soft;
+  padding: 22rpx 28rpx;
+}
+.option + .option {
+  border-top: 1rpx solid $app-divider;
 }
 .option.picked {
-  background: $app-brand-soft;
-  border-color: $app-brand;
+  background: $app-brand-wash;
 }
 .option.correct {
   background: $app-ok-soft;
-  border-color: $app-ok;
 }
 .option.wrong {
   background: $app-danger-soft;
-  border-color: $app-danger;
 }
 
 .marker {
@@ -391,8 +430,16 @@ function typeLabel(type: string) {
   background: $app-danger;
   border-color: $app-danger;
 }
-.marker-tick {
-  color: #fff;
+/* 已选（未判分）：蓝底白点 */
+.marker-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background: #ffffff;
+}
+/* 判分后：对勾 / 错叉 */
+.marker-glyph {
+  color: #ffffff;
   font-size: 22rpx;
   line-height: 1;
 }
@@ -418,37 +465,59 @@ function typeLabel(type: string) {
   flex: 1;
 }
 
-.feedback {
-  margin-top: 24rpx;
-  padding: 24rpx 28rpx;
-  border-radius: $radius-lg;
-  background: $app-surface;
-}
-.fb-title {
-  font-size: $text-lg;
-  font-weight: 500;
-  margin-bottom: 8rpx;
-}
-.fb-title.ok {
-  color: $app-ok;
-}
-.fb-title.bad {
-  color: $app-danger;
-}
-.fb-answer {
-  font-size: $text-base;
+/* 作答提示条（V1）：卡下方浅蓝面 + 细边 */
+.locked-tip {
+  margin-top: 28rpx;
+  padding: 18rpx 28rpx;
+  border-radius: $radius-md;
+  background: $app-surface-2;
+  border: 1rpx solid $app-line;
   color: $app-ink-muted;
+  font-size: $text-sm;
+  line-height: 1.5;
 }
 
-.analysis {
-  margin-top: 24rpx;
-  padding: 24rpx 28rpx;
+/* 判分反馈卡（V1）：徽章 + 正确答案同行，解析同卡、上分割线 */
+.feedback {
+  margin-top: 28rpx;
+  padding: 28rpx;
+  border-radius: $radius-lg;
+  background: $app-reader;
+  border: 1rpx solid $app-line-soft;
+  box-shadow: $shadow-sm;
 }
-.analysis-title {
+.fb-row {
+  display: flex;
+  align-items: center;
+}
+.fb-badge {
+  flex: none;
+  padding: 4rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: $text-base;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.fb-badge.bad {
+  background: $app-danger-soft;
+  color: $app-danger;
+}
+.fb-badge.ok {
+  background: $app-ok-soft;
+  color: $app-ink-green;
+}
+.fb-answer {
+  margin-left: 16rpx;
   font-size: $text-md;
   font-weight: 500;
   color: $app-ink;
-  margin-bottom: 8rpx;
+}
+.fb-analysis {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid $app-divider;
+  font-size: $text-base;
+  color: $app-ink-muted;
 }
 
 .actionbar {
@@ -463,12 +532,16 @@ function typeLabel(type: string) {
 .action-inner {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 16rpx 24rpx;
+  gap: 24rpx;
+  padding: 16rpx 32rpx;
+}
+.action-inner .qz-btn {
+  height: 96rpx;
+  border-radius: 24rpx;
 }
 .btn-prev {
   flex: none;
-  width: 200rpx;
+  width: 192rpx;
 }
 .btn-main {
   flex: 1;

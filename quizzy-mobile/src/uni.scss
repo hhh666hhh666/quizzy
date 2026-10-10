@@ -37,6 +37,10 @@ $app-warn-soft: #ffeaca;
 $app-danger: #cc3336;
 $app-danger-soft: #ffe4df;
 
+// 设计稿直采的浅档（2026-10-10，答题页复刻 Stitch V1 时加入；来源为设计稿像素采样，见 ADR 0033 Amendment 1）
+$app-brand-wash: #eaf2ff; // 整行选中洗底：比 brand-soft 更浅一档，供选项卡选中态
+$app-divider: #f0f4f8; // 卡内细分隔线：比 line-soft 更轻
+
 // 深字色：tint / soft 底上的彩字用（语义色本体在浅底上达不到小字 AA）
 $app-ink-blue: #2552aa;
 $app-ink-green: #006c35;

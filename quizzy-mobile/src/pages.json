@@ -20,7 +20,7 @@
     },
     {
       "path": "pages/quiz/index",
-      "style": { "navigationBarTitleText": "答题" }
+      "style": { "navigationBarTitleText": "答题", "navigationStyle": "custom" }
     },
     {
       "path": "pages/result/index",
