@@ -60,7 +60,7 @@ for f in "$TODO_DIR"/*.md; do
   name="$(basename "$f")"
   if [ "$name" = 'README.md' ]; then continue; fi
   if ! sed -n '1,6p' "$f" | grep -q '状态：待办'; then
-    report "$f 头部没有「状态：待办」——要么它已结案（应 git mv 进 $ARCHIVE_DIR/），要么没照模板写（见 $ARCHIVE_DIR/README.md）"
+    report "$f 头部没有「状态：待办」——要么它已结案（应 git mv 进 $ARCHIVE_DIR/），要么没照模板写（格式见 $TODO_DIR/README.md 的「文件格式」节；归档三步见 $ARCHIVE_DIR/README.md）"
   fi
 done
 
