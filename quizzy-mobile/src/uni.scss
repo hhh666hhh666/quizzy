@@ -56,6 +56,14 @@ $radius-xl: 40rpx; // 20px
 $shadow-sm: 0 4rpx 8rpx -2rpx rgba(43, 42, 70, 0.07), 0 2rpx 4rpx -2rpx rgba(43, 42, 70, 0.05);
 $shadow-md: 0 16rpx 40rpx -12rpx rgba(43, 42, 70, 0.12), 0 4rpx 12rpx -4rpx rgba(43, 42, 70, 0.07);
 
+// ── 动效（2026-10-11 答对反馈动效引入）──
+// 缓动直接沿用 PC 端 tokens.css 的 `--ease-out`（同一个值，不另造一套手感）；
+// 时长只分三档，够用就别再细分。⚠️ 小程序端目前不是编译目标，真上时要复核 @media 支持情况。
+$ease-out: cubic-bezier(0.2, 0, 0, 1);
+$dur-fast: 120ms; // 「换了就行」的微动：按钮文案切换
+$dur-base: 240ms; // 状态过渡：选项染色、徽章入场、整卡切换
+$dur-slow: 300ms; // 幅度最大的两条：正确勾弹入、进度条推进
+
 // ── 字阶（rpx：750rpx = 375px，即 1px = 2rpx）──
 $text-xs: 22rpx; // 11px
 $text-sm: 24rpx; // 12px

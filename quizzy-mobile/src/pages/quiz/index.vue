@@ -12,7 +12,7 @@
           <text class="counter">第 {{ current + 1 }} / {{ questions.length }} 题</text>
           <text class="percent-chip">{{ percent }}%</text>
         </view>
-        <text class="head-score">已得 {{ session.obtainedScore }} 分</text>
+        <text class="head-score">已得 {{ shownScore }} 分</text>
       </view>
 
       <view class="progress">
@@ -20,8 +20,9 @@
       </view>
 
       <template v-if="currentQuestion">
-        <!-- 题干与选项同卡（V1：一张问卷面，选项间细分割线；选中 / 对 / 错整行染色） -->
-        <view class="qcard">
+        <!-- 题干与选项同卡（V1：一张问卷面，选项间细分割线；选中 / 对 / 错整行染色）。
+             :key 绑题号：切题时整卡重挂一次，配合淡入，避免「上一题的脸直接换成下一题」。 -->
+        <view class="qcard" :key="current">
           <view class="stem-block">
             <view class="tags">
               <text class="qz-tag qz-tag--brand">{{ typeLabel(currentQuestion.type) }}</text>
@@ -43,7 +44,10 @@
           >
             <view :class="['marker', currentQuestion.type === 'MULTI' ? 'marker--square' : '']">
               <view v-if="showPickDot(option.label)" class="marker-dot" />
-              <text v-else-if="markerGlyph(option.label)" class="marker-glyph">
+              <text
+                v-else-if="markerGlyph(option.label)"
+                :class="['marker-glyph', markerGlyph(option.label) === '✓' ? 'pop' : 'fade']"
+              >
                 {{ markerGlyph(option.label) }}
               </text>
             </view>
@@ -99,7 +103,7 @@
 
 <script setup lang="ts">
 import { onLoad, onShow } from '@dcloudio/uni-app'
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import MarkdownRenderer from '@/components/MarkdownRenderer.vue'
 import { abandonSession, finishSession, getSession, submitAnswer } from '@/api/quiz'
 import { ensureLogin } from '@/utils/auth'
@@ -169,6 +173,63 @@ function markerGlyph(label: string): string {
   if (verdictAnswers.value.includes(label)) return '✓'
   return isPicked(label) ? '✗' : ''
 }
+
+/* ── 得分数字的滚动（答对才可能变化；答错分数不动，自然不滚）──
+   只在这一处用 JS 动：其余全是 CSS 过渡 / 关键帧。
+   ⚠️ 系统开了「减少动态效果」时直接落值（App.vue 里那层只挡 CSS，管不到 JS）。 */
+const shownScore = ref(0)
+let scoreTimer: ReturnType<typeof setInterval> | null = null
+let scoreInited = false
+
+function prefersReducedMotion(): boolean {
+  // H5 才有 window；小程序端拿不到就按「不降级」处理
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
+
+function stopScoreAnim() {
+  if (scoreTimer) {
+    clearInterval(scoreTimer)
+    scoreTimer = null
+  }
+}
+
+function animateScore(from: number, to: number) {
+  stopScoreAnim()
+  if (from === to) return
+  if (prefersReducedMotion()) {
+    shownScore.value = to
+    return
+  }
+  const startAt = Date.now()
+  scoreTimer = setInterval(() => {
+    const t = Math.min(1, (Date.now() - startAt) / 400)
+    const eased = 1 - Math.pow(1 - t, 3)
+    shownScore.value = Math.round(from + (to - from) * eased)
+    if (t >= 1) {
+      shownScore.value = to
+      stopScoreAnim()
+    }
+  }, 16)
+}
+
+// 第一次拿到会话（含续答恢复的旧会话）直接落值——不搞「一进页面就滚一遍」的入场动画
+watch(
+  () => session.value?.obtainedScore ?? 0,
+  (to) => {
+    if (!scoreInited) {
+      shownScore.value = to
+      scoreInited = true
+      return
+    }
+    animateScore(shownScore.value, to)
+  }
+)
+
+onUnmounted(stopScoreAnim)
 
 onShow(() => {
   ensureLogin()
@@ -342,9 +403,11 @@ function typeLabel(type: string) {
   line-height: 1.4;
   color: $app-brand;
 }
+/* tabular-nums：得分滚动时数字等宽，右侧「分」字不会跟着抖 */
 .head-score {
   font-size: $text-base;
   color: $app-ink-muted;
+  font-variant-numeric: tabular-nums;
 }
 
 .progress {
@@ -358,6 +421,8 @@ function typeLabel(type: string) {
   height: 100%;
   border-radius: 4rpx;
   background: $app-brand;
+  /* 只在切题时推进（判分不改变进度），过渡让它滑过去而不是跳过去 */
+  transition: width $dur-slow $ease-out;
 }
 
 /* 题干 + 选项的统一问卷卡（V1）：选项行不出卡、整行染色 */
@@ -368,6 +433,8 @@ function typeLabel(type: string) {
   border-radius: $radius-xl;
   box-shadow: $shadow-sm;
   overflow: hidden;
+  /* 切题时整卡重挂（:key 绑题号），用一次轻淡入过渡，别硬切 */
+  animation: qcard-in $dur-base $ease-out;
 }
 .stem-block {
   padding: 32rpx 28rpx;
@@ -384,10 +451,13 @@ function typeLabel(type: string) {
   color: $app-ink;
 }
 
+/* 状态变化一律用「可被打断」的过渡（不是关键帧）：
+   答对 / 答错 / 选中三种切换都走同一条曲线，观感才一致 */
 .option {
   display: flex;
   align-items: flex-start;
   padding: 22rpx 28rpx;
+  transition: background-color $dur-base $ease-out, border-color $dur-base $ease-out;
 }
 .option + .option {
   border-top: 1rpx solid $app-divider;
@@ -414,6 +484,7 @@ function typeLabel(type: string) {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color $dur-base $ease-out, border-color $dur-base $ease-out;
 }
 .marker--square {
   border-radius: 8rpx;
@@ -437,11 +508,48 @@ function typeLabel(type: string) {
   border-radius: 50%;
   background: #ffffff;
 }
-/* 判分后：对勾 / 错叉 */
+/* 判分后：对勾「弹入」（唯一带过冲的一条，过冲只有 6%）；错叉只淡入——
+   庆祝感只属于答对，答错那一侧保持安静 */
 .marker-glyph {
   color: #ffffff;
   font-size: 22rpx;
   line-height: 1;
+}
+.marker-glyph.pop {
+  animation: tick-pop $dur-slow $ease-out;
+}
+.marker-glyph.fade {
+  animation: glyph-fade $dur-base $ease-out;
+}
+@keyframes tick-pop {
+  0% {
+    transform: scale(0.25);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes glyph-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes qcard-in {
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .option-body {
@@ -454,6 +562,7 @@ function typeLabel(type: string) {
   font-weight: 500;
   margin-right: 8rpx;
   color: $app-ink;
+  transition: color $dur-base $ease-out;
 }
 .option.correct .opt-label {
   color: $app-ink-green;
@@ -490,6 +599,7 @@ function typeLabel(type: string) {
   display: flex;
   align-items: center;
 }
+/* 徽章入场：轻微上浮。答对 / 答错同款——这是「基础过渡」，不是庆祝 */
 .fb-badge {
   flex: none;
   padding: 4rpx 16rpx;
@@ -497,6 +607,7 @@ function typeLabel(type: string) {
   font-size: $text-base;
   font-weight: 600;
   line-height: 1.5;
+  animation: badge-in $dur-base $ease-out;
 }
 .fb-badge.bad {
   background: $app-danger-soft;
@@ -505,6 +616,16 @@ function typeLabel(type: string) {
 .fb-badge.ok {
   background: $app-ok-soft;
   color: $app-ink-green;
+}
+@keyframes badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(6rpx);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .fb-answer {
   margin-left: 16rpx;
@@ -539,11 +660,21 @@ function typeLabel(type: string) {
   height: 96rpx;
   border-radius: 24rpx;
 }
+/* 按钮换文案（提交本题 ↔ 下一题）时元素会重挂，给一个极短淡入，别硬闪 */
+.btn-main {
+  flex: 1;
+  animation: swap-in $dur-fast $ease-out;
+}
+@keyframes swap-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .btn-prev {
   flex: none;
   width: 192rpx;
-}
-.btn-main {
-  flex: 1;
 }
 </style>

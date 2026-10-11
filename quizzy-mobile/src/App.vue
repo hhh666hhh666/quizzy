@@ -124,4 +124,18 @@ page {
   text-align: center;
   color: $app-ink-muted;
 }
+
+/* 尊重系统「减少动态效果」（PRODUCT.md 的无障碍地板，与 PC 端 tokens.css 同一套口径）：
+   动画收到几乎为 0，过渡只留颜色类——这样关掉动效后页面不会还在位移。
+   ⚠️ 这层只挡 CSS；JS 驱动的数字滚动在调用处另判一次 matchMedia。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+  }
+}
 </style>
