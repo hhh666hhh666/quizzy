@@ -315,7 +315,9 @@ public class QuizService {
                     favoriteIds.contains(question.getId()),
                     question.getAnalysis()));
         }
-        double accuracy = answeredCount == 0 ? 0 : (correctCount * 100.0) / answeredCount;
+        // 正确率按整数百分比下发：33.333…% 这种浮点尾巴对用户没有意义，
+        // 而 PC 与移动端的结果页都原样渲染这个值，所以在源头取整（两端同时干净）
+        double accuracy = answeredCount == 0 ? 0 : Math.round((correctCount * 100.0) / answeredCount);
         return new SessionResultVO(session.getId(), session.getTitle(), session.getSourceType(),
                 session.getStatus(), session.getQuestionCount(), answeredCount, correctCount,
                 session.getQuestionCount() - answeredCount, totalScore, obtainedScore, accuracy,

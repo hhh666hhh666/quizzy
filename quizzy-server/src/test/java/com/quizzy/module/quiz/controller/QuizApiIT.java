@@ -275,8 +275,9 @@ class QuizApiIT extends ApiTestBase {
         // ② **单位是百分数（0–100），不是 0–1 的比例**——写成比例会得到 100.0 而不是 1.0。
         // 按公式断言，不写死数字：条件变了这条断言仍然说得通。
         // ⚠️ 分子分母都得非 0（这里是 1 / 2）——若全是 0，"单位写错"也会算出同一个答案，这条就白写了。
-        double expectedAccuracy = data.path("correctCount").asInt() * 100.0
-                / data.path("answeredCount").asInt();
+        // ③ 后端按**整数百分比**下发（Math.round）——33.333…% 这种尾巴对用户没有意义
+        double expectedAccuracy = Math.round(data.path("correctCount").asInt() * 100.0
+                / data.path("answeredCount").asInt());
         assertThat(data.path("accuracy").asDouble()).isCloseTo(expectedAccuracy, within(1e-9));
 
         // 已经结算的会话不能再提交。
