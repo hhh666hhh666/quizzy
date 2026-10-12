@@ -21,7 +21,8 @@
 
       <template v-if="currentQuestion">
         <!-- 题干与选项同卡（V1：一张问卷面，选项间细分割线；选中 / 对 / 错整行染色）。
-             :key 绑题号：切题时整卡重挂一次，配合淡入，避免「上一题的脸直接换成下一题」。 -->
+             :key 绑题号：切题时整卡重挂一次，配合淡入，避免「上一题的脸直接换成下一题」。
+             ⚠️ 提交判分不走这里——刷新会话「保持当前题」，不会触发重挂载（闪烁修复，见 ADR 0034 Amendment 1）。 -->
         <view class="qcard" :key="current">
           <view class="stem-block">
             <view class="tags">
@@ -39,14 +40,14 @@
           <view
             v-for="option in currentQuestion.options"
             :key="option.label"
-            :class="['option', optionState(option.label)]"
+            :class="['option', optionState(option.label), celebrate ? 'celebrate' : '']"
             @click="onPick(option.label)"
           >
             <view :class="['marker', currentQuestion.type === 'MULTI' ? 'marker--square' : '']">
               <view v-if="showPickDot(option.label)" class="marker-dot" />
               <text
                 v-else-if="markerGlyph(option.label)"
-                :class="['marker-glyph', markerGlyph(option.label) === '✓' ? 'pop' : 'fade']"
+                :class="['marker-glyph', celebrate ? (markerGlyph(option.label) === '✓' ? 'pop' : 'fade') : '']"
               >
                 {{ markerGlyph(option.label) }}
               </text>
@@ -116,6 +117,9 @@ const picked = ref<string[]>([])
 const pickedRadio = ref('')
 const feedback = ref<AnswerResultVO | null>(null)
 const submitting = ref(false)
+// 「刚提交判分」的门控：庆祝类动画（勾弹入 / 绿环涟漪）只在该题刚提交那一刻播；
+// 回看已判分的题不重播（ADR 0034：回看是静态复习）。
+const celebrate = ref(false)
 
 const questions = computed<QuizQuestionVO[]>(() => session.value?.questions || [])
 const currentQuestion = computed<QuizQuestionVO | null>(() => questions.value[current.value] || null)
@@ -206,7 +210,7 @@ function animateScore(from: number, to: number) {
   }
   const startAt = Date.now()
   scoreTimer = setInterval(() => {
-    const t = Math.min(1, (Date.now() - startAt) / 400)
+    const t = Math.min(1, (Date.now() - startAt) / 600)
     const eased = 1 - Math.pow(1 - t, 3)
     shownScore.value = Math.round(from + (to - from) * eased)
     if (t >= 1) {
@@ -244,10 +248,16 @@ onLoad(async (query) => {
   }
 })
 
-async function load() {
-  session.value = await getSession(sessionId.value)
-  const firstUnanswered = session.value.questions.findIndex((q) => !q.answered)
-  current.value = firstUnanswered === -1 ? 0 : firstUnanswered
+async function load(keepCurrent = false) {
+  // ⚠️ 提交后刷新必须走 keepCurrent=true——不能先把位置挪到「第一道未答题」再由调用方挪回来：
+  //    那会在两帧之间把题卡重挂载两次，配合切题淡入就是主人看到的「闪一下」（2026-10-12 修）。
+  const fresh = await getSession(sessionId.value)
+  session.value = fresh
+  if (!keepCurrent) {
+    const firstUnanswered = fresh.questions.findIndex((q) => !q.answered)
+    current.value = firstUnanswered === -1 ? 0 : firstUnanswered
+    celebrate.value = false
+  }
   syncPicked()
 }
 
@@ -283,6 +293,7 @@ function onPick(label: string) {
 
 function go(index: number) {
   if (index < 0 || index >= questions.value.length) return
+  celebrate.value = false
   current.value = index
   syncPicked()
 }
@@ -306,13 +317,12 @@ async function onSubmit() {
   submitting.value = true
   try {
     const result = await submitAnswer(sessionId.value, q.questionId, answer)
-    // 刷新会话（answered / userAnswers / obtainedScore），但**停在刚提交的这题**上。
-    // 不能让 load() 决定当前题：它会把位置挪到「第一道未答题」，于是反馈张冠李戴
-    // （题干是下一题、解析还是这题），而且按钮变成「下一题」，一点就跳过一道未答题。
-    const index = current.value
-    await load()
-    current.value = index
-    syncPicked()
+    // 刷新会话（answered / userAnswers / obtainedScore），但**停在刚提交的这题**上：
+    // 不再让 load() 决定当前题——它会把位置挪到「第一道未答题」，除了反馈张冠李戴，
+    // 还会让题卡在两帧之间重挂载两次（就是那个「闪一下」）。
+    await load(true)
+    // 庆祝类动画只在这一刻开闸；回看由 go() / load(false) 关掉
+    celebrate.value = true
     feedback.value = result
   } catch {
     // unwrap 已提示
@@ -508,8 +518,9 @@ function typeLabel(type: string) {
   border-radius: 50%;
   background: #ffffff;
 }
-/* 判分后：对勾「弹入」（唯一带过冲的一条，过冲只有 6%）；错叉只淡入——
-   庆祝感只属于答对，答错那一侧保持安静 */
+/* 判分后：对勾「弹入」——整套里过冲最大的一条（约 22%）；错叉只淡入——
+   庆祝感只属于答对，答错那一侧保持安静。
+   ⚠️ 动画由 celebrate 门控：只在刚提交那一刻挂上类，回看不重播。 */
 .marker-glyph {
   color: #ffffff;
   font-size: 22rpx;
@@ -523,11 +534,11 @@ function typeLabel(type: string) {
 }
 @keyframes tick-pop {
   0% {
-    transform: scale(0.25);
+    transform: scale(0.2);
     opacity: 0;
   }
-  60% {
-    transform: scale(1.06);
+  55% {
+    transform: scale(1.22);
     opacity: 1;
   }
   100% {
@@ -543,9 +554,21 @@ function typeLabel(type: string) {
     opacity: 1;
   }
 }
+/* 正确标记外扩一圈绿色涟漪再淡掉——只随「刚提交」播一次 */
+.option.celebrate.correct .marker {
+  animation: tick-ring 700ms $ease-out;
+}
+@keyframes tick-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 136, 75, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 20rpx rgba(0, 136, 75, 0);
+  }
+}
 @keyframes qcard-in {
   from {
-    opacity: 0.5;
+    opacity: 0.35;
   }
   to {
     opacity: 1;
@@ -599,7 +622,7 @@ function typeLabel(type: string) {
   display: flex;
   align-items: center;
 }
-/* 徽章入场：轻微上浮。答对 / 答错同款——这是「基础过渡」，不是庆祝 */
+/* 徽章入场：淡入 + 上浮。答对 / 答错同款——这是「基础过渡」，不是庆祝 */
 .fb-badge {
   flex: none;
   padding: 4rpx 16rpx;
@@ -620,7 +643,7 @@ function typeLabel(type: string) {
 @keyframes badge-in {
   from {
     opacity: 0;
-    transform: translateY(6rpx);
+    transform: translateY(16rpx);
   }
   to {
     opacity: 1;
@@ -660,14 +683,15 @@ function typeLabel(type: string) {
   height: 96rpx;
   border-radius: 24rpx;
 }
-/* 按钮换文案（提交本题 ↔ 下一题）时元素会重挂，给一个极短淡入，别硬闪 */
+/* 按钮换文案（提交本题 ↔ 下一题）时元素会重挂：给一个极短的柔和淡入。
+   ⚠️ 从 0.5 起、不是从 0——从全透明开始会变成「按钮闪一下」（2026-10-12 调）。 */
 .btn-main {
   flex: 1;
   animation: swap-in $dur-fast $ease-out;
 }
 @keyframes swap-in {
   from {
-    opacity: 0;
+    opacity: 0.5;
   }
   to {
     opacity: 1;
