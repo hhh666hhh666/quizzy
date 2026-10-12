@@ -1,0 +1,878 @@
+{
+  "updated_at": "2026-10-12 14:53",
+  "similarity_threshold": 0.75,
+  "questions": {
+    "0af58da6790d7496": {
+      "stem": "在单核 CPU 下，Stream 串行迭代的效率高于并行迭代。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "0f8f39ab28df96df": {
+      "stem": "通过序列化把对象状态保存为字节数组，可以避免 JVM 停止运行后对象状态丢失。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "1c4affb396702084": {
+      "stem": "静态方法可以访问类的实例变量和实例方法。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java中的static都能用来修饰什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "2514b7d6e0abf2c3": {
+      "stem": "只要 try 语句块被执行，finally 中的代码就一定会执行。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "finally中代码一定会执行吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "2b3e478f8a21eb1a": {
+      "stem": "int.class 与 Integer.class 是同一个 Class 对象。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > 反射使用步骤",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "38366243f02d1e9e": {
+      "stem": "LinkedList 比 ArrayList 更利于查找。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "ArrayList、LinkedList的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "3dc416ef16bb0960": {
+      "stem": "i++ 是先递增再返回。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "i++ 和 ++i 有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "3ee7b6994693490c": {
+      "stem": "想要重写 clone() 方法实现深拷贝，必须先实现 Cloneable 接口，否则会报 CloneNotSupport",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "4919d4abe2af6a22": {
+      "stem": "如果父类没有无参构造，子类需要手动调用 super(xxx) 调用父类的有参构造。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "55ae9eadfa77d7ab": {
+      "stem": "HashMap 是线程安全的。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5b37471877956503": {
+      "stem": "反射的优点是可以提升程序的灵活性和扩展性。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > 反射机制的优缺点：",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5d7a2eeda1602288": {
+      "stem": "在 JDK 8 及以前，for 循环中使用 + 拼接字符串时，每次拼接都会 new 一个 StringBuilder。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5fdeb92e10bce237": {
+      "stem": "SPI 中接口通常定义在调用方（框架/JDK）的包中，实现类在实现方的包中。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是SPI，和API有啥区别",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "6836d9a082114578": {
+      "stem": "当主要目的是复用代码时，应该使用抽象类。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "抽象类和接口的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "6be9cb77ffb6d919": {
+      "stem": "在增强 for 循环中调用 list.remove() 会抛出 ConcurrentModificationExcept",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "6cc4db4185ad57ca": {
+      "stem": "两个对象 x.equals(y) 为 true，但它们的 hashCode() 可以不同。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "和 equals() 有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "6d732fa7d70c7de6": {
+      "stem": "List<String> 和 List<Integer> 经过编译后是同一个类。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型擦除",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "7024da6a1eea7091": {
+      "stem": "通过 new 创建对象的效率比通过反射高。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > Java反射创建对象效率高还是通过new创建对象的效率高？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "72d4e578234e4489": {
+      "stem": "只要在不同平台上安装对应的 JVM，就可以运行 Java 程序，从而达到跨平台的目的。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是字节码？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "78eaa01bb6d5b087": {
+      "stem": "AIO 中应用程序发起 IO 操作后，调用线程会被阻塞直到操作完成。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8a23c7b665426521": {
+      "stem": "PECS 原则指的是 Producer Extends、Consumer Super，即上界生产、下界消费。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8d36f2e1ac3c0b9c": {
+      "stem": "NIO 的 Selector 可以用一个线程注册并监听多个通道上的 IO 事件。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "9512f5ba8c1acdb5": {
+      "stem": "并行流一定比串行流更快。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "99a518e3393660c7": {
+      "stem": "JDK 8 起，当链表长度超过 8 且数组大小大于等于 64 时，链表会转为红黑树。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap 的原理？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "a0bc6da844bf0f7d": {
+      "stem": "transient 关键字修饰的变量不会被序列化，反序列化后其值为初始值。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "a75297826ba5ea46": {
+      "stem": "用普通 for 循环正序删除集合元素时，不会漏删元素。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "b1e7b4ca8e6fe96a": {
+      "stem": "Java 的 char 类型可以存储中文字符。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "char能存储中文吗",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c16ab8067cc0454f": {
+      "stem": "浅拷贝后，新旧对象会共享同一个引用对象。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c54c3992ba94cd52": {
+      "stem": "重载（overload）要求同一个类中多个同名方法的参数列表必须不同。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "重载和重写的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c92918b9aac17cf1": {
+      "stem": "Stream 只能被消费一次，一旦遍历过就会失效。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "stream流的原理？常用的流？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "d1b9da6c59c2077f": {
+      "stem": "如果确定不需要处理小数，并且对执行速度有极端要求，使用 long 也可能更适合。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "ebe9a5c95363d668": {
+      "stem": "把对象序列化成字节流后立即反序列化，可以得到一个与原对象状态相同但完全独立的新对象，从而实现深拷贝。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么情况下需要对对象进行序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "f2df3e5b068e0b22": {
+      "stem": "Integer a = 100; Integer b = 100; 则 a == b 的结果为 true。",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "08b8f338195e708f": {
+      "stem": "关于 serialVersionUID，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "0d73836451855037": {
+      "stem": "下列属于静态类型语言的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 是动态类型语言还是静态类型语言？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "1372236cfbcb91bd": {
+      "stem": "关于包装类，正确的说法有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "1a22f05808a4fae4": {
+      "stem": "影响并行流性能的因素有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "1c2e1cc26d2dd847": {
+      "stem": "AIO 中应用程序可以通过哪些方式获知 IO 操作完成？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "28d60475c0ea2d90": {
+      "stem": "关于泛型中常见类型参数的含义，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型中K T V E ？ Object等分别代表什么含义。",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5440a35aae5d01de": {
+      "stem": "关于 HashMap、Hashtable、ConcurrentHashMap 对 null 的支持，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "77a7a7d2476e94f9": {
+      "stem": "注解的作用有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "注解的作用是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "7c5bde404ee17fd5": {
+      "stem": "关于 BeanUtils 的拷贝特性，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "7c9c534f11aa3ac5": {
+      "stem": "下列属于 Map 双列集合的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 中的集合类有哪些？它们的特点是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "7d0d9714e3e8e339": {
+      "stem": "关于抽象类，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "抽象类和接口的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "849e9efb8b3e26dd": {
+      "stem": "static 可以用来修饰哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java中的static都能用来修饰什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8869b36635c7a680": {
+      "stem": "泛型的主要作用有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8fb9091510696d4c": {
+      "stem": "下列属于 Java 基本数据类型的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 的基本数据类型有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "9ea33fa4709f6fa0": {
+      "stem": "面向对象的三大特征有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "面向对象都有哪些特征？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "bdcb09e26339f574": {
+      "stem": "以下属于反射性能低的原因的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > 反射机制的优缺点：",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "bddddf3e8890a766": {
+      "stem": "关于泛型通配符，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c79d864d9de487ee": {
+      "stem": "下列会导致 finally 不执行的情况有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "finally中代码一定会执行吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c94d0899c39123e7": {
+      "stem": "关于泛型信息的保留与擦除，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型擦除",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "ca0e6a031042e04a": {
+      "stem": "关于 Stream 的以下说法，正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "stream流的原理？常用的流？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "eb0c17f7fce9afc2": {
+      "stem": "下列属于非受检异常（RuntimeException 及其子类）的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "f48e4dad52a7b68c": {
+      "stem": "关于 equals 与 hashCode，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "和 equals() 有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "fc94f5d9191c0c56": {
+      "stem": "多线程环境下 HashMap 存在哪些问题？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap 的原理？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "fccfc2207d815618": {
+      "stem": "反射的使用场景有哪些？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "fd557dbda43edd54": {
+      "stem": "关于 String、StringBuilder 和 StringBuffer，下列说法正确的有？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "07611ab114e41740": {
+      "stem": "使用 Java 原生序列化机制时，类需要实现什么接口？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "08500cda94b8b0ff": {
+      "stem": "NIO 中用来替代 BIO 中流（Stream）的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "0e2b8b956ee8f48b": {
+      "stem": "从 JDK 1.7 开始，字符串常量池被放在哪里？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "1325734a56fba7ff": {
+      "stem": "Netty 网络框架基于哪种 IO 模型？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "168f2e131bd22efe": {
+      "stem": "对于引用数据类型，== 比较的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "和 equals() 有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "21d62e47cbe80596": {
+      "stem": "String 为什么是不可变的？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "2d3b3a1581b3af11": {
+      "stem": "关于受检异常，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "2fb4a10f3315c57d": {
+      "stem": "关于静态变量，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java中的static都能用来修饰什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "36544b605ecbf11e": {
+      "stem": "关于 this() 调用构造方法，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "3c14ea64582b6e11": {
+      "stem": "Java 中 char 类型占用多少字节？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "char能存储中文吗",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "43f87cccb974165e": {
+      "stem": "API 与 SPI 的区别是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是SPI，和API有啥区别",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "4609c086d8c563f4": {
+      "stem": "Object 类的 clone() 方法在不重写的情况下是什么拷贝？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "4e60457838b9853e": {
+      "stem": "关于抽象类与接口的继承和实现，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "抽象类和接口的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5075301d7222474e": {
+      "stem": "泛型擦除发生在哪个阶段？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型擦除",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "50bfa7e17b292315": {
+      "stem": "HashMap 默认的容量和负载因子分别是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap 的原理？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "53f813f3e96507a8": {
+      "stem": "getDeclaredXXX() 与 getXXX() 的区别是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > 反射使用步骤",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "54006476ad1191d5": {
+      "stem": "关于抽象类与接口的构造器，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "抽象类和接口的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "561280afe93b79ed": {
+      "stem": "Java 集合主要分为哪两大类？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 中的集合类有哪些？它们的特点是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5e14182834cfb518": {
+      "stem": "使用 Java 反射创建对象时，需要依次调用哪两个方法？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？ > 除了使用new创建对象之外，还可以用什么方法创建对象？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "5f0f7ea4c4d750f2": {
+      "stem": "反射指的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "反射机制及其使用场景有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "69e3db4e891a5278": {
+      "stem": "Error 和 Exception 的共同父类是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "71fbb19cfb9af5a8": {
+      "stem": "BIO（Blocking I/O）的特点是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "73af7ffc2298b87a": {
+      "stem": "super 关键字引用的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "7e4597bcf5f5b4ab": {
+      "stem": "注解是在 Java 哪个版本引入的？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "注解的作用是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "83d39a51d01a434f": {
+      "stem": "`<? extends T>` 表示什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "85ab4f7d54b7e8a2": {
+      "stem": "浅拷贝指的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8b41bde2dbc1d936": {
+      "stem": "ArrayList 扩容时新容量为老容量的多少倍？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "ArrayList是如何扩容的？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "8e7c61b5c0186598": {
+      "stem": "int 和 Integer 的区别是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "90ccf3b2d809d586": {
+      "stem": "关于方法重写（override），下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "重载和重写的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "9a07732e3fff788b": {
+      "stem": "泛型允许类、接口和方法在定义时使用什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是泛型",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "9afb306773212180": {
+      "stem": "HashMap 中如何根据 key 计算出数组下标？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap 的原理？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "a03884b39f4719fd": {
+      "stem": "以 JDBC 驱动为例，java.sql.Driver 接口是由谁定义的？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是SPI，和API有啥区别",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "a340c26eae2b29e8": {
+      "stem": "ConcurrentHashMap（JDK 8+）是如何保证线程安全的？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "bcef9ad1c295e64a": {
+      "stem": "把对象放入 Redis 这类分布式缓存前，需要先做什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么情况下需要对对象进行序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c22846d6ba2db86f": {
+      "stem": "Java 的基本数据类型共有多少种？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 的基本数据类型有哪些？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c3a7451c31c46717": {
+      "stem": "Java 源码编译后生成的 .class 文件是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是字节码？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "c852a9e18ceaa497": {
+      "stem": "NIO 中线程发起 IO 请求后的行为是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "cb6b4a598542093c": {
+      "stem": "HashMap 的底层数据结构是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "HashMap 的原理？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "ce0bf382ba48b20c": {
+      "stem": "涉及货币计算的应用，推荐使用哪个类型？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "d097ac56fb56f305": {
+      "stem": "Java 属于什么类型的语言？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "Java 是动态类型语言还是静态类型语言？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "d38e1d54029dd2bd": {
+      "stem": "没有实现 Serializable 的对象使用 Java 原生序列化时会抛出什么异常？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "d52f70916a99c538": {
+      "stem": "String s = new String(\"abc\") 会创建几个对象？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "d803612e42d09c43": {
+      "stem": "关于 Java 序列化与静态变量，下列说法正确的是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "db98f9aa17b1aa35": {
+      "stem": "对象序列化指的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是序列化与反序列化",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "de6c41aa1f66f6b6": {
+      "stem": "BIO 通常采用的线程模型是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是 AIO、BIO 和 NIO？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "e46de914f9ec06d9": {
+      "stem": "ArrayList 和 LinkedList 的底层结构分别是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "ArrayList、LinkedList的区别是什么？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "e85e88aff40c1091": {
+      "stem": "遍历集合时安全删除当前元素的正确做法是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "f0116adc02e2857f": {
+      "stem": "StringBuffer 是如何保证线程安全的？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "f5f8ac46cd82d334": {
+      "stem": "借助序列化实现深拷贝的思路是？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "f8049dd3f488c6d7": {
+      "stem": "多态指的是什么？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "面向对象都有哪些特征？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    },
+    "fd60eb4778b0520b": {
+      "stem": "通过 new String() 显式创建的字符串对象存储在哪里？",
+      "category": "javase",
+      "source_file": "md/JavaSe.md",
+      "source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "added_at": "2026-10-12 14:53",
+      "locked": false
+    }
+  }
+}

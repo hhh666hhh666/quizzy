@@ -1,0 +1,4327 @@
+{
+  "updated_at": "2026-10-12 14:53",
+  "count": 109,
+  "questions": [
+    {
+      "type": "JUDGE",
+      "stem": "在单核 CPU 下，Stream 串行迭代的效率高于并行迭代。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：在单核 CPU 的情况下，Stream 的串行迭代效率要高于并行迭代；多核 CPU 下并行迭代更快，但元素数量比较少时常规迭代反而更好。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "并行流",
+        "中频"
+      ],
+      "source_quote": "**在单核CPU的情况下，Stream的串行迭代的效率是要高于Stream的并行迭代的效率的。**",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__Stream的并行流一定比串行流更快吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "_fingerprint": "0af58da6790d7496",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "通过序列化把对象状态保存为字节数组，可以避免 JVM 停止运行后对象状态丢失。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：通过对象序列化可以把对象的状态保存为字节数组，需要时再反序列化成对象，从而避免 JVM 停止运行后对象状态丢失。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "序列化",
+        "中频"
+      ],
+      "source_quote": "这样就可以避免JVM停止运行后对对象状态丢失。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是序列化与反序列化",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化",
+      "_fingerprint": "0f8f39ab28df96df",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "静态方法可以访问类的实例变量和实例方法。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：静态方法可以在不创建实例的情况下调用，但不能访问类的实例变量或实例方法，它们只能访问其他的静态成员。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "静态方法",
+        "static",
+        "中频"
+      ],
+      "source_quote": "不能访问类的实例变量或实例方法，它们只能访问其他的静态成员。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java中的static都能用来修饰什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java中的static都能用来修饰什么？",
+      "_fingerprint": "1c4affb396702084",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "只要 try 语句块被执行，finally 中的代码就一定会执行。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：finally 一定执行有两个前提——try 语句块被执行、程序正常运行。执行 System.exit() 等情况会打破前提，导致 finally 不执行。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "finally",
+        "高频"
+      ],
+      "source_quote": "如果没有符合这两个条件的话，finally中的代码就无法被执行，如发生以下情况，都会导致finally不会执行：\n\n1、System.exit()方法被执行",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__finally中代码一定会执行吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "finally中代码一定会执行吗？",
+      "_fingerprint": "2514b7d6e0abf2c3",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "int.class 与 Integer.class 是同一个 Class 对象。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文给出等式：int.class = Integer.TYPE ≠ Integer.class，即 int.class 与 Integer.class 不是同一个 Class 对象。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "低频"
+      ],
+      "source_quote": "int.class=Integer.TYPE≠Integer.class",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "JavaSe__反射使用步骤",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > 反射使用步骤",
+      "_fingerprint": "2b3e478f8a21eb1a",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "LinkedList 比 ArrayList 更利于查找。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：ArrayList 更利于查找，LinkedList 更利于增删，题干的说法与原文相反。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "ArrayList",
+        "LinkedList",
+        "中频"
+      ],
+      "source_quote": "ArrayList 更利于查找，LinkedList 更利于增删。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__ArrayList、LinkedList的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "ArrayList、LinkedList的区别是什么？",
+      "_fingerprint": "38366243f02d1e9e",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "i++ 是先递增再返回。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确：i++ 是先返回再递增，++i 是先递增再返回，题干的说法正好相反。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "中频"
+      ],
+      "source_quote": "i++是先返回再递增, ++i是先递增再返回",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__i++-和-++i-有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "i++ 和 ++i 有什么区别？",
+      "_fingerprint": "3dc416ef16bb0960",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "想要重写 clone() 方法实现深拷贝，必须先实现 Cloneable 接口，否则会报 CloneNotSupportedException。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：想要实现深拷贝就需要重写 clone 方法，而想要重写 clone 方法，就必须实现 Cloneable，否则会报 CloneNotSupportedException 异常。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Cloneable",
+        "深拷贝",
+        "高频"
+      ],
+      "source_quote": "如果想要实现深拷贝，就需要重写clone方法，而想要重写clone方法，就必须实现Cloneable，否则会报CloneNotSupportedException异常。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__如何实现深拷贝",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "_fingerprint": "3ee7b6994693490c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "如果父类没有无参构造，子类需要手动调用 super(xxx) 调用父类的有参构造。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：super() 可以省略，编译器会主动调用父类构造方法；但父类没有无参构造时，就要手动调用父类有参构造 super(xxx)。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "super",
+        "中频"
+      ],
+      "source_quote": "如果父类没有无参构造就要手动去调用父类有参构造super(xxx))",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__this-关键字怎么用？super-怎么用？二者有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "_fingerprint": "4919d4abe2af6a22",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "HashMap 是线程安全的。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：HashMap 非线程安全，适用于单线程环境；Hashtable 与 ConcurrentHashMap 才是线程安全的实现。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "中频"
+      ],
+      "source_quote": "HashMap：非线程安全，适用于单线程环境。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__HashMap、Hashtable-和-ConcurrentHashMap-的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "_fingerprint": "55ae9eadfa77d7ab",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "反射的优点是可以提升程序的灵活性和扩展性。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：反射的优点是提升程序的灵活性和扩展性，缺点是性能低。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "优点：提升程序的灵活性和扩展性",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__反射机制的优缺点：",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > 反射机制的优缺点：",
+      "_fingerprint": "5b37471877956503",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "在 JDK 8 及以前，for 循环中使用 + 拼接字符串时，每次拼接都会 new 一个 StringBuilder。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：jdk8 及以前 + 号拼接的本质是使用 StringBuilder，for 循环中每次拼接都 new 一个 StringBuilder，再把 String 转成 StringBuilder 再 append，频繁创建对象既耗时又浪费内存；jdk9 以后有一定优化。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "String",
+        "中频"
+      ],
+      "source_quote": "在jdk8及以前，+号操作符拼接字符串的本质是使用StringBuilder，在for循环中，每次拼接都是new了一个StringBuilder，然后再把String转成StringBuilder，再进行append，频繁地创建对象会不仅会耗费很多时间还会造成内存的资源的浪费。在jdk9以后+拼接字符串有一定的优化。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__String、StringBuilder-和-StringBuffer-的区别是什么？StringBuffer-与-St",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "_fingerprint": "5d7a2eeda1602288",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "SPI 中接口通常定义在调用方（框架/JDK）的包中，实现类在实现方的包中。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：SPI 最显著的特征是「接口」在「调用方」的包，「调用方」定义规则，而自定义实现类在「实现方」的包，再把实现类加载到「调用方」中；API 则是实现和接口在一个包中。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "SPI",
+        "中频"
+      ],
+      "source_quote": "「接口」在「调用方」的包，「调用方」定义规则，而自定义实现类在「实现方」的包，然后把实现类加载到「调用方」中。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是SPI，和API有啥区别",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是SPI，和API有啥区别",
+      "_fingerprint": "5fdeb92e10bce237",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "当主要目的是复用代码时，应该使用抽象类。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文的选择标准：想要定义标准、规范时用接口，想要复用代码时用抽象类。抽象类的典型应用是模板方法模式。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "抽象类",
+        "接口",
+        "中频"
+      ],
+      "source_quote": "所以当我们想要定义标准、规范的时候，就使用接口。当我们想要复用代码的时候，就使用抽象类。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__抽象类和接口的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "抽象类和接口的区别是什么？",
+      "_fingerprint": "6836d9a082114578",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "在增强 for 循环中调用 list.remove() 会抛出 ConcurrentModificationException。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：增强 for 循环中直接 list.remove(s) 属于错误示范，会抛出 ConcurrentModificationException；正确做法是使用 Iterator.remove() 或 removeIf()。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Iterator",
+        "集合",
+        "中频"
+      ],
+      "source_quote": "list.remove(s); // 抛出 ConcurrentModificationException",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__集合删除元素的正确方法是什么（Iterator.remove）？ArrayList-与-LinkedList-的空间占用",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "_fingerprint": "6be9cb77ffb6d919",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "两个对象 x.equals(y) 为 true，但它们的 hashCode() 可以不同。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确否定该说法：如果两个对象通过 equals 比较为 true，它们的 hashCode() 也应该返回相同的结果。这是重写 equals 时必须同时重写 hashCode 的原因。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "equals",
+        "hashCode",
+        "高频"
+      ],
+      "source_quote": "不对, 如果两个对象通过equals方法比较结果为true, 那么它们的hashCode()也应该返回相同的结果",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__和-equals()-有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "和 equals() 有什么区别？",
+      "_fingerprint": "6cc4db4185ad57ca",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "List<String> 和 List<Integer> 经过编译后是同一个类。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：泛型擦除后，List<String> 和 List<Integer> 经过编译都是同一个类。但在子类中写死泛型类型时，可以通过反射保留具体类型参数。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型擦除",
+        "中频"
+      ],
+      "source_quote": "也就是说，List<String> 和 List<Integer>经过编译后都是同一个类。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__泛型擦除",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型擦除",
+      "_fingerprint": "6d732fa7d70c7de6",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "通过 new 创建对象的效率比通过反射高。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：通过 new 创建对象的效率比较高。new 在编译期即可确定要加载的对象路径以及是否合法，而反射要到运行时才能确定，安全合法性的检查会影响类加载的效率。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "高频"
+      ],
+      "source_quote": "通过new创建对象的效率比较高。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__Java反射创建对象效率高还是通过new创建对象的效率高？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > Java反射创建对象效率高还是通过new创建对象的效率高？",
+      "_fingerprint": "7024da6a1eea7091",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "只要在不同平台上安装对应的 JVM，就可以运行 Java 程序，从而达到跨平台的目的。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：java 虚拟机负责将字节码翻译成特定平台下的机器码然后运行，所以只要在不同平台上安装对应的 jvm 就可以运行 java 程序，达到跨平台的目的。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "字节码",
+        "跨平台",
+        "中频"
+      ],
+      "source_quote": "所以只要在不同平台上安装对应的jvm就可以运行java程序, 达到跨平台的目的",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是字节码？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是字节码？",
+      "_fingerprint": "72d4e578234e4489",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "AIO 中应用程序发起 IO 操作后，调用线程会被阻塞直到操作完成。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：AIO 中应用程序发起一个 IO 操作时立即返回，不会阻塞调用线程，由内核在后台完成整个操作后通过回调或 Future 通知应用程序。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "AIO",
+        "中频"
+      ],
+      "source_quote": "应用程序发起一个 I/O 操作（如 read()）时，立即返回，不会阻塞调用线程。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p02",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "78eaa01bb6d5b087",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "PECS 原则指的是 Producer Extends、Consumer Super，即上界生产、下界消费。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：使用限定通配符时要遵守 PECS 原则，即 Producer Extends, Consumer Super；上界生产，下界消费。要从集合读取类型 T 的数据用 ? extends，要写入用 ? super。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "PECS",
+        "泛型",
+        "中频"
+      ],
+      "source_quote": "在使用 限定通配符的时候，需要遵守PECS原则，即Producer Extends, Consumer Super；上界生产，下界消费。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__泛型中上下界限定符extends-和-super有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "_fingerprint": "8a23c7b665426521",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "NIO 的 Selector 可以用一个线程注册并监听多个通道上的 IO 事件。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：多路复用器（Selector）是 NIO 的核心，一个线程可以注册并监听多个通道上的 IO 事件（连接就绪、读就绪、写就绪），事件发生时 Selector 通知应用程序哪个通道准备好了什么事件。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "NIO",
+        "Selector",
+        "中频"
+      ],
+      "source_quote": "多路复用器 (Selector): NIO 的核心！ 一个线程可以注册并监听多个通道上的 I/O 事件（如连接就绪、读就绪、写就绪）。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p02",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "8d36f2e1ac3c0b9c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "并行流一定比串行流更快。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：Stream 底层使用 ForkJoin 进行并发处理，但并不代表用了并发处理就一定比串行处理更快，线程管理开销、任务分割、线程争用、数据依赖性、环境配置都会影响并行流性能。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "并行流",
+        "Stream",
+        "高频"
+      ],
+      "source_quote": "Stream底层使用了ForkJoin进行并发处理，但是，并不代表着用了并发处理就一定比串行处理更快。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__Stream的并行流一定比串行流更快吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "_fingerprint": "9512f5ba8c1acdb5",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "JDK 8 起，当链表长度超过 8 且数组大小大于等于 64 时，链表会转为红黑树。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：jdk8 以前用链表处理哈希冲突；从 jdk8 开始，链表长度超过 8 且数组大小大于等于 64 时就转为红黑树（查找 O(logn)），红黑树节点小于 6 时又退化为链表。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "红黑树",
+        "高频"
+      ],
+      "source_quote": "在jdk8以前是利用链表来处理哈希冲突，但链表一长呢查找性能就差，所以从jdk8开始，当链表长度超过8且数组大小大于等于64时就会将链表转为红黑树，因为红黑树查找的时间复杂度是O(logn)，不过java也很节俭，当红黑树节点小于6时又会退化为链表，避免维护树的额外开销。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__HashMap-的原理？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap 的原理？",
+      "_fingerprint": "99a518e3393660c7",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "transient 关键字修饰的变量不会被序列化，反序列化后其值为初始值。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：transient 用于控制变量的序列化，加上它可以阻止该变量被序列化到文件中，反序列化后该变量被设为初始值，如 int 型为 0、对象型为 null。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "transient",
+        "序列化",
+        "高频"
+      ],
+      "source_quote": "**transient** 关键字的作用是控制变量的序列化，在变量声明前加上该关键字，可以**阻止该变量被序列化到文件中**，在被反序列化后，transient 变量的值被设为初始值，如 int 型的是 0，对象型的是 null。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__如何进行序列化和反序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "_fingerprint": "a0bc6da844bf0f7d",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "用普通 for 循环正序删除集合元素时，不会漏删元素。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：普通 for 循环删除属于错误示范，删除元素后下标前移会导致跳过元素、漏删（例子中第二个 \"b\" 就未被删除）。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Iterator",
+        "集合",
+        "中频"
+      ],
+      "source_quote": "list.remove(i); // 会跳过元素，导致漏删",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__集合删除元素的正确方法是什么（Iterator.remove）？ArrayList-与-LinkedList-的空间占用",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "_fingerprint": "a75297826ba5ea46",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Java 的 char 类型可以存储中文字符。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "char 表示 16 位（2 个字节）的 Unicode 字符，可以存储任何 Unicode 字符集中的字符，当然也包括中文字符。原文同时提醒：极少数生僻字可能因 Unicode 版本问题暂时无法表示。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "char",
+        "中频"
+      ],
+      "source_quote": "它可以存储任何Unicode字符集中的字符，当然也包括中文字符。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__char能存储中文吗",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "char能存储中文吗",
+      "_fingerprint": "b1e7b4ca8e6fe96a",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "浅拷贝后，新旧对象会共享同一个引用对象。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：浅拷贝时引用类型的引用地址会被复制，但不会复制引用对象本身，这意味着新旧对象会共享同一个引用对象。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "浅拷贝",
+        "中频"
+      ],
+      "source_quote": "引用类型（如对象、数组等）的**引用地址**会被复制，但不会复制引用对象本身，这意味着新旧对象会共享同一个引用对象。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是深拷贝和浅拷贝？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？",
+      "_fingerprint": "c16ab8067cc0454f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "重载（overload）要求同一个类中多个同名方法的参数列表必须不同。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文对重载的定义就是：一个类中可以有多个同名的方法，但参数列表必须不同。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "重载",
+        "中频"
+      ],
+      "source_quote": "**重载(**overload)是一个类中可以由多个同名的方法, 但是方法的参数列表必须不同",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__重载和重写的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "重载和重写的区别是什么？",
+      "_fingerprint": "c54c3992ba94cd52",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Stream 只能被消费一次，一旦遍历过就会失效。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：流具有可消费性，是一次性的，Stream 只能被「消费」一次，一旦遍历过就会失效，就像容器的迭代器那样，想要再次遍历必须重新生成。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "Stream",
+        "中频"
+      ],
+      "source_quote": "**可消费性。流是一次性的**，Stream只能被“消费”一次，一旦遍历过就会失效，就像容器的迭代器那样，想要再次遍历必须重新生成。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__stream流的原理？常用的流？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "stream流的原理？常用的流？",
+      "_fingerprint": "c92918b9aac17cf1",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "如果确定不需要处理小数，并且对执行速度有极端要求，使用 long 也可能更适合。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：绝大多数货币计算推荐 BigDecimal；但如果确定不需要处理小数、且对执行速度有极端要求，使用 long 可能更适合。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "BigDecimal",
+        "中频"
+      ],
+      "source_quote": "如果确定不需要处理小数，并且对执行速度有极端要求，使用 long 可能更适合。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "_fingerprint": "d1b9da6c59c2077f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "把对象序列化成字节流后立即反序列化，可以得到一个与原对象状态相同但完全独立的新对象，从而实现深拷贝。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：序列化一个对象到字节流然后立即反序列化，会生成一个全新的、与原对象状态相同但完全独立的对象实例（前提是序列化/反序列化过程正确实现了深度复制）。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "序列化",
+        "深拷贝",
+        "中频"
+      ],
+      "source_quote": "序列化一个对象到字节流，然后立即反序列化，会生成一个全新的、与原对象状态相同但完全独立的对象实例（前提是序列化/反序列化过程正确实现了深度复制）。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么情况下需要对对象进行序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么情况下需要对对象进行序列化？",
+      "_fingerprint": "ebe9a5c95363d668",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Integer a = 100; Integer b = 100; 则 a == b 的结果为 true。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文给出的例子中，100 在 -128 至 127 之间，此时包装出的两个对象可以直接用 a == b 判断值相等，返回 true；而 300 超出了该范围，a == b 返回 false。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Integer",
+        "包装类",
+        "高频"
+      ],
+      "source_quote": "a == b 会返回true",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "JavaSe__int-和-Integer-有什么区别？什么是包装类？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "_fingerprint": "f2df3e5b068e0b22",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 serialVersionUID，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "反序列化时 JVM 会比较字节流与本地类的 serialVersionUID"
+        },
+        {
+          "label": "B",
+          "content": "没有显式定义时，每次重新编译 serialVersionUID 都会变化"
+        },
+        {
+          "label": "C",
+          "content": "两者不一致会出现 InvalidClassException"
+        },
+        {
+          "label": "D",
+          "content": "序列化会保存类的静态变量"
+        }
+      ],
+      "answer": [
+        "A",
+        "C"
+      ],
+      "analysis": "原文：反序列化时 JVM 会把传来的字节流中的 serialVersionUID 与本地实体类的 serialVersionUID 比较，相同才允许反序列化，否则抛 InvalidClassException。C 与「序列化不保存静态变量」矛盾；D 错在——Class 文件没变化时，即使多次编译 serialVersionUID 也不变。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "serialVersionUID",
+        "序列化",
+        "高频"
+      ],
+      "source_quote": "- 在进行反序列化时，JVM会把传来的字节流中的serialVersionUID与本地相应实体类的serialVersionUID进行比较，如果相同就认为是一致的，可以进行反序列化，否则就会出现序列化版本不一致的异常，即是InvalidClassException。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__如何进行序列化和反序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "_fingerprint": "08b8f338195e708f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列属于静态类型语言的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Java"
+        },
+        {
+          "label": "B",
+          "content": "Ruby"
+        },
+        {
+          "label": "C",
+          "content": "C 语言"
+        },
+        {
+          "label": "D",
+          "content": "Python"
+        }
+      ],
+      "answer": [
+        "A",
+        "C"
+      ],
+      "analysis": "原文明确：除了 Java，golang、C、C++、C# 都是静态类型语言；而 Python、JavaScript、Ruby 等属于动态类型语言。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "静态类型语言",
+        "中频"
+      ],
+      "source_quote": "除了Java, golang, C, C++, C# 都是静态类型语言",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-是动态类型语言还是静态类型语言？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 是动态类型语言还是静态类型语言？",
+      "_fingerprint": "0d73836451855037",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于包装类，正确的说法有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "包装类可以用 null 值来表示未知"
+        },
+        {
+          "label": "B",
+          "content": "包装类属于基本数据类型"
+        },
+        {
+          "label": "C",
+          "content": "包装类的典型使用场景包括集合类的泛型"
+        },
+        {
+          "label": "D",
+          "content": "包装类是将基本数据类型封装成对象的类"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文：包装类把基本数据类型封装成对象，用于需要对象而非原始值的场景（如集合泛型），且可以用 null 表示未知。包装类是引用类型，D 错。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "包装类",
+        "中频"
+      ],
+      "source_quote": "包装类是将基本数据类型封装成对象的类, 用于需要对象而非原始值的场景, 比如集合类的泛型, 包装类可以用null值来表示未知",
+      "_freq": "中频",
+      "_task_id": "JavaSe__int-和-Integer-有什么区别？什么是包装类？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "_fingerprint": "1372236cfbcb91bd",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "影响并行流性能的因素有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "任务分割是否均衡"
+        },
+        {
+          "label": "B",
+          "content": "线程管理的开销"
+        },
+        {
+          "label": "C",
+          "content": "元素数量很少时并行流仍有明显优势"
+        },
+        {
+          "label": "D",
+          "content": "并行流不存在线程争用"
+        }
+      ],
+      "answer": [
+        "A",
+        "B"
+      ],
+      "analysis": "原文：多线程会带来线程管理和任务分配的开销；性能提升依赖任务能有效分割和分配，分割不均衡会影响性能。另外并行流使用公共 ForkJoinPool，存在线程争用；元素数量比较少时直接用常规迭代性能更好，故 C、D 错。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "并行流",
+        "ForkJoin",
+        "中频"
+      ],
+      "source_quote": "**线程管理的开销**：并行流使用了多线程，而用了多线程就会带来线程管理和任务分配的开销。\n\n**任务分割**：并行流的性能提升依赖于任务能够有效地分割和分配。如果任务分割不均衡，一些线程可能空闲或等待，从而影响性能。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Stream的并行流一定比串行流更快吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "stream流的原理？常用的流？ > Stream的并行流一定比串行流更快吗？",
+      "_fingerprint": "1a22f05808a4fae4",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "AIO 中应用程序可以通过哪些方式获知 IO 操作完成？",
+      "options": [
+        {
+          "label": "A",
+          "content": "原地阻塞等待结果"
+        },
+        {
+          "label": "B",
+          "content": "用户线程定时轮询检查"
+        },
+        {
+          "label": "C",
+          "content": "回调函数（Callback）"
+        },
+        {
+          "label": "D",
+          "content": "Future 对象"
+        }
+      ],
+      "answer": [
+        "C",
+        "D"
+      ],
+      "analysis": "原文：AIO 中应用程序发起 IO 操作时提供一个回调函数（Callback）或一个 Future 对象，内核完成操作后主动通知应用程序。定时轮询是 NIO 的做法，原地阻塞是 BIO 的做法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "AIO",
+        "中频"
+      ],
+      "source_quote": "应用程序提供一个回调函数 (Callback) 或一个 Future 对象。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p02",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "1c2e1cc26d2dd847",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于泛型中常见类型参数的含义，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "E – Element（在集合中使用，因为集合中存放的是元素）"
+        },
+        {
+          "label": "B",
+          "content": "T – Type（Java 类）"
+        },
+        {
+          "label": "C",
+          "content": "S – String（字符串）"
+        },
+        {
+          "label": "D",
+          "content": "K – Key（键）"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：E 表示 Element、T 表示 Type、K 表示 Key、V 表示 Value、N 表示 Number；而 S、U、V 这些字母没有特定含义，只是代表某种未指定的类型，所以「S – String」是错的。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "泛型",
+        "低频"
+      ],
+      "source_quote": "+ E – Element (在集合中使用，因为集合中存放的是元素)\n+ T – Type (Java 类) \n+ K – Key（键） \n+ V – Value（值）",
+      "_freq": "低频",
+      "_task_id": "JavaSe__泛型中K-T-V-E-？-Object等分别代表什么含义。",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型中K T V E ？ Object等分别代表什么含义。",
+      "_fingerprint": "28d60475c0ea2d90",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 HashMap、Hashtable、ConcurrentHashMap 对 null 的支持，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "ConcurrentHashMap 不允许 null 键或值"
+        },
+        {
+          "label": "B",
+          "content": "HashMap 允许一个 null 键和多个 null 值"
+        },
+        {
+          "label": "C",
+          "content": "ConcurrentHashMap 允许 null 值"
+        },
+        {
+          "label": "D",
+          "content": "Hashtable 不允许任何 null 键或值"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：HashMap 允许一个 null 键和多个 null 值；Hashtable 不允许任何 null 键或值（否则抛 NullPointerException）；ConcurrentHashMap 也不允许 null 键或值，因为 get(key) 返回 null 会有值不存在还是值为 null 的歧义。D 错。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "Hashtable",
+        "ConcurrentHashMap",
+        "中频"
+      ],
+      "source_quote": "+ HashMap：允许一个 null 键和多个 null 值。\n+ Hashtable：不允许任何 null 键或值（否则抛出 NullPointerException）。\n+ ConcurrentHashMap：不允许 null 键或值（设计上避免歧义，如 get(key) 返回 null 可能表示值不存在或值为 null）。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__HashMap、Hashtable-和-ConcurrentHashMap-的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "_fingerprint": "5440a35aae5d01de",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "注解的作用有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "运行时处理"
+        },
+        {
+          "label": "B",
+          "content": "代码生成"
+        },
+        {
+          "label": "C",
+          "content": "编译检查"
+        },
+        {
+          "label": "D",
+          "content": "替代接口的方法实现"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文列出三类作用：编译检查（如 @Override、@Deprecated）、代码生成（如 Lombok 的 @Data）、运行时处理（如 Spring 的 @Autowired、JUnit 的 @Test）。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "注解",
+        "中频"
+      ],
+      "source_quote": "+ 编译检查：如@Override、@Deprecated。\n+ 代码生成：如 Lombok 的@Data。\n+ 运行时处理：如 Spring 的@Autowired、JUnit 的@Test。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__注解的作用是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "注解的作用是什么？",
+      "_fingerprint": "77a7a7d2476e94f9",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 BeanUtils 的拷贝特性，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Spring 的 org.springframework.beans.BeanUtils 是浅拷贝"
+        },
+        {
+          "label": "B",
+          "content": "Spring 的 BeanUtils 是深拷贝"
+        },
+        {
+          "label": "C",
+          "content": "Hutool 的 BeanUtil 是浅拷贝"
+        },
+        {
+          "label": "D",
+          "content": "Hutool 的 cn.hutool.core.bean.BeanUtil 是深拷贝"
+        }
+      ],
+      "answer": [
+        "A",
+        "D"
+      ],
+      "analysis": "原文明确：org.springframework.beans.BeanUtils 是浅拷贝的，cn.hutool.core.bean.BeanUtil 是深拷贝的。常用的各种 BeanUtils 基本也都是浅拷贝。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "浅拷贝",
+        "深拷贝",
+        "中频"
+      ],
+      "source_quote": "org.springframework.beans.BeanUtils是浅拷贝的\n\ncn.hutool.core.bean.BeanUtil是深拷贝的",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是深拷贝和浅拷贝？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？",
+      "_fingerprint": "7c5bde404ee17fd5",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列属于 Map 双列集合的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "TreeMap"
+        },
+        {
+          "label": "B",
+          "content": "LinkedHashMap"
+        },
+        {
+          "label": "C",
+          "content": "HashMap"
+        },
+        {
+          "label": "D",
+          "content": "ArrayList"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文：Map 主要有 HashMap、LinkedHashMap、ConcurrentHashMap、TreeMap 等；ArrayList 属于 Collection 单列集合。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "Map",
+        "集合",
+        "中频"
+      ],
+      "source_quote": "Map主要有HashMap，LinkedHashMap，ConcurrentHashMap，TreeMap等。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-中的集合类有哪些？它们的特点是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 中的集合类有哪些？它们的特点是什么？",
+      "_fingerprint": "7c9c534f11aa3ac5",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于抽象类，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "只能有常量和抽象方法"
+        },
+        {
+          "label": "B",
+          "content": "可以有构造方法"
+        },
+        {
+          "label": "C",
+          "content": "可以有成员变量"
+        },
+        {
+          "label": "D",
+          "content": "可以有具体方法"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文：抽象类用于描述类的共同特性和行为，可以有成员变量、构造方法和具体方法，适用于有明显继承关系的场景、用于代码复用；「只能有常量和抽象方法」描述的是接口（Java 8 前）的特征。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "抽象类",
+        "中频"
+      ],
+      "source_quote": "抽象类用于**描述类的共同特性和行为**，可以有成员变量、构造方法和具体方法。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__抽象类和接口的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "抽象类和接口的区别是什么？",
+      "_fingerprint": "7d0d9714e3e8e339",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "static 可以用来修饰哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "局部变量"
+        },
+        {
+          "label": "B",
+          "content": "代码块"
+        },
+        {
+          "label": "C",
+          "content": "变量"
+        },
+        {
+          "label": "D",
+          "content": "方法"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文：static 可用来修饰变量、方法、代码块以及类（静态内部类）。局部变量不在其列。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "static",
+        "高频"
+      ],
+      "source_quote": "可用来修饰**变量**、**方法**、**代码块**以及**类**。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__Java中的static都能用来修饰什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java中的static都能用来修饰什么？",
+      "_fingerprint": "849e9efb8b3e26dd",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "泛型的主要作用有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "代码复用：编写通用类或方法，适用于多种数据类型"
+        },
+        {
+          "label": "B",
+          "content": "提升程序的运行速度"
+        },
+        {
+          "label": "C",
+          "content": "类型安全：在编译时检查类型，避免类型转换错误"
+        },
+        {
+          "label": "D",
+          "content": "避免强制类型转换：不需要频繁进行类型强转"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文列出四点：类型安全、代码复用、可读性强、避免强制类型转换。运行速度不在其列，泛型甚至不改变运行期行为（类型擦除）。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型",
+        "高频"
+      ],
+      "source_quote": "1. **类型安全**：在编译时检查类型，避免类型转换错误。\n2. **代码复用**：编写通用类或方法，适用于多种数据类型。\n3. **可读性强**：明确变量或集合中元素的类型，代码更清晰。\n4. **避免强制类型转换**：使用泛型后不需要频繁进行类型强转，提高代码简洁性和可靠性。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__什么是泛型",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型",
+      "_fingerprint": "8869b36635c7a680",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列属于 Java 基本数据类型的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "String"
+        },
+        {
+          "label": "B",
+          "content": "double"
+        },
+        {
+          "label": "C",
+          "content": "int"
+        },
+        {
+          "label": "D",
+          "content": "Integer"
+        }
+      ],
+      "answer": [
+        "B",
+        "C"
+      ],
+      "analysis": "int 属于 4 种整数型之一，double 属于 2 种浮点型之一，都是基本数据类型；String 是类，Integer 是 int 的包装类，都属于引用数据类型，不在 8 种基本数据类型之列。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "基本数据类型",
+        "char",
+        "中频"
+      ],
+      "source_quote": "4 种整数型：`byte(1)`、`short(2)`、`int(4)`、`long(8)`\n    - 2 种浮点型：`float(4)`、`double(8)`",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-的基本数据类型有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 的基本数据类型有哪些？",
+      "_fingerprint": "8fb9091510696d4c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "面向对象的三大特征有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "重载"
+        },
+        {
+          "label": "B",
+          "content": "继承"
+        },
+        {
+          "label": "C",
+          "content": "封装"
+        },
+        {
+          "label": "D",
+          "content": "多态"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文一句话点明三大特征是封装、继承、多态。重载是同一类中多个同名方法按参数列表区分的机制，不属于三大特征。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "面向对象",
+        "封装",
+        "继承",
+        "多态",
+        "高频"
+      ],
+      "source_quote": "面向对象的三大特征是**封装, 继承, 多态**",
+      "_freq": "高频",
+      "_task_id": "JavaSe__面向对象都有哪些特征？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "面向对象都有哪些特征？",
+      "_fingerprint": "9ea33fa4709f6fa0",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "以下属于反射性能低的原因的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "涉及动态解析的类型，不能执行某些 Java 虚拟机优化（如 JIT 优化）"
+        },
+        {
+          "label": "B",
+          "content": "参数需要包装成 Object[] 再拆包，过程中产生很多对象，容易导致 GC"
+        },
+        {
+          "label": "C",
+          "content": "反射会在每次调用时把目标类重新加载到内存"
+        },
+        {
+          "label": "D",
+          "content": "反射调用方法时不需要检查可见性"
+        }
+      ],
+      "answer": [
+        "A",
+        "B"
+      ],
+      "analysis": "原文列出四点性能开销，A、B 分别对应前两点。C 与原文矛盾——反射调用方法时会从方法数组中遍历查找，并且会检查可见性，这些动作都是耗时的；D 在原文中没有依据。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "1、由于反射涉及动态解析的类型，因此不能执行某些Java虚拟机优化，如JIT优化。\n\n2、在使用反射时，参数需要包装（boxing)成Object[] 类型，但是真正方法执行的时候，又需要再拆包（unboxing)成真正的类型，这些动作不仅消耗时间，而且过程中也会产生很多对象，对象一多就容易导致GC，GC也会导致应用变慢。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__反射机制的优缺点：",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > 反射机制的优缺点：",
+      "_fingerprint": "bdcb09e26339f574",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于泛型通配符，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "`? extends T` 只能读，不能写（除了 null）"
+        },
+        {
+          "label": "B",
+          "content": "`? super T` 只能读，不能写"
+        },
+        {
+          "label": "C",
+          "content": "`? super T` 可以写，但不能随便读（只能读为 Object）"
+        },
+        {
+          "label": "D",
+          "content": "既要存又要取时，不要使用任何通配符"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文三条规则即 A、B、C；D 把 extends 与 super 的读写特性说反了。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型",
+        "通配符",
+        "中频"
+      ],
+      "source_quote": "+ `? extends T`：只能读，不能写（除了 null）\n+ `? super T`：可以写，不能随便读（只能读为 Object）\n+ 如果既要存又要取，那么就不要使用任何通配符。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__泛型中上下界限定符extends-和-super有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "_fingerprint": "bddddf3e8890a766",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列会导致 finally 不执行的情况有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "try 中抛出异常并被 catch 捕获"
+        },
+        {
+          "label": "B",
+          "content": "try 或者 catch 中有死循环"
+        },
+        {
+          "label": "C",
+          "content": "System.exit() 方法被执行"
+        },
+        {
+          "label": "D",
+          "content": "Runtime.getRuntime().halt() 方法被执行"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文列举的不执行情形包括：System.exit()、Runtime.getRuntime().halt()、try/catch 死循环、操作系统强杀 JVM、虚拟机崩溃、环境断电、守护线程的 finally 等。try 抛异常被 catch 捕获属于程序正常运行，finally 仍会执行，D 错。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "finally",
+        "中频"
+      ],
+      "source_quote": "1、System.exit()方法被执行\n\n2、Runtime.getRuntime().halt()方法被执行（**强制终止 Java 虚拟机（JVM）进程**，并返回指定的状态码。\n\n它的作用类似于 `System.exit(int status)`，但更为激烈和彻底。）\n\n3、try或者catch中有死循环",
+      "_freq": "中频",
+      "_task_id": "JavaSe__finally中代码一定会执行吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "finally中代码一定会执行吗？",
+      "_fingerprint": "c79d864d9de487ee",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于泛型信息的保留与擦除，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "使用侧（如方法局部变量）的泛型信息会保留到运行期"
+        },
+        {
+          "label": "B",
+          "content": "所有泛型信息在编译后都会丢失"
+        },
+        {
+          "label": "C",
+          "content": "声明侧泛型信息保留，例如声明泛型接口、泛型类、泛型方法时"
+        },
+        {
+          "label": "D",
+          "content": "使用侧泛型信息擦除，例如方法的局部变量"
+        }
+      ],
+      "answer": [
+        "C",
+        "D"
+      ],
+      "analysis": "原文：泛型信息是否擦除分两种情况——声明侧泛型信息保留（声明泛型接口、泛型类、泛型方法时），使用侧泛型信息擦除（如方法的局部变量）。C、D 与此矛盾。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型擦除",
+        "中频"
+      ],
+      "source_quote": "Java泛型信息是否擦除有如下两种情况：\n\n1. 声明侧泛型信息保留 例如声明泛型接口，泛型类，泛型方法时的泛型信息\n2. 使用侧泛型信息擦除 例如方法的局部变量等。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__泛型擦除",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型擦除",
+      "_fingerprint": "c94d0899c39123e7",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 Stream 的以下说法，正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "对 Stream 执行过滤操作会删除原数据中的元素"
+        },
+        {
+          "label": "B",
+          "content": "对 Stream 的任何修改都不会影响原数据，过滤会产生一个不包含被过滤元素的新 Stream"
+        },
+        {
+          "label": "C",
+          "content": "流可以被多次遍历，遍历之后仍然可以继续使用"
+        },
+        {
+          "label": "D",
+          "content": "惰式执行，只有等到用户真正需要结果的时候才会执行"
+        }
+      ],
+      "answer": [
+        "B",
+        "D"
+      ],
+      "analysis": "原文：对 Stream 的任何修改都不会影响原数据，执行过滤操作并不会删除被过滤的元素，而是产生一个不包含被过滤元素的新 Stream；Stream 惰式执行，操作并不会立即执行。C 与原文矛盾；D 错在流具有可消费性，只能被消费一次，一旦遍历过就会失效。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Stream",
+        "中频"
+      ],
+      "source_quote": "+ 为函数式编程而生。对Stream的任何修改都**不会影响原数据**，比如对Stream执行过滤操作并不会删除被过滤的元素，而是会产生一个不包含被过滤元素的新Stream。\n+ **惰式执行**。Stream上的操作并不会立即执行，只有等到用户真正需要结果的时候才会执行。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__stream流的原理？常用的流？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "stream流的原理？常用的流？",
+      "_fingerprint": "ca0e6a031042e04a",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列属于非受检异常（RuntimeException 及其子类）的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "IndexOutOfBoundsException"
+        },
+        {
+          "label": "B",
+          "content": "IllegalArgumentException"
+        },
+        {
+          "label": "C",
+          "content": "NullPointerException"
+        },
+        {
+          "label": "D",
+          "content": "IOException"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文列出的非受检异常包括 NullPointerException、IllegalArgumentException、IndexOutOfBoundsException 等；IOException 出现在受检异常的例子中，必须显式捕获或声明抛出。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "RuntimeException",
+        "中频"
+      ],
+      "source_quote": "+ NullPointerException：空指针异常，访问 `null` 对象的方法或属性。\n+ IllegalArgumentException：非法参数异常，传入非法参数。\n+ IndexOutOfBoundsException：索引越界异常，访问数组、列表等超出合法索引范围",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Error-和-Exception-的区别和联系是什么？常见的-RuntimeException-有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "_fingerprint": "eb0c17f7fce9afc2",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 equals 与 hashCode，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "相等的对象必须具有相同的哈希码"
+        },
+        {
+          "label": "B",
+          "content": "哈希码相同的对象一定相等"
+        },
+        {
+          "label": "C",
+          "content": "equals() 未重写时比较的是对象的内容是否相同"
+        },
+        {
+          "label": "D",
+          "content": "重写 equals 方法时必须重写 hashCode 方法"
+        }
+      ],
+      "answer": [
+        "A",
+        "D"
+      ],
+      "analysis": "原文：重写 equals 时必须重写 hashCode；相等的对象要有相同哈希码，但相同哈希码的对象不一定相等（C 错）；equals() 未重写时与 == 一样比较的是地址而非内容（D 错）。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "equals",
+        "hashCode",
+        "中频"
+      ],
+      "source_quote": "重写 equals 方法时必须重写 hashCode 方法，以保证在使用哈希表等数据结构时，对象的相等性判断和存储查找操作能够正常工作。而重写 hashCode 方法时，需要确保相等的对象具有相同的哈希码，但相同哈希码的对象不一定相等。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__和-equals()-有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "和 equals() 有什么区别？",
+      "_fingerprint": "f48e4dad52a7b68c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "多线程环境下 HashMap 存在哪些问题？",
+      "options": [
+        {
+          "label": "A",
+          "content": "put 和 get 并发时可能导致 get 到 null"
+        },
+        {
+          "label": "B",
+          "content": "读取操作会抛出 ConcurrentModificationException"
+        },
+        {
+          "label": "C",
+          "content": "put 时两个元素索引位置相同会导致元素丢失"
+        },
+        {
+          "label": "D",
+          "content": "扩容会死循环"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文列举三个并发问题：扩容死循环（jdk8 将头插法改为尾插法解决）、put 索引相同导致元素丢失、put 与 get 并发导致 get 到 null；因此多线程应使用 ConcurrentHashMap。D 不是原文列出的问题。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "多线程",
+        "中频"
+      ],
+      "source_quote": "+ 多线程下扩容会死循环(jdk8将链表的头插法改成了尾插法解决了这个问题)\n+ 多线程下 put 时如果两个元素索引位置相同会导致元素丢失\n+ put 和 get 并发时会导致 get 到 null，也就是一个线程put后刚好扩容就可能导致另一个线程get到null",
+      "_freq": "中频",
+      "_task_id": "JavaSe__HashMap-的原理？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap 的原理？",
+      "_fingerprint": "fc94f5d9191c0c56",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "反射的使用场景有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "框架开发"
+        },
+        {
+          "label": "B",
+          "content": "动态代理"
+        },
+        {
+          "label": "C",
+          "content": "序列化和反序列化"
+        },
+        {
+          "label": "D",
+          "content": "文件压缩与解压"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文列举的使用场景：框架开发、动态代理、序列化和反序列化、单元测试、注解处理等。文件压缩不在其列。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "使用场景有：框架开发，动态代理，序列化和反序列化，单元测试，注解处理等",
+      "_freq": "中频",
+      "_task_id": "JavaSe__反射机制及其使用场景有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？",
+      "_fingerprint": "fccfc2207d815618",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 String、StringBuilder 和 StringBuffer，下列说法正确的有？",
+      "options": [
+        {
+          "label": "A",
+          "content": "String 是不可变的"
+        },
+        {
+          "label": "B",
+          "content": "StringBuffer 是线程安全的"
+        },
+        {
+          "label": "C",
+          "content": "StringBuilder 是线程安全的"
+        },
+        {
+          "label": "D",
+          "content": "StringBuilder 和 StringBuffer 是可变的"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：String 不可变，StringBuilder 和 StringBuffer 可变；StringBuffer 线程安全，StringBuilder 非线程安全，D 错。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "String",
+        "StringBuilder",
+        "StringBuffer",
+        "高频"
+      ],
+      "source_quote": "String是不可变的，而StringBuilder和StringBuffer是可变的。StringBuffer是线程安全的，而StringBuilder是非线程安全的",
+      "_freq": "高频",
+      "_task_id": "JavaSe__String、StringBuilder-和-StringBuffer-的区别是什么？StringBuffer-与-St",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "_fingerprint": "fd557dbda43edd54",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "使用 Java 原生序列化机制时，类需要实现什么接口？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Cloneable"
+        },
+        {
+          "label": "B",
+          "content": "Comparable"
+        },
+        {
+          "label": "C",
+          "content": "Runnable"
+        },
+        {
+          "label": "D",
+          "content": "java.io.Serializable"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：只要一个类实现了 java.io.Serializable 接口，它就可以被序列化（使用 Java 原生的序列化机制）；没实现就抛 NotSerializableException。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "Serializable",
+        "序列化",
+        "高频"
+      ],
+      "source_quote": "在Java中，只要一个类**实现了java.io.Serializable接口**，那么它就可以被序列化(使用Java原生的序列化机制)。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__如何进行序列化和反序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "_fingerprint": "07611ab114e41740",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "NIO 中用来替代 BIO 中流（Stream）的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Buffer（缓冲区）"
+        },
+        {
+          "label": "B",
+          "content": "Selector（多路复用器）"
+        },
+        {
+          "label": "C",
+          "content": "Socket"
+        },
+        {
+          "label": "D",
+          "content": "Channel（通道）"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：NIO 的核心组件中，通道（Channel）替代 BIO 中的流（Stream），支持双向读写；缓冲区（Buffer）是数据读写的中转容器；多路复用器（Selector）是 NIO 的核心。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "NIO",
+        "Selector",
+        "中频"
+      ],
+      "source_quote": "通道 (Channel): 替代 BIO 中的流 (Stream)，支持双向读写，是连接数据源（如套接字、文件）的管道。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p02",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "08500cda94b8b0ff",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "从 JDK 1.7 开始，字符串常量池被放在哪里？",
+      "options": [
+        {
+          "label": "A",
+          "content": "永久代中"
+        },
+        {
+          "label": "B",
+          "content": "元空间中"
+        },
+        {
+          "label": "C",
+          "content": "堆内存中"
+        },
+        {
+          "label": "D",
+          "content": "栈内存中"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：jdk1.7 以前字符串常量池放在永久代中，从 jdk1.7 开始被移到了堆内存中。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "字符串常量池",
+        "中频"
+      ],
+      "source_quote": "在jdk1.7以前字符串常量池被放在永久代中, 从jdk1.7开始就被移到了堆内存中",
+      "_freq": "中频",
+      "_task_id": "JavaSe__String-为什么是不可变的？你对字符串常量池了解吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "_fingerprint": "0e2b8b956ee8f48b",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Netty 网络框架基于哪种 IO 模型？",
+      "options": [
+        {
+          "label": "A",
+          "content": "BIO"
+        },
+        {
+          "label": "B",
+          "content": "NIO"
+        },
+        {
+          "label": "C",
+          "content": "AIO"
+        },
+        {
+          "label": "D",
+          "content": "同步阻塞 IO"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：AIO 的实现复杂且不够成熟、应用不广泛，Netty 等网络框架仍然是基于 NIO 模型。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "NIO",
+        "AIO",
+        "中频"
+      ],
+      "source_quote": "Netty等网络框架仍然是基于NIO模型。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p01",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "1325734a56fba7ff",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "对于引用数据类型，== 比较的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "对象的地址是否相等"
+        },
+        {
+          "label": "B",
+          "content": "对象的内容是否相同"
+        },
+        {
+          "label": "C",
+          "content": "对象的 hashCode 是否相同"
+        },
+        {
+          "label": "D",
+          "content": "对象的类型是否相同"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：对于基本数据类型，== 比较的是值；对于引用数据类型，== 比较的是地址是否相等。比较对象内容一般是重写后的 equals() 的行为。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "equals",
+        "中频"
+      ],
+      "source_quote": "对于基本数据类型来说, ==比较的是值是否相等, 对于引用数据类型来说, ==比较的是地址是否相等, equals()在没有重写的情况下和==是一样的, 一般来说重写后的equals()比较的是对象的内容是否相同",
+      "_freq": "中频",
+      "_task_id": "JavaSe__和-equals()-有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "和 equals() 有什么区别？",
+      "_fingerprint": "168f2e131bd22efe",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "String 为什么是不可变的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "底层是用 final 修饰的字符数组，数组被初始化后不能再指向其他数组"
+        },
+        {
+          "label": "B",
+          "content": "因为 String 类被 final 修饰，无法产生子类"
+        },
+        {
+          "label": "C",
+          "content": "因为字符串的长度固定为 16"
+        },
+        {
+          "label": "D",
+          "content": "因为 String 没有提供任何修改内容的方法"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：jdk8 及以前 String 底层是 final 修饰的 char 数组（jdk9 起为 byte 数组），一旦数组被初始化就不能再指向其他数组，substring、concat 等方法都是返回新对象而非修改原字符串。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "String",
+        "高频"
+      ],
+      "source_quote": "在jdk8及以前, String的底层是用final修饰的char数组(从jdk9开始变为了byte数组), 一旦数组被初始化就不能再指向其他的数组, 像substring和concat这些方法并不是修改原来的字符串而是返回一个新的对象",
+      "_freq": "高频",
+      "_task_id": "JavaSe__String-为什么是不可变的？你对字符串常量池了解吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "_fingerprint": "21d62e47cbe80596",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于受检异常，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "可以不捕获也不声明抛出"
+        },
+        {
+          "label": "B",
+          "content": "都是 RuntimeException 的子类"
+        },
+        {
+          "label": "C",
+          "content": "由 JVM 在运行时自动处理"
+        },
+        {
+          "label": "D",
+          "content": "必须显式捕获或声明抛出"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：受检异常必须显式捕获或声明抛出，如 IOException、SQLException；RuntimeException 及其子类才是非受检异常。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "受检异常",
+        "中频"
+      ],
+      "source_quote": "受检异常：必须显式捕获或声明抛出，如IOException，SQLException",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Error-和-Exception-的区别和联系是什么？常见的-RuntimeException-有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "_fingerprint": "2d3b3a1581b3af11",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于静态变量，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "属于类的每个实例，创建对象时才初始化"
+        },
+        {
+          "label": "B",
+          "content": "每个实例持有不同的静态变量副本"
+        },
+        {
+          "label": "C",
+          "content": "不能使用 public static final 修饰"
+        },
+        {
+          "label": "D",
+          "content": "属于类本身，在类加载到内存时就被初始化，所有实例共享"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：静态变量属于类本身而不是任何特定实例，所有实例共享同一静态变量，在类加载到内存时就被初始化，而不是在创建对象的时候；public static final 修饰的常量是常见用法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "静态变量",
+        "static",
+        "中频"
+      ],
+      "source_quote": "- 所有实例共享同一静态变量。\n    - 在类加载到内存时就被初始化，而不是在创建对象的时候。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java中的static都能用来修饰什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java中的static都能用来修饰什么？",
+      "_fingerprint": "2fb4a10f3315c57d",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于 this() 调用构造方法，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "可以在类的任意方法中调用"
+        },
+        {
+          "label": "B",
+          "content": "只能在构造方法中使用，且必须放在第一行"
+        },
+        {
+          "label": "C",
+          "content": "必须放在构造方法的最后一行"
+        },
+        {
+          "label": "D",
+          "content": "可以在静态方法中调用"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：this() 可以调用当前类的构造方法，但只能在构造方法中使用且必须放在第一行。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "this",
+        "中频"
+      ],
+      "source_quote": "`this()`可以调用当前类的构造方法, 但是只能在构造方法中使用且必须放在第一行",
+      "_freq": "中频",
+      "_task_id": "JavaSe__this-关键字怎么用？super-怎么用？二者有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "_fingerprint": "36544b605ecbf11e",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Java 中 char 类型占用多少字节？",
+      "options": [
+        {
+          "label": "A",
+          "content": "1 字节"
+        },
+        {
+          "label": "B",
+          "content": "2 字节"
+        },
+        {
+          "label": "C",
+          "content": "4 字节"
+        },
+        {
+          "label": "D",
+          "content": "8 字节"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确 char 用来表示一个 16 位（2 个字节）的 Unicode 字符。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "char",
+        "中频"
+      ],
+      "source_quote": "在Java中，char类型是用来表示一个16位（2个字节）的Unicode字符",
+      "_freq": "中频",
+      "_task_id": "JavaSe__char能存储中文吗",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "char能存储中文吗",
+      "_fingerprint": "3c14ea64582b6e11",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "API 与 SPI 的区别是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "API 是开发者调用框架提供的接口和实现，SPI 是框架提供接口规范、开发者实现后由框架来调用"
+        },
+        {
+          "label": "B",
+          "content": "API 由开发者定义，SPI 由框架定义"
+        },
+        {
+          "label": "C",
+          "content": "API 用于扩展框架，SPI 用于普通功能调用"
+        },
+        {
+          "label": "D",
+          "content": "两者没有区别，只是叫法不同"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：API 是开发者调用框架提供的接口和实现；SPI 是框架提供接口的规范，开发者去实现这个接口，然后框架再来调用这个接口。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "SPI",
+        "API",
+        "高频"
+      ],
+      "source_quote": "API是开发者调用框架提供的接口和实现，SPI是框架提供接口的规范，开发者去实现这个接口，然后框架再来调用这个接口",
+      "_freq": "高频",
+      "_task_id": "JavaSe__什么是SPI，和API有啥区别",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是SPI，和API有啥区别",
+      "_fingerprint": "43f87cccb974165e",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Object 类的 clone() 方法在不重写的情况下是什么拷贝？",
+      "options": [
+        {
+          "label": "A",
+          "content": "深拷贝"
+        },
+        {
+          "label": "B",
+          "content": "浅拷贝"
+        },
+        {
+          "label": "C",
+          "content": "引用拷贝，根本不复制对象"
+        },
+        {
+          "label": "D",
+          "content": "浅深混合拷贝"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：Object 类中定义了 clone 方法，不重写的情况下其实也是浅拷贝；想要深拷贝需要重写 clone 方法，把引用数据类型的字段重新 new 一份出来。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "深拷贝",
+        "Cloneable",
+        "中频"
+      ],
+      "source_quote": "在Object类中定义了一个clone方法，这个方法其实在不重写的情况下，其实也是浅拷贝的。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__如何实现深拷贝",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "_fingerprint": "4609c086d8c563f4",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于抽象类与接口的继承和实现，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "一个类可以继承多个抽象类"
+        },
+        {
+          "label": "B",
+          "content": "一个类只能实现一个接口"
+        },
+        {
+          "label": "C",
+          "content": "一个类可以实现多个接口，但只能继承一个抽象类"
+        },
+        {
+          "label": "D",
+          "content": "接口不能继承其他接口"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：一个类可以实现多个接口，但只能继承一个抽象类；接口支持多重继承，一个接口可以继承多个其他接口。B、C、D 均与原文矛盾。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "抽象类",
+        "接口",
+        "高频"
+      ],
+      "source_quote": "一个类可以实现多个接口，但只能继承一个抽象类。接口支持多重继承，即一个接口可以继承多个其他接口。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__抽象类和接口的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "抽象类和接口的区别是什么？",
+      "_fingerprint": "4e60457838b9853e",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "泛型擦除发生在哪个阶段？",
+      "options": [
+        {
+          "label": "A",
+          "content": "类加载期间"
+        },
+        {
+          "label": "B",
+          "content": "编译期间"
+        },
+        {
+          "label": "C",
+          "content": "运行期间"
+        },
+        {
+          "label": "D",
+          "content": "源码编写阶段"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：Java 编译器在编译期间会移除泛型的类型参数，并用原始类型或边界类型来替代，这就是泛型擦除。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型擦除",
+        "高频"
+      ],
+      "source_quote": "Java 编译器在编译期间会移除泛型的类型参数，并用原始类型或边界类型来替代。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__泛型擦除",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型擦除",
+      "_fingerprint": "5075301d7222474e",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "HashMap 默认的容量和负载因子分别是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "容量 8，负载因子 0.75"
+        },
+        {
+          "label": "B",
+          "content": "容量 16，负载因子 0.75"
+        },
+        {
+          "label": "C",
+          "content": "容量 16，负载因子 1.0"
+        },
+        {
+          "label": "D",
+          "content": "容量 32，负载因子 0.5"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：HashMap 默认的容量是 16，负载因子是 0.75，意思是超过 12 个元素后就会触发扩容，容量会翻倍，并重新计算元素下标。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "扩容",
+        "高频"
+      ],
+      "source_quote": "HashMap默认的容量是16，负载因子是0.75，意思是超过12个元素后就会触发扩容，容量会翻倍，扩容会重新计算元素的下标，为了避免频繁扩容影响性能，如果一开始就知道大概容量，在初始化的时候就应该指定容量，避免反复扩容。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__HashMap-的原理？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap 的原理？",
+      "_fingerprint": "50bfa7e17b292315",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "getDeclaredXXX() 与 getXXX() 的区别是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "两者获取的成员完全相同"
+        },
+        {
+          "label": "B",
+          "content": "getDeclaredXXX() 能获取父类的私有成员"
+        },
+        {
+          "label": "C",
+          "content": "getXXX() 获取包括父类在内的公有成员，getDeclaredXXX() 只获取本类声明的所有成员（含私有）"
+        },
+        {
+          "label": "D",
+          "content": "getXXX() 只获取本类声明的公有成员"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：getXXX() 获取包括父类在内的公有成员，而 getDeclaredXXX() 只获取本类声明的所有成员（含私有）。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "`getXXX()` 获取包括父类在内的 **公有成员**，而 `getDeclaredXXX()` 只获取 **本类声明的所有成员（含私有）**。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__反射使用步骤",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > 反射使用步骤",
+      "_fingerprint": "53f813f3e96507a8",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于抽象类与接口的构造器，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "接口可以有构造器，抽象类不能有构造器"
+        },
+        {
+          "label": "B",
+          "content": "抽象类和接口都可以有构造器"
+        },
+        {
+          "label": "C",
+          "content": "抽象类和接口都不能有构造器"
+        },
+        {
+          "label": "D",
+          "content": "抽象类可以有构造器，接口不能有构造器"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：抽象类可以有构造器（不能 new 出来，但构造器能初始化共有成员变量、强制初始化操作），接口不能有构造器。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "抽象类",
+        "接口",
+        "中频"
+      ],
+      "source_quote": "**构造器**：抽象类可以有构造器。接口不能有构造器。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__抽象类和接口的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "抽象类和接口的区别是什么？",
+      "_fingerprint": "54006476ad1191d5",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Java 集合主要分为哪两大类？",
+      "options": [
+        {
+          "label": "A",
+          "content": "List 和 Set"
+        },
+        {
+          "label": "B",
+          "content": "Collection 单列集合和 Map 双列集合"
+        },
+        {
+          "label": "C",
+          "content": "数组和链表"
+        },
+        {
+          "label": "D",
+          "content": "队列和栈"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：Java 集合主要分为 Collection 单列集合和 Map 双列集合两大类。Collection 主要有 ArrayList、LinkedList、HashSet、TreeSet 等；Map 主要有 HashMap、LinkedHashMap、ConcurrentHashMap、TreeMap 等。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "集合",
+        "Collection",
+        "Map",
+        "中频"
+      ],
+      "source_quote": "Java集合主要分为Collection单列集合和Map双列集合两大类，",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-中的集合类有哪些？它们的特点是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 中的集合类有哪些？它们的特点是什么？",
+      "_fingerprint": "561280afe93b79ed",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "使用 Java 反射创建对象时，需要依次调用哪两个方法？",
+      "options": [
+        {
+          "label": "A",
+          "content": "getConstructor() 获取构造方法，再调用 newInstance()"
+        },
+        {
+          "label": "B",
+          "content": "getDeclaredFields() 获取字段，再调用 set()"
+        },
+        {
+          "label": "C",
+          "content": "getMethod() 获取方法，再调用 invoke()"
+        },
+        {
+          "label": "D",
+          "content": "forName() 加载类后直接调用 clone()"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：使用 Java 反射可以创建对象，先调用 getConstructor() 获取构造方法再调用 newInstance()。B、C 是反射操作字段/方法的 API，D 中的 clone 不是反射创建对象的方式。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "使用Java反射可以创建对象(先调用getConstructor()获取构造方法再调用newInstance())",
+      "_freq": "中频",
+      "_task_id": "JavaSe__除了使用new创建对象之外，还可以用什么方法创建对象？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？ > 除了使用new创建对象之外，还可以用什么方法创建对象？",
+      "_fingerprint": "5e14182834cfb518",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "反射指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "程序在编译期获取类的信息"
+        },
+        {
+          "label": "B",
+          "content": "程序在运行时直接修改字节码"
+        },
+        {
+          "label": "C",
+          "content": "类加载时由 JVM 校验类型"
+        },
+        {
+          "label": "D",
+          "content": "程序在运行时动态获取类的信息并操作其属性或方法"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：反射是程序在运行时能够动态获取类的信息并操作其属性或方法的机制——对任意一个类都能知道它的所有属性和方法，对任意一个对象都能调用它的任意属性和方法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "反射",
+        "中频"
+      ],
+      "source_quote": "反射指的是程序在运行时能够动态获取类的信息并操作其属性或方法的机制，通过反射，对于任意一个类，都能够知道这个类的所有属性和方法，对于任意一个对象，都能够调用它的任意属性和方法",
+      "_freq": "中频",
+      "_task_id": "JavaSe__反射机制及其使用场景有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "反射机制及其使用场景有哪些？",
+      "_fingerprint": "5f0f7ea4c4d750f2",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Error 和 Exception 的共同父类是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Object"
+        },
+        {
+          "label": "B",
+          "content": "RuntimeException"
+        },
+        {
+          "label": "C",
+          "content": "Throwable"
+        },
+        {
+          "label": "D",
+          "content": "BaseException"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文开篇即指出 Error 与 Exception 均继承自 Throwable。Error 是系统级严重错误，Exception 是程序需要捕捉处理的异常。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "Error",
+        "Exception",
+        "中频"
+      ],
+      "source_quote": "两者均继承自Throwable",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Error-和-Exception-的区别和联系是什么？常见的-RuntimeException-有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Error 和 Exception 的区别和联系是什么？常见的 RuntimeException 有哪些？",
+      "_fingerprint": "69e3db4e891a5278",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "BIO（Blocking I/O）的特点是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "同步非阻塞 I/O"
+        },
+        {
+          "label": "B",
+          "content": "异步非阻塞 I/O"
+        },
+        {
+          "label": "C",
+          "content": "异步阻塞 I/O"
+        },
+        {
+          "label": "D",
+          "content": "同步阻塞 I/O"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：BIO 是同步阻塞 I/O，JDK1.4 之前的传统 IO 模型，线程发起 IO 请求后一直阻塞到缓冲区数据就绪；优点是编程简单，缺点是效率低、CPU 利用率不高。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "BIO",
+        "中频"
+      ],
+      "source_quote": "BIO （Blocking I/O）：**同步阻塞I/O**，是JDK1.4之前的传统IO模型。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p01",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "71fbb19cfb9af5a8",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "super 关键字引用的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "父类对象"
+        },
+        {
+          "label": "B",
+          "content": "当前对象"
+        },
+        {
+          "label": "C",
+          "content": "子类对象"
+        },
+        {
+          "label": "D",
+          "content": "当前类的 Class 对象"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：super 是一个引用父类对象的关键字，创建子类对象时会隐式创建父类对象并由 super 引用。this 才是引用当前对象的关键字。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "super",
+        "this",
+        "中频"
+      ],
+      "source_quote": "`super`是一个**引用父类对象**的关键字(每当创建一个子类对象的时候，也会隐式的创建父类对象，由 super 关键字引用。)",
+      "_freq": "中频",
+      "_task_id": "JavaSe__this-关键字怎么用？super-怎么用？二者有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "this 关键字怎么用？super 怎么用？二者有什么区别？",
+      "_fingerprint": "73af7ffc2298b87a",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "注解是在 Java 哪个版本引入的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Java 8"
+        },
+        {
+          "label": "B",
+          "content": "Java 1.4"
+        },
+        {
+          "label": "C",
+          "content": "Java 5"
+        },
+        {
+          "label": "D",
+          "content": "Java 11"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：注解是 java5 引入的一种元数据（Metadata），用于为代码提供额外信息。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "注解",
+        "低频"
+      ],
+      "source_quote": "注解是java5引入的一种元数据(Metadata)",
+      "_freq": "低频",
+      "_task_id": "JavaSe__注解的作用是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "注解的作用是什么？",
+      "_fingerprint": "7e4597bcf5f5b4ab",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "`<? extends T>` 表示什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "类型的上界，参数化类型可能是 T 或 T 的子类"
+        },
+        {
+          "label": "B",
+          "content": "类型的下界，参数化类型是 T 的父类型直至 Object"
+        },
+        {
+          "label": "C",
+          "content": "无限制通配符，可以是任意类型"
+        },
+        {
+          "label": "D",
+          "content": "只表示 T 本身，不包括子类"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：<? extends T> 表示类型的上界，参数化类型可能是 T 或是 T 的子类；<? super T> 才表示类型下界，直至 Object。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "泛型",
+        "通配符",
+        "高频"
+      ],
+      "source_quote": "<? extends T> 表示类型的上界，表示参数化类型的可能是T 或是 T的子类",
+      "_freq": "高频",
+      "_task_id": "JavaSe__泛型中上下界限定符extends-和-super有什么区别？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型 > 泛型中上下界限定符extends 和 super有什么区别？",
+      "_fingerprint": "83d39a51d01a434f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "浅拷贝指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "拷贝对象及其所有引用对象"
+        },
+        {
+          "label": "B",
+          "content": "只拷贝对象本身的字段值，不拷贝字段中引用的对象本身"
+        },
+        {
+          "label": "C",
+          "content": "只拷贝基本数据类型字段，引用字段置空"
+        },
+        {
+          "label": "D",
+          "content": "把引用地址复制一份，指向同一个对象"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：浅拷贝（shallow copy）是指拷贝一个对象时，仅仅拷贝对象本身的字段值，而不拷贝字段中引用的对象本身；基本数据类型的值被复制，引用类型的地址被复制、新旧对象共享同一引用对象。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "浅拷贝",
+        "高频"
+      ],
+      "source_quote": "在 Java 中，“浅拷贝”（**shallow copy**）是指拷贝一个对象时，仅仅拷贝了**对象本身的字段值**，而**不拷贝字段中引用的对象本身**。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__什么是深拷贝和浅拷贝？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？",
+      "_fingerprint": "85ab4f7d54b7e8a2",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "ArrayList 扩容时新容量为老容量的多少倍？",
+      "options": [
+        {
+          "label": "A",
+          "content": "1.5 倍"
+        },
+        {
+          "label": "B",
+          "content": "2 倍"
+        },
+        {
+          "label": "C",
+          "content": "1.25 倍"
+        },
+        {
+          "label": "D",
+          "content": "容量不变，直接报错"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：新增元素时检查是否会超过数组容量，超过则把新容量设为老容量的 1.5 倍，再申请一个 1.5 倍容量的数组，并把老数组元素复制到新数组中，完成扩容。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "ArrayList",
+        "扩容",
+        "高频"
+      ],
+      "source_quote": "新增元素时检查新增元素后是否会超过数组的容量，如果超过，则设置新的容量为老容量的1.5倍，之后，申请一个容量为1.5倍的数组，并将老数组的元素复制到新数组中，扩容完成",
+      "_freq": "高频",
+      "_task_id": "JavaSe__ArrayList是如何扩容的？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "ArrayList是如何扩容的？",
+      "_fingerprint": "8b41bde2dbc1d936",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "int 和 Integer 的区别是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "int 是基本数据类型，Integer 是 int 对应的包装类，属于引用数据类型"
+        },
+        {
+          "label": "B",
+          "content": "两者都是引用数据类型"
+        },
+        {
+          "label": "C",
+          "content": "Integer 是基本数据类型的一种"
+        },
+        {
+          "label": "D",
+          "content": "两者没有区别，可以随意互换"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：int 是基本数据类型的一种，Integer 是 int 对应的包装类，属于引用数据类型。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "Integer",
+        "包装类",
+        "高频"
+      ],
+      "source_quote": "int是基本数据类型的一种, 而Integer是int对应的包装类, 属于引用数据类型",
+      "_freq": "高频",
+      "_task_id": "JavaSe__int-和-Integer-有什么区别？什么是包装类？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "int 和 Integer 有什么区别？什么是包装类？",
+      "_fingerprint": "8e7c61b5c0186598",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于方法重写（override），下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "子类方法的访问权限应小于等于父类"
+        },
+        {
+          "label": "B",
+          "content": "子类方法声明的异常类型应大于父类"
+        },
+        {
+          "label": "C",
+          "content": "只要求方法名相同，参数列表可以不同"
+        },
+        {
+          "label": "D",
+          "content": "方法名、参数列表和返回类型必须与父类中的方法一致"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文规定重写时方法名、参数列表和返回类型必须与父类一致；子类方法声明的异常类型要小于等于父类，访问权限应该大于等于父类。B、C 都说反了，D 忽略了参数列表也必须一致的要求。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "重写",
+        "中频"
+      ],
+      "source_quote": "**重写**(override)是子类重新定义父类中已有的方法, 方法名、参数列表和返回类型必须与父类中的方法一致, 子类方法声明的**异常类型**要小于等于父类, 子类方法的**访问权限**应该大于等于父类。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__重载和重写的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "重载和重写的区别是什么？",
+      "_fingerprint": "90ccf3b2d809d586",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "泛型允许类、接口和方法在定义时使用什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "一个或多个类型参数，使用时可以指定为具体类型"
+        },
+        {
+          "label": "B",
+          "content": "实例字段"
+        },
+        {
+          "label": "C",
+          "content": "静态常量"
+        },
+        {
+          "label": "D",
+          "content": "注解"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：泛型允许类、接口和方法在定义时使用一个或多个类型参数，这些类型参数在使用时可以被指定为具体的类型。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "泛型",
+        "中频"
+      ],
+      "source_quote": "泛型是 Java 编程语言中的一个重要特性，它允许类、接口和方法在定义时使用一个或多个类型参数，这些类型参数在使用时可以被指定为具体的类型。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是泛型",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是泛型",
+      "_fingerprint": "9a07732e3fff788b",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "HashMap 中如何根据 key 计算出数组下标？",
+      "options": [
+        {
+          "label": "A",
+          "content": "直接用 hashCode 对数组长度 n 取模"
+        },
+        {
+          "label": "B",
+          "content": "用 key 的字符串长度对 n 取模"
+        },
+        {
+          "label": "C",
+          "content": "先对 hashCode 做扰动处理（右移 16 位再与自身异或），再用 (n-1)&hash 算出下标"
+        },
+        {
+          "label": "D",
+          "content": "由 JVM 随机分配一个下标"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：靠 key 的 hashCode 方法算出哈希值，为减少哈希冲突还做扰动处理——把哈希值右移 16 位再和自身异或，然后利用 (n-1)&hash 算出数组下标，找到对应的桶。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "哈希冲突",
+        "中频"
+      ],
+      "source_quote": "一个键值对塞到HashMap里怎么找到自己的桶呢，靠的是key的hashCode方法算出哈希值，为了减少哈希冲突，还做了扰动处理，就是把哈希值右移 16 位再和自身异或，然后利用(n-1)&hash算出数组下标，找到对应的桶。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__HashMap-的原理？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap 的原理？",
+      "_fingerprint": "9afb306773212180",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "以 JDBC 驱动为例，java.sql.Driver 接口是由谁定义的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "各个数据库厂商"
+        },
+        {
+          "label": "B",
+          "content": "调用方（JDK）"
+        },
+        {
+          "label": "C",
+          "content": "应用开发者"
+        },
+        {
+          "label": "D",
+          "content": "JVM 在运行时生成"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：以 JDBC 驱动为例，「调用方」（用户或者说 JDK）定义了 java.sql.Driver 接口，该接口位于调用方 JDK 的包中，各个数据库厂商（实现方）实现这个接口。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "SPI",
+        "中频"
+      ],
+      "source_quote": "以JDBC驱动为例，「调用方」（用户或者说JDK)定义了`java.sql.Driver`接口，这个接口位于「调用方」JDK的包中，各个数据库厂商实现了这个接口，比如mysql驱动`com.mysql.jdbc.Driver`。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是SPI，和API有啥区别",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是SPI，和API有啥区别",
+      "_fingerprint": "a03884b39f4719fd",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "ConcurrentHashMap（JDK 8+）是如何保证线程安全的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "所有方法都加 synchronized"
+        },
+        {
+          "label": "B",
+          "content": "为每个节点添加 volatile 修饰"
+        },
+        {
+          "label": "C",
+          "content": "复制一份新 Map 再整体替换"
+        },
+        {
+          "label": "D",
+          "content": "使用 CAS + synchronized"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：ConcurrentHashMap 在 JDK 8+ 使用 CAS + synchronized 保证线程安全，性能显著高于 Hashtable；Hashtable 才是所有方法被 synchronized 修饰、因全局锁吞吐量极低。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "ConcurrentHashMap",
+        "高频"
+      ],
+      "source_quote": "ConcurrentHashMap：线程安全（JDK 8+ 使用 CAS + synchronized 分段锁），性能显著高于 Hashtable。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__HashMap、Hashtable-和-ConcurrentHashMap-的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap、Hashtable 和 ConcurrentHashMap 的区别是什么？",
+      "_fingerprint": "a340c26eae2b29e8",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "把对象放入 Redis 这类分布式缓存前，需要先做什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "克隆"
+        },
+        {
+          "label": "B",
+          "content": "加密"
+        },
+        {
+          "label": "C",
+          "content": "序列化"
+        },
+        {
+          "label": "D",
+          "content": "压缩"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：缓存系统本身通常不直接理解编程语言中的特定对象类型，它们存储的键值对的值通常是字符串或字节数组，要把对象放入缓存必须先序列化，取出时再反序列化。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "序列化",
+        "中频"
+      ],
+      "source_quote": "缓存系统本身通常不直接理解编程语言中的特定对象类型。它们存储的是键值对，值通常是字符串或字节数组。要将对象放入缓存，必须先序列化它；从缓存取出时再反序列化回对象。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么情况下需要对对象进行序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么情况下需要对对象进行序列化？",
+      "_fingerprint": "bcef9ad1c295e64a",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Java 的基本数据类型共有多少种？",
+      "options": [
+        {
+          "label": "A",
+          "content": "6 种"
+        },
+        {
+          "label": "B",
+          "content": "7 种"
+        },
+        {
+          "label": "C",
+          "content": "8 种"
+        },
+        {
+          "label": "D",
+          "content": "10 种"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文开篇即给出总数：Java 中有 8 种基本数据类型，其中 6 种数字类型、1 种字符类型 char、1 种布尔型 boolean。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "基本数据类型",
+        "中频"
+      ],
+      "source_quote": "Java 中有 8 种基本数据类型，分别为：",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-的基本数据类型有哪些？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 的基本数据类型有哪些？",
+      "_fingerprint": "c22846d6ba2db86f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Java 源码编译后生成的 .class 文件是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "特定平台的机器码"
+        },
+        {
+          "label": "B",
+          "content": "目标源代码文件"
+        },
+        {
+          "label": "C",
+          "content": "字节码文件"
+        },
+        {
+          "label": "D",
+          "content": "操作系统可执行文件"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：java 源码编译后生成的 .class 文件就是字节码文件；机器码是 JVM 把字节码翻译后的产物。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "字节码",
+        "中频"
+      ],
+      "source_quote": "java源码编译后生成的.class文件就是字节码文件",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是字节码？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是字节码？",
+      "_fingerprint": "c3a7451c31c46717",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "NIO 中线程发起 IO 请求后的行为是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "不需要阻塞，立即返回"
+        },
+        {
+          "label": "B",
+          "content": "一直阻塞，直到缓冲区数据就绪"
+        },
+        {
+          "label": "C",
+          "content": "阻塞并由系统定时轮询"
+        },
+        {
+          "label": "D",
+          "content": "挂起线程等待回调通知"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：NIO 是同步非阻塞 IO，线程发起 IO 请求后不需要阻塞、立即返回，可以先做其他操作，由 Selector 线程定时轮询检查缓冲区数据是否就绪；优点是并发性能高，缺点是编程相对复杂。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "NIO",
+        "高频"
+      ],
+      "source_quote": "NIO （Non-Blocking I/O）：**同步非阻塞IO**，线程发起IO请求后，不需要阻塞，立即返回。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p01",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "c852a9e18ceaa497",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "HashMap 的底层数据结构是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "数组 + 链表 / 红黑树"
+        },
+        {
+          "label": "B",
+          "content": "纯链表"
+        },
+        {
+          "label": "C",
+          "content": "纯红黑树"
+        },
+        {
+          "label": "D",
+          "content": "跳表"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：HashMap 底层是用「数组 + 链表 / 红黑树」实现的，查找的时间复杂度接近 O(1)。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "HashMap",
+        "红黑树",
+        "高频"
+      ],
+      "source_quote": "HashMap 是 Java 里常用的键值对存储容器，查找的时间复杂度接近 O (1)。它的底层是用“数组 + 链表 / 红黑树” 实现的。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__HashMap-的原理？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "HashMap 的原理？",
+      "_fingerprint": "cb6b4a598542093c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "涉及货币计算的应用，推荐使用哪个类型？",
+      "options": [
+        {
+          "label": "A",
+          "content": "double"
+        },
+        {
+          "label": "B",
+          "content": "BigDecimal"
+        },
+        {
+          "label": "C",
+          "content": "float"
+        },
+        {
+          "label": "D",
+          "content": "String"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：对于绝大多数涉及货币计算的应用，推荐使用 BigDecimal，因为它提供了必要的精度和灵活性，尽管牺牲了一些性能。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "BigDecimal",
+        "高频"
+      ],
+      "source_quote": "对于绝大多数涉及货币计算的应用，推荐使用 BigDecimal，因为它提供了必要的精度和灵活性，尽管牺牲了一些性能。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "BigDecimal和Long表示金额哪个更合适，怎么选择？",
+      "_fingerprint": "ce0bf382ba48b20c",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Java 属于什么类型的语言？",
+      "options": [
+        {
+          "label": "A",
+          "content": "动态类型语言，在运行时阶段进行类型检查"
+        },
+        {
+          "label": "B",
+          "content": "静态类型语言，在运行时阶段进行类型检查"
+        },
+        {
+          "label": "C",
+          "content": "静态类型语言，在编译阶段进行类型检查"
+        },
+        {
+          "label": "D",
+          "content": "动态类型语言，在编译阶段进行类型检查"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文指出 java 是静态类型语言，因为 java 在编译阶段进行类型检查，而动态类型语言是在运行时阶段进行类型检查。A 和 D 把语言类型与检查阶段搭配错了，C 把静态类型语言的检查阶段说成了运行时。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "静态类型语言",
+        "中频"
+      ],
+      "source_quote": "java是静态类型语言, 因为java会在编译阶段进行类型检查, 而动态类型语言是在运行时阶段进行类型检查",
+      "_freq": "中频",
+      "_task_id": "JavaSe__Java-是动态类型语言还是静态类型语言？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "Java 是动态类型语言还是静态类型语言？",
+      "_fingerprint": "d097ac56fb56f305",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "没有实现 Serializable 的对象使用 Java 原生序列化时会抛出什么异常？",
+      "options": [
+        {
+          "label": "A",
+          "content": "InvalidClassException"
+        },
+        {
+          "label": "B",
+          "content": "NotSerializableException"
+        },
+        {
+          "label": "C",
+          "content": "CloneNotSupportedException"
+        },
+        {
+          "label": "D",
+          "content": "ClassNotFoundException"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：使用 Java 原生序列化机制时对象必须实现 Serializable 接口，否则尝试原生序列化会抛出 NotSerializableException；InvalidClassException 是 serialVersionUID 不一致时抛出的。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Serializable",
+        "序列化",
+        "中频"
+      ],
+      "source_quote": "如果对象没有实现这个接口，尝试原生序列化会抛出 NotSerializableException。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__如何进行序列化和反序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "_fingerprint": "d38e1d54029dd2bd",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "String s = new String(\"abc\") 会创建几个对象？",
+      "options": [
+        {
+          "label": "A",
+          "content": "1 个"
+        },
+        {
+          "label": "B",
+          "content": "2 个"
+        },
+        {
+          "label": "C",
+          "content": "3 个"
+        },
+        {
+          "label": "D",
+          "content": "个数不确定"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：会创建两个对象，\"abc\" 本身是字符串常量池中的一个对象，new String() 时又根据它复制一个新的字符串对象放到堆上，两者内容相同但不是同一个对象。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "String",
+        "字符串常量池",
+        "高频"
+      ],
+      "source_quote": "会创建两个对象, \"abc\"本身是字符串常量池中的一个对象, 在new String()时又会根据这个对象复制一个新的字符串对象放在堆上, 两者内容是相同的, 但不是同一个对象",
+      "_freq": "高频",
+      "_task_id": "JavaSe__String-为什么是不可变的？你对字符串常量池了解吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "_fingerprint": "d52f70916a99c538",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于 Java 序列化与静态变量，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "序列化不保存静态变量"
+        },
+        {
+          "label": "B",
+          "content": "序列化会保存静态变量"
+        },
+        {
+          "label": "C",
+          "content": "静态变量必须用 transient 修饰才能参与序列化"
+        },
+        {
+          "label": "D",
+          "content": "静态变量是否序列化由 serialVersionUID 决定"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文明确：序列化并不保存静态变量。transient 是阻止普通实例变量被序列化，与静态变量无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "序列化",
+        "中频"
+      ],
+      "source_quote": "序列化并**不保存静态变量**。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__如何进行序列化和反序列化？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化 > 如何进行序列化和反序列化？",
+      "_fingerprint": "d803612e42d09c43",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "对象序列化指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "将对象编译成字节码文件"
+        },
+        {
+          "label": "B",
+          "content": "将对象从磁盘加载到内存"
+        },
+        {
+          "label": "C",
+          "content": "把对象转换为其源码字符串"
+        },
+        {
+          "label": "D",
+          "content": "将对象的状态信息转换为可以存储或传输的格式的过程"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：对象序列化是将对象的状态信息（数据成员）转换为可以存储或传输的格式（如字节流、JSON、XML 等）的过程，反序列化就是这个过程的逆过程。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "序列化",
+        "反序列化",
+        "中频"
+      ],
+      "source_quote": "**对象序列化是将对象的状态信息（数据成员）转换为可以存储或传输的格式（如字节流、JSON、XML等）的过程。反序列化就是把这个过程反过来。**",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是序列化与反序列化",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是序列化与反序列化",
+      "_fingerprint": "db98f9aa17b1aa35",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "BIO 通常采用的线程模型是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "一个线程处理所有连接"
+        },
+        {
+          "label": "B",
+          "content": "所有 IO 操作都由线程池统一处理"
+        },
+        {
+          "label": "C",
+          "content": "一个连接一个线程"
+        },
+        {
+          "label": "D",
+          "content": "单线程事件循环"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：BIO 通常采用「一个连接一个线程」的模式，每个客户端连接都需要一个独立线程处理读写，连接数高时消耗大量内存与 CPU，可伸缩性差。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "BIO",
+        "中频"
+      ],
+      "source_quote": "+ 线程模型： 通常采用 “一个连接一个线程” 的模式。每个客户端连接都需要一个独立的线程来处理其读写操作。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__什么是-AIO、BIO-和-NIO？__p02",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是 AIO、BIO 和 NIO？",
+      "_fingerprint": "de6c41aa1f66f6b6",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "ArrayList 和 LinkedList 的底层结构分别是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "ArrayList 是可改变大小的数组，LinkedList 是双向链表"
+        },
+        {
+          "label": "B",
+          "content": "ArrayList 是双向链表，LinkedList 是可改变大小的数组"
+        },
+        {
+          "label": "C",
+          "content": "两者都是数组"
+        },
+        {
+          "label": "D",
+          "content": "两者都是双向链表"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：ArrayList 是一个可改变大小的数组，LinkedList 是一个双向链表；ArrayList 更利于查找，LinkedList 更利于增删。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "javase",
+      "tags": [
+        "ArrayList",
+        "LinkedList",
+        "高频"
+      ],
+      "source_quote": "ArrayList 是一个可改变大小的数组，LinkedList 是一个双向链表。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__ArrayList、LinkedList的区别是什么？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "ArrayList、LinkedList的区别是什么？",
+      "_fingerprint": "e46de914f9ec06d9",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "遍历集合时安全删除当前元素的正确做法是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "普通 for 循环按索引 remove()"
+        },
+        {
+          "label": "B",
+          "content": "使用 Iterator.remove()"
+        },
+        {
+          "label": "C",
+          "content": "增强 for 循环中直接 remove()"
+        },
+        {
+          "label": "D",
+          "content": "先 clear() 再重新添加剩余元素"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：正确方式是使用 Iterator.remove()，它会更新迭代器的内部状态（如 expectedModCount），避免并发修改异常，且只能删除当前迭代的元素；最简洁的方式是调用 removeIf()。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "Iterator",
+        "高频"
+      ],
+      "source_quote": "Iterator.remove() 会更新迭代器的内部状态（如 expectedModCount），避免并发修改异常。",
+      "_freq": "高频",
+      "_task_id": "JavaSe__集合删除元素的正确方法是什么（Iterator.remove）？ArrayList-与-LinkedList-的空间占用",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "集合删除元素的正确方法是什么（Iterator.remove）？ArrayList 与 LinkedList 的空间占用情况如何？",
+      "_fingerprint": "e85e88aff40c1091",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "StringBuffer 是如何保证线程安全的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "内部使用 CAS 自旋锁"
+        },
+        {
+          "label": "B",
+          "content": "每次 append 都复制一个新数组"
+        },
+        {
+          "label": "C",
+          "content": "用 volatile 修饰内部字符数组"
+        },
+        {
+          "label": "D",
+          "content": "append 方法使用了 synchronized 修饰"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：StringBuffer 的 append 方法使用了 synchronized 修饰来确保线程安全；这也意味着 synchronized 加在方法上，只能保证同一时刻只有一个线程执行 append。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "StringBuffer",
+        "中频"
+      ],
+      "source_quote": "StringBuffer的append方法使用了synchronized修饰来确保线程安全",
+      "_freq": "中频",
+      "_task_id": "JavaSe__String、StringBuilder-和-StringBuffer-的区别是什么？StringBuffer-与-St",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String、StringBuilder 和 StringBuffer 的区别是什么？StringBuffer 与 StringBuilder 的线程安全性如何？",
+      "_fingerprint": "f0116adc02e2857f",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "借助序列化实现深拷贝的思路是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "直接调用 Object 的 clone() 方法"
+        },
+        {
+          "label": "B",
+          "content": "手动 new 一个同类型对象并逐字段赋值"
+        },
+        {
+          "label": "C",
+          "content": "先把对象序列化成流，再从流中反序列化成对象"
+        },
+        {
+          "label": "D",
+          "content": "用反射获取字段名后复制字段名"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：借助序列化实现深拷贝，先把对象序列化成流，再从流中反序列化成对象，这样就一定是新的对象；也可以用各种 JSON 工具序列化成 JSON 字符串再反序列化。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "深拷贝",
+        "序列化",
+        "中频"
+      ],
+      "source_quote": "我们可以借助序列化来实现深拷贝。先把对象序列化成流，再从流中反序列化成对象，这样就一定是新的对象了。",
+      "_freq": "中频",
+      "_task_id": "JavaSe__如何实现深拷贝",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "什么是深拷贝和浅拷贝？ > 如何实现深拷贝",
+      "_fingerprint": "f5f8ac46cd82d334",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "多态指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "同一个类中可以定义多个同名方法"
+        },
+        {
+          "label": "B",
+          "content": "子类继承父类的全部属性与方法"
+        },
+        {
+          "label": "C",
+          "content": "父类引用可以指向子类对象，并在运行时根据实际对象类型调用相应的方法"
+        },
+        {
+          "label": "D",
+          "content": "通过访问权限修饰符隐藏对象内部状态"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文对多态的定义即 A 所述。B 描述的是重载，C 描述的是继承，D 描述的是封装。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "多态",
+        "中频"
+      ],
+      "source_quote": "多态就是父类引用可以指向子类对象, 并且在运行时根据实际对象类型调用相应的方法",
+      "_freq": "中频",
+      "_task_id": "JavaSe__面向对象都有哪些特征？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "面向对象都有哪些特征？",
+      "_fingerprint": "f8049dd3f488c6d7",
+      "_added_at": "2026-10-12 14:53"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "通过 new String() 显式创建的字符串对象存储在哪里？",
+      "options": [
+        {
+          "label": "A",
+          "content": "字符串常量池中"
+        },
+        {
+          "label": "B",
+          "content": "堆内存中单独存储"
+        },
+        {
+          "label": "C",
+          "content": "永久代中"
+        },
+        {
+          "label": "D",
+          "content": "栈内存中"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：字符串常量池存储通过字面量和 intern() 方法创建的字符串的引用，而通过 new String() 显式创建的对象不会放在常量池中，会在堆内存中单独存储。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "javase",
+      "tags": [
+        "String",
+        "字符串常量池",
+        "中频"
+      ],
+      "source_quote": "通过new String()显式创建的字符串对象不会放在字符串常量池中, 会在堆内存中单独存储",
+      "_freq": "中频",
+      "_task_id": "JavaSe__String-为什么是不可变的？你对字符串常量池了解吗？",
+      "_source_file": "md/JavaSe.md",
+      "_source_section": "String 为什么是不可变的？你对字符串常量池了解吗？",
+      "_fingerprint": "fd60eb4778b0520b",
+      "_added_at": "2026-10-12 14:53"
+    }
+  ]
+}
