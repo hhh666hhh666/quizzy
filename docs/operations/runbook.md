@@ -34,6 +34,7 @@ bash server-compose.sh ps
 | 页面 502 / 接口 5xx | 后端没就绪，或容器 nginx 拿不到后端 | [后端 unhealthy](#场景--后端-unhealthy-或接口-5xx) |
 | 浏览器打开是宝塔的默认页 | 宿主 nginx 的站点没配好 / 没生效 | [站点打不开](#场景--站点打不开) |
 | 登录失效 / token 报非法 | JWT 密钥换过 | [配置](./configuration.md) |
+| 注册 / 登录**随机**失败，有时报「未登录或登录已过期」 | 容器 nginx 的后端名被同 Docker 网络里的**重名容器**抢走一半（2026-10-12 fit-app 事故） | [接口随机一半失败](#场景--接口随机一半失败) |
 | 磁盘快满了 | 镜像堆积（日志已有上限，不会再无限涨） | [磁盘](#场景--磁盘) |
 
 ## 数据在哪、怎么确认它还在（动手之前先看这节）
@@ -105,6 +106,22 @@ bash server-compose.sh logs --tail=100 <服务名>
 2. **宿主 nginx 返回 502** → 它反代的目标 `127.0.0.1:8081` 没人听。查 web 容器在不在、`docker compose ps` 里它的 ports 是不是 `127.0.0.1:8081->80/tcp`。
 3. **静态页能开但接口 502** → 容器 nginx 到后端的这一段断了，转上面「后端 unhealthy」。
 4. **改了前端但页面没变**：**这不再是已知毛病**——容器 nginx 现在给 `index.html` 发了 `no-cache`、给带 hash 的 `assets/` 发了长缓存。所以如果还是旧页面，说明**镜像没换**（部署没跑到 / 版本没变），而不是浏览器缓存。
+
+## 场景 · 接口随机一半失败
+
+**判据**：同一个接口连打几次，结果**一半正常一半异常**（如登录在「用户名或密码错误」与另一套文案之间交替），静态页完全正常——这说明请求被轮流发给了两个不同的后端。
+
+```bash
+# web 容器把 /api 发给了谁：正常应只解析到 quizzy-server 一个地址
+docker exec quizzy-web nslookup quizzy-server
+
+# 顺带看：有没有外来容器借住 quizzy 网络、且带了会撞名的别名
+docker network inspect quizzy_default --format '{{range .Containers}}{{.Name}} {{end}}'
+```
+
+**成因**：容器 nginx 用变量 + Docker DNS 解析后端；同一网络里出现**两个同名容器**时，DNS 对重名返回多个地址、nginx 按轮询分发 → 一半请求被发给**另一个系统**（它的账号与密钥和 quizzy 不通，表现为随机「未登录或登录已过期」）。
+
+**处置**：根治 = 部署包含 `quizzy-web/nginx.conf` 修复（后端名改用容器名 `quizzy-server`，不用通用名 `server`）的版本。临时止血：进 web 容器把 `/etc/nginx/conf.d/default.conf` 里 `$backend` 的域名改成 `quizzy-server:8080` 再 `nginx -s reload`——**容器一重建即失效**，只当救急。⚠️ 不要去改借住方的网络连接——那是另一个系统的事，牵一发动全身。
 
 ## 场景 · 数据库连不上
 
