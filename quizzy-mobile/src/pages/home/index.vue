@@ -40,6 +40,9 @@
     </view>
 
     <view class="logout" @click="onLogout">退出登录</view>
+
+    <!-- ICP 备案号：H5 挂在同一个域名的 /m/ 下，同样属于对外页面 -->
+    <QzBeian />
   </view>
 </template>
 
@@ -47,6 +50,7 @@
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { ensureLogin } from '@/utils/auth'
+import QzBeian from '@/components/QzBeian.vue'
 
 const store = useUserStore()
 

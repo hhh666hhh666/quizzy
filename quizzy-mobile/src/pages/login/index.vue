@@ -45,6 +45,9 @@
 
       <view class="hint">登录后即可刷题；题库与组卷在 PC 端维护。</view>
     </view>
+
+    <!-- ICP 备案号：登录页是未登录访客唯一能看到的页面，合规要求这一屏必须有 -->
+    <QzBeian />
   </view>
 </template>
 
@@ -52,6 +55,7 @@
 import { onShow } from '@dcloudio/uni-app'
 import { reactive, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
+import QzBeian from '@/components/QzBeian.vue'
 
 const store = useUserStore()
 const tab = ref<'login' | 'register'>('login')
@@ -89,6 +93,9 @@ async function onSubmit() {
 .page {
   min-height: 100vh;
   display: flex;
+  /* 改成竖排：备案号在卡片下方另起一行（card 已经 width:100%，横向排会把它挤掉） */
+  flex-direction: column;
+  gap: 40rpx;
   align-items: center;
   justify-content: center;
   padding: 40rpx;
