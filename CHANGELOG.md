@@ -24,7 +24,7 @@
 
 ---
 
-## [Unreleased]
+## [1.9.0] - 2026-10-14
 
 ### Added
 
@@ -589,7 +589,13 @@
 - 刻意**不把建 Release 做成自动化**：正文是给人看的说明书，手写比搬运本文件更用心，而发版是低频、需要人过目的动作。
 - 许可证见 [LICENSE](./LICENSE)。
 
-[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/hhh666hhh666/quizzy/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.8.3...v1.9.0
+[1.8.3]: https://github.com/hhh666hhh666/quizzy/compare/v1.8.2...v1.8.3
+[1.8.2]: https://github.com/hhh666hhh666/quizzy/compare/v1.8.1...v1.8.2
+[1.8.1]: https://github.com/hhh666hhh666/quizzy/compare/v1.8.0...v1.8.1
+[1.8.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.7.0...v1.8.0
+[1.7.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/hhh666hhh666/quizzy/compare/v1.3.2...v1.4.0
