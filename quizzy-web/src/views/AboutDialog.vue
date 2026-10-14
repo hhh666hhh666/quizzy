@@ -24,9 +24,13 @@
             <span class="text-ink-muted">仓库</span>
             <a class="link-button text-brand hover:underline" :href="REPO_URL" target="_blank" rel="noopener">{{ REPO_URL }}</a>
           </div>
-          <div class="flex items-center justify-between py-2">
+          <div class="flex items-center justify-between border-b border-line-soft py-2">
             <span class="text-ink-muted">许可证</span>
             <span>MIT</span>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <span class="text-ink-muted">ICP 备案</span>
+            <BeianFooter />
           </div>
         </div>
       </div>
@@ -40,6 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import BeianFooter from '@/components/BeianFooter.vue'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 

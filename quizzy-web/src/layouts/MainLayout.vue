@@ -72,6 +72,12 @@
           </div>
         </div>
       </div>
+
+      <!-- ICP 备案号：挂在侧栏最下——它是 flex 列里的常驻行，不随主内容滚动，
+           所以登录后每一屏都看得到（`.app-aside` 的「不裁切」断言由 e2e 排版用例守着） -->
+      <div class="border-t border-line-soft px-2.5 py-2">
+        <BeianFooter />
+      </div>
     </aside>
 
     <!-- 右列：主内容从顶栏下面穿过——顶栏的玻璃才有东西可透 -->
@@ -105,6 +111,7 @@ import {
 } from '@lucide/vue'
 import { useUserStore } from '@/stores/user'
 import { useThemeStore, type ThemeMode } from '@/stores/theme'
+import BeianFooter from '@/components/BeianFooter.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import AboutDialog from '@/views/AboutDialog.vue'
 import {

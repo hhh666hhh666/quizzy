@@ -1,5 +1,7 @@
 <template>
-  <div class="login-page flex min-h-screen items-center justify-center bg-canvas p-6 font-sans text-base text-ink">
+  <div
+    class="login-page flex min-h-screen flex-col items-center justify-center gap-6 bg-canvas p-6 font-sans text-base text-ink"
+  >
     <!-- 挑定构图（2026-10-08）：双栏——左身份面是 tint 容器，右表单面是近白面，卡体不铺玻璃 -->
     <div class="login-card grid w-full max-w-2xl overflow-hidden rounded-xl bg-tint-blue shadow-sm sm:grid-cols-[1fr_1.15fr]">
       <!-- 左：身份面 -->
@@ -92,6 +94,9 @@
         </form>
       </div>
     </div>
+
+    <!-- ICP 备案号：登录页是未登录访客唯一能看到的页面，合规要求这一屏必须有 -->
+    <BeianFooter />
   </div>
 </template>
 
@@ -99,6 +104,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import BeianFooter from '@/components/BeianFooter.vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

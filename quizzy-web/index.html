@@ -25,6 +25,22 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <!-- ICP 备案号的「静态兜底」：本应用是单页应用，页面上的字全是 JS 现画的，
+         「查看网页源代码」里一个方块都看不到。这段放在 <noscript> 里，
+         只在**浏览器禁用 JS** 时才露出来——正常用户看到的是 `src/components/BeianFooter.vue`
+         渲染的那份（视觉位置在登录页卡片下 / 登录后侧栏底部），两者是同一串号码。
+         样式写成行内是为了脱离打包产物也能用：这段出现时 CSS 未必加载得到。
+         ⚠️ 号码的真相源是那个 Vue 组件，换号请全仓搜 `蜀ICP备` 同步三处。 -->
+    <noscript>
+      <p
+        style="position: fixed; inset-inline: 0; bottom: 0; margin: 0; padding: 12px; border-top: 1px solid #d4dce5; background: #ffffff; color: #575e6c; font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.5; text-align: center"
+      >
+        <a style="color: inherit" href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer"
+          >蜀ICP备2026059456号-1</a
+        >
+      </p>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

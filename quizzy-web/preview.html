@@ -295,6 +295,14 @@
           ⚠️ 深色目前**未启用**：结构已在 <code class="font-mono">tokens.css</code> 里预留（<code class="font-mono">html.dark</code> 那一块）。
         </p>
         <p class="mt-1">缩窄窗口看响应式；系统开"减少动态效果"时，动效会自动降级。</p>
+        <!-- ICP 备案号：这一页会被打包进 dist 并对外可访问，所以照样要带。
+             本页是独立入口、用不了 Vue 组件，只好写死——号码的真相源在
+             `src/components/BeianFooter.vue`，换号时请一并改这里。 -->
+        <p class="mt-2">
+          <a class="hover:underline" href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer"
+            >蜀ICP备2026059456号-1</a
+          >
+        </p>
       </footer>
     </div>
 
