@@ -24,6 +24,18 @@
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **MySQL 缓冲池 128M → 64M（第四刀）**：这台 MySQL 已被内核 OOM-killer 杀掉**三次**（10-14 14:59、10-16 09:37、10-16 13:07），
+  容器驻留从 161MB 涨到 315MB / 硬顶 384MB——推力是共用同一实例的 fit-app 的餐照（往 `meal_photo` 写数 MB 的
+  `MEDIUMBLOB` 时，InnoDB 要在缓冲池**之外**再分配行缓冲，正好顶在天花板上）。这次同时把
+  `innodb_buffer_pool_chunk_size` 降到 32M——**必须一起降**：缓冲池不能小于一个 chunk，只把 pool 写小会被
+  MySQL 启动时向上取整回 128M（在线 `SET GLOBAL` 同样被 Warning 1210 拒绝）；另关掉从未使用的 X Plugin
+  （`--mysqlx=OFF`）。本次**推翻了 [《内存策略》](./docs/operations/内存策略.md) 里「别压缓冲池」那条旧判据**，
+  理由写在那一节。⚠️ 编排改动要落到服务器，得重建 MySQL 容器，quizzy 与 fit-app 会一起中断约十秒。
+
 ## [1.9.0] - 2026-10-14
 
 ### Added
