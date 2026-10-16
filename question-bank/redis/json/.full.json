@@ -1,0 +1,6928 @@
+{
+  "updated_at": "2026-10-16 01:15",
+  "count": 169,
+  "questions": [
+    {
+      "type": "JUDGE",
+      "stem": "在 AOF 重写（bgrewriteaof）期间，主进程每执行完一个写命令，会同时把这个命令写入「AOF 缓冲区」和「AOF 重写缓冲区」。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "重写期间主进程的写命令要同时写两个缓冲区：写 AOF 缓冲区保证原有路径的数据不丢，写 AOF 重写缓冲区则保证重写期间的新命令不会被漏掉——子进程完成重写后，主进程还要把重写缓冲区的内容追加到新的 AOF 文件中。只写其中一个缓冲区都会造成数据丢失。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "AOF",
+        "持久化",
+        "高频"
+      ],
+      "source_quote": "在重写 AOF 期间，当 Redis 执行完一个写命令之后，它会同时将这个写命令写入到 「AOF 缓冲区」和 「AOF 重写缓冲区」",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "02ae7317ecbaedd4",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "在 Redis 7.0 中，一个元素个数为 100、每个元素值 50 字节的 Zset，其底层数据结构是压缩列表。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "这个 Zset 满足小规模条件（元素个数 100 < 128，且每个元素值 50 字节 < 64 字节），按旧规则确实该用压缩列表；但在 Redis 7.0 中压缩列表数据结构已经废弃、交由 listpack 实现，所以它实际的底层结构是 listpack，题干说压缩列表是错的。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "Zset",
+        "压缩列表",
+        "listpack",
+        "低频"
+      ],
+      "source_quote": "在 Redis 7.0 中，压缩列表数据结构已经废弃了",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__Zset-底层是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "_fingerprint": "0dc0a00f29cde3f2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "开启混合持久化后，AOF 重写时是由 fork 出来的重写子进程先把与主线程共享的内存数据以 RDB 方式写入 AOF 文件。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文明确是 fork 出来的重写子进程在做这件事。主线程并不自己去写 RDB 部分，它继续处理客户端命令，这些命令被记进重写缓冲区；把 RDB 写入归给主线程，是混淆了子进程与主线程的分工。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "混合持久化",
+        "RDB",
+        "中频"
+      ],
+      "source_quote": "fork 出来的重写子进程会先将与主线程共享的内存数据以 RDB 方式写入到 AOF 文件",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "18eef4c8f471bf50",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "`min-replicas-max-lag` 是从 Redis 5.0 开始推荐使用的新参数名称。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：min-slaves-max-lag 是旧版本 Redis 中的参数名称，min-replicas-max-lag 是从 Redis 5.0 开始推荐使用的新名称，故判正确。这里的易错点是记反新旧关系——老资料里写的 min-slaves-* 是旧称，5.0 之后统一改成了 replicas 的命名。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "脑裂",
+        "低频"
+      ],
+      "source_quote": "`min-replicas-max-lag` 是从 Redis 5.0 开始推荐使用的新名称。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__主从切换如何减少数据丢失(脑裂)？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "_fingerprint": "1a94aaf38cf495ed",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "主从复制中，当 `replication buffer` 满了，会导致连接断开、删除缓存，从节点重新连接后重新开始全量复制。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：当 replication buffer 满了，会导致连接断开，删除缓存，从节点重新连接，重新开始全量复制，故判正确。注意别和 repl backlog buffer 记混——后者是环形结构，满了只覆盖起始位置数据，不会断开连接重做全量复制。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "replication buffer",
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "当 replication buffer 满了，会导致连接断开，删除缓存，从节点重新连接，重新开始全量复制。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制中两个-Buffer(replication-buffer-、repl-backlog-buffer)有什么区别",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "_fingerprint": "1e31e5d125957305",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "使用 Redisson 加锁时，如果自己给锁指定了有效期（leaseTime，例如 10 秒），看门狗仍会自动为这把锁续期。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文单独成段强调：自己给锁设置有效期不会触发看门狗机制。也就是说一旦显式传了 leaseTime，锁就按你给的固定时间自动释放，不再有后台续期；此时如果业务执行时间超过 10 秒，锁会提前释放，反而可能引发并发问题。想让看门狗生效，就不要指定 leaseTime（相当于传 -1，走默认的看门狗过期时间）。因此题干说法错误。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "看门狗",
+        "Redisson",
+        "高频"
+      ],
+      "source_quote": "自己给锁设置有效期不会触发看门狗机制",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__看门狗",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 看门狗",
+      "_fingerprint": "1edc955928bd0a89",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "SDS 既可以保存文本数据，也可以保存二进制数据。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说 SDS 是一个可以保存文本或二进制数据的抽象类型，题干说法与原文一致。这也是 Redis 不用 C 字符串而自造 SDS 的动机之一——C 字符串不能存 '\\0'，不是二进制安全的。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "低频"
+      ],
+      "source_quote": "SDS是一个可以保存文本或二进制数据的抽象类型",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__简单动态字符串（SDS,-Simple-Dynamic-Strings)",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "_fingerprint": "201286f8e483754d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redis 中的 key 一旦到达过期时间，就会被立即从内存中删除。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "过期不等于立即删除。惰性删除的含义正是：key 过期时不会马上从内存里移除，而是等它被访问时才触发删除操作，配合定期删除的抽查来回收。以为「过期即删」就会误判 Redis 的内存占用和过期 key 的可见性。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "过期删除",
+        "高频"
+      ],
+      "source_quote": "当一个 key 过期时，不会立即从内存中删除，而是在访问这个 key 的时候才会触发删除操作。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__介绍一下-Redis-过期删除策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 过期删除策略",
+      "_fingerprint": "253cfae4374dc3e2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "主从复制模式具备故障自动转移能力，主节点宕机后会自动把某个从节点升级为主节点。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文把「不具备故障自动转移的能力，没有办法做容错和恢复」列为主从模式最大的缺点，切换主节点需要手动实现。自动故障转移是哨兵模式提供的能力，把两者搞混就会在生产环境里误以为主节点挂了有人兜底。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "故障转移",
+        "高频"
+      ],
+      "source_quote": "但是主从模式最大的缺点，就是不具备故障自动转移的能力，没有办法做容错和恢复。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__主从复制模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式",
+      "_fingerprint": "37164a234a0cf506",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redis 事务执行期间，如果有其他客户端发来命令，会被阻塞等待。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "事务执行期间其他命令会被阻塞住——这正是 Redis 单线程执行命令的直接结果：同一时刻只处理一个操作，事务内的命令得以连续执行不被打断，外部命令只能排队等待。注意这与「回滚」无关，事务本身并不提供回滚能力。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "事务",
+        "原子性",
+        "低频"
+      ],
+      "source_quote": "事务执行期间如果有其他命令过来就会阻塞住。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__除了lua有没有什么也能保证redis的原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "_fingerprint": "3af320533408a0da",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "内存淘汰策略和过期键删除策略的触发原因相同，都是因为 key 到达过期时间而要回收它占用的内存。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "两者触发原因不同：过期删除针对的是「已过期的键值对」，而内存淘汰是内存满了之后为腾空间而删，被淘汰的 key 未必过期。把它们当成一回事，就会误以为调大过期时间能避免内存淘汰。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "过期删除",
+        "中频"
+      ],
+      "source_quote": "内存淘汰策略是在内存满了的时候，redis 会触发内存淘汰策略，来淘汰一些不必要的内存资源，以腾出空间，来保存新的内容",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__过期删除策略和内存淘汰策略有什么区别？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "_fingerprint": "46e856f1b6036bfe",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "跳表节点的层数是在创建节点时确定的：不断生成随机数，每小于 0.25 就加一层，直到随机数的结果大于 0.25 才结束。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说创建节点时生成随机数，小于 0.25 就增加一层，然后继续生成下一个随机数，直到随机数的结果大于 0.25 结束，最终确定该节点的层数，题干描述与原文一致。这样层数服从几何分布，节点的层级每增加一层，跨度就会更高。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "低频"
+      ],
+      "source_quote": "然后继续生成下一个随机数，直到随机数的结果大于 0.25 结束，最终确定该节点的层数",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__跳表是怎么设置层高的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么设置层高的？",
+      "_fingerprint": "4a75aeb50a5eac1e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "B+ 树的主要优势是层级低、能减少磁盘 IO，而 Redis 的数据存在内存中，用不上这个优势。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文直接说 b+ 树优势是层级低可以减少磁盘 io，而 redis 数据是存在内存中的，不需要这个优点，题干说法与原文一致。这也是 Redis 选跳表而不是 B+ 树的关键——磁盘 IO 优化在内存数据库里没有收益。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "中频"
+      ],
+      "source_quote": "b+树优势是层级低可以减少磁盘io, 而redis数据是存在内存中的, 不需要这个优点",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__Redis为什么使用跳表而不是用B+树_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Redis为什么使用跳表而不是用B+树?",
+      "_fingerprint": "4dec95932d327f49",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "在 Redisson 可重入锁中，只有同一个 JVM 的同一个线程才能重复获取锁，获取多少次锁就要解锁多少次才能彻底释放锁。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "与原文一致：UUID 区分不同 JVM 实例，threadId 区分同一 JVM 内的不同线程，只有同一个 JVM 的同一个线程才能重复获取锁（这正是 field 用 UUID:threadId 的原因）；并且获取了多少次锁就要解多少次锁才能彻底释放锁 —— 因为 Hash 的 value 记录的是重入次数，每加一次锁计数 +1，解锁时递减，减到 0 才算真正释放。所以只 unlock 一次是无法释放重入过的锁的。故判断为正确。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Redisson",
+        "中频"
+      ],
+      "source_quote": "只有同一个JVM的同一个线程才能重复获取锁，获取了多少次锁就要解多少次锁才能彻底释放锁。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 可重入锁 > 原理",
+      "_fingerprint": "57b6123a4fdbcd08",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "用互斥锁解决缓存击穿时，其他线程拿到锁之后会直接重新构建缓存。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：其他线程在拿到锁之后首先要判断缓存是否存在，如果存在就直接返回，不用去重复构建缓存。只有第一个拿到锁的线程才去构建。少了这层「拿到锁后再查一次缓存」的判断，每个线程都会各查一次数据库，互斥锁就退化成串行重建，白白损失并发。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存击穿",
+        "中频"
+      ],
+      "source_quote": "其他的线程在拿到锁之后首先要判断缓存是否存在, 如果存在就直接返回不用去重复构建缓存。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__缓存击穿",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存击穿",
+      "_fingerprint": "6c66fe7d431f5582",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "ZipList 的每个元素都是连续存储的，因此在小规模数据存储时显著减少了内存占用。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说 ZipList 的每个元素都是连续存储的，内存使用非常紧凑，并且与其他数据结构相比，在小规模数据存储时显著减少了内存占用，题干说法与原文一致。要注意代价是线性的 O(N)——省内存换来的是查找和增删变慢。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "压缩列表",
+        "低频"
+      ],
+      "source_quote": "ZipList是一个压缩的数据结构，它的每个元素都是连续存储的，因此内存的使用非常紧凑。**与其他数据结构相比，ZipList在小规模数据存储时显著减少了内存占用。**",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__压缩列表（Ziplist）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "_fingerprint": "7842f60d4c8daa6a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "一个哨兵判断主节点「主观下线」后，就可以直接把主节点标记为「客观下线」。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "判错。原文：一个哨兵判断主节点主观下线后，会询问其他哨兵的意见，只有达到配置的法定人数（quorum），主节点才会被标记为客观下线。单个哨兵的判定只是「主观」，必须与其他哨兵投票确认，这正是哨兵集群要部署多个节点的原因之一。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "当一个哨兵判断主节点主观下线后，会询问其他哨兵的意见，如果达到配置的法定人数(quorum)，主节点会被标记为“**客观下线**”。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵机制是如何工作的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "_fingerprint": "7e732f19e7ddb9fa",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redis 的 String 类型只能存储文本字符串，不能存储数字或二进制数据。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说 String 存储文本、数字或二进制数据，因此“只能存文本”不成立。这也是 String 的底层采用 SDS（可保存文本或二进制数据的抽象类型）带来的二进制安全特性。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "低频"
+      ],
+      "source_quote": "String：存储文本、数字或二进制数据。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__Redis常见的数据类型",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis常见的数据类型",
+      "_fingerprint": "82016e18c3abc80c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redis 6.0 的 I/O 多线程特性，默认情况下既以多线程方式发送响应数据（write client socket），也以多线程方式处理客户端读请求（read client socket）。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "默认情况下 I/O 多线程只针对发送响应数据（write client socket），并不会以多线程方式处理读请求。要想让多线程也处理读请求，需要把 Redis.conf 中的 io-threads-do-reads 设为 yes。注意：即便开了 I/O 多线程，命令本身仍由主线程单线程执行。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "多线程",
+        "低频"
+      ],
+      "source_quote": "默认情况下 I/O 多线程只针对发送响应数据（write client socket），并不会以多线程的方式处理读请求（read client socket）",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "低频",
+      "_task_id": "Redis__Redis哪些地方使用了多线程_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis哪些地方使用了多线程?",
+      "_fingerprint": "8ab0cbfa4bd3e9f2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "只要有一个主节点认为某节点主观下线，这个节点就会被标记为客观下线。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文要求「半数以上的主节点都认为某节点主观下线」才会标记为客观下线，单个主节点的判断只能算主观下线。把阈值从「半数以上」降成「一个」，是故障判定里最典型的边界错误——这样单点误判（比如网络抖动）就会触发不必要的故障转移。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "故障转移",
+        "高频"
+      ],
+      "source_quote": "当半数以上的主节点都认为某节点主观下线时，这个节点就会被标记为“客观下线”。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__集群如何实现故障转移",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "_fingerprint": "99cf0d9e9c425564",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redisson 提供的限流器 RRateLimiter 是基于滑动窗口算法实现的。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文特意点出这个易错点：在 Redisson 框架中已经给我们提供了一个限流器 RRateLimiter，不过它并不是滑动窗口，而是一个令牌桶的算法。上一节讲的 zset + ZREMRANGEBYSCORE + ZCARD 才是滑动窗口的 Redis 实现方式，两者不要混为一谈 —— 用 RRateLimiter 时你拿到的是令牌桶语义。因此题干说法错误。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "限流",
+        "Redisson",
+        "滑动窗口",
+        "高频"
+      ],
+      "source_quote": "不过他并不是滑动窗口，而是一个令牌桶的算法。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__基于Redisson实现限流",
+      "_source_file": "md/Redis.md",
+      "_source_section": "限流 > 基于Redisson实现限流",
+      "_fingerprint": "a39803c9c06b2f7d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "JUDGE",
+      "stem": "Redis Pipeline 能保证其中的多个命令以不可分割的原子操作执行。",
+      "options": [
+        {
+          "label": "A",
+          "content": "正确"
+        },
+        {
+          "label": "B",
+          "content": "错误"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确加粗强调：Pipeline 是不保证原子性的，它的多个命令都是独立执行的，Redis 并不保证这些命令能以不可分割的原子操作执行。需要原子性要用 MULTI/EXEC 或 Lua 脚本。把「批量」等同于「原子」是 Redis 面试里最常见的误解之一。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Pipeline",
+        "原子性",
+        "高频"
+      ],
+      "source_quote": "**Pipeline是不保证原子性的**，他的多个命令都是独立执行的，Redis并不保证这些命令可以以不可分割的原子操作进行执行。",
+      "_judge_remap": {
+        "A": "A",
+        "B": "B"
+      },
+      "_freq": "高频",
+      "_task_id": "Redis__Redis-Pipeline是什么？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis Pipeline是什么？",
+      "_fingerprint": "f68852a8091a9baa",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 的字典被用来实现哪些东西？",
+      "options": [
+        {
+          "label": "A",
+          "content": "跳表的多级索引层"
+        },
+        {
+          "label": "B",
+          "content": "List 类型"
+        },
+        {
+          "label": "C",
+          "content": "内部的键空间（所有的键都存储在一个字典中）"
+        },
+        {
+          "label": "D",
+          "content": "Hash 类型"
+        }
+      ],
+      "answer": [
+        "C",
+        "D"
+      ],
+      "analysis": "原文说字典用于实现 Redis 的 Hash 类型和内部的键空间，键空间指的就是所有的键都存储在一个字典中。List 由双向链表（quicklist）实现；跳表的多级索引层是靠节点里的 level 数组实现的，与字典无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "中频"
+      ],
+      "source_quote": "字典用于实现Redis的Hash类型和内部的键空间，键空间指的就是所有的键都存储在一个字典中。",
+      "_freq": "中频",
+      "_task_id": "Redis__字典（Dict）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict）",
+      "_fingerprint": "0c9ded1ca55c3a23",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列关于整数集合（IntSet）的说法，正确的是哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "是一种简单的数组结构，仅用来存储整数值"
+        },
+        {
+          "label": "B",
+          "content": "底层是哈希表，通过散列来快速定位元素"
+        },
+        {
+          "label": "C",
+          "content": "这样设计的目的是节省空间"
+        },
+        {
+          "label": "D",
+          "content": "可以根据存储的整数类型（如 16 位、32 位或 64 位）动态调整"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文说整数集合是一种简单的数组结构，仅用来存储整数值，并且可以根据存储的整数类型（16 位、32 位或 64 位）动态调整，这样就可以节省空间。D 描述的是字典（哈希表）的定位方式，整数集合是数组，靠有序存储加二分查找定位，不是散列。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "整数集合",
+        "低频"
+      ],
+      "source_quote": "整数集合是一种简单的数组结构，仅用来存储整数值，并且可以根据存储的整数类型（如16位、32位或64位）动态调整，这样就可以节省空间。",
+      "_freq": "低频",
+      "_task_id": "Redis__整数集合（IntSet）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 整数集合（IntSet）",
+      "_fingerprint": "1019da2574d47747",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "主从复制模式的优势有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "具备自动故障转移和容错恢复能力"
+        },
+        {
+          "label": "B",
+          "content": "增加从节点就能不断提升整个集群的读能力"
+        },
+        {
+          "label": "C",
+          "content": "简单易用，适用于读多写少的场景"
+        },
+        {
+          "label": "D",
+          "content": "提供了数据备份功能"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文给出的优势是简单易用、适合读多写少、提供数据备份、扩展性好（加从节点就提升读能力）。D 恰恰是主从模式的短板，故障转移要人工介入，这也是为什么要在它之上再引入哨兵。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "主从复制的优势在于简单易用，适用于读多写少的场景。**它提供了数据备份功能，并且可以有很好的扩展性，只要增加更多的从节点，就能让整个集群的读的能力不断提升。",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式",
+      "_fingerprint": "110cb73d4adb2661",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于布隆过滤器方案的局限，下列说法正确的有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "针对不能删除的问题可以改用布谷鸟过滤器，但它会占用更大的内存"
+        },
+        {
+          "label": "B",
+          "content": "布隆过滤器不能删除数据"
+        },
+        {
+          "label": "C",
+          "content": "布谷鸟过滤器不存在误判，可以完全替代布隆过滤器"
+        },
+        {
+          "label": "D",
+          "content": "布隆过滤器返回不存在时，该 key 仍可能实际存在"
+        }
+      ],
+      "answer": [
+        "A",
+        "B"
+      ],
+      "analysis": "原文：布隆过滤器还有一个缺点就是不能删除数据，针对这个缺点可以使用布谷鸟过滤器，但是布谷鸟过滤器会占用更大的内存，A、B 正确。C 的「不存在误判、完全替代」原文没有支持，原文只说它能删除且更占内存；D 与原文相反——返回不存在就一定不存在，误判只出现在返回「存在」时。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存穿透",
+        "中频"
+      ],
+      "source_quote": "布隆过滤器还有一个缺点就是不能删除数据，针对这个缺点可以使用布谷鸟过滤器，但是布谷鸟过滤器会占用更大的内存。",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存穿透",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存穿透",
+      "_fingerprint": "17ed9e89afe3a12e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redisson 的分布式可重入读写锁对同一个资源加锁时，满足哪些规则？",
+      "options": [
+        {
+          "label": "A",
+          "content": "同一资源允许同时存在多个写锁（写写共享）"
+        },
+        {
+          "label": "B",
+          "content": "同一资源同一时刻只能有一个写锁（写写互斥）"
+        },
+        {
+          "label": "C",
+          "content": "读锁与写锁之间互斥（读写互斥）"
+        },
+        {
+          "label": "D",
+          "content": "同一资源允许同时存在多个读锁（读读共享）"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文：Redisson 中支持分布式可重入读写锁，这种锁允许同时有多个读锁或只能有一个写锁对同一个资源进行加锁，满足「读读共享，写写互斥，读写互斥」。A、B、C 正好对应这三条。D 与 B 直接冲突：写锁必须是独占的，同一时刻只能有一个，允许多个写锁并发写就失去了写锁的意义。补充一点，这里的锁同时还是「可重入」的，即可重入特性与读写语义是叠加的。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "读写锁",
+        "Redisson",
+        "中频"
+      ],
+      "source_quote": "读读共享, 写写互斥, 读写互斥",
+      "_freq": "中频",
+      "_task_id": "Redis__读写锁",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 读写锁",
+      "_fingerprint": "1a0b1a8d28246e81",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 为什么快？",
+      "options": [
+        {
+          "label": "A",
+          "content": "通过 I/O 多路复用机制，在单线程下高效处理大量客户端的 Socket 请求"
+        },
+        {
+          "label": "B",
+          "content": "写操作都顺序追加到磁盘，靠磁盘顺序写提升读写性能"
+        },
+        {
+          "label": "C",
+          "content": "使用多个工作线程并行执行命令，充分利用多核 CPU"
+        },
+        {
+          "label": "D",
+          "content": "采用单线程模型，避免了多线程之间的竞争和上下文切换带来的性能损耗"
+        },
+        {
+          "label": "E",
+          "content": "数据存储在内存中，内存读写速度远大于磁盘，而且采用了高效的数据结构"
+        }
+      ],
+      "answer": [
+        "A",
+        "D",
+        "E"
+      ],
+      "analysis": "A、B、D 对应原文列出的三条原因：内存存储 + 高效数据结构、单线程避免线程竞争与上下文切换、I/O 多路复用。C 错：Redis 执行命令是单线程，引入多线程反而带来竞争和上下文切换开销，原文正是为避免这一点才坚持单线程。E 错：原文说的是内存读写速度远大于磁盘，把性能归给磁盘顺序写与原文相反。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "线程模型",
+        "IO多路复用",
+        "高频"
+      ],
+      "source_quote": "Redis 的**数据存储在内存中**, 数据在内存中的读写速度是远大于在磁盘中的, 而且**采用了高效的数据结构**",
+      "_freq": "高频",
+      "_task_id": "Redis__Redis为什么快？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis为什么快？",
+      "_fingerprint": "241781ddf865b6e7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列哪些内存淘汰策略只在设置了过期时间的键值中进行淘汰？",
+      "options": [
+        {
+          "label": "A",
+          "content": "volatile-lru"
+        },
+        {
+          "label": "B",
+          "content": "allkeys-lru"
+        },
+        {
+          "label": "C",
+          "content": "volatile-ttl"
+        },
+        {
+          "label": "D",
+          "content": "allkeys-random"
+        },
+        {
+          "label": "E",
+          "content": "volatile-lfu"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "E"
+      ],
+      "analysis": "volatile-* 这一族（random / ttl / lru / lfu）只在设置了过期时间的键里挑淘汰对象，名字里的 volatile 就是「带过期时间的」的意思。allkeys-* 一族的范围是全部键值，无论有没有设过期时间，所以 D、E 不在其中。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "高频"
+      ],
+      "source_quote": "volatile-ttl: 优先淘汰更早过期的键值。 \n+ volatile-lru(Least Recently Used): 从设置了过期时间的键值中选择最近最少(最久未使用)使用的那个 key 并删除。  \n+ volatile-lfu(Least Frequently Used): 从设置了过期时间的键值中选择访问频率最低的那个键值并删除。",
+      "_freq": "高频",
+      "_task_id": "Redis__介绍一下-Redis-内存淘汰策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 内存淘汰策略",
+      "_fingerprint": "252aa86aa261a01a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis数据结构有那些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "整数集合（IntSet）"
+        },
+        {
+          "label": "B",
+          "content": "跳表（Skiplist）"
+        },
+        {
+          "label": "C",
+          "content": "简单动态字符串（SDS）"
+        },
+        {
+          "label": "D",
+          "content": "双向链表"
+        },
+        {
+          "label": "E",
+          "content": "红黑树"
+        },
+        {
+          "label": "F",
+          "content": "压缩列表（Ziplist）"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "F"
+      ],
+      "analysis": "原文列出 Redis 的六种底层数据结构：简单动态字符串、双向链表、字典、压缩列表、整数集合、跳表。选项中的前五项都在其中（本题没有把字典列入选项），红黑树不在原文列举的 Redis 底层数据结构里。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "链表",
+        "压缩列表",
+        "整数集合",
+        "跳表",
+        "中频"
+      ],
+      "source_quote": "1. 简单动态字符串（SDS, Simple Dynamic Strings)\n2. 双向链表\n3. 字典（Dict）\n4. 压缩列表（Ziplist）\n5. 整数集合（IntSet）\n6. 跳表（Skiplist）",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis数据结构有那些？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？",
+      "_fingerprint": "277b630e871b3bb1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 ziplist 产生连锁更新的原因，下列说法正确的是哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "当前 entry 变大又会导致后面所有的 entry 都跟着变"
+        },
+        {
+          "label": "B",
+          "content": "前一个 entry 太大时，记录它的字段占用大小也会变大，进而导致当前 entry 变大"
+        },
+        {
+          "label": "C",
+          "content": "ziplist 中有一个字段用于记录前一个 entry 的大小"
+        },
+        {
+          "label": "D",
+          "content": "ziplist 记录当前 entry 的大小，插入时必须重算全部 entry 的偏移"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文说 ziplist 用一个字段记录前一个 entry 的大小；前一个 entry 太大时，这个字段占用的大小也会变大，进而导致当前 entry 变大，导致后面所有的 entry 都跟着变——这就是连锁更新。D 说反了：记录当前 entry 大小的是 listpack，正是靠这一点避免了连锁更新。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "listpack",
+        "压缩列表",
+        "中频"
+      ],
+      "source_quote": "Ziplist中有一个字段用于记录前一个entry的大小，如果前一个entry太大，这个字段占用的大小也会变大，进而导致当前的entry变大，导致后面所有的entry都跟着变",
+      "_freq": "中频",
+      "_task_id": "Redis__listpack",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > listpack",
+      "_fingerprint": "3400579934f3ea62",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列关于 listpack 的说法，正确的是哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "每个元素记录前一个元素的长度，因此存在连锁更新问题"
+        },
+        {
+          "label": "B",
+          "content": "主要用于小型的 list、hash 和 zset 的底层存储"
+        },
+        {
+          "label": "C",
+          "content": "是一块连续内存区域，内部存储多个元素"
+        },
+        {
+          "label": "D",
+          "content": "结构简单、压缩率高，支持正向和反向遍历"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文说 listpack 是一块连续内存区域，内部存储多个元素，结构简单、压缩率高，支持正向和反向遍历，并且主要用于小型 list、hash 和 zset 的底层存储。D 描述的是 ziplist 的特征，listpack 记录的是当前节点的长度，恰恰避免了连锁更新。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "listpack",
+        "低频"
+      ],
+      "source_quote": "主要用于小型的 list、hash 和 zset 的底层存储。它是一块连续内存区域，内部存储多个元素，结构简单、压缩率高，支持正向和反向遍历。",
+      "_freq": "低频",
+      "_task_id": "Redis__listpack",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > listpack",
+      "_fingerprint": "388200a9bbab5b10",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "按文中的描述，基于 Redis 实现滑动窗口限流的主要步骤包括哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "使用 EXPIRE 为整个 key 设置 60 秒过期，让计数自动清零"
+        },
+        {
+          "label": "B",
+          "content": "使用 ZREMRANGEBYSCORE 删除分值小于窗口起始时间戳（当前时间戳-60s）的数据"
+        },
+        {
+          "label": "C",
+          "content": "每次收到请求时往 zset 中新增一个元素，分数为当前时间戳"
+        },
+        {
+          "label": "D",
+          "content": "定义滑动窗口的时间范围，例如窗口大小为 60 秒"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "原文四步：① 定义滑动窗口的时间范围（例如窗口大小 60 秒）；② 每次请求往 zset 新增一个元素，分数为当前时间戳；③ 用 ZREMRANGEBYSCORE 删除分值小于窗口起始时间戳（当前时间戳-60s）的数据，剩下的就是窗口内应存在的元素；④ 用 ZCARD 取成员数量判断是否超限。D 不属于这套实现：给 key 设 EXPIRE 让计数整体清零是固定窗口计数器的思路，滑动窗口靠的是按 score 范围裁剪，而不是让整个 key 过期。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "滑动窗口",
+        "限流",
+        "中频"
+      ],
+      "source_quote": "定义滑动窗口的时间范围，例如，窗口大小为60秒。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何基于Redis实现滑动窗口限流？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "_fingerprint": "41d94c7e5ee4bc47",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "作者把下列哪些 Redis 使用场景标注为「可以」，而不是「建议」？",
+      "options": [
+        {
+          "label": "A",
+          "content": "分布式ID"
+        },
+        {
+          "label": "B",
+          "content": "分布式限流"
+        },
+        {
+          "label": "C",
+          "content": "布隆过滤器"
+        },
+        {
+          "label": "D",
+          "content": "推荐关注"
+        },
+        {
+          "label": "E",
+          "content": "bitmap状态统计"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D",
+        "E"
+      ],
+      "analysis": "原文的三档划分中，「可以」这一档包括：分布式ID、分布式限流、bitmap 状态统计、推荐关注。E 的布隆过滤器在清单里是「布隆过滤器（建议）」，属于建议档，是被拿来当干扰项的同类场景。记住这个分档就能回答「Redis 适不适合干某件事」这类问题：建议 = 推荐用，可以 = 能用但有更合适的选择，不建议 = 别用（如消息队列、延迟消息）。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "限流",
+        "低频"
+      ],
+      "source_quote": "分布式限流（可以）",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis的作用",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis的作用",
+      "_fingerprint": "4ac024cf965bc776",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "主从复制共有哪三种模式？",
+      "options": [
+        {
+          "label": "A",
+          "content": "半同步复制"
+        },
+        {
+          "label": "B",
+          "content": "基于 RDB 的定时快照复制"
+        },
+        {
+          "label": "C",
+          "content": "基于长连接的命令传播"
+        },
+        {
+          "label": "D",
+          "content": "全量复制"
+        },
+        {
+          "label": "E",
+          "content": "增量复制"
+        }
+      ],
+      "answer": [
+        "C",
+        "D",
+        "E"
+      ],
+      "analysis": "原文给出的三种模式是全量复制、基于长连接的命令传播、增量复制，分别对应首次同步、日常同步、断线重连三种场景。定时快照复制和半同步复制都不是 Redis 主从复制的模式（半同步是 MySQL 复制的概念），属于典型的概念搬家。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "全量同步",
+        "增量同步",
+        "中频"
+      ],
+      "source_quote": "主从复制共有三种模式：**全量复制**、**基于长连接的命令传播**、**增量复制**。",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "_fingerprint": "50b305b8691912d9",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "部署至少 3 个哨兵节点的目的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "实现投票机制"
+        },
+        {
+          "label": "B",
+          "content": "避免脑裂"
+        },
+        {
+          "label": "C",
+          "content": "提高主从复制的吞吐量"
+        },
+        {
+          "label": "D",
+          "content": "保证故障判定的准确性"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：部署至少 3 个哨兵是为了实现投票机制、保证故障判定的准确性、避免脑裂，从而确保 Redis 高可用系统的稳定性，故选 A、B、D。C 与哨兵职责无关——哨兵不参与命令复制和数据转发，增加哨兵数量不会提升复制吞吐量。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "脑裂",
+        "高频"
+      ],
+      "source_quote": "部署至少 3 个哨兵是为了实现**投票机制、保证故障判定的准确性、避免脑裂**，从而确保 Redis 高可用系统的稳定性。",
+      "_freq": "高频",
+      "_task_id": "Redis__为什么哨兵节点至少要有-3-个？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "_fingerprint": "587e7fcf44766c59",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 Redis Cluster 把槽位数定为 16k（16384）的理由，下列说法正确的有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "16k 的槽位数足以在最多 1000 个主节点的情况下为每个主节点分配足够的槽位"
+        },
+        {
+          "label": "B",
+          "content": "Redis Cluster 的主节点数量在设计上不受限制，因此槽位数可以任意增大"
+        },
+        {
+          "label": "C",
+          "content": "16k 数量足够小，可以方便地以原始位图的形式传播槽位配置"
+        },
+        {
+          "label": "D",
+          "content": "采用 65k 槽位时，心跳包携带的配置信息无法以幂等方式替换旧配置"
+        }
+      ],
+      "answer": [
+        "A",
+        "C"
+      ],
+      "analysis": "原文给出两条理由：一是 Redis Cluster 不太可能扩展到超过 1000 个主节点，16k 已足够为每个主节点分配槽位（A 对，B 的「不受限制」正相反）；二是 16k 数量足够小，便于以原始位图形式传播槽位配置（C 对）。D 错在归因：原文说正常心跳包携带完整配置、可以幂等方式替换旧配置，这是心跳包本身的性质，并不是 65k 带来的问题。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "高频"
+      ],
+      "source_quote": "与此同时，Redis Cluster 由于其他设计上的权衡，不太可能扩展到超过 1000 个主节点。因此，16k 的槽位数是一个合理的选择：它足以在最多 1000 个主节点的情况下为每个主节点分配足够的槽位，同时数量又足够小，可以方便地以原始位图的形式传播槽位配置。",
+      "_freq": "高频",
+      "_task_id": "Redis__为什么是16384个槽",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "_fingerprint": "5c5f32bec8f0322e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "使用混合持久化后，重启 Redis 加载 AOF 文件时能带来哪些好处？",
+      "options": [
+        {
+          "label": "A",
+          "content": "后半部分是重写期间主线程处理的命令，可以使得数据更少的丢失"
+        },
+        {
+          "label": "B",
+          "content": "AOF 文件的体积比纯 RDB 快照更小"
+        },
+        {
+          "label": "C",
+          "content": "不再需要 fork 子进程，避免了重写时的内存开销"
+        },
+        {
+          "label": "D",
+          "content": "前半部分是 RDB 内容，加载速度会很快"
+        }
+      ],
+      "answer": [
+        "A",
+        "D"
+      ],
+      "analysis": "混合持久化同时拿到两头的优点：RDB 部分让重启加载变快，AOF 增量部分让重写期间的命令不丢。C 是常见想当然，原文没有体积更小的说法，混合文件里命令仍以 AOF 格式存储；D 与原文相反，混合持久化依然要 fork 重写子进程去写 RDB 部分。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "混合持久化",
+        "AOF",
+        "RDB",
+        "高频"
+      ],
+      "source_quote": "重启 Redis 加载数据的时候，由于前半部分是 RDB 内容，这样加载的时候速度会很快。加载完 RDB 的内容后，才会加载后半部分的 AOF 内容，这里的内容是 Redis 后台子进程重写 AOF 期间，主线程处理的操作命令，可以使得数据更少的丢失",
+      "_freq": "高频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "6768b3648a2800c1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "按文中的经验值，下列哪些情况会被认为是 Redis 大 key？",
+      "options": [
+        {
+          "label": "A",
+          "content": "对于 Set 类型的 Value 值，含有的成员数量为 10000 个"
+        },
+        {
+          "label": "B",
+          "content": "对于 String 类型的 Value 值，值超过 5MB"
+        },
+        {
+          "label": "C",
+          "content": "对于 List 类型的 Value 值，含有的成员数量为 10000 个"
+        },
+        {
+          "label": "D",
+          "content": "对于 Hash 格式的 Value 值，含有的成员数量为 10000 个"
+        },
+        {
+          "label": "E",
+          "content": "对于 Hash 格式的 Value 值，含有的成员数量为 1000 个，但所有成员变量的总 Value 值大小为 100MB"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C",
+        "E"
+      ],
+      "analysis": "文中「多大算大？」一节给出了四类经验阈值：String 的 Value 超过 5MB；Set 成员数量 10000 个；List 成员数量 10000 个；Hash 成员数量 1000 个且成员变量总 Value 大小 100MB。E 把 Hash 的成员数量写成 10000，与 Set/List 的口径混淆了 —— Hash 的判定是「成员数量 1000 个 + 总体积 100MB」两个维度同时看，而不是 10000 个。补充：文中还提到腾讯云对 String 的定义是 10M、阿里云是 5M，作者取 5M，所以 10MB 不是本文建议值。另外这些只是经验值，文中明确说需要根据实际场景调整。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "中频"
+      ],
+      "source_quote": "对于 String 类型的 Value 值，值超过 5MB（腾讯云定义是 10M，阿里云定义是 5M，我认为 5M 合适一点）。",
+      "_freq": "中频",
+      "_task_id": "Redis__大key__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "69071e29f015fc0c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 AOF 持久化，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "AOF 文件一旦损坏就无法继续使用，只能删掉重新做全量同步"
+        },
+        {
+          "label": "B",
+          "content": "AOF 支持 everysec、always 等多种同步策略，可以在数据安全性和性能之间做权衡"
+        },
+        {
+          "label": "C",
+          "content": "同步策略设置为 always 时也不会对写入性能产生任何影响"
+        },
+        {
+          "label": "D",
+          "content": "AOF 默认每接收到一个写命令就追加到文件末尾，提供了更好的数据安全性"
+        },
+        {
+          "label": "E",
+          "content": "AOF 记录了每一个写操作，文件通常比 RDB 文件更大，占用更多磁盘空间"
+        }
+      ],
+      "answer": [
+        "B",
+        "D",
+        "E"
+      ],
+      "analysis": "A、B、C 都是原文列出的 AOF 特性：因为记录每一个写操作，文件通常比 RDB 大；默认每收到一个写命令就追加到文件末尾，数据安全性更好；支持 everysec、always 等同步策略来平衡安全性与性能。D 错：AOF 提供了 redis-check-aof 工具来修复损坏的文件。E 错：原文明确指出同步策略设为 always 时，频繁的磁盘 IO 可能对写入性能造成一定影响。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "AOF",
+        "持久化",
+        "中频"
+      ],
+      "source_quote": "首先，AOF提供了更好的数据安全性，因为它默认每接收到一个写命令就会追加到文件末尾。即使Redis服务器宕机，也只会丢失最后一次写入前的数据。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "6a2bb93f6a757c95",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "相比哨兵模式，Redis Cluster 带来了哪些能力？",
+      "options": [
+        {
+          "label": "A",
+          "content": "突破单节点的写入和存储瓶颈"
+        },
+        {
+          "label": "B",
+          "content": "分布式存储：数据分片存储在多个节点上，每个节点只负责一部分读写任务"
+        },
+        {
+          "label": "C",
+          "content": "从节点也对外提供读请求，进一步提升读吞吐"
+        },
+        {
+          "label": "D",
+          "content": "支持在线扩容和自动故障转移"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：Cluster 模式实现了 Redis 的分布式存储，把数据分片存储在多个节点上、每个节点只负责一部分读写任务，不仅突破了单节点的写入和存储瓶颈，还支持在线扩容和自动故障转移，故选 A、B、D。C 是干扰项——文中明确说 Cluster 里从节点作为备用节点，不提供请求，只作故障转移使用，不要把哨兵模式下读写分离的习惯带进来。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "分片集群",
+        "故障转移",
+        "高频"
+      ],
+      "source_quote": "它把数据分片存储在多个节点上，每个节点只负责一部分读写任务。",
+      "_freq": "高频",
+      "_task_id": "Redis__Redis-Cluster分片集群",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群",
+      "_fingerprint": "6bb2d36bf65268c7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "配置哨兵时，`sentinel monitor` 命令需要填写哪些参数？",
+      "options": [
+        {
+          "label": "A",
+          "content": "quorum 值"
+        },
+        {
+          "label": "B",
+          "content": "主节点的 IP 地址和端口号"
+        },
+        {
+          "label": "C",
+          "content": "其他哨兵节点的 IP 地址和端口"
+        },
+        {
+          "label": "D",
+          "content": "主节点名字（master-name）"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "D"
+      ],
+      "analysis": "原文：配置哨兵信息时只需要填这几个参数——主节点名字、主节点的 IP 地址和端口号以及 quorum 值，故选 A、B、D。C 是干扰项：哨兵之间不需要互相配置地址，它们是通过发布/订阅机制自动发现彼此的，这也正是本节要解释的问题。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "低频"
+      ],
+      "source_quote": "在配置哨兵的信息时，只需要填下面这几个参数，设置主节点名字、主节点的 IP 地址和端口号以及 quorum 值。",
+      "_freq": "低频",
+      "_task_id": "Redis__哨兵集群是如何组成的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "_fingerprint": "71a4efe0f80e1c7b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 Redis 事务的错误处理，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "对字符串执行列表相关操作这类错误，会在命令排队阶段就被检测出来"
+        },
+        {
+          "label": "B",
+          "content": "命令排队（累积命令）过程中就检测到的错误，比如语法错误、内存不够，调用 EXEC 后会拒绝执行事务并丢弃该事务，一条命令都不执行"
+        },
+        {
+          "label": "C",
+          "content": "事务执行过程中某条命令出错时，Redis 会回滚整个事务"
+        },
+        {
+          "label": "D",
+          "content": "内存不够这类问题只有在命令真正执行时才会暴露"
+        },
+        {
+          "label": "E",
+          "content": "对字符串进行列表相关操作的错误属于执行过程中才会出现的错误，出错并不会影响后续命令的执行"
+        }
+      ],
+      "answer": [
+        "B",
+        "E"
+      ],
+      "analysis": "Redis 的错误分两类：一类在命令排队过程中就能检测到（语法错误、内存不够等），这类错误会导致 EXEC 时拒绝执行事务、直接丢弃，一条命令都不执行；另一类只有在真正执行时才暴露，最典型的是操作类型不一致（对字符串做列表操作），此时出错不影响后续命令执行，也没有回滚。所以 A 错在没有回滚，C、D 错在把「内存不够」「类型错误」归到了错误的检测阶段。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "事务",
+        "高频"
+      ],
+      "source_quote": "然后，在执行 EXEC 期间会拒绝执行事务，并返回一个错误，同时丢弃该事务。如果事务执行过程中发生错误，Redis会继续执行剩余的命令而不是回滚整个事务。",
+      "_freq": "高频",
+      "_task_id": "Redis__除了lua有没有什么也能保证redis的原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "_fingerprint": "7f7ac19a0034f72a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "文中给出的处理 Big Key 的方案有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "针对访问频率低的大 key 进行有选择性的删除"
+        },
+        {
+          "label": "B",
+          "content": "使用 Cluster 集群模式，将大 key 分散到不同服务器上"
+        },
+        {
+          "label": "C",
+          "content": "在业务代码中按日期、用户尾号等维度拆分，用小键替代大键"
+        },
+        {
+          "label": "D",
+          "content": "合理设置缓存 TTL，避免过期缓存删除不及时而增大 key 大小"
+        },
+        {
+          "label": "E",
+          "content": "调大 Redis 的 maxmemory，让实例能容纳更多大 key"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "analysis": "文中「处理big key」一节列了四条方案：有选择地删除 Big Key（挑访问频率低的删，优化内存占用）、合理设置缓存 TTL（避免过期缓存删除不及时而增大 key 大小）、拆分 Big Key（业务代码层拆分 + 集群模式分散）、部分迁移（把大键放到单独的数据库中）。E 不在文中：调大 maxmemory 只是让实例能多装一点，并没有解决大 key 带来的读写慢、迁移难、删除耗时等问题，文中也没有把它列为方案。注意 D 与 C 是拆分这一条下面的两种做法，不是互斥的两种方案。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "中频"
+      ],
+      "source_quote": "针对 Big Key，我们可以针对一些访问频率低的进行有选择性的删除，删除 Big Key 来优化内存占用。",
+      "_freq": "中频",
+      "_task_id": "Redis__大key__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "83a0abcc19c7a572",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "逻辑过期方案中，缓存命中但 value 里的过期时间已过期时，会发生什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "开启独立线程后直接返回之前的数据"
+        },
+        {
+          "label": "B",
+          "content": "删除该 key，让后续请求回源数据库重建"
+        },
+        {
+          "label": "C",
+          "content": "阻塞当前请求，直到新数据重构完成后再返回新数据"
+        },
+        {
+          "label": "D",
+          "content": "独立线程去重构数据，重构完成后释放互斥锁"
+        }
+      ],
+      "answer": [
+        "A",
+        "D"
+      ],
+      "analysis": "原文：一旦命中且 value 中过期时间已过期，则在开启独立线程后直接返回之前的数据，独立线程去重构数据，重构完成后释放互斥锁，B、C 正确。A 错在「阻塞」——逻辑过期的核心就是请求线程不等待，先拿旧数据走；D 的删除 key 会让后续请求未命中而返回空数据，反而制造了击穿。注意「释放互斥锁」发生在重构完成之后，说明重构过程本身仍需要锁保护。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存击穿",
+        "中频"
+      ],
+      "source_quote": "如果过期，则在开启独立线程后直接返回之前的数据，独立线程去重构数据，重构完成后释放互斥锁。",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存击穿",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存击穿",
+      "_fingerprint": "8d5f491a6e46275d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列哪些情况会触发 Redis 字典的 rehash 操作？",
+      "options": [
+        {
+          "label": "A",
+          "content": "负载因子大于等于 5 时，不管有没有在执行 RDB 快照或 AOF 重写，都强制 rehash"
+        },
+        {
+          "label": "B",
+          "content": "负载因子大于等于 1，即使 Redis 正在执行 bgsave 也会立即 rehash"
+        },
+        {
+          "label": "C",
+          "content": "负载因子大于等于 1，并且 Redis 没有在执行 bgsave 或 bgrewriteaof"
+        },
+        {
+          "label": "D",
+          "content": "负载因子大于等于 5 时，也要等 RDB 快照或 AOF 重写结束后才 rehash"
+        }
+      ],
+      "answer": [
+        "A",
+        "C"
+      ],
+      "analysis": "原文给出两个触发条件：负载因子 ≥1 且没有在执行 bgsave/bgrewriteaof（即没有执行 RDB 快照或 AOF 重写）时进行 rehash；负载因子 ≥5 说明哈希冲突已经非常严重，不管有没有在执行 RDB 快照或 AOF 重写，都强制 rehash。C 丢掉了“并且没有在执行 bgsave”的前提，与原文相反；D 与原文的“强制”相反，≥5 时不会等待。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "rehash",
+        "RDB",
+        "AOF",
+        "高频"
+      ],
+      "source_quote": "当负载因子大于等于 1 ，并且 Redis 没有在执行 bgsave 命令或者 bgrewiteaof 命令，也就是没有执行 RDB 快照或没有进行 AOF 重写的时候，就会进行 rehash 操作。",
+      "_freq": "高频",
+      "_task_id": "Redis__哈希表是怎么扩容的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "_fingerprint": "928ea1efb146e776",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列哪些命令可以用来设置 key 的过期时间？",
+      "options": [
+        {
+          "label": "A",
+          "content": "PERSIST"
+        },
+        {
+          "label": "B",
+          "content": "EXPIRE"
+        },
+        {
+          "label": "C",
+          "content": "EXPIREAT"
+        },
+        {
+          "label": "D",
+          "content": "TTL"
+        }
+      ],
+      "answer": [
+        "B",
+        "C"
+      ],
+      "analysis": "EXPIRE 指定多久之后过期，EXPIREAT 指定到期的具体时间戳，两者都是设置过期时间。PERSIST 的作用正好相反，是移除过期时间让 key 变成永久的；TTL 只是查询剩余存活时间，不修改任何东西。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "过期删除",
+        "低频"
+      ],
+      "source_quote": "过期时间可以通过EXPIRE(指定过期时间)、EXPIREAT(指定到期的时间戳)、PERSIST(移除过期时间)等命令设置",
+      "_freq": "低频",
+      "_task_id": "Redis__介绍一下-Redis-过期删除策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 过期删除策略",
+      "_fingerprint": "92e9fecdfc84eb87",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "主从复制模式下主节点宕机，会带来哪些后果？",
+      "options": [
+        {
+          "label": "A",
+          "content": "客户端的部分读写请求会失败"
+        },
+        {
+          "label": "B",
+          "content": "若数据没有及时复制到从节点，还会导致数据不一致"
+        },
+        {
+          "label": "C",
+          "content": "需要人工介入让节点恢复，或手动把一台从节点切换成主节点"
+        },
+        {
+          "label": "D",
+          "content": "哨兵会自动选举出新的主节点，客户端完全无感知"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "主从模式下主节点和从节点的宕机都会让部分读写请求失败，恢复要靠人工，且主节点宕机时未同步完的数据会丢失，造成不一致。D 描述的是哨兵模式的行为，主从模式没有哨兵参与，不会自动切主。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "主节点和从节点的宕机都会导致客户端部分读写请求失败，需要人工介入让节点恢复或者手动切换一台从节点服务器变成主节点服务器才可以。并且在主节点宕机时，如果数据没有及时复制到从节点，也会导致数据不一致。",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式",
+      "_fingerprint": "96199a1e87581199",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "应对 Redis 主从数据不一致，可以采用哪些措施？",
+      "options": [
+        {
+          "label": "A",
+          "content": "强制读主：需要强一致性的那部分数据只从主节点读取"
+        },
+        {
+          "label": "B",
+          "content": "把主从复制改成同步复制，主节点等所有从节点执行完再向客户端返回"
+        },
+        {
+          "label": "C",
+          "content": "降低主从之间的网络延迟"
+        },
+        {
+          "label": "D",
+          "content": "业务可以接受的话，系统不做优化"
+        },
+        {
+          "label": "E",
+          "content": "监控主从同步状态，发现差异过大时及时重启从节点进行全量同步，让客户端不再连接该从节点读数据"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D",
+        "E"
+      ],
+      "analysis": "原文给出的应对办法共四条：业务能接受就不优化、强制读主、降低主从之间的网络延迟、监控同步状态并在差异过大时重启从节点做全量同步并摘掉该从节点的读流量，因此 A、B、D、E 都对。C 是典型的一厢情愿：主从复制本身就是异步的，文中从未提供「改成同步复制」这个选项，而且同步复制会让写的耗时受从节点和网络拖累，不是文中认可的应对手段。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "全量同步",
+        "高频"
+      ],
+      "source_quote": "4. 监控主从同步状态发现差异过大及时重启从节点进行全量同步，让客户端不再和这个从节点连接进行数据读取",
+      "_freq": "高频",
+      "_task_id": "Redis__如何应对主从数据不一致？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "_fingerprint": "aa02d46e08f26809",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 使用跳表而不是 B+ 树的原因有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "B+ 树的优势是层级低、可以减少磁盘 IO，而 Redis 数据存在内存中，不需要这个优点"
+        },
+        {
+          "label": "B",
+          "content": "B+ 树不支持范围查询"
+        },
+        {
+          "label": "C",
+          "content": "跳表所需要维护的内存大小比树节点更加小，不需要维护那么多的节点信息"
+        },
+        {
+          "label": "D",
+          "content": "跳表的代码更加简单"
+        },
+        {
+          "label": "E",
+          "content": "跳表能够实现跟树结构一样的范围检索、排序这样的功能"
+        },
+        {
+          "label": "F",
+          "content": "跳表的查找时间复杂度比 B+ 树更低"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D",
+        "E"
+      ],
+      "analysis": "原文给出四条理由：跳表维护的内存比树节点更小、能实现跟树结构一样的范围检索和排序、代码更加简单、B+ 树层级低减少磁盘 IO 的优势在内存数据库里用不上。E 说反了，B+ 树本身通过叶子节点链表支持范围查询，只是 Redis 用不上它在磁盘上的优势；F 也不成立，两者查找都是 O(log N) 量级，Redis 并不是因为复杂度更低才选跳表。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "高频"
+      ],
+      "source_quote": "+ 跳表所需要去维护的内存大小比树节点更加小, 它不需要去维护那么多的节点信息\n+ 跳表能够实现跟树结构一样的范围检索, 排序这样的功能\n+ 跳表的代码更加简单\n+ b+树优势是层级低可以减少磁盘io, 而redis数据是存在内存中的, 不需要这个优点",
+      "_freq": "高频",
+      "_task_id": "Redis__Redis为什么使用跳表而不是用B+树_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Redis为什么使用跳表而不是用B+树?",
+      "_fingerprint": "b8202a384fe88282",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 6.0 启动后默认会额外创建 6 个线程（不包括主线程），下列关于这些线程的说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "bio_close_file、bio_aof_fsync、bio_lazy_free 是三个后台线程，分别异步处理关闭文件任务、AOF 刷盘任务、释放内存任务"
+        },
+        {
+          "label": "B",
+          "content": "这 6 个线程的数量已经包含 Redis-server 主线程在内"
+        },
+        {
+          "label": "C",
+          "content": "io_thd_1、io_thd_2、io_thd_3 是三个 I/O 线程，用来分担 Redis 网络 I/O 的压力"
+        },
+        {
+          "label": "D",
+          "content": "Redis-server 是主线程，主要负责执行命令"
+        },
+        {
+          "label": "E",
+          "content": "io_thd_1、io_thd_2、io_thd_3 负责并行执行客户端发来的命令"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "Redis-server 是执行命令的主线程；三个后台线程 bio_close_file、bio_aof_fsync、bio_lazy_free 分别异步处理关闭文件、AOF 刷盘、释放内存任务；三个 io_thd_x 是 I/O 线程，只分担网络 I/O 压力，并不执行命令，A 错在把 I/O 线程当成命令执行线程。D 错：额外创建的 6 个线程不包括主线程。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "多线程",
+        "AOF",
+        "fsync",
+        "中频"
+      ],
+      "source_quote": "bio_close_file、bio_aof_fsync、bio_lazy_free：三个后台线程，分别异步处理**关闭文件任务**、**AOF刷盘任务**、**释放内存任务**",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis哪些地方使用了多线程_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis哪些地方使用了多线程?",
+      "_fingerprint": "b8f5c230e98f2958",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "哨兵节点主要负责哪三件事情？",
+      "options": [
+        {
+          "label": "A",
+          "content": "持久化"
+        },
+        {
+          "label": "B",
+          "content": "监控"
+        },
+        {
+          "label": "C",
+          "content": "通知"
+        },
+        {
+          "label": "D",
+          "content": "数据分片"
+        },
+        {
+          "label": "E",
+          "content": "选主"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "E"
+      ],
+      "analysis": "原文第一句就点明：哨兵节点主要负责三件事情——监控、选主、通知，故选 A、B、D。C 的数据分片是 Redis Cluster 的职责，哨兵并不参与 key 到节点的映射；E 的持久化由 Redis 自身的 RDB/AOF 完成，也与哨兵无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "高频"
+      ],
+      "source_quote": "哨兵节点主要负责三件事情：**监控**、**选主**、**通知**。",
+      "_freq": "高频",
+      "_task_id": "Redis__哨兵机制是如何工作的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "_fingerprint": "bcb85682b6a95a47",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Zset 在底层实现中同时结合了哪两种数据结构？",
+      "options": [
+        {
+          "label": "A",
+          "content": "整数集合"
+        },
+        {
+          "label": "B",
+          "content": "哈希表"
+        },
+        {
+          "label": "C",
+          "content": "压缩列表"
+        },
+        {
+          "label": "D",
+          "content": "跳表"
+        }
+      ],
+      "answer": [
+        "B",
+        "D"
+      ],
+      "analysis": "原文说 Sorted Set 在底层实现结合了跳表和哈希表：跳表负责按分数排序与按分数范围获取元素，哈希表负责按成员快速查找分数。整数集合是 Set 在只含整数且元素较少时的底层结构之一；压缩列表是元素个数少、元素值小时 Zset 才使用的另一种编码，不是 Zset 标准实现中的这两部分。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "哈希表",
+        "中频"
+      ],
+      "source_quote": "Sorted Set(Zset)：按分数排序且元素唯一的集合, 在底层实现结合了跳表和哈希表, 支持按分数范围获取元素。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis常见的数据类型",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis常见的数据类型",
+      "_fingerprint": "c75d74d98c05b179",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 的 Set 类型支持下列哪些集合运算？",
+      "options": [
+        {
+          "label": "A",
+          "content": "并集"
+        },
+        {
+          "label": "B",
+          "content": "按分数范围获取元素"
+        },
+        {
+          "label": "C",
+          "content": "差集"
+        },
+        {
+          "label": "D",
+          "content": "交集"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "原文写 Set 是元素唯一的字符串集合，支持交并差等集合运算。按分数范围获取元素是 Sorted Set 的能力——Set 无序、没有分数，做不到按分数范围取元素。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "低频"
+      ],
+      "source_quote": "无序且元素唯一的字符串集合，底层是哈希表, 支持交并差等集合运算。",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis常见的数据类型",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis常见的数据类型",
+      "_fingerprint": "c7b20911c6202fb8",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列哪些情况会引发缓存雪崩？",
+      "options": [
+        {
+          "label": "A",
+          "content": "同一时段大量的缓存 key 同时失效"
+        },
+        {
+          "label": "B",
+          "content": "单个热点 key 过期，大量请求同时回源数据库"
+        },
+        {
+          "label": "C",
+          "content": "Redis 服务宕机，导致大量请求到达数据库"
+        },
+        {
+          "label": "D",
+          "content": "客户端请求的数据在缓存和数据库中都不存在"
+        }
+      ],
+      "answer": [
+        "A",
+        "C"
+      ],
+      "analysis": "原文定义：同一时段大量缓存 key 同时失效或者 Redis 服务宕机，导致大量请求到达数据库，A、D 正确。B 是缓存击穿（单个热点 key 过期），C 是缓存穿透（数据本身不存在），两者都只有一个/一类 key 的问题，不是「同一时段大面积失效」，这三个概念最容易混。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存雪崩",
+        "高频"
+      ],
+      "source_quote": "缓存雪崩是指在同一时段大量的缓存key同时失效或者Redis服务宕机，导致大量请求到达数据库，给数据库带来巨大压力。",
+      "_freq": "高频",
+      "_task_id": "Redis__缓存雪崩",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存雪崩",
+      "_fingerprint": "cb25af751e9333f9",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "当 Redis 的 fork 耗时过大（例如超过 1 秒）时，可以考虑哪些优化措施？",
+      "options": [
+        {
+          "label": "A",
+          "content": "在主从架构中适当调大 repl-backlog-size，避免主节点频繁走全量同步"
+        },
+        {
+          "label": "B",
+          "content": "把单个实例的内存占用控制在 10 GB 以下，让 fork 能很快返回"
+        },
+        {
+          "label": "C",
+          "content": "在主从架构中适当调小 repl-backlog-size，让主节点更频繁地使用全量同步"
+        },
+        {
+          "label": "D",
+          "content": "把 RDB 快照频率调到每秒一次，减少单次快照要写的数据量"
+        },
+        {
+          "label": "E",
+          "content": "如果 Redis 只当纯缓存使用、不关心数据安全性，可以关闭 AOF 和 AOF 重写，这样就不再调用 fork"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "E"
+      ],
+      "analysis": "fork 阻塞是因为要复制父进程的页表，页表越大越慢，可用 info 的 latest_fork_usec 观测耗时。降单个实例内存（10 GB 以下）、纯缓存场景关闭 AOF 与 AOF 重写都能减少或避免 fork；主从场景下 repl_backlog_buffer 太小会导致主节点频繁全量同步，而全量同步要创建 RDB、又会调用 fork，所以应当调大而非调小 repl-backlog-size（C 说反了）。A 错：提高快照频率只会让 fork 发生得更频繁。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "持久化",
+        "全量同步",
+        "中频"
+      ],
+      "source_quote": "在主从架构中，要适当调大 repl-backlog-size，避免因为 repl_backlog_buffer 不够大，导致主节点频繁地使用全量同步的方式，全量同步的时候，是会创建 RDB 文件的，也就是会调用 fork 函数。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "cbfd14ae3b5c3fc5",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "故障转移时，哨兵对筛选后的从节点进行排序以选出新主节点，排序标准有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "运行 ID：优先级和偏移量都相同时，比较字典序，字典序小的优先"
+        },
+        {
+          "label": "B",
+          "content": "从节点优先级：`slave-priority` 的值越小优先级越高"
+        },
+        {
+          "label": "C",
+          "content": "复制偏移量：偏移量越大意味着数据越新、复制越完整"
+        },
+        {
+          "label": "D",
+          "content": "从节点的内存占用，占用越小越优先"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文给出三个排序标准：① slave-priority 值越小优先级越高（为 0 的不会被选中）；② 复制偏移量越大越新；③ 前两者相同则比较运行 ID 字典序，小的优先，故选 A、C、D。B 的内存占用不在排序标准里，属于把别的系统的选主维度搬了过来。另外注意排序前还有一轮基础筛选：已下线、网络不稳定、优先级设为 0 明确不参与挑选的节点会被先排除。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "①、从节点优先级： slave-priority 的值越小优先级越高，优先级为 0 的从节点不会被选中。",
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵机制是如何工作的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "_fingerprint": "ccbcfe902fd18854",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "跳表的每个节点存储了哪些内容？",
+      "options": [
+        {
+          "label": "A",
+          "content": "分数值"
+        },
+        {
+          "label": "B",
+          "content": "后向指针"
+        },
+        {
+          "label": "C",
+          "content": "前一个节点的长度"
+        },
+        {
+          "label": "D",
+          "content": "指向父节点的指针"
+        },
+        {
+          "label": "E",
+          "content": "元素值"
+        },
+        {
+          "label": "F",
+          "content": "一个前向指针 level 数组"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "E",
+        "F"
+      ],
+      "analysis": "原文说跳表的每个节点存储了元素值、分数值、后向指针和一个前向指针 level 数组。记录前一个节点长度是 ziplist 的字段，跳表没有；跳表是链表结构，节点间靠前向/后向指针连接，没有树那样的父节点指针。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "链表",
+        "中频"
+      ],
+      "source_quote": "跳表的每个节点存储了元素值, 分数值, 后向指针和一个前向指针level数组",
+      "_freq": "中频",
+      "_task_id": "Redis__跳表是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "_fingerprint": "d72b45d76b4427c1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 Redis 的定期删除和惰性删除，下列说法正确的有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "惰性删除会导致过期的 key 始终保存在内存中，占用内存空间"
+        },
+        {
+          "label": "B",
+          "content": "定期删除每轮都会扫描全部设置了过期时间的 key"
+        },
+        {
+          "label": "C",
+          "content": "惰性删除是被动删除策略，可以节省 CPU 资源"
+        },
+        {
+          "label": "D",
+          "content": "定期删除是主动删除策略，会占用 CPU 资源去扫描 key，可能影响 Redis 的性能"
+        }
+      ],
+      "answer": [
+        "A",
+        "C",
+        "D"
+      ],
+      "analysis": "两条策略是一对权衡：定期删除主动扫、能及时清但费 CPU；惰性删除省 CPU 但过期 key 可能一直躺着占内存。D 错在原文说的是「随机抽取一些」，如果每轮全量扫描，大 key 空间下开销会不可接受。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "过期删除",
+        "中频"
+      ],
+      "source_quote": "定期删除是 Redis 的主动删除策略，它可以确保过期的 key 能够及时被删除，但是会占用 CPU 资源去扫描 key，可能会影响 Redis 的性能。\n+ **惰性删除**：当一个 key 过期时，不会立即从内存中删除，而是在访问这个 key 的时候才会触发删除操作。惰性删除是 Redis 的被动删除策略，它可以节省 CPU 资源，但是会导致过期的 key 始终保存在内存中，占用内存空间。",
+      "_freq": "中频",
+      "_task_id": "Redis__介绍一下-Redis-过期删除策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 过期删除策略",
+      "_fingerprint": "e55dfd25a4aa4fb7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "Redis 主从切换过程中，产生数据丢失的情况有哪两种？",
+      "options": [
+        {
+          "label": "A",
+          "content": "集群产生脑裂数据丢失"
+        },
+        {
+          "label": "B",
+          "content": "异步复制同步丢失"
+        },
+        {
+          "label": "C",
+          "content": "从节点 AOF 重写期间宕机导致命令丢失"
+        },
+        {
+          "label": "D",
+          "content": "全量同步期间主节点生成 RDB 失败"
+        }
+      ],
+      "answer": [
+        "A",
+        "B"
+      ],
+      "analysis": "原文开头就把丢失情况归为两种：异步复制同步丢失、集群产生脑裂数据丢失，因此 A、C 对。B、D 看似合理，但文中并未把它们列为主从切换时的数据丢失场景——RDB 生成失败和 AOF 重写宕机属于持久化环节的问题，不属于本节讨论的切换丢失两类。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "脑裂",
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "+ 异步复制同步丢失\n+ 集群产生脑裂数据丢失",
+      "_freq": "中频",
+      "_task_id": "Redis__主从切换如何减少数据丢失(脑裂)？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "_fingerprint": "e876d36d5d3fd741",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "关于 Redisson 中 tryLock() 的参数，下列说法正确的有哪些？",
+      "options": [
+        {
+          "label": "A",
+          "content": "unit 表示锁的可重入次数上限"
+        },
+        {
+          "label": "B",
+          "content": "waitTime 不指定时相当于传入 -1，表示不等待，失败了立即返回"
+        },
+        {
+          "label": "C",
+          "content": "waitTime 表示最大等待获取锁的时间"
+        },
+        {
+          "label": "D",
+          "content": "leaseTime 不指定时相当于传入 -1，表示使用默认的看门狗过期时间，超过 30 秒自动释放"
+        },
+        {
+          "label": "E",
+          "content": "leaseTime 表示锁的持有时间，即自动释放时间"
+        }
+      ],
+      "answer": [
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "analysis": "原文对 tryLock() 三个参数的说明：waitTime 是最大等待获取锁的时间，不指定等于传入 -1，表示不等待、失败了立即返回；leaseTime 是锁的持有时间（自动释放时间），不指定等于传入 -1，表示使用默认的看门狗过期时间，超过 30 秒自动释放；unit 是时间单位。无参 tryLock() 相当于传 (-1, -1, TimeUnit.SECONDS)。E 错：unit 是时间单位，跟重入次数毫无关系，重入次数是 Hash value 里记录的那个 int。另外要注意 waitTime 与 leaseTime 的 -1 含义完全不同：前者是不等待，后者是交给看门狗自动续期。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "Redisson",
+        "看门狗",
+        "中频"
+      ],
+      "source_quote": "leaseTime 锁的持有时间(自动释放时间)，不指定等于传入-1，表示使用默认的看门狗过期时间超过30秒自动释放",
+      "_freq": "中频",
+      "_task_id": "Redis__原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 可重入锁 > 原理",
+      "_fingerprint": "f61b5f72a5038eb2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "C 语言字符串存在哪些缺陷？",
+      "options": [
+        {
+          "label": "A",
+          "content": "字符串里不能存 '\\0' 字符"
+        },
+        {
+          "label": "B",
+          "content": "获取字符串长度需要遍历，时间复杂度是 O(N)"
+        },
+        {
+          "label": "C",
+          "content": "字符串追加时容易造成缓冲区溢出"
+        },
+        {
+          "label": "D",
+          "content": "获取字符串长度的时间复杂度是 O(1)"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "C"
+      ],
+      "analysis": "原文列出三条缺陷：strlen 要通过遍历统计长度、时间复杂度 O(N)；字符串不能存 '\\0'；字符串进行追加时容易造成缓冲区溢出。D 恰好是 SDS 靠 len 字段达到的效果，不是 C 字符串的缺陷——C 字符串正是因为要遍历才拿不到 O(1)。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "中频"
+      ],
+      "source_quote": "C 语言的字符串长度获取 strlen 函数，需要通过遍历的方式来统计字符串长度，时间复杂度是 O（N）。\n+ 字符串不能存'\\0'\n+ 字符串进行追加时容易造成缓冲区溢出",
+      "_freq": "中频",
+      "_task_id": "Redis__简单动态字符串（SDS,-Simple-Dynamic-Strings)",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "_fingerprint": "f6394da28faca9ce",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "MULTI",
+      "stem": "下列哪些属于文中列举的 Redis 大 key 危害？",
+      "options": [
+        {
+          "label": "A",
+          "content": "在 Redis 集群中，某个节点存储了 Big Key，导致多个节点之间内存使用不均匀"
+        },
+        {
+          "label": "B",
+          "content": "大 key 的迁移和复制压力较大，极易破坏缓存的一致性"
+        },
+        {
+          "label": "C",
+          "content": "Redis 会自动压缩大 key 的 value，读取时需要额外解压开销"
+        },
+        {
+          "label": "D",
+          "content": "Redis 会拒绝为大 key 设置过期时间，导致其只能常驻内存"
+        },
+        {
+          "label": "E",
+          "content": "从 RDB 文件中恢复全量数据时，可能需要大量的时间，甚至无法正常恢复"
+        }
+      ],
+      "answer": [
+        "A",
+        "B",
+        "E"
+      ],
+      "analysis": "文中列出七条危害，其中：集群中某节点存了 Big Key 会让多节点内存使用不均匀（A）；大 key 迁移和复制压力较大，极易破坏缓存的一致性（B）；从 RDB 文件恢复全量数据时可能耗时很长甚至无法正常恢复（D）。C 与原文相反 —— 原文说的是大 key 删除耗时，并没有说不能设置过期时间。E 属于凭空加戏，文中未提及任何自动压缩机制，大 key 的问题是 value 本身很大导致读取慢，而不是压缩解压开销。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "RDB",
+        "高频"
+      ],
+      "source_quote": "比如在 Redis 集群中，可能会因为某个节点上存储了 Big Key，导致多个节点之间内存使用不均匀。",
+      "_freq": "高频",
+      "_task_id": "Redis__大key__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "fbbf02cd0a4c9488",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 的定期删除策略默认每隔多久抽查一次设置了过期时间的 key？",
+      "options": [
+        {
+          "label": "A",
+          "content": "每隔 1 秒"
+        },
+        {
+          "label": "B",
+          "content": "每隔 10 毫秒"
+        },
+        {
+          "label": "C",
+          "content": "每隔 60 秒"
+        },
+        {
+          "label": "D",
+          "content": "每隔 100 毫秒"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "默认值是每隔 100ms 随机抽取一部分设置了过期时间的 key 做检查，过期才删。A、D 间隔太长，过期 key 会长时间滞留；B 间隔太短，CPU 扫描开销过大。注意它是「随机抽取一些」而不是全量扫描。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "过期删除",
+        "中频"
+      ],
+      "source_quote": "Redis 默认每隔 100ms 就随机抽取一些设置了过期时间的 key，并检查其是否过期，如果过期才删除。",
+      "_freq": "中频",
+      "_task_id": "Redis__介绍一下-Redis-过期删除策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 过期删除策略",
+      "_fingerprint": "02ee7a1fca18bc07",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从复制模式主要是为了解决什么问题？",
+      "options": [
+        {
+          "label": "A",
+          "content": "提升单个节点的写性能"
+        },
+        {
+          "label": "B",
+          "content": "解决单点故障问题，把数据复制成多个副本"
+        },
+        {
+          "label": "C",
+          "content": "实现主节点宕机后的自动故障转移"
+        },
+        {
+          "label": "D",
+          "content": "降低单个节点的内存占用"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "主从复制的出发点是单点故障：把数据复制出多个副本，一台挂了其余还能继续服务。A 错在加从节点扩展的是读能力，写仍然只在主节点；B 是哨兵模式才有的能力，原文明确说主从模式不具备自动故障转移；D 与复制无关，副本反而会占用更多内存。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "低频"
+      ],
+      "source_quote": "这个模式主要是为了解决单点故障的问题，所以将数据复制多个副本中",
+      "_freq": "低频",
+      "_task_id": "Redis__主从复制模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式",
+      "_fingerprint": "03f3cba14d123d7b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "SDS 的 alloc 字段有什么作用？",
+      "options": [
+        {
+          "label": "A",
+          "content": "记录结构体类型，表明字符串的大小类型（长度上限）"
+        },
+        {
+          "label": "B",
+          "content": "记录分配给字符数组的空间长度，修改字符串时用它判断是否扩容"
+        },
+        {
+          "label": "C",
+          "content": "记录字符串当前已使用的长度"
+        },
+        {
+          "label": "D",
+          "content": "记录字符串的最大长度上限，超出则拒绝写入"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说 alloc 就是分配给字符数组的空间长度，修改字符串时判断新的 len 是否大于 alloc 来决定是否扩容。A 和 D 描述的是 flags 的作用（表明结构体的大小类型、长度上限）；B 描述的是 len 的作用。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "中频"
+      ],
+      "source_quote": "alloc就是分配给字符数组的空间长度, 在修改字符串时可以判断新的len是否大于alloc, 来决定是否进行扩容",
+      "_freq": "中频",
+      "_task_id": "Redis__简单动态字符串（SDS,-Simple-Dynamic-Strings)",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "_fingerprint": "052fb07e501c3919",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "哨兵集群是如何知道「从节点」的信息的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "从节点启动后主动向哨兵集群注册自己的地址"
+        },
+        {
+          "label": "B",
+          "content": "哨兵每 10 秒一次向主节点发送 INFO 命令，从返回的从节点列表中获取"
+        },
+        {
+          "label": "C",
+          "content": "哨兵订阅 `__sentinel__:hello` 频道，从频道消息里拿到所有从节点信息"
+        },
+        {
+          "label": "D",
+          "content": "运维在哨兵配置文件中手动配置每个从节点的地址"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：主节点知道所有从节点的信息，所以哨兵会每 10 秒一次的频率向主节点发送 INFO 命令来获取所有从节点的信息，再根据返回的连接信息与每个从节点建立连接并持续监控，B 对。A 的从节点主动注册、D 的手动配置都不符合文中描述；C 把哨兵之间互相发现用的 __sentinel__:hello 频道安到了从节点发现上，频道和 INFO 命令是两回事，容易记混。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "主节点知道所有「从节点」的信息，所以哨兵会每 10 秒一次的频率向主节点发送 INFO 命令来获取所有「从节点」的信息。",
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵集群是如何组成的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "_fingerprint": "09a7335dbb04bb2a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "如果只部署 2 个哨兵节点，主要问题是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "哨兵无法与主节点建立连接"
+        },
+        {
+          "label": "B",
+          "content": "根本无法完成故障转移，任何切换都必须人工介入"
+        },
+        {
+          "label": "C",
+          "content": "会导致主节点拒绝所有写请求"
+        },
+        {
+          "label": "D",
+          "content": "投票容易产生平票，难以决定主节点是否真的宕机"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：如果是 2 个哨兵，投票就容易产生平票的情况，难以决定主节点是否真的宕机，D 对。A、B、C 都夸大了后果——2 个哨兵并不是不能工作，而是投票时容易出现 1:1 的僵局，判定可靠性不足；相比之下只有 1 个哨兵时才是既没法投票、也无法分辨到底是主节点挂了还是哨兵自己出了问题。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "如果是 2 个哨兵，投票就容易产生平票的情况，难以决定主节点是否真的宕机。",
+      "_freq": "中频",
+      "_task_id": "Redis__为什么哨兵节点至少要有-3-个？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "_fingerprint": "0b684ce097bdb78a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "针对 Redis 故障宕机引发的缓存雪崩，下列哪一项是原文给出的应对方法？",
+      "options": [
+        {
+          "label": "A",
+          "content": "给不同的 Key 的 TTL 添加随机值"
+        },
+        {
+          "label": "B",
+          "content": "服务熔断或请求限流机制"
+        },
+        {
+          "label": "C",
+          "content": "加互斥锁，保证同一时间内只有一个请求来构建缓存"
+        },
+        {
+          "label": "D",
+          "content": "使用布隆过滤器在查询前做存在性校验"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文针对 Redis 故障宕机给出两条措施：服务熔断或请求限流机制、构建 Redis 缓存高可靠集群避免单点故障，D 正确。A、B 是应对「大量数据同时过期」的（Redis 都挂了，打散 TTL 毫无意义）；C 的布隆过滤器是缓存穿透方案，它防的是不存在的 key 打到数据库，挡不住缓存整体不可用时的流量。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存雪崩",
+        "限流",
+        "中频"
+      ],
+      "source_quote": "服务熔断或请求限流机制",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存雪崩",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存雪崩",
+      "_fingerprint": "0d33234f8770374c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 6.0 为什么要引入多线程来处理网络 I/O？",
+      "options": [
+        {
+          "label": "A",
+          "content": "因为单线程执行命令存在线程安全问题，需要靠加锁保护"
+        },
+        {
+          "label": "B",
+          "content": "因为客户端连接数超过了 I/O 多路复用的监听上限"
+        },
+        {
+          "label": "C",
+          "content": "因为网络硬件性能提升后，Redis 的性能瓶颈有时会出现在网络 I/O 的处理上，需要提高网络 I/O 的并行度"
+        },
+        {
+          "label": "D",
+          "content": "因为 fork 子进程的成本太高，需要用多线程替代"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文给出的动因很明确：随着网络硬件的性能提升，Redis 的性能瓶颈有时会出现在网络 I/O 的处理上，所以才有针对性地提高网络 I/O 的并行度，而不是让多线程去执行命令。A 与 Redis 单线程执行命令的前提相反；B、D 都不是本节给出的原因。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "网络模型",
+        "多线程",
+        "低频"
+      ],
+      "source_quote": "这是因为随着网络硬件的性能提升，Redis 的性能瓶颈有时会出现在网络 I/O 的处理上。",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis的网络模型是怎样的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis的网络模型是怎样的？",
+      "_fingerprint": "0e7e45adb4600e67",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "哨兵判断一个节点「主观下线」的依据是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "主节点在 `down-after-milliseconds` 规定的时间内没有回复哨兵的 INFO 命令"
+        },
+        {
+          "label": "B",
+          "content": "该节点没有在 `down-after-milliseconds` 规定的时间内响应哨兵的 PING 命令"
+        },
+        {
+          "label": "C",
+          "content": "超过半数的哨兵都认为主节点不可达"
+        },
+        {
+          "label": "D",
+          "content": "该节点的复制偏移量在 1 秒内没有任何变化"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：哨兵每隔 1 秒给所有主从节点发送 PING 命令，主从节点没有在规定时间内响应就会被标记为主观下线，这个规定时间由 down-after-milliseconds 设定，单位是毫秒，C 对。A 把探测命令换成了 INFO——INFO 是哨兵用来获取从节点列表的，不是心跳；B 描述的是客观下线需要的法定人数，不是单个哨兵的主观判定；D 的偏移量停滞文中从未作为下线依据。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "如果主节点或者从节点没有在规定的时间内响应哨兵的 PING 命令，哨兵就会将它们标记为「**主观下线**」。",
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵机制是如何工作的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "_fingerprint": "12b5c0803d72c50d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "针对已过期的键值对，Redis 实际采用的删除策略是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "定时删除，key 一到过期时间就立即删除"
+        },
+        {
+          "label": "B",
+          "content": "只使用定期删除"
+        },
+        {
+          "label": "C",
+          "content": "只使用惰性删除"
+        },
+        {
+          "label": "D",
+          "content": "惰性删除 + 定期删除"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "Redis 是两种策略配合使用：惰性删除在访问时才删，定期删除周期性抽查，二者互补。A 的定时删除是最占 CPU 的做法，Redis 并没有采用；C、D 都只取了一半，漏掉了另一种。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "过期删除",
+        "高频"
+      ],
+      "source_quote": "过期键删除策略是将已过期的键值对进行删除，Redis 采用的删除策略是惰性删除+定期删除。",
+      "_freq": "高频",
+      "_task_id": "Redis__过期删除策略和内存淘汰策略有什么区别？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "_fingerprint": "14a3866cf0a7008a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "如何基于 Redis 实现滑动窗口限流？请求记录存放在什么结构里、分数是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "用 List 保存每次请求，按下标判断是否超限"
+        },
+        {
+          "label": "B",
+          "content": "用 Hash 保存，field 为时间戳、value 为该秒的请求数"
+        },
+        {
+          "label": "C",
+          "content": "用 String 计数器配合 EXPIRE 60 秒自动清零"
+        },
+        {
+          "label": "D",
+          "content": "用 zset 保存，每次请求的分数为当前时间戳"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文的步骤 2：每次收到一个请求时，我们就往 zset 中新增一个元素，分数为当前时间戳。用时间戳做 score，才能后面按分值范围剔除窗口外的数据 —— 这是滑动窗口能「滑动」的关键。A 的 List 没有分值，无法按时间范围裁剪；B 的 Hash 按秒聚合，本质更接近固定窗口的计数；C 是典型的固定窗口计数器做法，会出现窗口临界突刺，不是文中的滑动窗口实现。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "滑动窗口",
+        "限流",
+        "中频"
+      ],
+      "source_quote": "每次收到一个请求时，我们就往zset中新增一个元素，分数为当前时间戳。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何基于Redis实现滑动窗口限流？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "_fingerprint": "1567b2c27f375ba1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "为应对布隆过滤器的误判，原文给出的做法是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "增大位数组长度，把误判率降到可以忽略的程度"
+        },
+        {
+          "label": "B",
+          "content": "定期重建布隆过滤器，剔除已失效的 key"
+        },
+        {
+          "label": "C",
+          "content": "改用布谷鸟过滤器，从根本上避免误判"
+        },
+        {
+          "label": "D",
+          "content": "结合空值缓存：先用布隆过滤器初步筛选，误判后查库发现不存在就缓存一个空值"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：解决方法是结合空值缓存——先使用布隆过滤器进行初步筛选，如果误判了去查数据库，那就缓存一个空值，避免下次误判又去查数据库，B 正确。A 的工程做法不在原文里；C 的定期重建针对的是「数据变化」，不是误判；D 里布谷鸟过滤器在原文中是用来解决「不能删除数据」的，不是用来消除误判的，别把两个缺点的解法串在一起。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "缓存穿透",
+        "中频"
+      ],
+      "source_quote": "先使用布隆过滤器进行初步筛选, 如果误判了去查数据库，那就缓存一个空值, 避免下次误判又去查数据库。",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存穿透",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存穿透",
+      "_fingerprint": "16f757229f439b08",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "开启混合持久化后，AOF 重写生成的这个新 AOF 文件在格式上是如何组织的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "整个文件都是 AOF 格式的命令，RDB 内容仍然只保存在独立的 dump.rdb 里"
+        },
+        {
+          "label": "B",
+          "content": "前半部分是 AOF 格式的增量数据，后半部分是 RDB 格式的全量数据"
+        },
+        {
+          "label": "C",
+          "content": "前半部分是 RDB 格式的全量数据，后半部分是 AOF 格式的增量数据"
+        },
+        {
+          "label": "D",
+          "content": "前半部分是 RDB 格式的全量数据，重写缓冲区里的增量命令则被丢弃不写入"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "混合持久化的顺序是：fork 出的重写子进程先把共享内存数据以 RDB 方式写入 AOF 文件，主线程期间的写命令先记在重写缓冲区里，再以 AOF 方式追加到同一文件，所以成品是「RDB 全量 + AOF 增量」。B 把两段顺序说反了；A 描述的是纯 AOF（未开混合）的情形；D 错在增量命令不会被丢弃，否则就退化成只有 RDB 快照，会丢掉重写期间的数据。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "混合持久化",
+        "AOF",
+        "RDB",
+        "中频"
+      ],
+      "source_quote": "使用了混合持久化，AOF 文件的前半部分是 RDB 格式的全量数据，后半部分是 AOF 格式的增量数据",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "2315b988d22099c4",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Zset 满足什么条件时会使用压缩列表作为底层数据结构？",
+      "options": [
+        {
+          "label": "A",
+          "content": "元素个数小于 128 个，并且每个元素的值小于 64 字节"
+        },
+        {
+          "label": "B",
+          "content": "元素个数小于 64 个，并且每个元素的值小于 128 字节"
+        },
+        {
+          "label": "C",
+          "content": "元素个数小于 128 个即可，与元素大小无关"
+        },
+        {
+          "label": "D",
+          "content": "只要每个元素的值小于 64 字节即可，与元素个数无关"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说有序集合的元素个数小于 128 个，并且每个元素的值小于 64 字节时使用压缩列表；否则使用跳表。B 把两个阈值对调了；C、D 各自丢掉了一个条件，都不完整——两个条件是与的关系，缺一不可。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Zset",
+        "压缩列表",
+        "跳表",
+        "高频"
+      ],
+      "source_quote": "如果有序集合的元素个数小于 128 个，并且每个元素的值小于 64 字节时，Redis 会使用压缩列表作为 Zset 类型的底层数据结构",
+      "_freq": "高频",
+      "_task_id": "Redis__Zset-底层是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "_fingerprint": "27363cf7d8beb3db",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "缓存击穿指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "请求的数据在缓存和数据库中都不存在，缓存永远不会生效"
+        },
+        {
+          "label": "B",
+          "content": "同一时段大量缓存 key 同时失效，请求全部落到数据库"
+        },
+        {
+          "label": "C",
+          "content": "热点 key 突然过期，导致大量请求在短时间内访问数据库"
+        },
+        {
+          "label": "D",
+          "content": "Redis 服务宕机，所有请求直接访问数据库"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：缓存击穿是指热点 key 突然过期导致大量请求在短时间内访问数据库，B 正确。A 是缓存穿透（数据根本不存在）；C、D 是缓存雪崩（大面积失效 / 服务宕机）。三者的分界线是：穿透看「数据存不存在」，击穿看「是不是一个热点 key」，雪崩看「是不是一大批 key」。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "缓存击穿",
+        "中频"
+      ],
+      "source_quote": "缓存击穿是指热点key突然过期导致大量请求在短时间内访问数据库",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存击穿",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存击穿",
+      "_fingerprint": "2a08a83dbaa2d4c8",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 的延迟队列通常是怎么实现的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "基于 List 的 BRPOP 阻塞弹出，由消费者延迟拉取"
+        },
+        {
+          "label": "B",
+          "content": "基于 Redis 键空间通知，在 key 过期时回调执行任务"
+        },
+        {
+          "label": "C",
+          "content": "基于 Stream 消费组的延迟投递能力实现"
+        },
+        {
+          "label": "D",
+          "content": "通过 zset 存储任务和过期时间，定时任务轮询 zset 取出到期的任务并执行"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文对 Redisson 延迟队列的实现只有一句核心描述：通过 zset 存储任务和过期时间，定时任务轮询 zset 取出到期的任务并执行。用 zset 是为了能按过期时间排序（score 即到期时间），再由定时任务扫描取出已到期的任务。A 的 BRPOP 是普通消息队列的做法，做不到按时间延迟投递；B 的键空间通知与 D 的 Stream 消费组都不是文中给出的实现方式。要注意这是在 Redis 上「实现」延迟队列的常见思路，作者也另外标注了延迟消息属于不建议用 Redis 承担的场景。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "延迟队列",
+        "Redisson",
+        "中频"
+      ],
+      "source_quote": "通过zset存储任务和过期时间，定时任务轮询zset取出到期的任务并执行",
+      "_freq": "中频",
+      "_task_id": "Redis__Redisson-延迟队列",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redisson 延迟队列",
+      "_fingerprint": "2ac93ddbae226cf1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "命令传播阶段，主节点把写操作命令发给从节点之前，会先做什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "直接通过 TCP 长连接发出，不经过任何缓冲区"
+        },
+        {
+          "label": "B",
+          "content": "先写入 repl_backlog_buffer，等从节点按需来拉取"
+        },
+        {
+          "label": "C",
+          "content": "先写入到 replication buffer(复制缓冲区)，再发送给从节点"
+        },
+        {
+          "label": "D",
+          "content": "先写入 AOF 缓冲区，由 AOF 重写子进程转发给从节点"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "命令传播时主节点先把命令写进 replication buffer（复制缓冲区），再通过长连接发给从节点。B 把 repl_backlog_buffer（为断连后找差异数据服务的环形缓冲区）和 replication buffer 搞混了，这是两个 buffer 最容易记串的地方；A 忽略了缓冲区；D 把持久化的 AOF 缓冲区扯进了复制链路。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "replication buffer",
+        "中频"
+      ],
+      "source_quote": "主节点会先将命令写入到 replication buffer(复制缓冲区)，再发送给从节点。",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "_fingerprint": "2f4e2c390f1850c5",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 3.0 之后默认的内存淘汰策略 noeviction，在内存满后的行为是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "随机淘汰设置了过期时间的任意键值"
+        },
+        {
+          "label": "B",
+          "content": "不会淘汰任何键值对，内存满后写入就直接返回错误信息"
+        },
+        {
+          "label": "C",
+          "content": "淘汰所有键值中访问频率最低的那个"
+        },
+        {
+          "label": "D",
+          "content": "淘汰所有键值中最近最少使用的那个"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "noeviction 是 Redis 3.0 之后的默认策略，它不淘汰任何键，内存满后新的写入直接报错，读操作不受影响。A、B、D 分别对应 volatile-random、allkeys-lfu、allkeys-lru 的行为，都是需要显式配置才生效的淘汰策略，不是默认值。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "中频"
+      ],
+      "source_quote": "noeviction(Redis3.0之后，默认的内存淘汰策略): 不会淘汰任何键值对，内存满后写入就直接返回错误信息。",
+      "_freq": "中频",
+      "_task_id": "Redis__介绍一下-Redis-内存淘汰策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 内存淘汰策略",
+      "_fingerprint": "307e6c43c99b9291",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 自带的用于识别大 key 的分析工具是哪个？",
+      "options": [
+        {
+          "label": "A",
+          "content": "redis-cli --hotkeys"
+        },
+        {
+          "label": "B",
+          "content": "redis-cli --memkeys"
+        },
+        {
+          "label": "C",
+          "content": "redis-benchmark"
+        },
+        {
+          "label": "D",
+          "content": "redis-cli --bigkeys"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "文中「识别big key」一节明确写：Redis 提供了一个专用的分析工具叫 redis-cli --bigkeys，可以找出数据库中最占内存的 key，用法形如 redis-cli --bigkeys -n 1 -a 123456（1 为数据库编号，123456 为密码）。A 的 --hotkeys 是分析热 key 的，找的是访问频率高而不是体积大的 key；C 的 --memkeys 是按内存采样的分析，不是文中说的专用大 key 工具；D 的 redis-benchmark 是压测工具，与找大 key 无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "中频"
+      ],
+      "source_quote": "Redis 提供了一个专用的分析工具叫 **redis-cli --bigkeys**，可以找出数据库中最占内存的 key",
+      "_freq": "中频",
+      "_task_id": "Redis__大key__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "309d7002443ef836",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "`min-replicas-to-write` 和 `min-replicas-max-lag` 的默认值分别是多少？",
+      "options": [
+        {
+          "label": "A",
+          "content": "0 和 0"
+        },
+        {
+          "label": "B",
+          "content": "0 和 10"
+        },
+        {
+          "label": "C",
+          "content": "1 和 10"
+        },
+        {
+          "label": "D",
+          "content": "3 和 10"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：默认情况下 min-replicas-to-write 设为 0（功能禁用），min-replicas-max-lag 设为 10，故选 B。注意把其中任意一个或两个都设为 0 会禁用该功能，也就是说默认状态下这个保护其实是没有生效的，需要显式配置才起作用。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "脑裂",
+        "低频"
+      ],
+      "source_quote": "默认情况下，min-replicas-to-write 设为 0（功能禁用），min-replicas-max-lag 设为 10。",
+      "_freq": "低频",
+      "_task_id": "Redis__主从切换如何减少数据丢失(脑裂)？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "_fingerprint": "32ff7b842655eb5e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "listpack 是靠什么办法解决连锁更新问题的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "记录当前 entry 的大小，而不是记录前一个 entry 的大小"
+        },
+        {
+          "label": "B",
+          "content": "每个 entry 记录前一个 entry 的大小，插入时只更新后继节点"
+        },
+        {
+          "label": "C",
+          "content": "把元素分散存放在多块内存中，避免连续内存搬移"
+        },
+        {
+          "label": "D",
+          "content": "限制每个 entry 的长度上限，使长度字段不会变大"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说 listpack 记录当前 entry 的大小而不是前一个 entry 的大小，因此在 listpack 中新增或删除元素只会影响这个元素自己，不需要其他元素级联更新。A 描述的正是 ziplist 的做法，也是连锁更新的根源；C、D 原文都没有提到。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "listpack",
+        "压缩列表",
+        "高频"
+      ],
+      "source_quote": "而listpack采用的记录当前entry的大小而不是前一个entry的大小，那么，在ListPack中新增或者删除元素，只会影响到这个元素自己",
+      "_freq": "高频",
+      "_task_id": "Redis__listpack",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > listpack",
+      "_fingerprint": "3a67b4da278a9672",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 的 lock() 方法与 tryLock() 方法的主要区别是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "lock() 没有 waitTime 参数，在成功获取锁之前会一直阻塞"
+        },
+        {
+          "label": "B",
+          "content": "lock() 不会触发看门狗自动续期，tryLock() 才会"
+        },
+        {
+          "label": "C",
+          "content": "lock() 比 tryLock() 多一个 waitTime 参数"
+        },
+        {
+          "label": "D",
+          "content": "lock() 只能用于公平锁，tryLock() 只能用于非公平锁"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说得很清楚：与 tryLock() 的区别是没有 waitTime 这个参数，lock() 在成功获取锁之前是会一直阻塞下去的。B 恰好说反 —— 多出 waitTime 参数的是 tryLock()。A 不对，是否走看门狗取决于有没有指定 leaseTime，而不是取决于调 lock() 还是 tryLock()。C 把方法差异说成锁的类型差异，文中没有这种说法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Redisson",
+        "低频"
+      ],
+      "source_quote": "与tryLock()的区别是没有waitTime这个参数，lock()在成功获取锁之前是会一直阻塞下去的。",
+      "_freq": "低频",
+      "_task_id": "Redis__原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 可重入锁 > 原理",
+      "_fingerprint": "3d130952c6b87fd6",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "脑裂发生后网络恢复，旧主节点被降级为从节点，之前客户端写入它的数据为什么会丢失？",
+      "options": [
+        {
+          "label": "A",
+          "content": "旧主节点在网络分区期间的 RDB 文件被哨兵删除了"
+        },
+        {
+          "label": "B",
+          "content": "旧主节点作为从节点与新主节点进行同步复制时，会清空自己的缓冲区"
+        },
+        {
+          "label": "C",
+          "content": "哨兵重新选举时直接清空了旧主节点的整个键空间"
+        },
+        {
+          "label": "D",
+          "content": "客户端的写入请求在网络分区期间根本没有到达旧主节点"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：网络恢复后旧主节点降级为从节点，再与新主节点进行同步复制的时候，由于从节点会清空自己的缓冲区，导致之前客户端写入的数据丢失了，C 对。A、B 把丢失归因于删除 RDB 或哨兵清空键空间，文中并无此说法；D 与前提矛盾——分区期间客户端确实写进了旧主节点，否则就谈不上「之前写入的数据丢失」。这也解释了为什么那两个参数能缓解：让失去从节点的主节点拒绝写入，数据就不会写进去再被清空。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "脑裂",
+        "哨兵",
+        "高频"
+      ],
+      "source_quote": "再与新主节点进行同步复制的时候，由于会从节点会清空自己的缓冲区，所以导致之前客户端写入的数据丢失了。",
+      "_freq": "高频",
+      "_task_id": "Redis__主从切换如何减少数据丢失(脑裂)？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "_fingerprint": "3f224a05336f715b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "ACID 的原子性与 Redis 执行 Lua 脚本的原子性，在概念上的差异主要体现在哪里？",
+      "options": [
+        {
+          "label": "A",
+          "content": "ACID 原子性允许部分命令执行成功，而 Lua 脚本原子性要求脚本内命令要么全部成功、要么全部失败回滚"
+        },
+        {
+          "label": "B",
+          "content": "两者含义完全相同，都保证要么全部成功、要么全部失败"
+        },
+        {
+          "label": "C",
+          "content": "ACID 原子性由 Redis 单线程命令执行保证，Lua 脚本原子性由 MULTI/EXEC 事务保证"
+        },
+        {
+          "label": "D",
+          "content": "Lua 脚本原子性只要求脚本作为一个整体执行且不被其他事务打断，并不要求脚本内的命令全部成功或全部失败"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "判别点在于是否要求「要么全成、要么全败」：ACID 的原子性要求命令要么全执行、要么全不执行；而 Redis 里 Lua 脚本的原子性只强调脚本作为一个整体执行、不被其他事务打断，脚本中某条命令失败并不会让已执行的部分回滚。所以 A 把两者的说法正好说反，C 抹平了差异，D 把 Lua 脚本原子性的来源说成了 MULTI/EXEC。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "原子性",
+        "Lua",
+        "中频"
+      ],
+      "source_quote": "Redis中执行 Lua脚本原子性是指：Lua脚本需要作为一个整体执行且不被其他事务打断，至于 Lua脚本里面的命令是否必须全部成功，或者全部失败，并不要求。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何实现redis-原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何实现redis 原子性？",
+      "_fingerprint": "3f82e250c10a17ed",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis Cluster 中，一个切片集群被分为多少个哈希槽（slot）？",
+      "options": [
+        {
+          "label": "A",
+          "content": "1024"
+        },
+        {
+          "label": "B",
+          "content": "4096"
+        },
+        {
+          "label": "C",
+          "content": "8192"
+        },
+        {
+          "label": "D",
+          "content": "16384"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：一个切片集群被分为 16384 个 slot（槽），每个 key 对应一个编号在 0-16383 之间的哈希槽，故选 D。其余数字都是常见的槽位数误记，槽位总数是固定的 16384，与集群里有多少个节点无关，节点变化只是改变槽的归属。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "一个切片集群被分为16384个slot（槽）",
+      "_freq": "中频",
+      "_task_id": "Redis__客户端是怎样知道该访问哪个分片的_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 客户端是怎样知道该访问哪个分片的?",
+      "_fingerprint": "3f900492f4e17d44",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 通过配置文件中的哪个参数来指定内存淘汰策略？",
+      "options": [
+        {
+          "label": "A",
+          "content": "maxmemory"
+        },
+        {
+          "label": "B",
+          "content": "maxmemory-samples"
+        },
+        {
+          "label": "C",
+          "content": "appendfsync"
+        },
+        {
+          "label": "D",
+          "content": "maxmemory-policy"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "策略本身由 maxmemory-policy 指定。maxmemory 是触发淘汰的内存上限阈值，不是策略名；maxmemory-samples 只是 LRU/LFU 采样精度相关的参数；appendfsync 属于 AOF 持久化配置项，跟淘汰无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "低频"
+      ],
+      "source_quote": "Redis 支持多种内存淘汰策略，可以通过配置文件中的 maxmemory-policy 参数来指定。",
+      "_freq": "低频",
+      "_task_id": "Redis__介绍一下-Redis-内存淘汰策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 内存淘汰策略",
+      "_fingerprint": "40d6b73175e33136",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis Pipeline 是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "一种批量执行命令的机制，允许客户端在一次网络往返中发送多个命令"
+        },
+        {
+          "label": "B",
+          "content": "一种把多个命令打包成事务、保证原子执行的机制"
+        },
+        {
+          "label": "C",
+          "content": "服务端脚本机制，用于在 Redis 内部执行 Lua 代码"
+        },
+        {
+          "label": "D",
+          "content": "Redis 的持久化机制，用于把命令批量写入 AOF 缓冲区"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：Redis Pipeline（管道）是一种批量执行命令的机制，允许客户端在一次网络往返中发送多个命令，大幅提升批量操作效率，C 正确。A 把 Pipeline 和事务（MULTI/EXEC）混为一谈，Pipeline 并不保证原子性；B 说的是 Lua 脚本/EVAL；D 与持久化无关。Pipeline 省的是多次命令往返的网络开销，这是它的全部出发点。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "Pipeline",
+        "中频"
+      ],
+      "source_quote": "Redis Pipeline（管道）是一种批量执行命令的机制，允许客户端在一次网络往返中发送多个命令，大幅提升批量操作效率。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-Pipeline是什么？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis Pipeline是什么？",
+      "_fingerprint": "411ce45d9acf2308",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Pipeline 批量执行过程中，其中一个命令失败了，其余命令会怎样？",
+      "options": [
+        {
+          "label": "A",
+          "content": "整个 Pipeline 全部回滚，已执行的命令被撤销"
+        },
+        {
+          "label": "B",
+          "content": "其余命令仍会被执行，且不会回滚"
+        },
+        {
+          "label": "C",
+          "content": "失败命令之后的所有命令被中止，之前执行的保留"
+        },
+        {
+          "label": "D",
+          "content": "由客户端自动重试失败命令，直到全部成功"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：如果执行多个命令过程中有一个命令失败了，其他命令还是会被执行，而不会回滚的，A 正确。B 是事务/关系型数据库的行为，Pipeline 没有回滚能力；C 的「中断后续命令」是 Pipeline 不具备的短路语义；D 的自动重试是客户端策略，不是 Pipeline 本身的保证。记住：Pipeline 只是把命令打包发出去，每条命令各自执行、各自返回结果。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Pipeline",
+        "中频"
+      ],
+      "source_quote": "如果执行多个命令过程中，有一个命令失败了，其他命令还是会被执行，而不会回滚的。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-Pipeline是什么？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis Pipeline是什么？",
+      "_fingerprint": "423e5ef8535228ea",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "旁路缓存策略的写策略中，推荐的基本操作顺序是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "先删除缓存，再更新数据库"
+        },
+        {
+          "label": "B",
+          "content": "先更新缓存，再更新数据库"
+        },
+        {
+          "label": "C",
+          "content": "同时更新数据库和缓存"
+        },
+        {
+          "label": "D",
+          "content": "先更新数据库，再删除缓存"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "写策略的基本形态是先更新数据库再删除缓存，让下一次读去回源重建缓存。B 只是延迟双删的第一步，单独这样做（删完就更新 DB）仍会有旧数据被回写进缓存的窗口；C、D 都是「更新缓存」而不是「删除缓存」，并发下两次写顺序颠倒就会留下脏数据。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存一致性",
+        "中频"
+      ],
+      "source_quote": "先更新数据库, 再删除缓存",
+      "_freq": "中频",
+      "_task_id": "Redis__如何保证-redis-和-mysql-数据缓存一致性问题？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "_fingerprint": "476368cfd3600336",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis.conf 中 appendfsync 配置为 everysec 时，写命令是如何写回硬盘的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "每次写操作命令执行完后，同步将 AOF 日志数据写回硬盘"
+        },
+        {
+          "label": "B",
+          "content": "每次写操作命令执行完后，先将命令写入 AOF 文件的内核缓冲区，然后每隔一秒将缓冲区里的内容写回到硬盘"
+        },
+        {
+          "label": "C",
+          "content": "每次写操作命令执行完后，只写入 AOF 文件的内核缓冲区，写回硬盘的时机交给操作系统控制"
+        },
+        {
+          "label": "D",
+          "content": "先把命令写入 AOF 重写缓冲区，等 AOF 重写完成后再写回硬盘"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "appendfsync 有三种策略：always 是每条写命令执行完立即同步写回硬盘；no 是不由 Redis 控制、转交给操作系统决定何时写回；everysec 介于两者之间——命令先进入 AOF 文件的内核缓冲区，再由 Redis 每秒把缓冲区内容写回硬盘。A 描述的是 always，B 描述的是 no，D 混入了 AOF 重写缓冲区的概念。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "AOF",
+        "持久化",
+        "中频"
+      ],
+      "source_quote": "Everysec，这个单词的意思是「每秒」，所以它的意思是每次写操作命令执行完后，先将命令写入到 AOF 文件的内核缓冲区，然后每隔一秒将缓冲区里的内容写回到硬盘",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "4e6158b5e1080b62",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于主从复制中 `replication buffer` 的出现阶段和分配方式，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "只在增量复制阶段出现，一个主节点只分配一个"
+        },
+        {
+          "label": "B",
+          "content": "在全量复制和增量复制阶段都会出现，但一个主节点只分配一个"
+        },
+        {
+          "label": "C",
+          "content": "在全量复制和增量复制阶段都会出现，主节点会给每个新连接的从节点各分配一个"
+        },
+        {
+          "label": "D",
+          "content": "只在全量复制阶段出现，主节点给每个新连接的从节点各分配一个"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文明确：replication buffer 在全量复制阶段和增量复制阶段都会出现，且主节点会给每个新连接的从节点分配一个 replication buffer，所以 C 对。A、D 把阶段说窄了（漏掉增量或全量之一）；B 把「每个从节点一个」错记成「一个主节点只有一个」，那其实是 repl backlog buffer 的分配方式——两个 Buffer 的分配粒度正是本题的考点。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "replication buffer",
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "replication buffer 是在全量复制阶段和增量复制阶段都会出现，**主节点会给每个新连接的从节点，分配一个 replication buffer；**",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制中两个-Buffer(replication-buffer-、repl-backlog-buffer)有什么区别",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "_fingerprint": "4f8e0a270b9dbe31",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "当 Redis 纯粹作为缓存使用时，推荐使用哪种内存淘汰策略？",
+      "options": [
+        {
+          "label": "A",
+          "content": "allkeys-lru，将最近最少使用的 Key 淘汰"
+        },
+        {
+          "label": "B",
+          "content": "allkeys-random，随机淘汰的实现开销最小"
+        },
+        {
+          "label": "C",
+          "content": "volatile-ttl，优先淘汰更早过期的键值"
+        },
+        {
+          "label": "D",
+          "content": "noeviction，避免误删缓存数据"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "纯缓存场景数据都可以在需要时从后端重建，所以淘汰范围取全部键值、按最近最少使用来淘汰最合理，命中率也最好。B 的随机淘汰会误伤热点；C 只淘汰带过期时间的键，没设过期时间的键会一直堆积；D 的 noeviction 会让内存满后写入直接报错，不适合纯缓存。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "中频"
+      ],
+      "source_quote": "当 Redis 作为缓存使用的时候，推荐使用 allkeys-lru 淘汰策略。该策略会将最近最少使用的 Key 淘汰。",
+      "_freq": "中频",
+      "_task_id": "Redis__介绍一下-Redis-内存淘汰策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 内存淘汰策略",
+      "_fingerprint": "57d69fbe92138d58",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从复制架构中，主节点处理掉（或被淘汰算法淘汰掉）一个 key 后，从节点是怎么把这个 key 删掉的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "主节点模拟一条 del 命令发送给从节点，从节点收到后执行删除"
+        },
+        {
+          "label": "B",
+          "content": "从节点自己执行定期删除时发现过期才删，主节点不参与"
+        },
+        {
+          "label": "C",
+          "content": "主节点把该 key 的过期时间同步给从节点，由从节点惰性判断后再删"
+        },
+        {
+          "label": "D",
+          "content": "主从各自独立执行过期删除，彼此互不影响"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "从节点不自己判断过期，而是由主节点在处理或淘汰掉 key 后模拟一条 del 命令发给它，从节点收到命令才删除——这样主从的删除动作由主节点统一驱动，避免从节点各自判断导致数据不一致。A、D 会让主从删除时机不一致；C 描述的过期时间同步并不是原文的做法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "主节点模拟一条del命令发送给从节点，从节点收到该命令后，就进行删除key的操作",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制架构中，过期key如何处理？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制架构中，过期key如何处理？",
+      "_fingerprint": "5922789b56a93b7f",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于 Redis I/O 线程数（io-threads）的设置，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "4 核 CPU 建议设置为 4，刚好用满所有核"
+        },
+        {
+          "label": "B",
+          "content": "8 核 CPU 建议设置为 6"
+        },
+        {
+          "label": "C",
+          "content": "线程数应设置为略大于机器核数，线程数越大越好"
+        },
+        {
+          "label": "D",
+          "content": "线程数由 Redis 按 CPU 核数自动决定，无需手动配置"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "官方建议：4 核 CPU 设为 2 或 3，8 核 CPU 设为 6，且线程数一定要小于机器核数——线程数并不是越大越好。所以 A（4 核设 4）、C（大于核数且越大越好）错；D 错，io-threads 需要手动配置，默认值为 4。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "多线程",
+        "低频"
+      ],
+      "source_quote": "官方的建议是如果为 4 核的 CPU，建议线程数设置为 2 或 3，如果为 8 核 CPU 建议线程数设置为 6，线程数一定要小于机器核数，线程数并不是越大越好。",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis哪些地方使用了多线程_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis哪些地方使用了多线程?",
+      "_fingerprint": "59868057d88e86d8",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 执行单条命令时天然具备原子性，原因是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "因为 Redis 对每一条命令都加了互斥锁"
+        },
+        {
+          "label": "B",
+          "content": "因为 redis 执行命令的时候是单线程来处理的，不存在多线程安全的问题"
+        },
+        {
+          "label": "C",
+          "content": "因为每条命令都会被自动包装成一个事务来执行"
+        },
+        {
+          "label": "D",
+          "content": "因为 Redis 使用了 MVCC 多版本并发控制"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说得很直接：一条命令执行具备原子性，是因为命令由单线程处理，根本不存在多线程安全问题。A、C、D 都是把别的系统的做法（加锁、事务、MVCC）安到 Redis 头上——Redis 不需要这些，因为它压根没有多线程并发执行命令。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "原子性",
+        "多线程",
+        "中频"
+      ],
+      "source_quote": "redis 执行一条命令的时候是具备原子性的，因为 redis 执行命令的时候是单线程来处理的，不存在多线程安全的问题。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何实现redis-原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何实现redis 原子性？",
+      "_fingerprint": "5a14516139fe60fc",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "listpack 是 Redis 在哪个版本引入、用来替代哪种数据结构的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "3.0 版本，替代 ziplist"
+        },
+        {
+          "label": "B",
+          "content": "5.0 版本，替代 ziplist"
+        },
+        {
+          "label": "C",
+          "content": "5.0 版本，替代 intset"
+        },
+        {
+          "label": "D",
+          "content": "7.0 版本，替代 skiplist"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说 listpack 是 Redis 在 5.0 版本为替代 ziplist（压缩列表）设计的数据结构。intset 是整数集合，仍用于只含少量整数的 Set；skiplist 是跳表，用于 Zset 的另一条编码路径，都不是被 listpack 替代的对象；7.0 是压缩列表被正式废弃、交由 listpack 实现的版本，不是引入版本。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "listpack",
+        "压缩列表",
+        "中频"
+      ],
+      "source_quote": "**listpack** 是 Redis 在 5.0 版本为替代 ziplist(压缩列表) 设计的数据结构",
+      "_freq": "中频",
+      "_task_id": "Redis__listpack",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > listpack",
+      "_fingerprint": "5d55d301d2917cb3",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 在什么条件下会选择用压缩列表来存储 List、Hash 或 Sorted Set？",
+      "options": [
+        {
+          "label": "A",
+          "content": "数据项较大时"
+        },
+        {
+          "label": "B",
+          "content": "元素数量超过一定阈值之后"
+        },
+        {
+          "label": "C",
+          "content": "数据项较小并且数量较少时"
+        },
+        {
+          "label": "D",
+          "content": "只要在配置里开启了内存压缩"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文说当 List、Hash 或 Sorted Set 的数据项较小并且数量较少时，Redis 就会选择用压缩列表存储，目的是优化内存使用。数据项大或数量多时，O(N) 的查找与插入代价会被放大，就不会用它；原文也没有提到靠配置开关决定。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "压缩列表",
+        "低频"
+      ],
+      "source_quote": "如果List、Hash或Sorted Set类型的数据项较小并且数量较少时，Redis就会选择使用压缩列表来存储，目的就是优化内存使用。",
+      "_freq": "低频",
+      "_task_id": "Redis__压缩列表（Ziplist）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "_fingerprint": "6395b3c67635ce80",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 有哪三种主要的集群模式？",
+      "options": [
+        {
+          "label": "A",
+          "content": "主从复制、哨兵模式、Codis 代理模式"
+        },
+        {
+          "label": "B",
+          "content": "Redis Cluster、哨兵模式、Twemproxy 代理模式"
+        },
+        {
+          "label": "C",
+          "content": "主从复制、Redis Cluster、读写分离模式"
+        },
+        {
+          "label": "D",
+          "content": "主从复制、哨兵模式、Redis Cluster"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文列出的三种主要集群模式是主从复制（Master-Slave Replication）、哨兵模式（Sentinel）和 Redis Cluster。Codis、Twemproxy 属于第三方代理分片方案，不是 Redis 自带的集群模式；读写分离只是主从复制能提供的能力，不是独立模式。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "这些集群模式分别是：主从复制（Master-Slave Replication）、哨兵模式（Sentinel）和Redis Cluster模式。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis集群",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群",
+      "_fingerprint": "63c8d1aeecfe8d69",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "全部数据迁移完成后，Redis 会怎么处理这两个哈希表？",
+      "options": [
+        {
+          "label": "A",
+          "content": "释放哈希表 1 的空间，哈希表 2 变成哈希表 1，再创建一个空白的哈希表 2"
+        },
+        {
+          "label": "B",
+          "content": "清空哈希表 1，两个表继续并存做双表查找"
+        },
+        {
+          "label": "C",
+          "content": "把哈希表 2 的数据再搬回哈希表 1"
+        },
+        {
+          "label": "D",
+          "content": "把两个哈希表合并成一张更大的表"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说迁移完成后哈希表 1 的空间就会被释放，哈希表 2 变成哈希表 1，然后再创建一个空白的哈希表 2，为下一次 rehash 做准备。A、B 都与原文描述相反——不会再搬回去，也不会两张表长期并存；D 的“合并”原文没有提到。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "rehash",
+        "低频"
+      ],
+      "source_quote": "最后迁移完成后哈希表1的空间就会被释放, 哈希表2就变成哈希表1, 然后再创建一个空白的哈希表2, 为下一次rehash做准备",
+      "_freq": "低频",
+      "_task_id": "Redis__哈希表是怎么扩容的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "_fingerprint": "69f9103cd7fc1b2e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从复制中为什么有了 `replication buffer` 还需要 `repl backlog buffer`？",
+      "options": [
+        {
+          "label": "A",
+          "content": "replication buffer 只短暂存储待发送给从节点的命令，从节点断开后就被清空，断开的从节点过多时未同步数据堆积会占用大量内存"
+        },
+        {
+          "label": "B",
+          "content": "replication buffer 只能在全量复制阶段使用，增量阶段的命令需要另一个缓冲区承载"
+        },
+        {
+          "label": "C",
+          "content": "repl backlog buffer 的容量比 replication buffer 大得多，能保存更久的历史命令"
+        },
+        {
+          "label": "D",
+          "content": "repl backlog buffer 负责向客户端返回命令结果，replication buffer 只负责主从同步"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文的解释是：replication buffer 只是短暂存放在命令传播中要发给从节点的命令，从节点断开连接后就会清空它；如果断开连接的从节点数量过多，未同步的数据都堆在 replication buffer 里就会占用大量内存，所以需要独立、可复用的 repl backlog buffer，B 对。A 与原文相反——replication buffer 全量和增量阶段都会出现；C 的「容量更大」原文没提，也不是设立它的理由；D 把 repl backlog 的用途说成了客户端响应，主从复制的缓冲区与客户端返回值无关。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "replication buffer",
+        "repl backlog",
+        "低频"
+      ],
+      "source_quote": "replication buffer只是短暂存储在命令传播中要发送给从节点的命令，在从节点断开连接后就会清空replication buffer",
+      "_freq": "低频",
+      "_task_id": "Redis__主从复制中两个-Buffer(replication-buffer-、repl-backlog-buffer)有什么区别",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "_fingerprint": "6a9fff7791486187",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "跳表节点的 level 数组里存的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "元素值和分数值"
+        },
+        {
+          "label": "B",
+          "content": "后向指针和跨度"
+        },
+        {
+          "label": "C",
+          "content": "前向指针和跨度"
+        },
+        {
+          "label": "D",
+          "content": "前一个节点的长度和前向指针"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文说 level 数组里存了前向指针和跨度。元素值、分数值、后向指针是节点上其它几个字段，不在 level 数组里；前一个节点的长度是 ziplist 的字段，跳表不记录它。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "低频"
+      ],
+      "source_quote": "level数组里存了前向指针和跨度",
+      "_freq": "低频",
+      "_task_id": "Redis__跳表是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "_fingerprint": "6ad1cf67a5b9a2f9",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "为什么用 SETNX 实现的分布式锁在真实生产环境中用得并不多？",
+      "options": [
+        {
+          "label": "A",
+          "content": "存在锁无法续期导致并发冲突的问题"
+        },
+        {
+          "label": "B",
+          "content": "SETNX 命令性能较差，无法满足生产环境的吞吐要求"
+        },
+        {
+          "label": "C",
+          "content": "SETNX 只能在单机 Redis 上使用，集群环境完全不可用"
+        },
+        {
+          "label": "D",
+          "content": "SETNX 无法设置过期时间，只能靠业务代码手动删除"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文的判断是：在使用 SETNX 实现的分布式锁中，因为存在锁无法续期导致并发冲突的问题，所以真实生产环境中用得并不多；生产上用得比较多的是基于 Redisson 实现的分布式锁。A 把原因推给性能，原文没提性能；B 说集群完全不可用，原文未涉及，属于过度断言；D 与常见实现相反，SETNX 通常会配合 EXPIRE 设置过期时间，真正的问题是「设了过期时间后无法续期」，业务没跑完锁就到期了，于是出现并发冲突。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "分布式锁",
+        "Redisson",
+        "高频"
+      ],
+      "source_quote": "因为存在锁无法续期导致并发冲突的问题，所以在真实的生产环境中用的并不是很多",
+      "_freq": "高频",
+      "_task_id": "Redis__分布式锁",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁",
+      "_fingerprint": "6b538e500c819b8a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 的内存淘汰策略是在什么情况下被触发的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "只要有 key 到达过期时间就会被触发"
+        },
+        {
+          "label": "B",
+          "content": "定期删除任务每扫描完一轮之后被触发"
+        },
+        {
+          "label": "C",
+          "content": "内存满了、需要腾出空间来保存新内容时被触发"
+        },
+        {
+          "label": "D",
+          "content": "客户端执行 EXPIRE 或 EXPIREAT 时被触发"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "内存淘汰的触发点是「内存满了」，目的是腾出空间装新数据，跟 key 有没有过期无关，被淘汰的 key 完全可以还没过期。A、D 说的是过期键相关的时机，属于过期删除的范畴；B 把淘汰跟定期删除的扫描节奏绑在一起，也是张冠李戴。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "过期删除",
+        "中频"
+      ],
+      "source_quote": "内存淘汰策略是在内存满了的时候，redis 会触发内存淘汰策略，来淘汰一些不必要的内存资源，以腾出空间，来保存新的内容",
+      "_freq": "中频",
+      "_task_id": "Redis__过期删除策略和内存淘汰策略有什么区别？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "_fingerprint": "747f73c719f96d59",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis Cluster 中各个节点之间是怎么通信的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "通过哨兵节点转发，普通节点只与哨兵通信"
+        },
+        {
+          "label": "B",
+          "content": "通过 Redis 的发布者/订阅者机制，把拓扑信息发布到集群频道"
+        },
+        {
+          "label": "C",
+          "content": "由客户端在每次请求时把集群拓扑广播给所有节点"
+        },
+        {
+          "label": "D",
+          "content": "通过 Gossip 协议：每个节点周期性地从节点列表中选择 k 个节点，把本节点存储的信息传播出去，直到所有节点信息一致"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：各个节点通过 Gossip 协议通信，Gossip 是一种谣言传播协议，每个节点周期性地从节点列表中选择 k 个节点，将本节点存储的信息传播出去，直到所有节点信息一致，B 对。A 不成立，Cluster 的故障转移由节点自身通过 Gossip 协商完成，不依赖哨兵；C 的发布/订阅是哨兵集群相互发现、通知客户端的机制，不是 Cluster 节点通信方式；D 把拓扑维护推给客户端，原文没有这种说法。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "分片集群",
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "各个节点通过Gossip协议通信，Gossip是一种谣言传播协议，每个节点周期性地从节点列表中选择 k 个节点，将本节点存储的信息传播出去，直到所有节点信息一致。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-Cluster分片集群",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群",
+      "_fingerprint": "76a89700abc102f7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 的 GEO 类型本质上是基于哪种数据类型实现的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Hash"
+        },
+        {
+          "label": "B",
+          "content": "Bitmap"
+        },
+        {
+          "label": "C",
+          "content": "Stream"
+        },
+        {
+          "label": "D",
+          "content": "Sorted Set"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文直接写明 GEO 本质使用了 Sorted Set。Hash 用于对象存储，Bitmap 用于签到统计这类二值统计，Stream 是专门为消息队列设计的类型，都与地理位置存储无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "低频"
+      ],
+      "source_quote": "用于存储地理位置信息，并对存储的信息进行操作。本质使用了Sorted Set",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis常见的数据类型",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis常见的数据类型",
+      "_fingerprint": "77aba978c2c16483",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "在单线程模型下，Redis 为什么要引入 I/O 多路复用？",
+      "options": [
+        {
+          "label": "A",
+          "content": "为了让单个 socket 的读写带宽翻倍"
+        },
+        {
+          "label": "B",
+          "content": "为了减少内核态与用户态之间的数据拷贝次数"
+        },
+        {
+          "label": "C",
+          "content": "为避免线程阻塞在某个未就绪的 socket 上，导致其他所有客户端都必须等待"
+        },
+        {
+          "label": "D",
+          "content": "为了把命令的执行分摊到多个 worker 线程"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "单线程只能依次处理每个 socket，一旦正在处理的 socket 未就绪（数据不可读或不可写）线程就被阻塞，其余客户端全部排队等待，性能很差；多路复用的作用就是在 socket 可读可写时才收到通知，避免这种无效等待。B 是 epoll 相对 select/poll 的收益之一，不是引入多路复用的初衷；C 错，命令执行始终是单线程。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "IO多路复用",
+        "中频"
+      ],
+      "source_quote": "如果正在处理的socket恰好未就绪（数据不可读或不可写），线程就会被阻塞，所有其它客户端socket都必须等待，性能就会很差",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis为什么快？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis为什么快？",
+      "_fingerprint": "7d25027f673861b9",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 集群节点每秒发送 ping 消息时，是怎么挑选发送对象的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "向集群中所有节点广播发送 ping 消息"
+        },
+        {
+          "label": "B",
+          "content": "随机选取 5 个节点，并向这 5 个节点都发送 ping 消息"
+        },
+        {
+          "label": "C",
+          "content": "随机选取 5 个节点，找出其中最久没有通信的节点发送 ping 消息"
+        },
+        {
+          "label": "D",
+          "content": "只在本地节点列表中找出最久没有通信的那一个节点发送，不做随机选取"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：每秒会随机选取 5 个节点，找出最久没有通信的节点发送 ping 消息，C 正确。B 是这条规则最容易被记错的地方——随机选 5 个是候选集，真正发 ping 的只是其中最久未通信的那一个，否则心跳量会翻 5 倍；A 的广播会随集群规模线性放大心跳开销；D 少了随机采样，无法在大规模集群里控制开销。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "每秒会随机选取5个节点，找出最久没有通信的节点发送ping消息",
+      "_freq": "中频",
+      "_task_id": "Redis__为什么是16384个槽",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "_fingerprint": "7eb2f3ce35dc591a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis Cluster 中，一个节点被标记为主观下线的直接依据是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "该节点负责的哈希槽无法被客户端访问"
+        },
+        {
+          "label": "B",
+          "content": "该节点长时间未响应其他节点发送的 PING 消息"
+        },
+        {
+          "label": "C",
+          "content": "半数以上的主节点都认为该节点不可用"
+        },
+        {
+          "label": "D",
+          "content": "该节点的从节点发起了选举请求"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：节点每秒向随机节点发送 PING 消息，发现某个节点长时间未响应 PING 消息就将其标记为主观下线，C 正确。A 把「哈希槽不可访问」当成判定依据，原文没这么说；B 描述的是客观下线的判定条件（半数以上主节点），比主观下线多一层；D 中从节点选举发生在主节点被判定下线之后，是结果而不是判定依据。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "每秒钟，节点会向一定数量的随机节点发送 PING 消息，当发现某个节点长时间未响应 PING 消息，就会将其标记为主观下线。",
+      "_freq": "中频",
+      "_task_id": "Redis__集群如何实现故障转移",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "_fingerprint": "806fb8f4437fcd65",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "点赞这类读写并发都很高的场景，为什么更适合用 canal 监听 binlog 来更新缓存，而不是频繁删除缓存？",
+      "options": [
+        {
+          "label": "A",
+          "content": "因为 canal 能扩大缓存容量，让更多数据常驻 Redis"
+        },
+        {
+          "label": "B",
+          "content": "因为频繁删除缓存会让缓存命中率很低、频繁重建缓存给数据库带来压力，而 canal 异步更新还能保证缓存更新的顺序"
+        },
+        {
+          "label": "C",
+          "content": "因为并发下删除缓存会阻塞 Redis 主线程，导致实例不可响应"
+        },
+        {
+          "label": "D",
+          "content": "因为 binlog 里保存了缓存的最新值，可以直接回写到 Redis"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "高并发写场景下每次更新都删缓存，缓存等于形同虚设，请求全部打回数据库重建缓存，命中率崩塌、数据库压力陡增；改用 canal 订阅 binlog 异步更新缓存，既避免了频繁删除，又因订阅顺序与 binlog 一致而保证了更新顺序，不会出现乱序导致的不一致。A、D 对 canal 的作用描述错误，B 把压力来源错归给了 Redis 主线程阻塞。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "缓存一致性",
+        "高频"
+      ],
+      "source_quote": "例如点赞这种读写并发都很高的情况下，频繁删除缓存可能会导致缓存命中率很低，频繁重建缓存也会给数据库带来压力，此时可以通过canal监听binlog来异步更新缓存，保证了缓存更新的顺序就不会出现缓存不一致的问题",
+      "_freq": "高频",
+      "_task_id": "Redis__如何保证-redis-和-mysql-数据缓存一致性问题？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "_fingerprint": "82b934c91cd5e6a0",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 中的双向链表主要用来实现哪种数据类型？",
+      "options": [
+        {
+          "label": "A",
+          "content": "Hash"
+        },
+        {
+          "label": "B",
+          "content": "List"
+        },
+        {
+          "label": "C",
+          "content": "Set"
+        },
+        {
+          "label": "D",
+          "content": "Zset"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说它用来实现 Redis 的 List 类型，支持在列表的两端快速插入或删除元素——每个节点都有指向前、后节点的指针，所以两端操作都很快。Hash 由字典或压缩列表实现，Set 由整数集合或哈希表实现，Zset 由跳表（结合哈希表）实现。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "链表",
+        "低频"
+      ],
+      "source_quote": "它用来实现Redis的List类型，支持在列表的两端快速插入或删除元素。",
+      "_freq": "低频",
+      "_task_id": "Redis__双向链表",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 双向链表",
+      "_fingerprint": "852c7073cb431f1c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "为什么在小型 Redis 集群中，槽位 bitmap 很难被压缩？",
+      "options": [
+        {
+          "label": "A",
+          "content": "小型集群的网络带宽更充裕，没有必要做压缩"
+        },
+        {
+          "label": "B",
+          "content": "小型集群的槽位数会被自动缩减，位图长度不固定"
+        },
+        {
+          "label": "C",
+          "content": "小型集群发送心跳更频繁，来不及做压缩"
+        },
+        {
+          "label": "D",
+          "content": "节点数 N 较小时，位图中大约 slots/N 个 bit 被设置，占比相当高"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：在小型集群中位图很难压缩，因为节点数 N 较小时，位图中会有大约 slots/N 个 bit 被设置，占据了相当高的比例，B 正确。这正是填充率 = slots / N 的直接推论——N 越小，每个节点分到的槽越多、置位的 bit 越密集，压缩率反而越低（注意方向别搞反：槽位数越低才越容易压缩）。A、C、D 都是原文没提的理由。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "低频"
+      ],
+      "source_quote": "在小型集群中，这种位图很难进行压缩，因为当节点数 N 较小时，位图中会有大约 slots/N 个 bit 被设置，占据了相当高的比例。",
+      "_freq": "低频",
+      "_task_id": "Redis__为什么是16384个槽",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "_fingerprint": "863e9ba2aff9876f",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 是同步复制还是异步复制？",
+      "options": [
+        {
+          "label": "A",
+          "content": "同步复制，主节点必须等从节点写入成功后才返回"
+        },
+        {
+          "label": "B",
+          "content": "半同步复制，至少一个从节点确认后才返回"
+        },
+        {
+          "label": "C",
+          "content": "异步复制，主节点先写到内部的缓冲区，然后异步发送给从节点"
+        },
+        {
+          "label": "D",
+          "content": "默认是同步复制，可通过配置改成异步复制"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "主节点收到写命令后先写入内部缓冲区，再异步地发给从节点，不等从节点确认就返回，这是 Redis 复制延迟和数据丢失风险的根源。同步复制和半同步复制都要等从节点确认，会显著拖慢写性能，并非 Redis 的行为；D 的默认与可配置关系也说反了。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "中频"
+      ],
+      "source_quote": "Redis 主节点每次收到写命令之后，先写到内部的缓冲区，然后异步发送给从节点。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-是同步复制还是异步复制？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > Redis 是同步复制还是异步复制？",
+      "_fingerprint": "87940f5c87d661ee",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "SDS 获取字符串长度的时间复杂度能做到 O(1)，原因是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "用 len 字段直接记录字符串长度"
+        },
+        {
+          "label": "B",
+          "content": "遍历字符数组直到遇到结束符，平均只需常数次"
+        },
+        {
+          "label": "C",
+          "content": "用 alloc 字段记录字符串长度"
+        },
+        {
+          "label": "D",
+          "content": "系统缓存了上一次 strlen 的计算结果"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说 len 用来记录字符串的长度，所以取长度只需读取 len，复杂度为 O(1)。遍历字符数组正是 C 语言 strlen 的做法，复杂度是 O(N)；alloc 记录的是分配给字符数组的空间长度（容量），不是字符串长度；原文没有提到缓存 strlen 结果。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "高频"
+      ],
+      "source_quote": "len用来记录字符串的长度, 这样获取字符串长度的时间复杂度就只有O(1), alloc就是分配给字符数组的空间长度",
+      "_freq": "高频",
+      "_task_id": "Redis__简单动态字符串（SDS,-Simple-Dynamic-Strings)",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "_fingerprint": "88fe012eb4cd406a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "延迟双删的完整执行顺序是怎样的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "先删除缓存，再更新数据库，再延迟 1~2s 删除一次缓存"
+        },
+        {
+          "label": "B",
+          "content": "先更新数据库，再删除缓存，1 秒后再删一次缓存"
+        },
+        {
+          "label": "C",
+          "content": "先删除缓存，再更新数据库，再立即删除一次缓存"
+        },
+        {
+          "label": "D",
+          "content": "先更新数据库，再更新缓存，再延迟 1~2s 删除缓存"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "延迟双删是「删缓存 → 更新数据库 → 延迟 1~2s 再删一次缓存」，第二次删除是为了清掉在更新数据库期间被其他读请求回写进去的旧数据，所以必须延迟，不能立即删（C 就失去了意义）。A、D 把第一步改成了先更新数据库，那是普通写策略，不是延迟双删。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存一致性",
+        "中频"
+      ],
+      "source_quote": "延迟双删: 先删除缓存, 再更新数据库, 再延迟1~2s删除一次缓存",
+      "_freq": "中频",
+      "_task_id": "Redis__如何保证-redis-和-mysql-数据缓存一致性问题？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "_fingerprint": "8b88c0a6441bf4de",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "渐进式 rehash 期间，Redis 插入的新数据会写入哪个哈希表？",
+      "options": [
+        {
+          "label": "A",
+          "content": "哈希表 1"
+        },
+        {
+          "label": "B",
+          "content": "哈希表 1 和哈希表 2 各写一份"
+        },
+        {
+          "label": "C",
+          "content": "哈希表 2"
+        },
+        {
+          "label": "D",
+          "content": "先写入临时缓冲区，等迁移结束后再统一写入"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文说逐步迁移期间，如果插入新的数据就会插入到哈希表 2，这样新数据不必再参与后续迁移。写哈希表 1 会让新数据还要被二次迁移；两个表都写一份没有必要；原文没有提到临时缓冲区。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "rehash",
+        "中频"
+      ],
+      "source_quote": "然后逐步将哈希表1的数据迁移到哈希表2, 此时如果插入新的数据就会插入到哈希表2",
+      "_freq": "中频",
+      "_task_id": "Redis__哈希表是怎么扩容的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "_fingerprint": "8f90596aaf32a03c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "节点每 100 毫秒扫描本地节点列表时，发现某节点最近一次收到 pong 消息的时间超过哪个阈值就立刻发送 ping 消息？",
+      "options": [
+        {
+          "label": "A",
+          "content": "cluster-node-timeout"
+        },
+        {
+          "label": "B",
+          "content": "cluster-node-timeout/2"
+        },
+        {
+          "label": "C",
+          "content": "cluster-node-timeout*2"
+        },
+        {
+          "label": "D",
+          "content": "固定 1 秒"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：每 100 毫秒扫描本地节点列表，若节点最近一次接受 pong 消息的时间大于 cluster-node-timeout/2 则立刻发送 ping 消息，B 正确。A 漏掉了除以 2，把阈值放宽了一倍，节点要等到更久才补发心跳；C、D 都是凭印象给的数字，原文没有这两个阈值。这类题的坑就在「一半」这个系数上。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "每100毫秒都会扫描本地节点列表，如果发现节点最近一次接受pong消息的时间大于cluster-node-timeout/2 则立刻发送ping消息",
+      "_freq": "中频",
+      "_task_id": "Redis__为什么是16384个槽",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "_fingerprint": "8fc0d183eaa84b34",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "用 Redis 防止超卖、要求库存判断与扣减具备强一致性时，应当怎么做？",
+      "options": [
+        {
+          "label": "A",
+          "content": "在从节点上执行 Lua 脚本完成判断与扣减，避免主节点压力过大"
+        },
+        {
+          "label": "B",
+          "content": "通过 Lua 脚本完成库存判断和扣减，并让主节点负责执行整个 Lua 脚本"
+        },
+        {
+          "label": "C",
+          "content": "读写都走从节点，并给从节点开启写权限以保证本地一致"
+        },
+        {
+          "label": "D",
+          "content": "先读主节点库存再写从节点，靠业务层重试兜底"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文的方案是「强制读主」：需要强一致的数据只从主节点读，例如用 Redis 防超卖时，通过 Lua 脚本完成库存判断和扣减，并让主节点负责执行整个 Lua 脚本，从而保证一致性，C 对。A、B 都把一致性关键操作放到了从节点上，从节点的数据本来就可能是旧的，正是要规避的对象；D 把读和写分散在两端，异步复制下仍有超卖窗口。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "Lua",
+        "中频"
+      ],
+      "source_quote": "例如使用Redis来防止超卖，通过 Lua 脚本来完成库存判断和扣减操作，并且让主节点负责执行整个 Lua 脚本，从而保证数据的一致性。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何应对主从数据不一致？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "_fingerprint": "977f0b2c14e9c10a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 配置了 io-threads 4，实际会启用几个 I/O 多线程？",
+      "options": [
+        {
+          "label": "A",
+          "content": "4 个"
+        },
+        {
+          "label": "B",
+          "content": "2 个"
+        },
+        {
+          "label": "C",
+          "content": "3 个"
+        },
+        {
+          "label": "D",
+          "content": "6 个"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "io-threads N 表示启用 N-1 个 I/O 多线程，因为主线程也算一个 I/O 线程；默认值 4 对应 io_thd_1、io_thd_2、io_thd_3 三个 I/O 线程。选 4 是漏算了主线程，选 2 或 6 则没有原文依据。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "多线程",
+        "中频"
+      ],
+      "source_quote": "io_thd_1、io_thd_2、io_thd_3：三个 I/O 线程，io-threads 默认是 4 ，所以会启动 3（4-1）个 I/O 多线程，用来分担 Redis 网络 I/O 的压力。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis哪些地方使用了多线程_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis哪些地方使用了多线程?",
+      "_fingerprint": "995d2b4eda8a18b3",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "缓存穿透指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "请求的数据在缓存中和数据库中都不存在，缓存永远不会生效，请求都打到数据库"
+        },
+        {
+          "label": "B",
+          "content": "大量缓存 key 在同一时段同时失效，请求全部落到数据库"
+        },
+        {
+          "label": "C",
+          "content": "Redis 服务宕机，导致所有请求直接访问数据库"
+        },
+        {
+          "label": "D",
+          "content": "热点 key 过期后，大量请求在短时间内访问数据库"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库，D 正确。A、B 是缓存雪崩（大面积失效 / 服务宕机），C 是缓存击穿（热点 key 过期）。穿透的本质是「查的东西本来就不存在」，所以缓存永远建不起来。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "缓存穿透",
+        "中频"
+      ],
+      "source_quote": "缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库。",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存穿透",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存穿透",
+      "_fingerprint": "9b98233882882d1d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "在逻辑过期方案中，用户查询 Redis 未命中时会怎么处理？",
+      "options": [
+        {
+          "label": "A",
+          "content": "加互斥锁后查询数据库并重建缓存"
+        },
+        {
+          "label": "B",
+          "content": "返回空值，同时异步发起数据库查询"
+        },
+        {
+          "label": "C",
+          "content": "阻塞等待异步线程重建完成后再返回新数据"
+        },
+        {
+          "label": "D",
+          "content": "直接返回空数据，不查询数据库"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：用户查询 redis 时判断是否命中，如果没有命中则直接返回空数据，不查询数据库，A 正确。B 是互斥锁方案的行为，逻辑过期方案未命中时并不回源；C、D 都给未命中加上了「查库 / 等待」的动作，与原文相反。这是逻辑过期最容易踩的坑：它假设热点 key 已被预先加载，未命中就当没有，绝不把流量放给数据库。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "缓存击穿",
+        "中频"
+      ],
+      "source_quote": "当用户开始查询redis时，判断是否命中，如果没有命中则直接返回空数据，不查询数据库",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存击穿",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存击穿",
+      "_fingerprint": "9c9b84b639eadd5f",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 事务的主要目的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "保证多个命令执行的原子性，在一个原子操作中执行且不会被打断"
+        },
+        {
+          "label": "B",
+          "content": "提供类似关系型数据库的回滚能力，命令失败时可以撤销已执行的操作"
+        },
+        {
+          "label": "C",
+          "content": "提升多条命令的执行性能，减少网络往返开销"
+        },
+        {
+          "label": "D",
+          "content": "为涉及的多个 key 自动加分布式锁，避免并发修改冲突"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "Redis 支持事务，主要目的就是让多个命令在一个原子操作中执行、不被打断（事务执行期间其他命令会被阻塞住）。A 是最大的误解：Redis 事务没有回滚能力，执行中某条命令出错也不会撤销已执行的部分。B 说的是 pipeline 的作用；C 的加锁不属于事务的职责。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "原子性",
+        "事务",
+        "中频"
+      ],
+      "source_quote": "Redis中是支持事务的，他的事务主要目的是保证多个命令执行的原子性，即要在一个原子操作中执行，不会被打断。",
+      "_freq": "中频",
+      "_task_id": "Redis__除了lua有没有什么也能保证redis的原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "_fingerprint": "a62bda35aefaa668",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "epoll 分别使用什么数据结构保存待监听的 fd 和已就绪的 fd？",
+      "options": [
+        {
+          "label": "A",
+          "content": "待监听用红黑树，已就绪用链表"
+        },
+        {
+          "label": "B",
+          "content": "都用保存 select 那样的数组"
+        },
+        {
+          "label": "C",
+          "content": "待监听用链表，已就绪用红黑树"
+        },
+        {
+          "label": "D",
+          "content": "待监听用哈希表，已就绪用队列"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "epoll 用红黑树存要监听的 fd，用链表存就绪的 fd，这样只需把就绪的 fd 复制回用户空间去处理，而不是把所有 fd 都拷回来轮询一遍。B 把两者的位置颠倒了；用数组的是 select，A 错；D 没有原文依据。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "epoll",
+        "链表",
+        "中频"
+      ],
+      "source_quote": "epoll是使用红黑树去存你想要监听的fd，使用链表来存就绪的fd",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis为什么快？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis为什么快？",
+      "_fingerprint": "ac784ef8d2d73b1d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 的跳表用来实现哪种数据类型？",
+      "options": [
+        {
+          "label": "A",
+          "content": "List"
+        },
+        {
+          "label": "B",
+          "content": "Sorted Set（有序集合）"
+        },
+        {
+          "label": "C",
+          "content": "Hash"
+        },
+        {
+          "label": "D",
+          "content": "Set"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说跳跃表可以用来实现 Redis 的 Sorted Set 类型，也就是有序集合，它可以快速按范围查询和按分数排序。List 由双向链表（quicklist）实现，Hash 由字典或压缩列表实现，Set 由整数集合或哈希表实现。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "中频"
+      ],
+      "source_quote": "跳跃表可以用来实现Redis的Sorted Set类型，也就是有序集合，它可以快速按范围查询和按分数排序。",
+      "_freq": "中频",
+      "_task_id": "Redis__跳表（Skiplist）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist）",
+      "_fingerprint": "aca72a6e29a5d649",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 自动生成 RDB 快照时，为什么执行快照的过程中数据还能被修改？",
+      "options": [
+        {
+          "label": "A",
+          "content": "fork 采用 copy-on-write 技术，主进程执行写操作时会拷贝一份数据再修改，防止子进程读数据时被篡改"
+        },
+        {
+          "label": "B",
+          "content": "快照期间主进程会暂停所有写命令，等快照结束后再回放"
+        },
+        {
+          "label": "C",
+          "content": "主进程把写命令暂存到客户端输出缓冲区，等快照完成后统一回放"
+        },
+        {
+          "label": "D",
+          "content": "子进程直接复制了主进程的全部内存，两者的数据互不影响"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "自动生成 RDB 时会 fork 出子进程来做，fork 之后父子共享同一份物理内存；主进程执行写操行时才拷贝一份出来再改，这就是 copy-on-write，既保证子进程读到的是快照那一刻的数据，又不必阻塞主进程。代价是极端情况下内存占用可能翻倍，内存中有大 key 时影响性能。A 错在把 bgsave 说成了会阻塞写；B 把 AOF 重写缓冲区的概念搬到了 RDB；D 错：fork 并不复制物理内存，只复制页表。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "RDB",
+        "持久化",
+        "大key",
+        "中频"
+      ],
+      "source_quote": "这是因为fork采用的是copy-on-write技术, 当主进程执行写操作时，则会拷贝一份数据，执行写操作。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "afec0569bf409a62",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "跳表完成查找、插入和删除操作的时间复杂度是多少？",
+      "options": [
+        {
+          "label": "A",
+          "content": "O(log n)"
+        },
+        {
+          "label": "B",
+          "content": "O(1)"
+        },
+        {
+          "label": "C",
+          "content": "O(N)"
+        },
+        {
+          "label": "D",
+          "content": "O(N log N)"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说跳跃表可以在 O(log n) 时间复杂度内完成查找、插入和删除，靠的是每个节点持有的多层指针。O(1) 是哈希表的查找复杂度；O(N) 是压缩列表的复杂度；O(N log N) 通常是排序的复杂度，与这里无关。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "中频"
+      ],
+      "source_quote": "所以跳跃表可以在O(log n)时间复杂度内完成查找、插入和删除操作。",
+      "_freq": "中频",
+      "_task_id": "Redis__跳表（Skiplist）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist）",
+      "_fingerprint": "b53f7a93b019c05b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "ZipList 的插入、删除和查找操作的时间复杂度通常是多少？",
+      "options": [
+        {
+          "label": "A",
+          "content": "O(1)"
+        },
+        {
+          "label": "B",
+          "content": "O(N)"
+        },
+        {
+          "label": "C",
+          "content": "O(log N)"
+        },
+        {
+          "label": "D",
+          "content": "O(N log N)"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确 ZipList 的插入、删除和查找通常是 O(N)，因为它是一段紧凑的线性结构，查找要遍历整个列表，插入删除也要移动后续元素，相对来说比较慢。O(1) 是哈希表的查找复杂度，O(log N) 是跳表的复杂度，都不是 ZipList 的。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "压缩列表",
+        "中频"
+      ],
+      "source_quote": "所以ZipList的插入、删除和查找操作的时间复杂度通常是 O(N)。相对来说是比较慢的。",
+      "_freq": "中频",
+      "_task_id": "Redis__压缩列表（Ziplist）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "_fingerprint": "b6586ce8f9ce2b71",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 集群心跳包消息头中的 myslots 位图，某一位为 1 表示什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "这个槽是属于这个节点的"
+        },
+        {
+          "label": "B",
+          "content": "该槽位正在进行数据迁移"
+        },
+        {
+          "label": "C",
+          "content": "该槽位当前没有存储任何键值数据"
+        },
+        {
+          "label": "D",
+          "content": "该槽位对应的节点已经下线"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：myslots 是 char 数组形式的 bitmap，每一个位代表一个槽，该位为 1 表示这个槽属于这个节点，D 正确。A、B、C 都是给「某一位的值」附加上原文没有的语义——迁移状态、是否有数据、节点存活都另有机制表达，不靠这一位。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "每一个位代表一个槽，如果该位为1，表示这个槽是属于这个节点的。",
+      "_freq": "中频",
+      "_task_id": "Redis__为什么是16384个槽",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "_fingerprint": "b9c6d5559a408ddc",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "在腾讯云上新建 Redis 实例后不做任何修改，内存被占满时会发生什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "自动按 allkeys-lru 淘汰最近最少使用的键，服务基本不受影响"
+        },
+        {
+          "label": "B",
+          "content": "优先淘汰设置了过期时间且最早过期的键"
+        },
+        {
+          "label": "C",
+          "content": "不删除任何键，内存占满后出现 OOM 问题，建议创建好实例后修改淘汰策略"
+        },
+        {
+          "label": "D",
+          "content": "写命令阻塞等待，直到有 key 过期释放内存后自动写入"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "腾讯云默认是 noeviction，即不删除键，所以内存写满后直接表现为 OOM，而不是优雅地淘汰数据，因此建议建好实例就改成合适的策略。A、B 描述的都是显式配置了淘汰策略后的行为；C 的阻塞等待并不是 Redis 的做法，noeviction 下是直接返回错误。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "内存淘汰",
+        "低频"
+      ],
+      "source_quote": "腾讯云默认是noeviction，即不删除键。在内存占满后会出现 OOM 问题，所以建议创建好实例后修改淘汰策略，减少 OOM 问题的出现。",
+      "_freq": "低频",
+      "_task_id": "Redis__介绍一下-Redis-内存淘汰策略",
+      "_source_file": "md/Redis.md",
+      "_source_section": "介绍一下 Redis 内存淘汰策略",
+      "_fingerprint": "bb62893140dd7a78",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 的字典通过什么方式快速定位键？",
+      "options": [
+        {
+          "label": "A",
+          "content": "顺序遍历键值对"
+        },
+        {
+          "label": "B",
+          "content": "对有序数组做二分查找"
+        },
+        {
+          "label": "C",
+          "content": "散列（Hashing）"
+        },
+        {
+          "label": "D",
+          "content": "跳表的多级索引"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文明确 Redis 的字典使用散列（Hashing）来快速定位键，因此平均可以在 O(1) 找到键。顺序遍历是 O(N)；二分查找要求有序数组，字典并不维护顺序；多级索引是跳表的做法，不是字典的。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "低频"
+      ],
+      "source_quote": "Redis的字典使用散列（Hashing）来快速定位键。",
+      "_freq": "低频",
+      "_task_id": "Redis__字典（Dict）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict）",
+      "_fingerprint": "bb685d030e256881",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "用「缓存空值」解决缓存穿透，主要缺点是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "实现复杂，需要额外维护一套过滤器数据结构"
+        },
+        {
+          "label": "B",
+          "content": "无法拦截同一个不存在的 key 被反复查询"
+        },
+        {
+          "label": "C",
+          "content": "可能会造成大量的 key 占用内存"
+        },
+        {
+          "label": "D",
+          "content": "会导致缓存与数据库的数据长期不一致"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文明确指出缓存空值的缺点是可能会造成大量的 key 占用内存，B 正确。C 说反了——缓存空值恰恰是为了让后续对同一个不存在 key 的请求在缓存层就被拦住；A 说的是布隆过滤器的成本；D 不是原文给出的缺点，空值通常会带较短 TTL 以便数据真正写入后能生效。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "缓存穿透",
+        "中频"
+      ],
+      "source_quote": "缺点是可能会造成大量的key占用内存",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存穿透",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存穿透",
+      "_fingerprint": "bc14499cb7fba51f",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "给 Bigkey 设置了过期时间后，为什么它过期时仍可能影响 Redis 的性能？",
+      "options": [
+        {
+          "label": "A",
+          "content": "过期后这个 key 会被删除，而大 key 的删除过程本身也比较耗时"
+        },
+        {
+          "label": "B",
+          "content": "过期时会同步触发一次全量 RDB 持久化，阻塞主线程"
+        },
+        {
+          "label": "C",
+          "content": "大 key 的过期时间会被 Redis 自动取消，导致 key 永久驻留"
+        },
+        {
+          "label": "D",
+          "content": "过期 key 由后台线程异步删除，因此对主线程完全无影响"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "文中「过期执行耗时」一条说得很直接：如果 Bigkey 设置了过期时间，当过期后这个 key 会被删除，而大 key 的删除过程也比较耗时 —— 瓶颈在删除动作本身，跟是否过期触发无关。A 把过期与 RDB 持久化强行绑定，原文只说大 key 会让 RDB 恢复变慢，没说过期会触发持久化。B 与原文相反，过期时间不会被取消。C 是最容易踩的坑：即使有异步/惰性删除的机制，文中仍把大 key 删除列为一条独立危害，说明不能认为「异步就完全无影响」，释放大块内存本身的开销仍在。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "低频"
+      ],
+      "source_quote": "如果 Bigkey 设置了过期时间，当过期后，这个 key 会被删除，而大 key 的删除过程也比较耗时",
+      "_freq": "低频",
+      "_task_id": "Redis__大key__p01",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "bfc508fd66a8491b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "在作者列举的 Redis 使用场景中，「分布式锁」被归为哪一类？",
+      "options": [
+        {
+          "label": "A",
+          "content": "建议"
+        },
+        {
+          "label": "B",
+          "content": "可以"
+        },
+        {
+          "label": "C",
+          "content": "不建议"
+        },
+        {
+          "label": "D",
+          "content": "文中未提及"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文的清单里写的是「分布式锁（建议）」，和缓存、排行榜、计数器、地理位置应用、分布式 Session、布隆过滤器、共同关注同属建议一类。要注意作者把场景分成了三档：建议、可以、不建议，不要把所有场景都记成「建议」—— 例如分布式限流和分布式 ID 只是「可以」，消息队列和延迟消息则是「不建议」。D 明显不对，清单里明确列了这一项。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "分布式锁",
+        "中频"
+      ],
+      "source_quote": "分布式锁（建议）",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis的作用",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis的作用",
+      "_fingerprint": "c0fb07f2c79faf18",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "混合持久化 AOF 重写期间，主线程处理的那些操作命令最终是如何进入新的 AOF 文件的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "由主线程自己直接追加写入新的 AOF 文件"
+        },
+        {
+          "label": "B",
+          "content": "先暂存到 repl_backlog_buffer，等从节点来拉取时再补写"
+        },
+        {
+          "label": "C",
+          "content": "由重写子进程把它们以 RDB 方式合并进前半部分"
+        },
+        {
+          "label": "D",
+          "content": "先记录在重写缓冲区里，再以 AOF 方式写入到 AOF 文件"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "重写期间主线程的命令不会丢，也不会被子进程收走，而是先落到重写缓冲区，再以 AOF 格式追加到文件后半段。A 混淆了主线程与子进程的写入职责；B 把复制用的 repl_backlog_buffer 搬到了持久化场景；C 错在子进程已经 fork 完，看不到 fork 之后的新命令，所以增量只能走 AOF 方式。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "混合持久化",
+        "AOF",
+        "中频"
+      ],
+      "source_quote": "主线程处理的操作命令会被记录在重写缓冲区里，重写缓冲区里的增量命令会以 AOF 方式写入到 AOF 文件",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis有哪2种持久化方式？分别的优缺点是什么？__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "_fingerprint": "c23d776bda9a047a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "集群中一个主节点被判定下线后，它原本负责的哈希槽由谁接管？",
+      "options": [
+        {
+          "label": "A",
+          "content": "由集群中负载最低的主节点自动接管"
+        },
+        {
+          "label": "B",
+          "content": "这些哈希槽暂时不可用，需要人工执行 CLUSTER ADDSLOTS 重新分配"
+        },
+        {
+          "label": "C",
+          "content": "它的从节点之一被选举为新的主节点，接管原主节点负责的哈希槽"
+        },
+        {
+          "label": "D",
+          "content": "由所有剩余主节点平分这些哈希槽"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：如果下线的是主节点，它的从节点之一将被选举为新的主节点，接管原主节点负责的哈希槽，A 正确。B 的「负载最低的主节点」混淆了主从故障转移与重新分槽；C 忽略了从节点自动顶上的机制，故障转移正是为了避免人工介入；D 的平分会把槽拆散给多个节点，与「从节点之一接管」不符。注意只有主节点下线才会触发选举，从节点下线不会。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "故障转移",
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "如果下线的是主节点，它的从节点之一将被选举为新的主节点，接管原主节点负责的哈希槽。",
+      "_freq": "中频",
+      "_task_id": "Redis__集群如何实现故障转移",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "_fingerprint": "c5a1be2fd667dff2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从复制模式下，主节点和从节点分别可以处理哪些操作？",
+      "options": [
+        {
+          "label": "A",
+          "content": "主节点只处理写操作，从节点只处理读操作"
+        },
+        {
+          "label": "B",
+          "content": "主节点处理读写，从节点也能处理读写"
+        },
+        {
+          "label": "C",
+          "content": "主节点负责处理所有写操作和读操作，从节点只能处理读操作"
+        },
+        {
+          "label": "D",
+          "content": "从节点不处理任何客户端请求，只做数据备份"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文明确主节点负责所有写操作和读操作，从节点复制主节点数据且只能处理读操作。A 漏掉了主节点也承担读；B 错在从节点是可读不可写，往从节点写会造成数据不一致；D 忽略了从节点对外提供读服务这一核心用途。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "高频"
+      ],
+      "source_quote": "主节点负责处理所有写操作和读操作，而从节点则复制主节点的数据，并且只能处理读操作。",
+      "_freq": "高频",
+      "_task_id": "Redis__主从复制模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式",
+      "_fingerprint": "c8832b19dfbedb3e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "哨兵模式虽然解决了自动故障转移，但它仍然存在的明显限制是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "不支持读写分离，从节点无法承担读请求"
+        },
+        {
+          "label": "B",
+          "content": "主节点的写能力和存储容量仍然受限于单机的硬件配置"
+        },
+        {
+          "label": "C",
+          "content": "主节点故障时无法自动完成故障转移"
+        },
+        {
+          "label": "D",
+          "content": "每个主节点只能挂一个从节点，无法一主多从"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：哨兵模式依然存在一个明显的限制——主节点的写能力和存储容量仍然受限于单机的硬件配置，无法满足更大规模的数据处理需求，B 对。A 与原文相反，哨兵模式是在主从模式基础上实现的，支持读写分离；C 恰恰是哨兵已经解决的问题；D 的一主一从限制文中没有提到。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "分片集群",
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "但是哨兵模式依然存在一个明显的限制——主节点的写能力和存储容量仍然受限于单机的硬件配置，无法满足更大规模的数据处理需求。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-Cluster分片集群",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群",
+      "_fingerprint": "ca946cfcd11aff4b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "用布隆过滤器拦截缓存穿透时，它返回「不存在」意味着什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "该 key 可能存在于数据库中，仍需继续查询"
+        },
+        {
+          "label": "B",
+          "content": "该 key 一定不存在"
+        },
+        {
+          "label": "C",
+          "content": "该 key 一定存在于数据库中"
+        },
+        {
+          "label": "D",
+          "content": "布隆过滤器发生了误判，需要重建过滤器"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文：布隆过滤器返回不存在时就一定不存在；但布隆过滤器说存在，那可能真的存在也可能不存在（有误判），C 正确。A、B、D 都把误判的方向搞反了——误判只发生在「说存在」这一侧，说不存在时是确定的，可以放心直接返回。记住口诀：说没有就一定没有，说有不一定有。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存穿透",
+        "高频"
+      ],
+      "source_quote": "布隆过滤器返回不存在时就一定不存在，但是如果布隆过滤器说存在那就可能存在也可能不存在",
+      "_freq": "高频",
+      "_task_id": "Redis__缓存穿透",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存穿透",
+      "_fingerprint": "ce2da2304180f4e1",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "到 Redis 6.0 之后，Redis 的网络模型是怎样的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "网络 I/O 与命令执行都由多个线程并行处理"
+        },
+        {
+          "label": "B",
+          "content": "网络 I/O 采用多线程处理，但命令的执行仍然使用单线程"
+        },
+        {
+          "label": "C",
+          "content": "网络 I/O 仍然保持单线程轮询，只有命令执行改为多线程"
+        },
+        {
+          "label": "D",
+          "content": "网络 I/O 与命令执行都严格保持单线程处理"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "Redis 6.0 为了提高网络 I/O 的并行度，把网络 I/O 改成多线程处理；但命令的执行仍然使用单线程，所以不存在多个线程同时执行命令。B、C 把命令执行说成多线程、或把网络 I/O 说成单线程，都与本节结论相反；D 否定了 6.0 在网络 I/O 上引入多线程这一点。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "网络模型",
+        "多线程",
+        "中频"
+      ],
+      "source_quote": "但是对于命令的执行，Redis 仍然使用单线程来处理",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis的网络模型是怎样的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis的网络模型是怎样的？",
+      "_fingerprint": "ce88b9e75dc0cf7c",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "配置 `min-replicas-to-write` 和 `min-replicas-max-lag` 的主要作用是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "不保证 N 个从节点都会接受写入，但能在可用从节点不足时把写入丢失的风险窗口限制在指定的秒数内"
+        },
+        {
+          "label": "B",
+          "content": "保证 N 个从节点都会接受写入操作，从而实现强一致复制"
+        },
+        {
+          "label": "C",
+          "content": "限制主节点每秒处理的写命令数量，避免从节点复制积压"
+        },
+        {
+          "label": "D",
+          "content": "主节点宕机后自动从从节点中选举出新主节点"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文对该选项的说明是：它不保证 N 个从节点都会接受写入操作，但会在可用从节点不足的情况下，将写入丢失的风险窗口限制在指定的秒数内，D 对。A 正好说反——文中明确「不保证」；B 把它当成了限流手段，与复制无关；C 是哨兵的选主职责，不是这两个配置项的能力。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "脑裂",
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "此选项不保证 N 个从节点都会接受写入操作，但会在可用从节点不足的情况下，将写入丢失的风险窗口限制在指定的秒数内。",
+      "_freq": "中频",
+      "_task_id": "Redis__主从切换如何减少数据丢失(脑裂)？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "_fingerprint": "d0483b382f8b8d7b",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "借助消息队列的重试机制来确保缓存删除成功，这个方案的主要缺点是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "无法保证缓存最终被删除，一致性反而更差"
+        },
+        {
+          "label": "B",
+          "content": "会产生大量 binlog，增加主库写入压力"
+        },
+        {
+          "label": "C",
+          "content": "对代码侵入性比较强，需要改造原本业务的代码"
+        },
+        {
+          "label": "D",
+          "content": "只适用于读多写少的场景"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "消息队列的重试机制恰恰是用来保证删除最终成功的，代价是业务代码要接入消息发送/消费，侵入性强；正因如此原文才给出替代方案：用 canal 监听 binlog 来删除缓存，对业务代码零改造。A 说反了，B 把 binlog 当成消息队列的产物，C 的场景限制原文没有提及。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存一致性",
+        "中频"
+      ],
+      "source_quote": "为了确保能够成功删除缓存确保高一致性可以通过消息队列来删除缓存，通过消息队列的重试机制来确保缓存删除成功，但是这样对代码侵入性比较强，因为需要改造原本业务的代码，可以通过canal监听binlog的方式来删除缓存",
+      "_freq": "中频",
+      "_task_id": "Redis__如何保证-redis-和-mysql-数据缓存一致性问题？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "_fingerprint": "d4338d33b4515023",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 中提供的限流组件叫什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "RLock"
+        },
+        {
+          "label": "B",
+          "content": "RSemaphore"
+        },
+        {
+          "label": "C",
+          "content": "RRateLimiter"
+        },
+        {
+          "label": "D",
+          "content": "RBucket"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：在 Redisson 框架中，已经给我们提供了一个限流器 —— RRateLimiter，用法是 redissonClient.getRateLimiter(key) 拿到实例后 trySetRate 设置速率、tryAcquire() 尝试获取。B 的 RLock 是分布式锁；C 的 RSemaphore 是分布式信号量，虽然也能用来做并发数限制，但不是文中说的那个限流器；D 的 RBucket 是通用对象容器。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "限流",
+        "Redisson",
+        "低频"
+      ],
+      "source_quote": "在 Redisson框架中，已经给我们提供了一个限流器——RRateLimiter",
+      "_freq": "低频",
+      "_task_id": "Redis__基于Redisson实现限流",
+      "_source_file": "md/Redis.md",
+      "_source_section": "限流 > 基于Redisson实现限流",
+      "_fingerprint": "d4501625d867fcf7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "I/O 多路复用中的「多路」和「复用」分别指的是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "多个 Redis 实例 / 复用同一个 CPU 核"
+        },
+        {
+          "label": "B",
+          "content": "多个网络连接的客户端 / 复用同一个线程（单进程）"
+        },
+        {
+          "label": "C",
+          "content": "多个 Redis 数据库 / 复用同一份 key 空间"
+        },
+        {
+          "label": "D",
+          "content": "多个磁盘文件描述符 / 复用同一个磁盘缓冲区"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确：多路指的是多个网络连接的客户端，复用指的是复用同一个线程（单进程）。这也是 Redis 能在单线程前提下扛住大量并发客户端的前提。A、C、D 都是把「多路」安到别的维度上，与原文不符。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "IO多路复用",
+        "低频"
+      ],
+      "source_quote": "这里“多路”指的是多个网络连接客户端，“复用”指的是复用同一个线程",
+      "_freq": "低频",
+      "_task_id": "Redis__Redis为什么快？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis为什么快？",
+      "_fingerprint": "d5cd55519264ab02",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "为什么 Redis 主从节点之间会出现数据不一致？",
+      "options": [
+        {
+          "label": "A",
+          "content": "主从节点间的命令复制是异步的，主节点本地执行完就向客户端返回结果，不会等从节点实际执行完"
+        },
+        {
+          "label": "B",
+          "content": "从节点先在本地执行写命令再向主节点确认，导致主节点的数据落后于从节点"
+        },
+        {
+          "label": "C",
+          "content": "从节点会把读请求的结果缓存起来，缓存未过期前不再向主节点同步"
+        },
+        {
+          "label": "D",
+          "content": "主从节点使用了不同的过期键删除策略，同一个 key 在两端的存活时间不同"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：主从节点间的命令复制是异步进行的，所以无法实现强一致性保证；主节点收到写命令后发给从节点，但不会等从节点实际执行完再返回，而是自己本地执行完就返回结果，从节点还没执行同步过来的命令时数据就不一致了，B 对。A 把复制方向说反了，写命令是主节点发给从节点；C 的「从节点缓存读结果」不是不一致的成因；D 的过期策略差异原文未提，也不是本节讨论的不一致来源。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "全量同步",
+        "中频"
+      ],
+      "source_quote": "之所以会出现主从数据不一致的现象，是因为主从节点间的命令复制是异步进行的，所以无法实现强一致性保证（主从数据时时刻刻保持一致）。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何应对主从数据不一致？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "_fingerprint": "dbb467739573fda2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "只配置了主节点信息的多个哨兵，是如何相互发现并组成哨兵集群的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "通过 Redis 的发布者/订阅者机制：哨兵把自己的 IP 和端口发布到 `__sentinel__:hello` 频道，其他哨兵订阅该频道后建立连接"
+        },
+        {
+          "label": "B",
+          "content": "哨兵向主节点发送 INFO 命令，从返回结果里拿到其他哨兵的地址"
+        },
+        {
+          "label": "C",
+          "content": "哨兵节点之间周期性通过 Gossip 协议交换彼此的地址"
+        },
+        {
+          "label": "D",
+          "content": "哨兵启动时读取同一份配置文件，文件里记录了所有哨兵的地址"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文：哨兵节点之间通过 Redis 的发布者/订阅者机制相互发现，哨兵 A 把自己的 IP 和端口发布到 __sentinel__:hello 频道，订阅了该频道的哨兵 B、C 就能拿到 A 的地址并与其建立连接，B、C 之间也因此互联，哨兵集群就此形成，C 对。A 的 INFO 命令是哨兵用来获取从节点列表的，拿不到哨兵地址；B 的 Gossip 是 Redis Cluster 节点间的通信协议；D 与原文「不需要填其他哨兵节点的信息」直接矛盾。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "高频"
+      ],
+      "source_quote": "哨兵节点之间是通过 Redis 的**发布者/订阅者机制**来相互发现的。",
+      "_freq": "高频",
+      "_task_id": "Redis__哨兵集群是如何组成的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "_fingerprint": "dcc2c3181f07383d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "用 ZCARD 拿到窗口内的成员数量后，判定是否限流的规则是什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "大于等于限制数量则不插入并返回失败，否则插入并返回成功"
+        },
+        {
+          "label": "B",
+          "content": "大于限制数量则拒绝，等于限制数量时放行"
+        },
+        {
+          "label": "C",
+          "content": "大于等于限制数量时仍然插入，只记录一条告警"
+        },
+        {
+          "label": "D",
+          "content": "小于限制数量时反而拒绝，说明窗口已失效"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文第 4 步：最后再使用 ZCARD 命令获取有序集合中的成员数量，如果大于等于限制数量，则不插入并返回失败，否则插入并返回成功。注意边界是「大于等于」（≥）而不是「大于」（>），A 就把边界放宽了一次请求。C 与原文相反，超限是不插入的；另外按文中步骤，新增元素发生在 ZREMRANGEBYSCORE 与 ZCARD 之前，C 的说法在顺序上也不成立。D 逻辑颠倒。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "滑动窗口",
+        "限流",
+        "中频"
+      ],
+      "source_quote": "如果大于等于限制数量，则不插入并返回失败，否则插入并返回成功。",
+      "_freq": "中频",
+      "_task_id": "Redis__如何基于Redis实现滑动窗口限流？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "_fingerprint": "e165c7b8ed8c503a",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Set 类型在什么情况下会使用整数集合作为底层结构？",
+      "options": [
+        {
+          "label": "A",
+          "content": "集合中只包含整数值并且元素数量较少时"
+        },
+        {
+          "label": "B",
+          "content": "集合只包含短字符串时"
+        },
+        {
+          "label": "C",
+          "content": "集合中元素数量很多时"
+        },
+        {
+          "label": "D",
+          "content": "只要给这个 Set 开启了压缩配置"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文说整数集合用于存储 Set 类型的键，条件是集合中只包含整数值并且元素数量较少。含短字符串时用不上整数集合（它只存整数）；数量多时会转为哈希表；原文没有提到靠配置开关决定。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "整数集合",
+        "低频"
+      ],
+      "source_quote": "整数集合用于存储Set类型的键，当集合中只包含整数值并且元素数量较少时。",
+      "_freq": "低频",
+      "_task_id": "Redis__整数集合（IntSet）",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 整数集合（IntSet）",
+      "_fingerprint": "e1d8acc430f55f3e",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "文中提出「合理地设置缓存 TTL」这一手段，主要针对的是什么问题？",
+      "options": [
+        {
+          "label": "A",
+          "content": "保证大 key 始终命中内存，不会被换出到磁盘"
+        },
+        {
+          "label": "B",
+          "content": "让大 key 在过期后自动被分散到集群其它节点"
+        },
+        {
+          "label": "C",
+          "content": "避免过期缓存删除不及时而增大 key 大小"
+        },
+        {
+          "label": "D",
+          "content": "避免大 key 在生成 RDB 快照时被遗漏"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文把「合理设置缓存 TTL」加粗单列，目的写得很明确：避免过期缓存删除不及时而增大 key 大小 —— 也就是说 TTL 是为了让数据及时失效，防止一个 key 不断膨胀成大 key。A、B、D 都把 TTL 的作用挪到了别处（内存淘汰、集群分布、RDB 持久化），这些都不是文中给出的理由。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "中频"
+      ],
+      "source_quote": "避免过期缓存删除不及时而增大 key 大小。",
+      "_freq": "中频",
+      "_task_id": "Redis__大key__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "e32bc18ecf673592",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "关于 Redis Cluster 的最小节点配置，下列说法正确的是？",
+      "options": [
+        {
+          "label": "A",
+          "content": "至少 3 个节点（1 主 2 从），从节点可以分担读请求"
+        },
+        {
+          "label": "B",
+          "content": "至少 6 个节点（3 主 3 从），从节点同样对外提供读写请求"
+        },
+        {
+          "label": "C",
+          "content": "至少 6 个节点（3 主 3 从），主节点提供读写，从节点只作为故障转移使用"
+        },
+        {
+          "label": "D",
+          "content": "至少 2 个节点（1 主 1 从），主节点只写、从节点只读"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：Redis Cluster 集群节点最小配置 6 个节点以上（3 主 3 从），其中主节点提供读写操作，从节点作为备用节点，不提供请求，只作为故障转移使用，C 对。A、D 的节点数低于最小配置；B 错在让从节点对外提供读写，这与哨兵模式的读写分离不同，是 Cluster 最容易记混的一点。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "分片集群",
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "Redis cluster集群节点最小配置6个节点以上（3主3从），其中主节点提供读写操作，从节点作为备用节点，不提供请求，只作为故障转移使用。",
+      "_freq": "中频",
+      "_task_id": "Redis__Redis-Cluster分片集群",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群",
+      "_fingerprint": "e38ca231be1798d2",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis Cluster 是如何计算一个 Key 应该落到哪个哈希槽的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "先用 MD5 对 Key 取哈希，再对集群节点数量求余数"
+        },
+        {
+          "label": "B",
+          "content": "由客户端随机挑一个槽写入，之后由集群自动迁移到目标节点"
+        },
+        {
+          "label": "C",
+          "content": "按 Key 的首字母顺序把键空间平均分配给各个节点"
+        },
+        {
+          "label": "D",
+          "content": "先用 CRC16 算法对 Key 计算得到一个结果，再把结果对 16384 求余数"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：存取 Key 时 Redis 会根据 CRC16 算法得出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，A 对。B 的算法和对节点数取模都是一致性哈希那套思路，Cluster 用的是固定槽位 + CRC16；C、D 都不是哈希槽的映射方式，且会导致同一个 key 每次落到不同节点。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希槽",
+        "中频"
+      ],
+      "source_quote": "当我们在存取 Key 的时候，Redis 会根据 CRC16 算法得出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽。",
+      "_freq": "中频",
+      "_task_id": "Redis__客户端是怎样知道该访问哪个分片的_",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > Redis Cluster分片集群 > 客户端是怎样知道该访问哪个分片的?",
+      "_fingerprint": "e8148ff511960c14",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 的可重入锁在 Redis 中是用什么结构存储锁信息的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "String 结构，value 为 UUID:threadId"
+        },
+        {
+          "label": "B",
+          "content": "List 结构，按加锁顺序保存每个线程的标识"
+        },
+        {
+          "label": "C",
+          "content": "ZSet 结构，score 保存重入次数"
+        },
+        {
+          "label": "D",
+          "content": "Hash 结构，field 为 UUID:threadId，value 为重入次数"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文明确：Redisson 使用 Redis 的 Hash 结构存储锁的信息，key 是锁的名称，value 是一个 Hash，其中 field 为 UUID:threadId，value 为重入次数（int）。UUID 用于区分不同 JVM 实例，threadId 用于区分同一 JVM 内的不同线程 —— 这两个维度合起来正好构成 Hash 的 field，这也是「可重入」能成立的前提。A 只保留了标识信息，没有地方记重入次数；C、D 都不是文中说的结构。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "Redisson",
+        "高频"
+      ],
+      "source_quote": "Redisson 使用 Redis 的 **Hash 结构** 存储锁的信息",
+      "_freq": "高频",
+      "_task_id": "Redis__原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 可重入锁 > 原理",
+      "_fingerprint": "e852fab9497fdb83",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "哨兵配置中 quorum 的值一般建议如何设置？",
+      "options": [
+        {
+          "label": "A",
+          "content": "与哨兵个数相等"
+        },
+        {
+          "label": "B",
+          "content": "哨兵个数的三分之一加 1"
+        },
+        {
+          "label": "C",
+          "content": "哨兵个数的二分之一加 1，并且哨兵节点数量应为奇数"
+        },
+        {
+          "label": "D",
+          "content": "固定设为 2，与哨兵个数无关"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：quorum 建议设置为哨兵个数的二分之一加 1，例如 3 个哨兵就设 2、5 个哨兵设 3，而且哨兵节点的数量应该是奇数，C 对。A 要求全票通过会让故障判定过于保守，任何一名哨兵失联就切不了；B 的「三分之一加 1」在 3 个哨兵时只有 2，看似巧合相同，但哨兵数变多后会低于半数，起不到多数派的作用；D 忽略了 quorum 要随哨兵规模调整。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "中频"
+      ],
+      "source_quote": "quorum 的值建议设置为**哨兵个数的二分之一加 1**，例如 3 个哨兵就设置 2，5 个哨兵设置为 3，而且哨兵节点的数量应该是**奇数**。",
+      "_freq": "中频",
+      "_task_id": "Redis__为什么哨兵节点至少要有-3-个？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "_fingerprint": "ea58f31e044757a5",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "要保证 Redis 中多条命令的原子性，通常怎么做？",
+      "options": [
+        {
+          "label": "A",
+          "content": "用 MULTI/EXEC 事务，因为它比 Lua 更适合做简单的逻辑判断"
+        },
+        {
+          "label": "B",
+          "content": "用 pipeline 批量打包这些命令，pipeline 天然保证原子性"
+        },
+        {
+          "label": "C",
+          "content": "把多个操作写到一个 Lua 脚本中，Redis 把整个脚本作为一个整体执行且执行过程中不会被其他命令打断"
+        },
+        {
+          "label": "D",
+          "content": "给涉及的 key 加分布式锁，Redis 会自动串行化这些命令"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "多条命令想一起执行不被打断，就把它们写进一个 Lua 脚本：Redis 会把整个脚本作为一个整体执行，期间不会被其他命令打断。A 错在把 Lua 的优势说反了——能做简单逻辑判断的恰恰是 Lua 脚本，这是 Redis 事务做不到的。B 错：pipeline 只是一次性打包发送、减少网络往返，不提供原子性保证。D 是外部手段，不是 Redis 自身的保证。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "原子性",
+        "Lua",
+        "事务",
+        "高频"
+      ],
+      "source_quote": "如果要保证多条命令的原子性的话，可以考虑用 lua 脚本，将多个操作写到一个 Lua 脚本中，Redis 会把整个 Lua 脚本作为一个整体执行，在执行的过程中不会被其他命令打断，从而保证了 Lua 脚本中操作的原子性。",
+      "_freq": "高频",
+      "_task_id": "Redis__如何实现redis-原子性？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "如何实现redis 原子性？",
+      "_fingerprint": "eaf0267b604a3778",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "跳表在创建节点时，生成的随机数小于多少会让层数增加一层？",
+      "options": [
+        {
+          "label": "A",
+          "content": "0.5"
+        },
+        {
+          "label": "B",
+          "content": "0.25"
+        },
+        {
+          "label": "C",
+          "content": "0.75"
+        },
+        {
+          "label": "D",
+          "content": "1"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文说创建节点时会生成范围为 [0-1] 的一个随机数，如果这个随机数小于 0.25（相当于概率 25%），那么层数就增加 1 层。0.5、0.75、1 都不是原文给出的阈值。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "中频"
+      ],
+      "source_quote": "会生成范围为[0-1]的一个随机数，如果这个随机数小于 0.25（相当于概率 25%），那么层数就增加 1 层",
+      "_freq": "中频",
+      "_task_id": "Redis__跳表是怎么设置层高的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么设置层高的？",
+      "_fingerprint": "ebd2119a08bfd283",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redis 引入哨兵模式主要解决什么问题？",
+      "options": [
+        {
+          "label": "A",
+          "content": "解决主节点写能力和存储容量受单机硬件配置限制的问题"
+        },
+        {
+          "label": "B",
+          "content": "解决数据分片存储与水平扩容的问题"
+        },
+        {
+          "label": "C",
+          "content": "解决 repl backlog buffer 溢出导致反复全量复制的问题"
+        },
+        {
+          "label": "D",
+          "content": "解决主从模式无法自动容错及恢复的问题，实现主从节点故障转移"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文：为了解决主从模式的无法自动容错及恢复的问题，Redis 引入了哨兵模式的集群架构，作用是实现主从节点故障转移，B 对。A 是哨兵模式仍然存在的限制，要靠 Redis Cluster 才能突破；C 是 Cluster 的分片能力，不是哨兵的职责；D 属于主从复制缓冲区的问题，与哨兵无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "为了解决主从模式的无法自动容错及恢复的问题，Redis引入了一种哨兵模式的集群架构，作用是实现**主从节点故障转移**。",
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵模式",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式",
+      "_fingerprint": "ecb12835ebf5a679",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "跳表在查询元素时为什么能做到快速定位？",
+      "options": [
+        {
+          "label": "A",
+          "content": "节点按分数有序排列，可以对节点数组做二分查找"
+        },
+        {
+          "label": "B",
+          "content": "每个节点都直接保存了指向目标节点的指针"
+        },
+        {
+          "label": "C",
+          "content": "所有节点都存放在连续内存中，可以随机访问"
+        },
+        {
+          "label": "D",
+          "content": "查询时可以跳过中间的部分元素"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文说在跳表中查询元素的时候可以跳过中间的部分元素，从而达到快速定位的效果。二分查找要求能随机访问，跳表是链表结构做不到；节点只保存后续指针，不会直接指向目标节点；连续内存是压缩列表 / listpack 的特点，不是跳表快的原因。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "跳表",
+        "低频"
+      ],
+      "source_quote": "在跳表中查询元素的时候可以跳过中间的部分元素, 从而达到快速定位的效果",
+      "_freq": "低频",
+      "_task_id": "Redis__跳表是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "_fingerprint": "ed6ec7fd137dd4d7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 看门狗检查锁的超时时间默认是多少，如何修改？",
+      "options": [
+        {
+          "label": "A",
+          "content": "默认 30 秒，只能通过升级 Redisson 版本调整"
+        },
+        {
+          "label": "B",
+          "content": "默认 10 秒，可通过修改 Config.lockWatchdogTimeout 另行指定"
+        },
+        {
+          "label": "C",
+          "content": "默认 30 秒，可通过修改 Config.lockWatchdogTimeout 另行指定"
+        },
+        {
+          "label": "D",
+          "content": "默认 60 秒，可通过修改 Config.watchdogTimeout 另行指定"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：默认情况下，看门狗的检查锁的超时时间是 30 秒钟，也可以通过修改 Config.lockWatchdogTimeout 来另行指定。B 错在「只能升级版本」，配置项本来就是留给你调的。C 把默认时间记成 10 秒。D 除了时间错，配置项名字也少了一截（应为 lockWatchdogTimeout），属于易混写法。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "看门狗",
+        "Redisson",
+        "中频"
+      ],
+      "source_quote": "默认情况下，看门狗的检查锁的超时时间是30秒钟，也可以通过修改Config.lockWatchdogTimeout来另行指定",
+      "_freq": "中频",
+      "_task_id": "Redis__看门狗",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 看门狗",
+      "_fingerprint": "f155b1acc2eb5ee3",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "Redisson 引入看门狗（watchdog）机制主要为了解决什么问题？",
+      "options": [
+        {
+          "label": "A",
+          "content": "解决主从切换时锁丢失的问题"
+        },
+        {
+          "label": "B",
+          "content": "避免锁超时：在 Redisson 实例被关闭前不断延长锁的有效期，让锁因业务执行完而释放"
+        },
+        {
+          "label": "C",
+          "content": "解决加锁失败后的排队与重试问题"
+        },
+        {
+          "label": "D",
+          "content": "减少加锁时的网络往返次数，提高加锁性能"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文第一句就点明了目的：为了避免锁超时，Redisson 中引入了看门狗机制，它可以在 Redisson 实例被关闭前不断延长锁的有效期，确保锁是因为业务执行完而释放的，而不是因为业务阻塞或者运行时间长导致的释放。A 的主从切换锁失效是另一个话题（Redlock 一类），文中没说看门狗能解决；B 是获取锁阶段的问题，看门狗作用在持有锁之后；D 与续期机制无关。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "看门狗",
+        "Redisson",
+        "高频"
+      ],
+      "source_quote": "为了避免锁超时，Redisson中引入了看门狗的机制，他可以帮助我们在Redisson实例被关闭前，不断的延长锁的有效期",
+      "_freq": "高频",
+      "_task_id": "Redis__看门狗",
+      "_source_file": "md/Redis.md",
+      "_source_section": "分布式锁 > 看门狗",
+      "_fingerprint": "f1a01d9791c013b7",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "哨兵完成主从切换后，通过什么机制把新主节点的信息通知给客户端？",
+      "options": [
+        {
+          "label": "A",
+          "content": "客户端主动轮询哨兵暴露的 HTTP 接口获取主节点地址"
+        },
+        {
+          "label": "B",
+          "content": "哨兵向客户端发送 SLAVEOF 命令"
+        },
+        {
+          "label": "C",
+          "content": "Redis 的发布者/订阅者机制"
+        },
+        {
+          "label": "D",
+          "content": "通过 Gossip 协议在集群节点之间传播，客户端自行感知"
+        }
+      ],
+      "answer": [
+        "C"
+      ],
+      "analysis": "原文：通知客户端新主节点的 IP 和信息是通过 Redis 的发布者/订阅者机制来实现的，哨兵提供多个订阅频道，不同频道对应主从切换过程中的不同关键事件，B 对。A 的 HTTP 接口不存在；C 的 SLAVEOF 是把旧主节点降级为从节点时用的命令，不是通知客户端的手段；D 的 Gossip 是 Redis Cluster 节点间的通信协议，与哨兵通知客户端无关。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哨兵",
+        "故障转移",
+        "中频"
+      ],
+      "source_quote": "3. 通知客户端的新主节点的ip和信息(通过 Redis 的发布者/订阅者机制来实现)",
+      "_freq": "中频",
+      "_task_id": "Redis__哨兵机制是如何工作的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "_fingerprint": "f2cf859e0d00e329",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主节点平均每秒产生 1 MB 写命令，从节点断线后平均要 5 秒才能重连，repl_backlog_buffer 的大小至少不能低于多少？",
+      "options": [
+        {
+          "label": "A",
+          "content": "1 MB"
+        },
+        {
+          "label": "B",
+          "content": "5 MB"
+        },
+        {
+          "label": "C",
+          "content": "10 MB"
+        },
+        {
+          "label": "D",
+          "content": "20 MB"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "按 second * write_size_per_second 估算：5 秒 × 1 MB/s = 5 MB，低于这个数新写的命令就会把还没被从节点取走的旧数据覆盖掉，从而被迫退化成全量同步。10 MB 是原文在此基础上再放大 2 倍留余量的推荐值，不是下限；1 MB 和 20 MB 都与估算结果不符。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "增量同步",
+        "中频"
+      ],
+      "source_quote": "如果主服务器平均每秒产生 1 MB 的写命令，而从服务器断线之后平均要 5 秒才能重新连接主服务器。那么 repl_backlog_buffer 大小就不能低于 5 MB",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "_fingerprint": "f3cbb99e41fef8cf",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "渐进式 rehash 期间查找一个 key，Redis 的查找顺序是怎样的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "先查哈希表 2，没找到再查哈希表 1"
+        },
+        {
+          "label": "B",
+          "content": "只查哈希表 1"
+        },
+        {
+          "label": "C",
+          "content": "两个哈希表同时遍历，谁先命中用谁"
+        },
+        {
+          "label": "D",
+          "content": "先查哈希表 1，没找到再查哈希表 2"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文说查找一个 key 的值，先会在哈希表 1 里查找，没找到就继续到哈希表 2 里查找。因为迁移是逐步进行的，数据可能还在旧表也可能已经迁到新表，两张表都得查；只查一张表会漏数据，同时遍历则做不到“没找到再到另一张表”的顺序语义。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "哈希表",
+        "rehash",
+        "中频"
+      ],
+      "source_quote": "查找一个 key 的值的话，先会在「哈希表 1」 里面进行查找，如果没找到，就会继续到「哈希表 2」 里面进行查找",
+      "_freq": "中频",
+      "_task_id": "Redis__哈希表是怎么扩容的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "_fingerprint": "f61b7094820c8e11",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "SDS 在原本字符数组之上增加了哪三个元数据？",
+      "options": [
+        {
+          "label": "A",
+          "content": "len、free、buf"
+        },
+        {
+          "label": "B",
+          "content": "size、capacity、flags"
+        },
+        {
+          "label": "C",
+          "content": "len、alloc、buf"
+        },
+        {
+          "label": "D",
+          "content": "len、alloc、flags"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "原文明确 SDS 在字符数组之上增加的三个元数据是 len、alloc、flags，目的是解决 C 语言字符串的缺陷。len、free、buf 是早期版本 SDS 的写法（buf 本身还是那个字符数组），size / capacity 是其它语言里动态数组的常见字段命名，都不是 Redis 现在这套 SDS 的三个元数据。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "SDS",
+        "中频"
+      ],
+      "source_quote": "SDS 在原本字符数组之上，增加了三个元数据：len、alloc、flags, 主要是为了解决 C 语言字符串的缺陷",
+      "_freq": "中频",
+      "_task_id": "Redis__简单动态字符串（SDS,-Simple-Dynamic-Strings)",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "_fingerprint": "f644af5a7f30f12d",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "文中「处理 big key」里的「集群模式分散」具体指什么做法？",
+      "options": [
+        {
+          "label": "A",
+          "content": "把大 key 复制到所有从节点，用读写分离提升读性能"
+        },
+        {
+          "label": "B",
+          "content": "使用 Cluster 集群模式，将大 key 分散到不同服务器上，加快响应速度"
+        },
+        {
+          "label": "C",
+          "content": "将大 key 存放在单独的数据库中，从而实现对大键的部分迁移"
+        },
+        {
+          "label": "D",
+          "content": "在业务代码中按日期、用户尾号等维度拆分，用小键替代大键"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文对「集群模式分散」的表述是：使用 Cluster 集群模式，将大 key 分散到不同服务器上，加快响应速度。C 和 D 都是真实存在的方案，但分别是「部分迁移」和「业务代码层拆分」，属于同一节里相邻条款的易混项，不是集群模式分散。B 的复制到所有从节点文中未提及，而且复制只会让每个节点都存一份大 key，反而加重内存与复制压力。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "大key",
+        "低频"
+      ],
+      "source_quote": "使用 Cluster 集群模式，将大 key 分散到不同服务器上，加快响应速度。",
+      "_freq": "低频",
+      "_task_id": "Redis__大key__p02",
+      "_source_file": "md/Redis.md",
+      "_source_section": "大key",
+      "_fingerprint": "f789fcc4c7e2acf0",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从第一次建立连接时的全量同步，是如何把数据交给从节点的？",
+      "options": [
+        {
+          "label": "A",
+          "content": "把主节点内存中的写命令逐条回放给从节点"
+        },
+        {
+          "label": "B",
+          "content": "生成 RDB 文件，将 master 节点的所有数据都发送给 slave 节点"
+        },
+        {
+          "label": "C",
+          "content": "由从节点拉取主节点的 AOF 文件并重放"
+        },
+        {
+          "label": "D",
+          "content": "通过 repl_backlog_buffer 中的增量数据补发给从节点"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "首次同步走的是 RDB：主节点生成 RDB 文件把全部数据送给从节点，从节点加载后再由主节点补发期间的写命令。A 是命令传播阶段的形态，不适合一次性传全量；C 的 AOF 重放不是主从同步的方式；D 的 repl_backlog_buffer 是断线重连后做增量补数据用的，不是首次同步的通道。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "全量同步",
+        "RDB",
+        "中频"
+      ],
+      "source_quote": "生成RDB文件将master节点的所有数据都发送给slave节点",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "_fingerprint": "fa7f6fb0b0d3365f",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "在 Redis 7.0 中，压缩列表数据结构被什么取代了？",
+      "options": [
+        {
+          "label": "A",
+          "content": "跳表"
+        },
+        {
+          "label": "B",
+          "content": "listpack"
+        },
+        {
+          "label": "C",
+          "content": "intset"
+        },
+        {
+          "label": "D",
+          "content": "quicklist"
+        }
+      ],
+      "answer": [
+        "B"
+      ],
+      "analysis": "原文明确在 Redis 7.0 中，压缩列表数据结构已经废弃了，交由 listpack 数据结构来实现。跳表是不满足小规模条件时 Zset 的另一条编码路径；intset 用于只含整数的 Set；quicklist 是 List 的底层结构，都与取代压缩列表无关。",
+      "difficulty": "EASY",
+      "score": 1,
+      "category": "redis",
+      "tags": [
+        "Zset",
+        "压缩列表",
+        "listpack",
+        "中频"
+      ],
+      "source_quote": "在 Redis 7.0 中，压缩列表数据结构已经废弃了，交由 listpack 数据结构来实现了",
+      "_freq": "中频",
+      "_task_id": "Redis__Zset-底层是怎么实现的？",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "_fingerprint": "fa99416227df3fc9",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从之间网络断开又恢复后，主节点依据什么决定做增量同步还是全量同步？",
+      "options": [
+        {
+          "label": "A",
+          "content": "只要连接恢复就一律做增量同步"
+        },
+        {
+          "label": "B",
+          "content": "一律重新做全量同步，重新生成 RDB"
+        },
+        {
+          "label": "C",
+          "content": "由从节点自己比较 repl-backlog-size 配置后决定"
+        },
+        {
+          "label": "D",
+          "content": "对比主从的 offset：从节点需要的数据还在缓冲区里就做增量同步，否则做全量同步"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "重连后从节点上报自己的复制偏移量，主节点拿自己的 offset 与之对比来决定同步方式：差异数据还在 repl_backlog_buffer 里就只补增量，已经被环形缓冲区覆盖掉就只能重新全量。A 忽略了缓冲区可能被覆盖的情况，B 则把恢复成本无谓地放大；C 错在决定权在主节点比较 offset，不在从节点的配置。",
+      "difficulty": "HARD",
+      "score": 3,
+      "category": "redis",
+      "tags": [
+        "主从复制",
+        "增量同步",
+        "高频"
+      ],
+      "source_quote": "从节点会将自己的复制偏移量发送给主节点，主节点会根据自己的offset和从节点的offset进行对比，从而来决定进行哪种同步操作，如果从节点需要的数据还在缓冲区里，那就进行增量同步，反之就进行全量同步。",
+      "_freq": "高频",
+      "_task_id": "Redis__主从复制原理",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "_fingerprint": "fdeb1bb933c50fad",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "针对「大量数据同时过期」引发的缓存雪崩，原文给出的应对方法是哪一项？",
+      "options": [
+        {
+          "label": "A",
+          "content": "给不同的 Key 的 TTL 添加随机值"
+        },
+        {
+          "label": "B",
+          "content": "服务熔断或请求限流机制"
+        },
+        {
+          "label": "C",
+          "content": "构建 Redis 缓存高可靠集群，避免服务单点故障"
+        },
+        {
+          "label": "D",
+          "content": "对查询不到的 key 缓存空值"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "analysis": "原文把雪崩的应对按成因分成两类：大量数据同时过期 → 给不同的 Key 的 TTL 添加随机值、加互斥锁；Redis 故障宕机 → 服务熔断或请求限流、构建高可靠集群。C 属于第一类，正确。A、B 是针对「Redis 宕机」的措施，对 key 集中过期无效；D 的缓存空值是缓存穿透的方案，与 TTL 打散无关。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "缓存雪崩",
+        "中频"
+      ],
+      "source_quote": "给不同的Key的TTL添加随机值",
+      "_freq": "中频",
+      "_task_id": "Redis__缓存雪崩",
+      "_source_file": "md/Redis.md",
+      "_source_section": "缓存雪崩",
+      "_fingerprint": "fe21bafd7bf997ae",
+      "_added_at": "2026-10-16 01:15"
+    },
+    {
+      "type": "SINGLE",
+      "stem": "主从复制中 `repl backlog buffer` 写满之后会发生什么？",
+      "options": [
+        {
+          "label": "A",
+          "content": "会导致连接断开，从节点重新连接并重新开始全量复制"
+        },
+        {
+          "label": "B",
+          "content": "主节点会阻塞新的写命令，直到从节点把缓冲区消费完"
+        },
+        {
+          "label": "C",
+          "content": "会触发一次新的全量同步，主节点重新生成 RDB 发给从节点"
+        },
+        {
+          "label": "D",
+          "content": "因为是环形结构，会直接覆盖起始位置数据"
+        }
+      ],
+      "answer": [
+        "D"
+      ],
+      "analysis": "repl backlog buffer 是环形结构，写满后直接覆盖起始位置的数据，所以 A 对。B 是另一个 Buffer（replication buffer）写满后的行为，是最容易被记混的点；C 的「阻塞主节点写入」是凭直觉加的，原文没有这回事；D 把「覆盖数据」和「重做全量复制」的因果关系安错了对象，repl backlog 覆盖后丢失的是增量数据，不会主动触发全量同步。",
+      "difficulty": "MEDIUM",
+      "score": 2,
+      "category": "redis",
+      "tags": [
+        "repl backlog",
+        "主从复制",
+        "中频"
+      ],
+      "source_quote": "当 repl backlog buffer 满了，因为是环形结构，会直接覆盖起始位置数据;",
+      "_freq": "中频",
+      "_task_id": "Redis__主从复制中两个-Buffer(replication-buffer-、repl-backlog-buffer)有什么区别",
+      "_source_file": "md/Redis.md",
+      "_source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "_fingerprint": "fe57bfa068cf5289",
+      "_added_at": "2026-10-16 01:15"
+    }
+  ]
+}

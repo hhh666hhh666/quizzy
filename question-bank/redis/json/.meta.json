@@ -1,0 +1,1358 @@
+{
+  "updated_at": "2026-10-16 01:15",
+  "similarity_threshold": 0.75,
+  "questions": {
+    "02ae7317ecbaedd4": {
+      "stem": "在 AOF 重写（bgrewriteaof）期间，主进程每执行完一个写命令，会同时把这个命令写入「AOF 缓冲区」和「A",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "0dc0a00f29cde3f2": {
+      "stem": "在 Redis 7.0 中，一个元素个数为 100、每个元素值 50 字节的 Zset，其底层数据结构是压缩列表。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "18eef4c8f471bf50": {
+      "stem": "开启混合持久化后，AOF 重写时是由 fork 出来的重写子进程先把与主线程共享的内存数据以 RDB 方式写入 AOF ",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1a94aaf38cf495ed": {
+      "stem": "`min-replicas-max-lag` 是从 Redis 5.0 开始推荐使用的新参数名称。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1e31e5d125957305": {
+      "stem": "主从复制中，当 `replication buffer` 满了，会导致连接断开、删除缓存，从节点重新连接后重新开始全量复",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1edc955928bd0a89": {
+      "stem": "使用 Redisson 加锁时，如果自己给锁指定了有效期（leaseTime，例如 10 秒），看门狗仍会自动为这把锁续",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 看门狗",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "201286f8e483754d": {
+      "stem": "SDS 既可以保存文本数据，也可以保存二进制数据。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "253cfae4374dc3e2": {
+      "stem": "Redis 中的 key 一旦到达过期时间，就会被立即从内存中删除。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 过期删除策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "37164a234a0cf506": {
+      "stem": "主从复制模式具备故障自动转移能力，主节点宕机后会自动把某个从节点升级为主节点。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3af320533408a0da": {
+      "stem": "Redis 事务执行期间，如果有其他客户端发来命令，会被阻塞等待。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "46e856f1b6036bfe": {
+      "stem": "内存淘汰策略和过期键删除策略的触发原因相同，都是因为 key 到达过期时间而要回收它占用的内存。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "4a75aeb50a5eac1e": {
+      "stem": "跳表节点的层数是在创建节点时确定的：不断生成随机数，每小于 0.25 就加一层，直到随机数的结果大于 0.25 才结束。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么设置层高的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "4dec95932d327f49": {
+      "stem": "B+ 树的主要优势是层级低、能减少磁盘 IO，而 Redis 的数据存在内存中，用不上这个优势。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Redis为什么使用跳表而不是用B+树?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "57b6123a4fdbcd08": {
+      "stem": "在 Redisson 可重入锁中，只有同一个 JVM 的同一个线程才能重复获取锁，获取多少次锁就要解锁多少次才能彻底释放",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 可重入锁 > 原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6c66fe7d431f5582": {
+      "stem": "用互斥锁解决缓存击穿时，其他线程拿到锁之后会直接重新构建缓存。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存击穿",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "7842f60d4c8daa6a": {
+      "stem": "ZipList 的每个元素都是连续存储的，因此在小规模数据存储时显著减少了内存占用。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "7e732f19e7ddb9fa": {
+      "stem": "一个哨兵判断主节点「主观下线」后，就可以直接把主节点标记为「客观下线」。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "82016e18c3abc80c": {
+      "stem": "Redis 的 String 类型只能存储文本字符串，不能存储数字或二进制数据。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis常见的数据类型",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "8ab0cbfa4bd3e9f2": {
+      "stem": "Redis 6.0 的 I/O 多线程特性，默认情况下既以多线程方式发送响应数据（write client socket",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis哪些地方使用了多线程?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "99cf0d9e9c425564": {
+      "stem": "只要有一个主节点认为某节点主观下线，这个节点就会被标记为客观下线。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "a39803c9c06b2f7d": {
+      "stem": "Redisson 提供的限流器 RRateLimiter 是基于滑动窗口算法实现的。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "限流 > 基于Redisson实现限流",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f68852a8091a9baa": {
+      "stem": "Redis Pipeline 能保证其中的多个命令以不可分割的原子操作执行。",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis Pipeline是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "0c9ded1ca55c3a23": {
+      "stem": "Redis 的字典被用来实现哪些东西？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1019da2574d47747": {
+      "stem": "下列关于整数集合（IntSet）的说法，正确的是哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 整数集合（IntSet）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "110cb73d4adb2661": {
+      "stem": "主从复制模式的优势有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "17ed9e89afe3a12e": {
+      "stem": "关于布隆过滤器方案的局限，下列说法正确的有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存穿透",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1a0b1a8d28246e81": {
+      "stem": "Redisson 的分布式可重入读写锁对同一个资源加锁时，满足哪些规则？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 读写锁",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "241781ddf865b6e7": {
+      "stem": "Redis 为什么快？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis为什么快？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "252aa86aa261a01a": {
+      "stem": "下列哪些内存淘汰策略只在设置了过期时间的键值中进行淘汰？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 内存淘汰策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "277b630e871b3bb1": {
+      "stem": "Redis数据结构有那些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3400579934f3ea62": {
+      "stem": "关于 ziplist 产生连锁更新的原因，下列说法正确的是哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > listpack",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "388200a9bbab5b10": {
+      "stem": "下列关于 listpack 的说法，正确的是哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > listpack",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "41d94c7e5ee4bc47": {
+      "stem": "按文中的描述，基于 Redis 实现滑动窗口限流的主要步骤包括哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "4ac024cf965bc776": {
+      "stem": "作者把下列哪些 Redis 使用场景标注为「可以」，而不是「建议」？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis的作用",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "50b305b8691912d9": {
+      "stem": "主从复制共有哪三种模式？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "587e7fcf44766c59": {
+      "stem": "部署至少 3 个哨兵节点的目的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "5c5f32bec8f0322e": {
+      "stem": "关于 Redis Cluster 把槽位数定为 16k（16384）的理由，下列说法正确的有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6768b3648a2800c1": {
+      "stem": "使用混合持久化后，重启 Redis 加载 AOF 文件时能带来哪些好处？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "69071e29f015fc0c": {
+      "stem": "按文中的经验值，下列哪些情况会被认为是 Redis 大 key？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6a2bb93f6a757c95": {
+      "stem": "关于 AOF 持久化，下列说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6bb2d36bf65268c7": {
+      "stem": "相比哨兵模式，Redis Cluster 带来了哪些能力？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "71a4efe0f80e1c7b": {
+      "stem": "配置哨兵时，`sentinel monitor` 命令需要填写哪些参数？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "7f7ac19a0034f72a": {
+      "stem": "关于 Redis 事务的错误处理，下列说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "83a0abcc19c7a572": {
+      "stem": "文中给出的处理 Big Key 的方案有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "8d5f491a6e46275d": {
+      "stem": "逻辑过期方案中，缓存命中但 value 里的过期时间已过期时，会发生什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存击穿",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "928ea1efb146e776": {
+      "stem": "下列哪些情况会触发 Redis 字典的 rehash 操作？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "92e9fecdfc84eb87": {
+      "stem": "下列哪些命令可以用来设置 key 的过期时间？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 过期删除策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "96199a1e87581199": {
+      "stem": "主从复制模式下主节点宕机，会带来哪些后果？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "aa02d46e08f26809": {
+      "stem": "应对 Redis 主从数据不一致，可以采用哪些措施？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "b8202a384fe88282": {
+      "stem": "Redis 使用跳表而不是 B+ 树的原因有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Redis为什么使用跳表而不是用B+树?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "b8f5c230e98f2958": {
+      "stem": "Redis 6.0 启动后默认会额外创建 6 个线程（不包括主线程），下列关于这些线程的说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis哪些地方使用了多线程?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "bcb85682b6a95a47": {
+      "stem": "哨兵节点主要负责哪三件事情？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c75d74d98c05b179": {
+      "stem": "Zset 在底层实现中同时结合了哪两种数据结构？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis常见的数据类型",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c7b20911c6202fb8": {
+      "stem": "Redis 的 Set 类型支持下列哪些集合运算？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis常见的数据类型",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "cb25af751e9333f9": {
+      "stem": "下列哪些情况会引发缓存雪崩？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存雪崩",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "cbfd14ae3b5c3fc5": {
+      "stem": "当 Redis 的 fork 耗时过大（例如超过 1 秒）时，可以考虑哪些优化措施？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ccbcfe902fd18854": {
+      "stem": "故障转移时，哨兵对筛选后的从节点进行排序以选出新主节点，排序标准有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "d72b45d76b4427c1": {
+      "stem": "跳表的每个节点存储了哪些内容？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e55dfd25a4aa4fb7": {
+      "stem": "关于 Redis 的定期删除和惰性删除，下列说法正确的有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 过期删除策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e876d36d5d3fd741": {
+      "stem": "Redis 主从切换过程中，产生数据丢失的情况有哪两种？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f61b5f72a5038eb2": {
+      "stem": "关于 Redisson 中 tryLock() 的参数，下列说法正确的有哪些？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 可重入锁 > 原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f6394da28faca9ce": {
+      "stem": "C 语言字符串存在哪些缺陷？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fbbf02cd0a4c9488": {
+      "stem": "下列哪些属于文中列举的 Redis 大 key 危害？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "02ee7a1fca18bc07": {
+      "stem": "Redis 的定期删除策略默认每隔多久抽查一次设置了过期时间的 key？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 过期删除策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "03f3cba14d123d7b": {
+      "stem": "主从复制模式主要是为了解决什么问题？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "052fb07e501c3919": {
+      "stem": "SDS 的 alloc 字段有什么作用？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "09a7335dbb04bb2a": {
+      "stem": "哨兵集群是如何知道「从节点」的信息的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "0b684ce097bdb78a": {
+      "stem": "如果只部署 2 个哨兵节点，主要问题是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "0d33234f8770374c": {
+      "stem": "针对 Redis 故障宕机引发的缓存雪崩，下列哪一项是原文给出的应对方法？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存雪崩",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "0e7e45adb4600e67": {
+      "stem": "Redis 6.0 为什么要引入多线程来处理网络 I/O？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis的网络模型是怎样的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "12b5c0803d72c50d": {
+      "stem": "哨兵判断一个节点「主观下线」的依据是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "14a3866cf0a7008a": {
+      "stem": "针对已过期的键值对，Redis 实际采用的删除策略是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "1567b2c27f375ba1": {
+      "stem": "如何基于 Redis 实现滑动窗口限流？请求记录存放在什么结构里、分数是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "16f757229f439b08": {
+      "stem": "为应对布隆过滤器的误判，原文给出的做法是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存穿透",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "2315b988d22099c4": {
+      "stem": "开启混合持久化后，AOF 重写生成的这个新 AOF 文件在格式上是如何组织的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "27363cf7d8beb3db": {
+      "stem": "Zset 满足什么条件时会使用压缩列表作为底层数据结构？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "2a08a83dbaa2d4c8": {
+      "stem": "缓存击穿指的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存击穿",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "2ac93ddbae226cf1": {
+      "stem": "Redisson 的延迟队列通常是怎么实现的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redisson 延迟队列",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "2f4e2c390f1850c5": {
+      "stem": "命令传播阶段，主节点把写操作命令发给从节点之前，会先做什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "307e6c43c99b9291": {
+      "stem": "Redis 3.0 之后默认的内存淘汰策略 noeviction，在内存满后的行为是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 内存淘汰策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "309d7002443ef836": {
+      "stem": "Redis 自带的用于识别大 key 的分析工具是哪个？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "32ff7b842655eb5e": {
+      "stem": "`min-replicas-to-write` 和 `min-replicas-max-lag` 的默认值分别是多少？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3a67b4da278a9672": {
+      "stem": "listpack 是靠什么办法解决连锁更新问题的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > listpack",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3d130952c6b87fd6": {
+      "stem": "Redisson 的 lock() 方法与 tryLock() 方法的主要区别是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 可重入锁 > 原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3f224a05336f715b": {
+      "stem": "脑裂发生后网络恢复，旧主节点被降级为从节点，之前客户端写入它的数据为什么会丢失？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3f82e250c10a17ed": {
+      "stem": "ACID 的原子性与 Redis 执行 Lua 脚本的原子性，在概念上的差异主要体现在哪里？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何实现redis 原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "3f900492f4e17d44": {
+      "stem": "Redis Cluster 中，一个切片集群被分为多少个哈希槽（slot）？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 客户端是怎样知道该访问哪个分片的?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "40d6b73175e33136": {
+      "stem": "Redis 通过配置文件中的哪个参数来指定内存淘汰策略？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 内存淘汰策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "411ce45d9acf2308": {
+      "stem": "Redis Pipeline 是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis Pipeline是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "423e5ef8535228ea": {
+      "stem": "Pipeline 批量执行过程中，其中一个命令失败了，其余命令会怎样？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis Pipeline是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "476368cfd3600336": {
+      "stem": "旁路缓存策略的写策略中，推荐的基本操作顺序是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "4e6158b5e1080b62": {
+      "stem": "Redis.conf 中 appendfsync 配置为 everysec 时，写命令是如何写回硬盘的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "4f8e0a270b9dbe31": {
+      "stem": "关于主从复制中 `replication buffer` 的出现阶段和分配方式，下列说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "57d69fbe92138d58": {
+      "stem": "当 Redis 纯粹作为缓存使用时，推荐使用哪种内存淘汰策略？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 内存淘汰策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "5922789b56a93b7f": {
+      "stem": "主从复制架构中，主节点处理掉（或被淘汰算法淘汰掉）一个 key 后，从节点是怎么把这个 key 删掉的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制架构中，过期key如何处理？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "59868057d88e86d8": {
+      "stem": "关于 Redis I/O 线程数（io-threads）的设置，下列说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis哪些地方使用了多线程?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "5a14516139fe60fc": {
+      "stem": "Redis 执行单条命令时天然具备原子性，原因是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何实现redis 原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "5d55d301d2917cb3": {
+      "stem": "listpack 是 Redis 在哪个版本引入、用来替代哪种数据结构的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > listpack",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6395b3c67635ce80": {
+      "stem": "Redis 在什么条件下会选择用压缩列表来存储 List、Hash 或 Sorted Set？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "63c8d1aeecfe8d69": {
+      "stem": "Redis 有哪三种主要的集群模式？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "69f9103cd7fc1b2e": {
+      "stem": "全部数据迁移完成后，Redis 会怎么处理这两个哈希表？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6a9fff7791486187": {
+      "stem": "主从复制中为什么有了 `replication buffer` 还需要 `repl backlog buffer`？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6ad1cf67a5b9a2f9": {
+      "stem": "跳表节点的 level 数组里存的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "6b538e500c819b8a": {
+      "stem": "为什么用 SETNX 实现的分布式锁在真实生产环境中用得并不多？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "747f73c719f96d59": {
+      "stem": "Redis 的内存淘汰策略是在什么情况下被触发的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "过期删除策略和内存淘汰策略有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "76a89700abc102f7": {
+      "stem": "Redis Cluster 中各个节点之间是怎么通信的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "77aba978c2c16483": {
+      "stem": "Redis 的 GEO 类型本质上是基于哪种数据类型实现的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis常见的数据类型",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "7d25027f673861b9": {
+      "stem": "在单线程模型下，Redis 为什么要引入 I/O 多路复用？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis为什么快？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "7eb2f3ce35dc591a": {
+      "stem": "Redis 集群节点每秒发送 ping 消息时，是怎么挑选发送对象的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "806fb8f4437fcd65": {
+      "stem": "Redis Cluster 中，一个节点被标记为主观下线的直接依据是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "82b934c91cd5e6a0": {
+      "stem": "点赞这类读写并发都很高的场景，为什么更适合用 canal 监听 binlog 来更新缓存，而不是频繁删除缓存？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "852c7073cb431f1c": {
+      "stem": "Redis 中的双向链表主要用来实现哪种数据类型？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 双向链表",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "863e9ba2aff9876f": {
+      "stem": "为什么在小型 Redis 集群中，槽位 bitmap 很难被压缩？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "87940f5c87d661ee": {
+      "stem": "Redis 是同步复制还是异步复制？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > Redis 是同步复制还是异步复制？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "88fe012eb4cd406a": {
+      "stem": "SDS 获取字符串长度的时间复杂度能做到 O(1)，原因是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "8b88c0a6441bf4de": {
+      "stem": "延迟双删的完整执行顺序是怎样的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "8f90596aaf32a03c": {
+      "stem": "渐进式 rehash 期间，Redis 插入的新数据会写入哪个哈希表？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "8fc0d183eaa84b34": {
+      "stem": "节点每 100 毫秒扫描本地节点列表时，发现某节点最近一次收到 pong 消息的时间超过哪个阈值就立刻发送 ping 消",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "977f0b2c14e9c10a": {
+      "stem": "用 Redis 防止超卖、要求库存判断与扣减具备强一致性时，应当怎么做？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "995d2b4eda8a18b3": {
+      "stem": "Redis 配置了 io-threads 4，实际会启用几个 I/O 多线程？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis哪些地方使用了多线程?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "9b98233882882d1d": {
+      "stem": "缓存穿透指的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存穿透",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "9c9b84b639eadd5f": {
+      "stem": "在逻辑过期方案中，用户查询 Redis 未命中时会怎么处理？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存击穿",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "a62bda35aefaa668": {
+      "stem": "Redis 事务的主要目的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "除了lua有没有什么也能保证redis的原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ac784ef8d2d73b1d": {
+      "stem": "epoll 分别使用什么数据结构保存待监听的 fd 和已就绪的 fd？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis为什么快？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "aca72a6e29a5d649": {
+      "stem": "Redis 的跳表用来实现哪种数据类型？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "afec0569bf409a62": {
+      "stem": "Redis 自动生成 RDB 快照时，为什么执行快照的过程中数据还能被修改？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "b53f7a93b019c05b": {
+      "stem": "跳表完成查找、插入和删除操作的时间复杂度是多少？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "b6586ce8f9ce2b71": {
+      "stem": "ZipList 的插入、删除和查找操作的时间复杂度通常是多少？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 压缩列表（Ziplist）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "b9c6d5559a408ddc": {
+      "stem": "Redis 集群心跳包消息头中的 myslots 位图，某一位为 1 表示什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 为什么是16384个槽",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "bb62893140dd7a78": {
+      "stem": "在腾讯云上新建 Redis 实例后不做任何修改，内存被占满时会发生什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "介绍一下 Redis 内存淘汰策略",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "bb685d030e256881": {
+      "stem": "Redis 的字典通过什么方式快速定位键？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "bc14499cb7fba51f": {
+      "stem": "用「缓存空值」解决缓存穿透，主要缺点是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存穿透",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "bfc508fd66a8491b": {
+      "stem": "给 Bigkey 设置了过期时间后，为什么它过期时仍可能影响 Redis 的性能？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c0fb07f2c79faf18": {
+      "stem": "在作者列举的 Redis 使用场景中，「分布式锁」被归为哪一类？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis的作用",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c23d776bda9a047a": {
+      "stem": "混合持久化 AOF 重写期间，主线程处理的那些操作命令最终是如何进入新的 AOF 文件的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis有哪2种持久化方式？分别的优缺点是什么？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c5a1be2fd667dff2": {
+      "stem": "集群中一个主节点被判定下线后，它原本负责的哈希槽由谁接管？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 集群如何实现故障转移",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "c8832b19dfbedb3e": {
+      "stem": "主从复制模式下，主节点和从节点分别可以处理哪些操作？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ca946cfcd11aff4b": {
+      "stem": "哨兵模式虽然解决了自动故障转移，但它仍然存在的明显限制是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ce2da2304180f4e1": {
+      "stem": "用布隆过滤器拦截缓存穿透时，它返回「不存在」意味着什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存穿透",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ce88b9e75dc0cf7c": {
+      "stem": "到 Redis 6.0 之后，Redis 的网络模型是怎样的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis的网络模型是怎样的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "d0483b382f8b8d7b": {
+      "stem": "配置 `min-replicas-to-write` 和 `min-replicas-max-lag` 的主要作用是什么",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从切换如何减少数据丢失(脑裂)？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "d4338d33b4515023": {
+      "stem": "借助消息队列的重试机制来确保缓存删除成功，这个方案的主要缺点是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何保证 redis 和 mysql 数据缓存一致性问题？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "d4501625d867fcf7": {
+      "stem": "Redisson 中提供的限流组件叫什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "限流 > 基于Redisson实现限流",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "d5cd55519264ab02": {
+      "stem": "I/O 多路复用中的「多路」和「复用」分别指的是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis为什么快？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "dbb467739573fda2": {
+      "stem": "为什么 Redis 主从节点之间会出现数据不一致？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 如何应对主从数据不一致？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "dcc2c3181f07383d": {
+      "stem": "只配置了主节点信息的多个哨兵，是如何相互发现并组成哨兵集群的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵集群是如何组成的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e165c7b8ed8c503a": {
+      "stem": "用 ZCARD 拿到窗口内的成员数量后，判定是否限流的规则是什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "限流 > 如何基于Redis实现滑动窗口限流？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e1d8acc430f55f3e": {
+      "stem": "Set 类型在什么情况下会使用整数集合作为底层结构？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 整数集合（IntSet）",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e32bc18ecf673592": {
+      "stem": "文中提出「合理地设置缓存 TTL」这一手段，主要针对的是什么问题？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e38ca231be1798d2": {
+      "stem": "关于 Redis Cluster 的最小节点配置，下列说法正确的是？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e8148ff511960c14": {
+      "stem": "Redis Cluster 是如何计算一个 Key 应该落到哪个哈希槽的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > Redis Cluster分片集群 > 客户端是怎样知道该访问哪个分片的?",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "e852fab9497fdb83": {
+      "stem": "Redisson 的可重入锁在 Redis 中是用什么结构存储锁信息的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 可重入锁 > 原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ea58f31e044757a5": {
+      "stem": "哨兵配置中 quorum 的值一般建议如何设置？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 为什么哨兵节点至少要有 3 个？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "eaf0267b604a3778": {
+      "stem": "要保证 Redis 中多条命令的原子性，通常怎么做？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "如何实现redis 原子性？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ebd2119a08bfd283": {
+      "stem": "跳表在创建节点时，生成的随机数小于多少会让层数增加一层？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么设置层高的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ecb12835ebf5a679": {
+      "stem": "Redis 引入哨兵模式主要解决什么问题？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "ed6ec7fd137dd4d7": {
+      "stem": "跳表在查询元素时为什么能做到快速定位？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > 跳表是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f155b1acc2eb5ee3": {
+      "stem": "Redisson 看门狗检查锁的超时时间默认是多少，如何修改？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 看门狗",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f1a01d9791c013b7": {
+      "stem": "Redisson 引入看门狗（watchdog）机制主要为了解决什么问题？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "分布式锁 > 看门狗",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f2cf859e0d00e329": {
+      "stem": "哨兵完成主从切换后，通过什么机制把新主节点的信息通知给客户端？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 哨兵模式 > 哨兵机制是如何工作的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f3cbb99e41fef8cf": {
+      "stem": "主节点平均每秒产生 1 MB 写命令，从节点断线后平均要 5 秒才能重连，repl_backlog_buffer 的大小",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f61b7094820c8e11": {
+      "stem": "渐进式 rehash 期间查找一个 key，Redis 的查找顺序是怎样的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 字典（Dict） > 哈希表是怎么扩容的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f644af5a7f30f12d": {
+      "stem": "SDS 在原本字符数组之上增加了哪三个元数据？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 简单动态字符串（SDS, Simple Dynamic Strings)",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "f789fcc4c7e2acf0": {
+      "stem": "文中「处理 big key」里的「集群模式分散」具体指什么做法？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "大key",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fa7f6fb0b0d3365f": {
+      "stem": "主从第一次建立连接时的全量同步，是如何把数据交给从节点的？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fa99416227df3fc9": {
+      "stem": "在 Redis 7.0 中，压缩列表数据结构被什么取代了？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis数据结构有那些？ > 跳表（Skiplist） > Zset 底层是怎么实现的？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fdeb1bb933c50fad": {
+      "stem": "主从之间网络断开又恢复后，主节点依据什么决定做增量同步还是全量同步？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制原理",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fe21bafd7bf997ae": {
+      "stem": "针对「大量数据同时过期」引发的缓存雪崩，原文给出的应对方法是哪一项？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "缓存雪崩",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    },
+    "fe57bfa068cf5289": {
+      "stem": "主从复制中 `repl backlog buffer` 写满之后会发生什么？",
+      "category": "redis",
+      "source_file": "md/Redis.md",
+      "source_section": "Redis集群 > 主从复制模式 > 主从复制中两个 Buffer(replication buffer 、repl backlog buffer)有什么区别？",
+      "added_at": "2026-10-16 01:15",
+      "locked": false
+    }
+  }
+}
