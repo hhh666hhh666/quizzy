@@ -45,7 +45,17 @@ services:
       # ⚠️ 首跑取 128M 而不是 256M：实测这台机可用内存只有 ~800MB，而 JVM 那边还要吃 400–600MB，
       #    两处都按「2C2G 的余量」配会合起来超预算——顶不住的表现是 OOM-killer 杀进程，
       #    症状却长成「健康检查永远不过」，极难联想到是内存。跑通、观察 free -m 有余量后再调回 256M。
-      - --innodb-buffer-pool-size=128M
+      # ---- 2026-10-16：128M → 64M（第四刀）----
+      # 依据：这台 MySQL 已被内核 OOM-killer 杀了**三次**（10-14 14:59、10-16 09:37、10-16 13:07），
+      #   容器驻留从 161MB（2026-10-10 基线）涨到 315MB / 硬顶 384MB。涨的推力是 fit-app 的餐照：
+      #   往 meal_photo 写数 MB 的 MEDIUMBLOB 时，InnoDB 要在缓冲池**之外**再分配行缓冲，
+      #   正好顶在这块天花板上。在 384MB 的硬顶下，128M 的缓冲池已经买不起——
+      #   取舍与依据见 docs/operations/内存策略.md。
+      # ⚠️ 必须**同时**降 chunk size：缓冲池不能小于一个 chunk，而 chunk 默认 128M、只能在启动时设。
+      #   只把 pool 写小、chunk 不动，MySQL 启动时会把它向上取整回 128M——**改了等于没改**。
+      #   （在线 `SET GLOBAL innodb_buffer_pool_size` 也会被 Warning 1210 拒绝，同一条限制。）
+      - --innodb-buffer-pool-chunk-size=32M
+      - --innodb-buffer-pool-size=64M
       - --max-connections=50
       # ---- 以下三条是 2026-10-10 按实测加的「省内存三刀」----
       # 依据：当天实测 MySQL 容器 RSS 533MB，用
@@ -62,6 +72,10 @@ services:
       # 3) 表缓存 4000 → 400 —— 单库小应用同时打开的表远不到 400 张；调小只会让超出部分
       #    「重新打开文件」，不会报错，省数十 MB。
       - --table-open-cache=400
+      # 4) 2026-10-16：关掉 X Plugin（MySQL 8 默认开着，占 33060 端口）。两个项目一律走
+      #    JDBC/3306，X Protocol（mysqlx）从来没用过，关掉省十几 MB。代价：将来若要用
+      #    MySQL Shell 的 X DevAPI 连它，得改回 ON 并重建容器。
+      - --mysqlx=OFF
     volumes:
       - type: bind
         source: ${MYSQL_DATA_DIR:?请在 /srv/quizzy/.env 里设置 MYSQL_DATA_DIR（Linux 绝对路径）}
