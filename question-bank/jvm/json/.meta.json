@@ -1,0 +1,1286 @@
+{
+  "updated_at": "2026-10-16 23:50",
+  "similarity_threshold": 0.75,
+  "questions": {
+    "00225c7e7b099a40": {
+      "stem": "并发回收器在整个垃圾回收过程中完全不需要暂停应用线程，不存在任何 STW 阶段。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 并发回收和并行回收",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0068feeac0d99371": {
+      "stem": "可达性分析算法判定某个对象不可达之后，JVM 就会立刻把它回收掉。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0d377036a2bde775": {
+      "stem": "内存分配完成后、调用构造方法之前，JVM 会先把分配到的内存空间初始化为零值，所以对象字段在这一步就已经有了默认值。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > JVM是如何创建对象的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "15a2f1ee8dcd6aa2": {
+      "stem": "类加载链接阶段的准备阶段，在为类的静态变量分配内存后，会顺带把用户在代码里写的显式值赋给它。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 一个类的加载流程？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "163f8ed3463254b1": {
+      "stem": "Serial 垃圾收集器在 GC 过程中必须暂停其他所有的工作线程，直到收集结束（Stop The World）。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 串行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1e25090e14698a42": {
+      "stem": "在 JDK 7 之后的版本中，只要老年代最大可用连续空间大于历次晋升到老年代对象的平均大小，就认为空间分配担保成功。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 空间分配担保机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "224d798d3df77b17": {
+      "stem": "采用引用计数法时，两个互相引用的对象会形成环形结构，导致它们永远无法被回收。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 三色标记算法，写屏障",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "2dfc530d3c420fdb": {
+      "stem": "通常说的内存溢出如果没有特别说明都是指堆溢出（OutOfMemory）；Java 中用 new 在堆上创建对象而没有足够",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存泄漏和内存溢出的区别是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3e53588d903a3443": {
+      "stem": "程序计数器是每个线程共享的一块内存区域，用于记录当前线程正在执行的字节码指令的地址。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存结构",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3f0e91d079d2463d": {
+      "stem": "G1 中每个 Region 的记忆集（卡表）记录的是“本 Region 指向其他 Region 的指针”，用于解决跨代引",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "413309f9db2c9dea": {
+      "stem": "只要空间分配担保成功，本次 Young GC 就一定不会再出现内存放不下的问题。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 空间分配担保机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "47ccfab112c5628f": {
+      "stem": "tomcat 因为要在同一个容器里同时运行多个项目（可能同时用到 SpringBoot2.x 和 SpringBoot3",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 双亲委派机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4a4f63d4543c7afa": {
+      "stem": "标记-清除算法在清除垃圾时，会把存活对象压缩移动到内存的一端，以避免产生碎片。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-清除",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4be6773b6533b1ac": {
+      "stem": "STW（Stop-The-World）是指 JVM 在执行垃圾回收时必须暂停（停止）所有的应用程序线程。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？ > 可达性分析算法的不足",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4bff40b2d94e1a2a": {
+      "stem": "只要设置了 -XX:CMSInitiatingOccupancyFraction=75，JVM 就会严格在老年代使用率达",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > CMS",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "50677fe9a3ef8df6": {
+      "stem": "逃逸分析的论文早在 1999 年就已发表，因此到今天它已经是一项十分成熟的技术。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "51300599c6411cb5": {
+      "stem": "因为 `-XX:PretenureSizeThreshold` 默认不为 0，所以默认情况下超过一定大小的对象会直接进入",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM 中一次完整的 GC 流程是怎样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "634d830716539f85": {
+      "stem": "HashMap 使用的是强引用，因此垃圾回收时 Map 中引用的对象不会被 GC 掉。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 什么是强引用、软引用、弱引用和虚引用？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "8222a0d7ceb8b5b7": {
+      "stem": "应用刚启动时，通过调节负载均衡先给它一小部分流量来触发 JIT 优化，等优化好了再把流量调大，这种做法可以缓解发布时的超",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > JIT优化可能带来的问题",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "83b4475a8665d53c": {
+      "stem": "AOT 静态编译后的程序仍然是平台无关的字节码，可以像普通 Java 程序一样跨平台运行。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > AOT编译",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "86fb10b1e3b047d2": {
+      "stem": "ZGC 的停顿时间会随着堆容量和堆中对象数量的增加而正比例增长。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "93e519c6af7e47ce": {
+      "stem": "JVM 中存在方法调用计数器，只有当累计计数大于一定值时才会使用 JIT 编译生成机器码，否则就由解释器进行解释执行。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > Java是编译型还是解释型?",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ad46724f9cba9ab7": {
+      "stem": "代码中执行 System.gc() 一定会立即触发一次 Full GC。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > YoungGC和FullGC的触发条件是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ae8486d056c76dfc": {
+      "stem": "Shenandoah 和 ZGC 几乎整个工作过程都是并发的，只有初始标记、最终标记这些阶段有短暂的停顿，且这部分停顿时",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > Shenandoah",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "b61259103847b2c4": {
+      "stem": "标记-整理算法的第一个阶段（标记）与标记-清除算法是一模一样的，都是遍历 GC Roots 并标记存活对象。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-整理",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c3e3eba70298c79f": {
+      "stem": "并行垃圾收集器的“并行”指的是 GC 线程与应用线程并发执行，因此回收过程不会发生 Stop-The-World。",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 并行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "f7409ee541cc703e": {
+      "stem": "G1 的内存划分是固定不变的，而 Parallel Scavenge GC + Parallel Old GC 完全不支",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > Java 8 和 Java 11 的GC有什么区别？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "00b8cc89b4e2ffc4": {
+      "stem": "JVM 在堆上为对象分配内存时，用来解决并发安全问题的手段有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > JVM是如何创建对象的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "12241fc4cd820c62": {
+      "stem": "新生代被细分为一个 Eden 区和两个 Survivor 区，关于它们的工作方式下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "15497e68de8fb658": {
+      "stem": "基于逃逸分析，一个对象可能存在哪几种逃逸状态？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1645e4763fbf5281": {
+      "stem": "下列哪些 JVM 启动参数可以用来输出垃圾回收的详细信息？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "调优 > 常用的JVM启动参数(待补充)",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "164c8d72d2806e49": {
+      "stem": "重分配集中某个 Region 的存活对象全部复制完毕后，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1a5c9aac2116489e": {
+      "stem": "老年代使用 CMS 或 G1 时，一次完整的标记—清理过程分为哪四个阶段？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM 中一次完整的 GC 流程是怎样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3a9ba23993a5abcf": {
+      "stem": "对象晋升到老年代的触发条件主要看对象的大小和年龄，下列属于文中列出的晋升条件的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3b6d0323a5d7169a": {
+      "stem": "新生代采用的标记复制算法，其过程主要分为哪几个步骤？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM 中一次完整的 GC 流程是怎样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3e0fb96d63af37b2": {
+      "stem": "为什么很多应用在发布过程中，刚重启好的实例会出现大量超时？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > JIT优化可能带来的问题",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "463359f4e5e85622": {
+      "stem": "把方法区放到元空间（堆外内存）带来的好处有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 为什么JDK 1.8要废弃永久代，改用元空间",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "55b138d936ffc463": {
+      "stem": "创建对象时「设置对象头」这一步，会往对象里写入哪些信息？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > JVM是如何创建对象的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "568986c1317d93ff": {
+      "stem": "Java 虚拟机栈中，一次方法调用所创建的栈帧会存储哪些信息？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存结构",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "5dba18a19b51ebb2": {
+      "stem": "一个类要被卸载，需要满足哪些条件？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类的生命周期是怎么样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "60ae0f4a3dc4b705": {
+      "stem": "CMS 采用三色标记法进行标记，下列哪些阶段是需要 Stop The World 的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > CMS",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "7092541fe23161b5": {
+      "stem": "三色标记法的三个标记阶段中，哪些阶段需要 Stop The World？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 三色标记算法，写屏障",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "7426eece81d073e5": {
+      "stem": "关于 G1 的 Humongous 区域，下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "79eca3a2630e1786": {
+      "stem": "基于计数器的热点探测为每个方法准备了两个计数器，它们分别统计什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "84835ef095f27a55": {
+      "stem": "下列哪些属于常见的内存泄漏情况？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存泄漏和内存溢出的区别是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a05696287343a702": {
+      "stem": "自定义类加载器时，关于重写方法与双亲委派模型的关系，下列说法正确的有？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 双亲委派机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a54717a0b0f09c42": {
+      "stem": "关于 G1 采用的垃圾收集算法及其效果，下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a89688e2cb63d2d6": {
+      "stem": "原文列举的 Full GC 触发条件主要包含哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > YoungGC和FullGC的触发条件是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a8a88b416c14402e": {
+      "stem": "关于 G1 并发回收过程中新对象的分配（TAMS 指针），下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ac03fdf8d919f20f": {
+      "stem": "下列哪些 Java 特性不满足 AOT 静态编译所要求的“封闭性假设”？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > AOT编译",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "b61f454f0ab50855": {
+      "stem": "下列关于标记-复制算法的说法，正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-复制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "bd22d9e0a98e7f98": {
+      "stem": "关于符号引用与直接引用，下列说法正确的有？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 一个类的加载流程？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c1294e8983b5aa57": {
+      "stem": "JIT 编译存在哪些不可忽视的缺点？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > AOT编译",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c48e45da21f8f557": {
+      "stem": "为了减少可达性分析的时间和开销，一些常见的回收器会采用哪些优化技术？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？ > 可达性分析算法的不足",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c8f3fc77402aa985": {
+      "stem": "关于 HotSpot 中不同收集器的标记实现方案，下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c9ea62f22971e1a2": {
+      "stem": "关于对象被第一次标记后与 finalize() 相关的处理，下列说法正确的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "dfdb3c96d3534419": {
+      "stem": "关于 ZGC（JDK 11 推出）和 Shenandoah GC（JDK 12 推出），下列说法正确的有？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 项目中如何选择垃圾回收器？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ef7f0be0136b9425": {
+      "stem": "为什么需要双亲委派模型？它带来的好处有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 双亲委派机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "f0cbbda762b1b5a8": {
+      "stem": "下列垃圾收集器中，属于并发回收器的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 并发回收和并行回收",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "fbc2f10d85562abc": {
+      "stem": "下列属于新生代收集器的有哪些？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0146acc7a0c8eabc": {
+      "stem": "ZGC（The Z Garbage Collector）是在哪个 JDK 版本推出的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "01d8b2ab57d8817f": {
+      "stem": "关于 ParNew 与 Serial 的关系，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 并行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "06062ba1ae7ba780": {
+      "stem": "可达性分析算法难以适用于大型程序的分析，其根本原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？ > 可达性分析算法的不足",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "099a13f39b64fe8c": {
+      "stem": "G1 判定一个对象为大对象（需存入 Humongous 区域）的阈值是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "09b97582444e308f": {
+      "stem": "发生 Minor GC 时，Remembered Set 中记录的对象会被如何处理？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0a515e24eb9531d1": {
+      "stem": "分代收集算法中，老年代通常选用哪种垃圾回收算法，原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0de0d7bf3aaa782e": {
+      "stem": "G1 之所以能建立“可预测的停顿时间模型”，主要依靠下列哪项机制？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0f6dd1f72cdc56d4": {
+      "stem": "按照文中的选择步骤，堆内存大约达到多大才建议考虑使用 G1、ZGC 这类收集器？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 项目中如何选择垃圾回收器？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "0fcc192d360d7e27": {
+      "stem": "标记-整理算法既不会产生内存碎片也不浪费内存空间，它的代价是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-整理",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "159148555cc7f517": {
+      "stem": "类的加载阶段中，JVM 根据类的全限定名找到 class 文件并加载后，会在内存中生成什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 一个类的加载流程？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "16ee0e5f51e23b8d": {
+      "stem": "标记-复制算法解决了碎片问题，却带来了新的问题，这个新问题是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-复制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "18d930615f6dab3d": {
+      "stem": "Linux 下 64 位指针的高 18 位不能用来寻址，ZGC 的染色指针盯上的是剩下多少位的指针宽度？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1b09bf7b0905cc0c": {
+      "stem": "关于 CMS 垃圾回收器在 JDK 中的引入与废弃过程，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > CMS",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1b8f8d7f010b1353": {
+      "stem": "一个实时交易系统要选垃圾收集器，按文中的选择步骤，首先应该按哪一维度判断、最看重什么指标？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 项目中如何选择垃圾回收器？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "1d7ae09dd0a1a71d": {
+      "stem": "在 Java 8 及以上版本中，设置 Metaspace 的初始大小和最大大小应该使用哪组参数？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "调优 > 常用的JVM启动参数(待补充)",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "208c33d50ccb4ef5": {
+      "stem": "运行时常量池位于哪个内存区域，主要存放什么内容？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存结构",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "239dcbbafc287c85": {
+      "stem": "HotSpot 基于计数器的热点探测中，触发 JIT 编译的方法调用阈值 CompileThreshold 默认值是多少",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "24a33f08a24310dc": {
+      "stem": "HotSpot 引入 JIT 技术的直接原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "2b4b4a2ba1bf230b": {
+      "stem": "本地方法栈与 Java 虚拟机栈的主要区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存结构",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "2b949831b764a095": {
+      "stem": "在只扫描新生代的 Young GC 中，为什么会出现「本来还活着的对象被回收」的情况？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3184afebfd0841c3": {
+      "stem": "HotSpot 虚拟机中的“栈上分配”本质上是通过什么技术实现的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "31963beaa5141e03": {
+      "stem": "G1 垃圾收集器是在哪个 JDK 版本被设置为默认垃圾收集器的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 项目中如何选择垃圾回收器？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "35644c7fd59e1aa0": {
+      "stem": "分代收集算法中，新生代为什么选用标记-复制算法？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3a8e00a914980e39": {
+      "stem": "把 Parallel Scavenge 的 -XX:GCTimeRatio 设置为 19 时，允许的最大垃圾收集时间占总",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 并行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3aa40066f110c04d": {
+      "stem": "关于内存泄漏与内存溢出的关系，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存泄漏和内存溢出的区别是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3d3ca67f7ccb5d88": {
+      "stem": "双亲委派模型中，一个类加载器收到类加载请求后的正确处理过程是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 双亲委派机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "3d87076d54f7a966": {
+      "stem": "AOT（Ahead-of-Time）编译与 JIT 编译最核心的区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > AOT编译",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "420492f77334a0de": {
+      "stem": "Java 中的方法内联指的是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "441d7a62b15b8f47": {
+      "stem": "Java 中的对象一定在堆上分配内存吗？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > Java中的对象一定在堆上分配内存吗？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "45984c85b3033f42": {
+      "stem": "软引用指向的对象在什么时机会被垃圾回收？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 什么是强引用、软引用、弱引用和虚引用？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "45eae8c371de62b4": {
+      "stem": "Young GC 的复制阶段结束后，剩余存活对象的大小既大于 Survivor 区、又大于老年代可用内存，会发生什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 空间分配担保机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "466940de31767370": {
+      "stem": "内存泄漏和内存溢出的根本区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存泄漏和内存溢出的区别是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4b069560669587ce": {
+      "stem": "并发（Concurrent）与并行（Parallel）这两个概念的核心区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 并发回收和并行回收",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4c62d3ede1db83e7": {
+      "stem": "在 Java 8 的 HotSpot JVM 中，默认的垃圾收集器组合是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 并行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "4c825f9fc96e30a5": {
+      "stem": "标记-复制算法是如何解决标记-清除算法的空间碎片问题的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-复制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "526a59f7ec364282": {
+      "stem": "关于 Shenandoah 收集器的来源与定位，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > Shenandoah",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "5ac504ab09640d45": {
+      "stem": "JDK 1.8 为什么要用元空间取代永久代？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 为什么JDK 1.8要废弃永久代，改用元空间",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "5fcb4506cbf6eb35": {
+      "stem": "根据逃逸状态与优化手段的对应关系，下列哪种优化只有对象处于无逃逸（NoEscape）状态时才能进行？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "61ad3d369b8a4dae": {
+      "stem": "每一次执行 Young GC 之前，虚拟机会先做哪一项检查？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 空间分配担保机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "62d19424ed433ac8": {
+      "stem": "分代收集中的“动态对象年龄判断”，其判定规则是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "6726fdc382e29cc8": {
+      "stem": "下列哪种情况才会触发类的初始化？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 一个类的加载流程？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "6759e9ad20391359": {
+      "stem": "Young GC 的触发条件是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > YoungGC和FullGC的触发条件是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "6abd7891ffb0c20e": {
+      "stem": "ZGC 的再标记（Remark）阶段，停顿时间一般不超过多少？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "6b70ed6702fab285": {
+      "stem": "JIT 编译器编译同步块时，依据什么判断可以对该同步块做锁消除（同步省略）？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "70debb3be0e51c5b": {
+      "stem": "在 HotSpot 中，当堆中的内存是离散（不连续）的时，JVM 采用哪种方式为对象分配内存？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > JVM是如何创建对象的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "74802be0b6c27919": {
+      "stem": "JDK 自带的基础类一定不会被回收，那么真正会被回收掉的是哪些类？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类的生命周期是怎么样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "79f52ee1b2e8df46": {
+      "stem": "现在不提倡覆盖 finalize() 方法，其主要原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "8314d7ad9cbf7f01": {
+      "stem": "自定义类加载器要把加载请求直接委派给启动类加载器时，父加载器参数应该怎么写？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类加载器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "8486461911efd668": {
+      "stem": "Serial 这类单线程串行收集器最主要的好处是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 串行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "84afd92c6d3e7960": {
+      "stem": "G1 的并发标记周期（Concurrent Marking Cycle）由哪个条件触发？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "880e5158303ff4ea": {
+      "stem": "在 G1 中，新生代和老年代的内存布局是怎样的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "8dec4c56dced976b": {
+      "stem": "CMS 默认在老年代使用率达到多少时启动回收？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > CMS",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "920bcabd827d1944": {
+      "stem": "在垃圾识别方式上，Java 8 与 Java 11 中的 G1 有什么区别？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > Java 8 和 Java 11 的GC有什么区别？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "92ca041985d88243": {
+      "stem": "日常情况下，Full GC 的频率保持在什么范围内可以认为是正常的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > FullGC多久一次算正常？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "92edafef39f6a105": {
+      "stem": "在 Eden 区创建对象但 Eden 区内存不够时，JVM 会怎么做？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM 中一次完整的 GC 流程是怎样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "9521dffca69c2dcf": {
+      "stem": "标量替换能给程序带来的直接好处是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > 编译优化",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "95aa39c6dda37623": {
+      "stem": "关于推荐使用 G1 收集器的堆内存门槛及其原因，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "95d78753c69e4ad9": {
+      "stem": "关于老年代收集器的归属，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "97e61747e9e89c02": {
+      "stem": "阿里 Dragonwell 的 JwarmUp 技术是靠什么来缓解 JIT 预热问题的？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术 > JIT优化可能带来的问题",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "99176a54f2618351": {
+      "stem": "三色标记能大幅降低 GC 停顿时长，关键在于它对哪个阶段做了处理？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 三色标记算法，写屏障",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "9b92e62316747bc1": {
+      "stem": "Remembered Set 的核心目标是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "9c264219ff9996d7": {
+      "stem": "ZGC 的并发转移（Concurrent Relocation）阶段主要做什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "9ed6aa36790cd457": {
+      "stem": "可达性分析算法在内存方面的不足体现在哪里？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？ > 可达性分析算法的不足",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a04f8ab05d7cad2f": {
+      "stem": "引用计数法实现简单、效率高，但主流虚拟机并没有选择它来管理内存，最主要的原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a17ff48c66255542": {
+      "stem": "三色标记法中，灰色对象表示什么状态？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 三色标记算法，写屏障",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a1aeefd1cbf6147a": {
+      "stem": "标记-清除算法在识别出垃圾后直接将其清除，这带来的最明显缺点是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-清除",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a3b8e1beb6f53b8d": {
+      "stem": "ZGC 的并发转移准备阶段在确定重分配集时，与 G1 选择回收集的方式有什么不同？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a7c220f51825849a": {
+      "stem": "把 `rt.jar` 改名为 `myrt.jar` 后放到 `<JAVA_HOME>\\lib` 目录下，启动类加载器会加",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类加载器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "a828a62f46455b23": {
+      "stem": "空间分配担保中要参考「历次晋升到老年代对象的平均大小」，原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 空间分配担保机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "aafbfa665b49383b": {
+      "stem": "G1 在并发标记阶段，标记线程与用户线程同时运行导致对象引用关系发生变化，G1 用什么办法解决？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > G1",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "b4d776312bd968ed": {
+      "stem": "标记-整理算法的“整理”阶段具体做了什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 标记-整理",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "bc5b1c8c720f33ab": {
+      "stem": "Java 到底是编译型语言还是解释型语言？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > Java是编译型还是解释型?",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "bd49c405e3b01c0c": {
+      "stem": "可达性分析算法判定一个对象“不可用”的依据是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > JVM如何判断对象是否存活？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c3372179a0f3c835": {
+      "stem": "ZGC 是在哪个 JDK 版本中新增的垃圾收集器？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c42d6a4fca40133e": {
+      "stem": "Java 11 中默认使用哪款垃圾收集器进行整堆回收？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > Java 8 和 Java 11 的GC有什么区别？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "c99f2fb84d2f95ea": {
+      "stem": "Serial GC 主要采用哪种垃圾回收算法？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 串行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ccb61d4177255e58": {
+      "stem": "虚引用（PhantomReference）的主要用途是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 什么是强引用、软引用、弱引用和虚引用？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "cce57f438daa0188": {
+      "stem": "一个对响应时间敏感的在线交易处理系统，希望尽可能减少 GC 引起的停顿，应优先选择哪类垃圾回收方式？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 并发回收和并行回收",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "cf4e026255eb5a2f": {
+      "stem": "常见的 JVM 工具中，`jps` 的作用是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > 常见的JVM工具有哪些",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "cfb37fbeb8bdba17": {
+      "stem": "并行回收器与并发回收器在关注目标上的主要区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 并发回收和并行回收",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d042ee0361b1e4e0": {
+      "stem": "Serial 与 Serial Old 的主要区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 串行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d0e6e84ea37819a8": {
+      "stem": "JVM 创建对象时，第一步要做什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 一个对象的结构是什么样的？ > JVM是如何创建对象的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d1cf752129591c1b": {
+      "stem": "下列哪项属于类被加载完毕后的「类使用」过程？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类的生命周期是怎么样的？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d2cf6849500ec48a": {
+      "stem": "关于 Java 的直接内存，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 内存结构",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d3e701ef579c3361": {
+      "stem": "CMS 与 Parallel 系列收集器最大的区别是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > CMS",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d471c18266b56a12": {
+      "stem": "关于 JDK 1.8 及之前系统提供的三种类加载器，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 类加载器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d6c2d09952a0a755": {
+      "stem": "关于 Full GC 与 Minor GC 的对比，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 分代收集算法",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d86a9e1b46d4caf8": {
+      "stem": "关于 G1 垃圾回收器的推出与默认版本，下列说法正确的是？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "d9932d81969b31bc": {
+      "stem": "如果没有使用双亲委派模型，用户自己编写了一个 `java.lang.Object` 类并放在程序的 ClassPath ",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "类加载机制 > 双亲委派机制",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "dc3b5e8a4f9ba833": {
+      "stem": "下列哪个 JVM 启动参数用于设置每个线程的栈大小？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "调优 > 常用的JVM启动参数(待补充)",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ddfd5a2f8e41dbb9": {
+      "stem": "ZGC 标志性的染色指针（Colored Pointer）技术，本质上是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "e09a7718ef15f26f": {
+      "stem": "为什么方法区放在堆上（永久代）会导致频繁的 GC 和 OOM 问题？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 为什么JDK 1.8要废弃永久代，改用元空间",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "e53ec48f6eb491a6": {
+      "stem": "CMS 作为低延迟垃圾收集器，它要付出的主要代价是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 项目中如何选择垃圾回收器？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "e594459c7838bbe0": {
+      "stem": "WeakHashMap 中的 key 已经不再被使用时，对应的 Entry 会被自动回收掉，原因是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 什么是强引用、软引用、弱引用和虚引用？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "e5e20ed9f533dda5": {
+      "stem": "Parallel Scavenge 与 ParNew 最大的不同是什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > 并行垃圾收集器",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "eb56d2356b50ed0e": {
+      "stem": "受染色指针标志位压缩地址空间的影响，ZGC 能够管理的内存上限是多少？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾收集器 > 各种垃圾收集器 > ZGC",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "ec215fcb88d68039": {
+      "stem": "Young GC 之后，需要移到老年代的对象在老年代存不下时，会发生什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > YoungGC和FullGC的触发条件是什么？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "efc9b35804844844": {
+      "stem": "JIT 把热点代码编译完成之后还会做什么？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "其他 > JIT优化技术",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "fc36427dfe595477": {
+      "stem": "被弱引用指向的对象能存活多久？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "内存 > 什么是强引用、软引用、弱引用和虚引用？",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    },
+    "fce6558debda2964": {
+      "stem": "并发标记阶段为什么要引入写屏障（Write Barrier）？",
+      "category": "jvm",
+      "source_file": "md/JVM.md",
+      "source_section": "垃圾回收 > 垃圾回收算法有哪些 > 三色标记算法，写屏障",
+      "added_at": "2026-10-16 23:47",
+      "locked": false
+    }
+  }
+}

@@ -1,0 +1,5372 @@
+[
+  {
+    "type": "JUDGE",
+    "stem": "并发回收器在整个垃圾回收过程中完全不需要暂停应用线程，不存在任何 STW 阶段。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。并发回收器只是允许垃圾收集线程在应用程序线程运行的同时执行部分收集工作，原文明确“并发回收期间，只有在特定的收集阶段会发生短暂的STW”，即特定阶段仍会短暂暂停应用线程，只是整体停顿比全程 STW 的收集器短得多。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "并发回收",
+      "STW",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "可达性分析算法判定某个对象不可达之后，JVM 就会立刻把它回收掉。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文明确说“并不是说当进行完可达性分析算法后，即可证明某对象可以被 GC。对象是否存活，需要两次标记”：第一次标记只是把没有 GC Roots 引用链的对象标记出来（没有第二步则直接回收）；若对象覆盖了 finalize() 且未执行过，会先进入 F-Queue，执行后若重新关联上 GC Roots 则移出“即将回收”集合，仍然没有关联才会第二次标记并回收。所以“不可达即立刻回收”是常见误解。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "可达性分析",
+      "finalize",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "内存分配完成后、调用构造方法之前，JVM 会先把分配到的内存空间初始化为零值，所以对象字段在这一步就已经有了默认值。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说内存分配完成后虚拟机需要将分配到的内存空间都初始化为零值，「这一步确保了对象的字段在创建时都有默认值」，例如 int 被初始化为 0、引用类型被初始化为 null。它排在调用构造方法之前，构造方法只是「按照程序员意愿进行赋值」。常见误解是以为字段的默认值由构造方法赋予，实际上构造方法执行前字段就已经有默认值了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "创建对象",
+      "低频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "类加载链接阶段的准备阶段，在为类的静态变量分配内存后，会顺带把用户在代码里写的显式值赋给它。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：准备阶段为类的静态变量分配内存（方法区），并赋予默认初始值（不是用户写的值），所以本题说法错误。用户写的显式赋值要等到初始化阶段执行类构造器 `<clinit>()` 时才完成，这也是初始化阶段的定义——执行静态变量的显式赋值和静态代码块。最常见的误解就是把准备阶段的「默认初始值」和初始化阶段的「显式赋值」当成同一步。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "类加载",
+      "方法区",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "Serial 垃圾收集器在 GC 过程中必须暂停其他所有的工作线程，直到收集结束（Stop The World）。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文明确：在 GC 的过程中，必须暂停其他所有的工作线程，直至 Serial 收集器收集结束为止（Stop The World）。原因正是它是单线程串行回收，回收期间无法与应用线程同时工作，所以若 GC 频繁发生就会影响程序执行性能。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "串行",
+      "垃圾收集器",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "在 JDK 7 之后的版本中，只要老年代最大可用连续空间大于历次晋升到老年代对象的平均大小，就认为空间分配担保成功。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：HandlePromotionFailure 这个参数在 JDK 7 中就不再支持了，后续版本中只要检查老年代最大可用连续空间是否大于历次晋升到老年代的对象的平均大小，如果大于，就认为担保成功。要注意的是，去掉的只是「是否允许担保失败」这一次判断，担保成功本身仍然不代表 Young GC 一定没有风险。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "空间分配担保",
+      "老年代",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "采用引用计数法时，两个互相引用的对象会形成环形结构，导致它们永远无法被回收。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文列举引用计数法的问题时说：如果两个对象互相引用，就形成了一个环形结构，采用引用计数法的话这两个对象将永远无法被回收。这正是引入三色标记（可达性分析）的原因之一——可达性分析从 GC Roots 出发，环形结构只要整体不可达就照样会被回收，不受循环引用影响。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "三色标记",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "通常说的内存溢出如果没有特别说明都是指堆溢出（OutOfMemory）；Java 中用 new 在堆上创建对象而没有足够的可用内存时，会抛出 OutOfMemoryError。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说常见的内存溢出情况包括栈溢出和堆溢出，我们常说的内存溢出如果没有特别说明都是指堆溢出，即 OutOfMemory；在 Java 中当程序动态分配内存（例如使用 new 操作符在堆中创建对象）时没有足够的可用内存，就会发生 OOM，即 OutOfMemoryError。要注意「不加说明时默认指堆溢出」这个约定——栈溢出是另一种内存溢出，不能混为一谈。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "内存溢出",
+      "OOM",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "程序计数器是每个线程共享的一块内存区域，用于记录当前线程正在执行的字节码指令的地址。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文明确说程序计数器「是线程私有的，为每个线程维护一个独立的程序计数器」，线程切换后要靠各自的计数器恢复到正确的执行位置，所以不可能是共享的。题干后半句「记录正在执行的字节码指令的地址」本身是对的，但把私有说成共享这一处就足以判错。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "内存结构",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "G1 中每个 Region 的记忆集（卡表）记录的是“本 Region 指向其他 Region 的指针”，用于解决跨代引用问题。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "方向反了。原文是：每个 Region 都有自己的记忆集（卡表），这些记忆集记录下的是“别的 Region 指向自己的指针”，并标记这些指针分别在哪些卡页的范围之内，用于解决跨代引用问题。之所以要记录“别人指向我”，是因为回收某个 Region 时必须知道还有谁在引用它；如果记成“我指向别人”，那么判断一个 Region 里的对象是否存活时就得把整个堆扫一遍，这正是记忆集要避免的代价。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "只要空间分配担保成功，本次 Young GC 就一定不会再出现内存放不下的问题。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说得很明白：即使大于（担保成功），也只是「尝试进行一次 YoungGC，但这次 YoungGC 依然是有风险的」，担保的结果可能成功也可能失败。复制阶段执行之后仍可能出现剩余存活对象大于 Survivor 且大于老年代可用内存的情况，那时照样会触发 Full GC。题干把「允许尝试」当成了「保证成功」。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "空间分配担保",
+      "YoungGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "tomcat 因为要在同一个容器里同时运行多个项目（可能同时用到 SpringBoot2.x 和 SpringBoot3.x），需要根据不同情况加载不同的类，所以需要打破双亲委派机制。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文举例：一个 tomcat 可能会运行好几个项目，可能有 SpringBoot2.x 版本，也有 SpringBoot3.x 版本，他需要根据不同的情况去加载不同的类，所以需要打破双亲委派机制，故判断为正确。若误判为错误，通常是把「破坏双亲委派」当成了不该发生的异常行为——实际上容器需要同时承载多版本类，必须让子加载器先自己加载，默认的向上委派顺序反而会让它永远加载到同一份。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "双亲委派",
+      "类加载器",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "标记-清除算法在清除垃圾时，会把存活对象压缩移动到内存的一端，以避免产生碎片。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。标记-清除是“最简单和干脆”的一种：识别出垃圾后直接清除，不移动也不复制对象，正因如此它的优点才是“速度快，因为不需要移动和复制对象”。把存活对象按内存地址次序排列并回收末端内存，那是标记-整理算法的“整理”阶段；也正是不移动对象，标记-清除才会留下大量内存碎片。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "标记-清除",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "STW（Stop-The-World）是指 JVM 在执行垃圾回收时必须暂停（停止）所有的应用程序线程。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文定义：STW 是 Stop-The-World 的缩写，指系统在执行特定操作时必须暂停所有应用程序线程；在 Java 中需要进行垃圾回收时，垃圾回收器需要停止应用程序的所有线程，以便安全地识别和回收不再使用的对象，这个过程就称为 Stop The World。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "STW",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "只要设置了 -XX:CMSInitiatingOccupancyFraction=75，JVM 就会严格在老年代使用率达到 75% 时触发 CMS GC。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文说明 -XX:+UseCMSInitiatingOccupancyOnly 默认是 false，即 JVM 不一定只按你设定的阈值触发，而是会根据运行时的 GC 情况进行自适应调整，因此即使设为 75 也可能不严格按 75% 触发；只有把该开关设为 true，才会只按设定阈值决定触发时机。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "CMS",
+      "老年代",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "逃逸分析的论文早在 1999 年就已发表，因此到今天它已经是一项十分成熟的技术。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文说逃逸分析论文 1999 年就已发表，但直到 JDK 1.6 才有实现，而且这项技术到如今也并不是十分成熟的。根本原因是无法保证逃逸分析的性能消耗一定能高于它的消耗——逃逸分析自身也要做一系列复杂分析，极端情况下如果发现没有一个对象是不逃逸的，这次分析就白白浪费了。“论文发表得早”不等于“技术已经成熟”，只是它仍是 JIT 优化中一个十分重要的手段。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "逃逸分析",
+      "JIT",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "因为 `-XX:PretenureSizeThreshold` 默认不为 0，所以默认情况下超过一定大小的对象会直接进入老年代。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说 PretenureSizeThreshold 默认是 0，也就是说默认情况下对象不会提前进入老年代，而是直接在新生代分配，之后再靠 GC 次数和动态年龄判断进入老年代。只有显式把该阈值设成大于 0 的值，大小超过它的对象才会被当作大对象直接进老年代。题干把默认值说成「不为 0」，结论正好反了。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "新生代",
+      "老年代",
+      "Eden",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "HashMap 使用的是强引用，因此垃圾回收时 Map 中引用的对象不会被 GC 掉。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。强引用是默认的引用方式，直接用 new 创建对象就是强引用，只要引用一直在就不会被 GC 回收掉；原文明确说 HashMap 使用的引用就是强引用，所以垃圾收集时 Map 中引用的对象不会被 GC 掉。这也正是 HashMap 与 WeakHashMap 的区别所在：WeakHashMap 的 Entry 是弱引用，key 不再被使用时会被自动回收，而 HashMap 不会——因此长期持有 HashMap 也容易成为内存泄漏的来源。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "强引用",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "应用刚启动时，通过调节负载均衡先给它一小部分流量来触发 JIT 优化，等优化好了再把流量调大，这种做法可以缓解发布时的超时问题。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。这正是原文给出的“预热”思路：应用刚刚启动的时候通过调节负载均衡，不要很快把大流量分发给它，而是先分一小部分流量，用这部分流量触发 JIT 优化，等优化好了再把流量调大，思想与缓存预热类似。它是“降低瞬时请求量”这一思路的落地方式。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "解释器",
+      "热点代码",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "AOT 静态编译后的程序仍然是平台无关的字节码，可以像普通 Java 程序一样跨平台运行。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文明确说静态编译以后的代码程序是平台相关的。AOT 在编译期就把字节码转成了机器码，机器码与具体平台绑定，也就不具备字节码交给 JVM 执行所带来的跨平台能力。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "AOT",
+      "JIT编译",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "ZGC 的停顿时间会随着堆容量和堆中对象数量的增加而正比例增长。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文说这部分停顿的时间基本上是固定的（10ms 以内），与堆的容量、堆中对象的数量没有正比例关系；正是这一点让 ZGC 能胜任超大堆内存。容易误判成正确，是因为传统收集器（如 Parallel、Serial）确实是堆越大停顿越长，把这经验套到 ZGC 上就错了。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "堆",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "JVM 中存在方法调用计数器，只有当累计计数大于一定值时才会使用 JIT 编译生成机器码，否则就由解释器进行解释执行。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文写的是 JVM 中一个方法调用计数器，当累计计数大于一定值的时候，就使用 JIT 进行编译生成机器码文件，否则就是用解释器进行解释执行，字节码也是经过解释器解释运行的。这正是热点探测的思路：只有足够“热”的方法才会被 JIT 编译，认为“所有方法一上来就被 JIT 编译”是对这句话最常见的误读。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "解释器",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "代码中执行 System.gc() 一定会立即触发一次 Full GC。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：代码中执行 System.gc() 的时候会触发 Full GC，但是并不保证一定会立即触发。也就是说它只是向虚拟机提出一次回收建议，真正的执行时机由虚拟机决定，题干里的「一定」「立即」都过于绝对。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "FullGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "Shenandoah 和 ZGC 几乎整个工作过程都是并发的，只有初始标记、最终标记这些阶段有短暂的停顿，且这部分停顿时间基本固定，与堆的容量、堆中对象的数量没有正比例关系。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "与原文一致：Shenandoah 和 ZGC 几乎整个工作过程全部都是并发的，只有初始标记、最终标记这些阶段有短暂的停顿，这部分停顿的时间基本上是固定的，与堆的容量、堆中对象的数量没有正比例关系，因此它们能在可管理的堆容量下把停顿控制在十毫秒以内，被官方命名为“低延迟垃圾收集器”。要注意区分的是“与堆容量无关”只针对那几个短暂的标记停顿，ZGC 本身对可管理的堆容量是有限制的（例如现在 ZGC 只能管理 4TB 以内的堆），不要把两者混为一谈。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "Shenandoah",
+      "ZGC",
+      "初始标记",
+      "低频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "标记-整理算法的第一个阶段（标记）与标记-清除算法是一模一样的，都是遍历 GC Roots 并标记存活对象。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "正确。原文说“标记：它的第一个阶段与标记-清除算法是一模一样的，均是遍历 GC Roots，然后将存活的对象标记”。两者的差异在第二阶段：标记-清除直接清除垃圾、不做移动，所以会留下碎片；标记-整理则移动存活对象并回收末端内存。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "标记-整理",
+      "标记-清除",
+      "中频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "并行垃圾收集器的“并行”指的是 GC 线程与应用线程并发执行，因此回收过程不会发生 Stop-The-World。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误。原文明确：“并行”主要体现在 GC 线程之间的并行，不是应用线程和 GC 线程并发（仍然是 Stop-The-World 的收集器）。并行收集器只是用多条 GC 线程同时回收来缩短单次停顿时间，回收期间应用线程依然被暂停；能做到与应用线程并发的是并发回收器（如 CMS、G1）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "Parallel",
+      "并行回收",
+      "STW",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "JUDGE",
+    "stem": "G1 的内存划分是固定不变的，而 Parallel Scavenge GC + Parallel Old GC 完全不支持自适应划分内存。",
+    "options": [
+      {
+        "label": "A",
+        "content": "正确"
+      },
+      {
+        "label": "B",
+        "content": "错误"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "错误，而且两处都错。原文说 G1 的内存划分是自适应的，会根据堆的大小和使用情况动态调整各个区域的大小和比例；Parallel Scavenge GC + Parallel Old GC 虽然也可以自适应划分内存，只是不够灵活。把“不够灵活”理解成“完全不支持”是常见的过度推断。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Parallel",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "JVM 在堆上为对象分配内存时，用来解决并发安全问题的手段有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Thread Local Allocation Buffer（TLAB）"
+      },
+      {
+        "label": "B",
+        "content": "CAS 加失败重试"
+      },
+      {
+        "label": "C",
+        "content": "指针碰撞"
+      },
+      {
+        "label": "D",
+        "content": "空闲列表"
+      }
+    ],
+    "answer": [
+      "A",
+      "B"
+    ],
+    "analysis": "原文明确列出：分配内存解决并发有两种手段，一个是 CAS+失败重试，一个是 Thread Local Allocation Buffer（TLAB）。B 和 D 是「内存怎么分配」的两种方式（分别对应堆内存连续和离散），解决的是空间怎么找的问题，不是多线程竞争的并发安全问题——这两组概念名字相近、极易张冠李戴，是最常被放在一起考的混淆点。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "创建对象",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "新生代被细分为一个 Eden 区和两个 Survivor 区，关于它们的工作方式下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "平常只有一块 Eden 区和一块 Survivor 区在被使用，另一块 Survivor 区空着"
+      },
+      {
+        "label": "B",
+        "content": "由于始终有一块 Survivor 空闲，新生代的内存使用率大约为 50%"
+      },
+      {
+        "label": "C",
+        "content": "两块 Survivor 区同时对外提供新对象的分配"
+      },
+      {
+        "label": "D",
+        "content": "空着的那块 Survivor 区主要用来接收 GC 时复制过来的存活对象"
+      }
+    ],
+    "answer": [
+      "A",
+      "D"
+    ],
+    "analysis": "原文：同时工作的只有一个 Eden 区加一个 Survivor 区，“另外一个空Survivor主要用来复制就可以了”；回收时把 Eden 存活对象（以及当前 Survivor 中的存活对象）转移到另一块空着的 Survivor。因此 A、C 正确。B 错在两块 Survivor 并不同时承担分配，始终有一块是空的；D 错在数值——原文说正因为只有一块 Survivor 空着，内存使用率大约 90%，而不是 50%。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "Eden",
+      "Survivor",
+      "新生代",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "基于逃逸分析，一个对象可能存在哪几种逃逸状态？",
+    "options": [
+      {
+        "label": "A",
+        "content": "线程逃逸（ThreadEscape）"
+      },
+      {
+        "label": "B",
+        "content": "无逃逸（NoEscape）"
+      },
+      {
+        "label": "C",
+        "content": "参数逃逸（ArgEscape）"
+      },
+      {
+        "label": "D",
+        "content": "全局逃逸（GlobalEscape）"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "原文明确给出三种逃逸状态：全局逃逸、参数逃逸和无逃逸。全局逃逸指对象超出方法或线程的范围（如存入静态字段、作为方法返回值）；参数逃逸指对象被作为参数传递或被参数引用，但方法调用期间不会全局逃逸；无逃逸指对象可被标量替换，内存分配可以从生成的代码中移除。D 的“线程逃逸”并不是原文列出的状态，属于凭空杜撰的状态名。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "逃逸分析",
+      "JIT",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些 JVM 启动参数可以用来输出垃圾回收的详细信息？",
+    "options": [
+      {
+        "label": "A",
+        "content": "-XX:+HeapDumpOnOutOfMemoryError"
+      },
+      {
+        "label": "B",
+        "content": "-XX:+UseG1GC"
+      },
+      {
+        "label": "C",
+        "content": "-XX:+PrintGCDetails"
+      },
+      {
+        "label": "D",
+        "content": "-verbose:gc"
+      }
+    ],
+    "answer": [
+      "C",
+      "D"
+    ],
+    "analysis": "-XX:+PrintGCDetails 打印垃圾回收的详细信息，-verbose:gc 输出垃圾回收的详细信息，两者都属于 GC 信息输出类参数。A 的 -XX:+UseG1GC 是选择使用 G1 收集器，属于垃圾回收器设置而不是日志输出；C 的 -XX:+HeapDumpOnOutOfMemoryError 是在内存溢出时生成堆转储，虽然也是排查内存问题的常用参数，但它不在垃圾回收时输出 GC 信息。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "启动参数",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "重分配集中某个 Region 的存活对象全部复制完毕后，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "转发表还得继续保留，因为可能还有访问在使用它"
+      },
+      {
+        "label": "B",
+        "content": "这个 Region 可以立即释放，用于新对象的分配"
+      },
+      {
+        "label": "C",
+        "content": "这个 Region 必须等到下一次垃圾收集循环结束后才能释放"
+      },
+      {
+        "label": "D",
+        "content": "转发表可以随该 Region 一起立即释放"
+      }
+    ],
+    "answer": [
+      "A",
+      "B"
+    ],
+    "analysis": "原文：Region 里存活对象都复制完毕后，该 Region 就可以立即释放用于新对象的分配，但转发表还得留着不能释放掉，因为可能还有访问在使用这个转发表——只有等所有指针都修复后，转发表才能释放。B 把 Region 和转发表的释放时机混为一谈，这是最容易踩的坑；D 混淆了两个概念：“合并到下一次垃圾收集循环的并发标记阶段”说的是并发重映射（引用修复）工作，不是 Region 的释放时机。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "Region",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "老年代使用 CMS 或 G1 时，一次完整的标记—清理过程分为哪四个阶段？",
+    "options": [
+      {
+        "label": "A",
+        "content": "并发清理"
+      },
+      {
+        "label": "B",
+        "content": "并发压缩整理"
+      },
+      {
+        "label": "C",
+        "content": "并发标记"
+      },
+      {
+        "label": "D",
+        "content": "重新标记"
+      },
+      {
+        "label": "E",
+        "content": "初始标记"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D",
+      "E"
+    ],
+    "analysis": "原文：老年代常用的收集器是 CMS 或 G1，采用的都是三色标记法，分为初始标记、并发标记、重新标记及并发清理四个阶段。A 错，「并发压缩整理」是把标记-整理/压缩类收集器的动作混了进来，CMS 的清理阶段是并发清理，并不做压缩整理。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "老年代",
+      "FullGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "对象晋升到老年代的触发条件主要看对象的大小和年龄，下列属于文中列出的晋升条件的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "对象大小大于 -XX:PretenureSizeThreshold 指定的临界值，直接进入老年代"
+      },
+      {
+        "label": "B",
+        "content": "对象躲过 15 次 GC，年龄达到 MaxTenuringThreshold 指定的阈值"
+      },
+      {
+        "label": "C",
+        "content": "对象在 Eden 区分配失败并触发一次 GC 后，立刻晋升到老年代"
+      },
+      {
+        "label": "D",
+        "content": "Survivor 空间中按年龄从小到大累加对象大小，总和超过 Survivor 空间一半时，当前年龄及以上的对象晋升"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文说对象进入老年代的条件有三个，满足一个即进入：①躲过 15 次 GC（jdk8 默认 MaxTenuringThreshold，可用 -XX:MaxTenuringThreshold 调整）；②动态对象年龄判断——从年龄小的对象开始累加大小，累加总和超过 Survivor 空间一半时，当前年龄及以上的对象晋升；③大对象直接进入，由 -XX:PretenureSizeThreshold 设置临界值，大于该值即直接进入老年代。A 不属于这三个条件：Eden 分配失败触发的是 Young GC，存活对象是被搬运到 Survivor 区，只有在 Survivor 放不下等情况下才会进入老年代。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "老年代",
+      "新生代",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "新生代采用的标记复制算法，其过程主要分为哪几个步骤？",
+    "options": [
+      {
+        "label": "A",
+        "content": "清除"
+      },
+      {
+        "label": "B",
+        "content": "复制"
+      },
+      {
+        "label": "C",
+        "content": "压缩整理"
+      },
+      {
+        "label": "D",
+        "content": "标记"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文：新生代采用的是标记复制算法，主要分为标记、复制、清除三个步骤——先从 GC Root 开始标记存活对象，再把 Eden 区和 Survivor 区复制到另外一个 Survivor 区，最后把 Eden 和 From Survivor 区的对象清理掉。A（压缩整理）是标记-整理算法的典型步骤，不属于标记复制算法，复制算法是靠「复制」而不是「整理」来解决碎片问题的。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "新生代",
+      "Eden",
+      "Survivor",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "为什么很多应用在发布过程中，刚重启好的实例会出现大量超时？",
+    "options": [
+      {
+        "label": "A",
+        "content": "启动瞬时请求量大时解释器高负荷运行、占用大量 CPU，导致负载升高、性能下降"
+      },
+      {
+        "label": "B",
+        "content": "在 JIT 生效之前，所有请求只能通过解释器执行，速度较慢"
+      },
+      {
+        "label": "C",
+        "content": "重启后 JVM 必须重新加载全部类，类加载是这段时间的性能瓶颈"
+      },
+      {
+        "label": "D",
+        "content": "JIT 优化发生在运行期，不是应用一启动就能生效，需要先通过执行收集到热点代码信息"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "D"
+    ],
+    "analysis": "原文把因果链写得很清楚：JIT 优化发生在运行期且不是应用一启动就能生效，得先执行收集热点代码 → 在此之前所有请求只能通过解释器执行、速度较慢 → 启动瞬时请求量大时解释器高负荷运行、占用大量 CPU，负载升高、性能下降，于是刚重启好的应用出现大量超时。D 把原因归到重新类加载上，原文并没有这样说，属于想当然。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "解释器",
+      "热点代码",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "把方法区放到元空间（堆外内存）带来的好处有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "类信息不再需要占用任何内存空间"
+      },
+      {
+        "label": "B",
+        "content": "JVM 可以根据机器内存大小动态扩展元空间的大小"
+      },
+      {
+        "label": "C",
+        "content": "不受堆大小的限制"
+      },
+      {
+        "label": "D",
+        "content": "减少 OOM 的发生"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "原文：元空间在本地内存上，不受堆大小的限制，不容易发生 OOM；把方法区放到元空间即放到堆外内存中，JVM 可以根据机器内存大小动态扩展元空间的大小，减少 OOM 的发生。D 明显错误——把方法区挪到元空间只是换了存放位置和内存来源，类信息依然要占用内存，只是不再占用堆内存、不再受堆大小约束。另外要注意「减少 OOM」不等于「永远不会 OOM」，元空间同样受本机内存总量的约束。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "元空间",
+      "方法区",
+      "OOM",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "创建对象时「设置对象头」这一步，会往对象里写入哪些信息？",
+    "options": [
+      {
+        "label": "A",
+        "content": "对象的哈希码"
+      },
+      {
+        "label": "B",
+        "content": "该实例所对应的类、如何找到类的元数据信息"
+      },
+      {
+        "label": "C",
+        "content": "对象的 GC 分代年龄、轻量级锁等信息"
+      },
+      {
+        "label": "D",
+        "content": "对象的实例字段的具体取值"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文：设置对象头时写入的是该实例所对应的类、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄、轻量级锁等信息。C 错：实例字段的取值不写在对象头里，它由前一步的零值初始化（int 为 0、引用为 null）和后一步的构造方法赋值决定，对象头只放对象自身的运行时元数据。对象头与实例数据是对象布局里两个不同的部分，容易混。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "对象头",
+      "创建对象",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "Java 虚拟机栈中，一次方法调用所创建的栈帧会存储哪些信息？",
+    "options": [
+      {
+        "label": "A",
+        "content": "方法出口"
+      },
+      {
+        "label": "B",
+        "content": "对象的实例数据"
+      },
+      {
+        "label": "C",
+        "content": "动态链接"
+      },
+      {
+        "label": "D",
+        "content": "运行时常量池"
+      },
+      {
+        "label": "E",
+        "content": "局部变量"
+      },
+      {
+        "label": "F",
+        "content": "操作数栈"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "E",
+      "F"
+    ],
+    "analysis": "原文说每次方法调用都会创建一个栈帧，该栈帧用于存储局部变量、操作数栈、动态链接、方法出口等信息，方法执行完毕后栈帧被弹出、变量作用域结束。E 错：对象的实例数据存放在 Java 堆中，栈帧里只放指向对象的引用（局部变量）。F 错：运行时常量池是方法区的一部分，不在栈帧里。容易把「局部变量表里的对象引用」和「对象本身」混为一谈，前者在栈、后者在堆。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "栈帧",
+      "内存结构",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "一个类要被卸载，需要满足哪些条件？",
+    "options": [
+      {
+        "label": "A",
+        "content": "该类所有的实例都已被 GC 回收"
+      },
+      {
+        "label": "B",
+        "content": "只要该类的 ClassLoader 已经被 GC 回收即可，实例是否被回收不影响"
+      },
+      {
+        "label": "C",
+        "content": "该类的 ClassLoader 已经被 GC 回收"
+      },
+      {
+        "label": "D",
+        "content": "该类所有的实例都已被 GC 回收，或者该类的 ClassLoader 已经被 GC 回收，满足其一即可"
+      }
+    ],
+    "answer": [
+      "A",
+      "C"
+    ],
+    "analysis": "原文列出的是 2 个条件，需要同时满足：该类所有的实例都已被 GC 回收、该类的 ClassLoader 已经被 GC 回收，之后该类会在 FULLGC 期间从方法区被回收掉。C 把「同时满足」改成了「满足其一」，是典型的边界条件说错。D 只保留了 ClassLoader 那一条，漏掉了实例必须已被回收这一前提，条件不全。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "类卸载",
+      "类加载器",
+      "方法区",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "CMS 采用三色标记法进行标记，下列哪些阶段是需要 Stop The World 的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "并发标记"
+      },
+      {
+        "label": "B",
+        "content": "初始标记"
+      },
+      {
+        "label": "C",
+        "content": "重新标记"
+      },
+      {
+        "label": "D",
+        "content": "并发清理"
+      }
+    ],
+    "answer": [
+      "B",
+      "C"
+    ],
+    "analysis": "原文明确：在标记的过程中，只有初始标记和重新标记这两个步骤是 STW 的。B 的并发标记与 D 的并发清理都是与应用线程并发执行的，不需要暂停应用线程；正因为把耗时最长的标记与清理过程并发化，CMS 相比整个回收过程都 STW 的收集器停顿时间更短。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "CMS",
+      "STW",
+      "停顿时间",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "三色标记法的三个标记阶段中，哪些阶段需要 Stop The World？",
+    "options": [
+      {
+        "label": "A",
+        "content": "初始标记之前的清除阶段"
+      },
+      {
+        "label": "B",
+        "content": "并发标记"
+      },
+      {
+        "label": "C",
+        "content": "重新标记"
+      },
+      {
+        "label": "D",
+        "content": "初始标记"
+      }
+    ],
+    "answer": [
+      "C",
+      "D"
+    ],
+    "analysis": "原文明确：以上三个标记阶段中，初始标记和重新标记是需要 STW 的，而并发标记是不需要 STW 的。B 错，并发标记与应用线程并发执行，正是为了减少停顿；D 错，清除阶段发生在重新标记结束之后，不属于三个标记阶段之一，原文也没把它列为需要 STW 的阶段。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "三色标记",
+      "STW",
+      "并发标记",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 G1 的 Humongous 区域，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Region 大小通过 -XX:G1HeapRegionSize 设定，取值范围 1MB～32MB，可以是任意整数值"
+      },
+      {
+        "label": "B",
+        "content": "超过了整个 Region 容量的超级大对象，会被存放在 N 个连续的 Humongous Region 之中"
+      },
+      {
+        "label": "C",
+        "content": "G1 的大多数行为把 Humongous Region 作为新生代的一部分来看待"
+      },
+      {
+        "label": "D",
+        "content": "G1 的大多数行为把 Humongous Region 作为老年代的一部分来进行看待"
+      }
+    ],
+    "answer": [
+      "B",
+      "D"
+    ],
+    "analysis": "B、D 直接对应原文：超过整个 Region 容量的超级大对象被存放在 N 个连续的 Humongous Region 之中，且 G1 的大多数行为把 Humongous Region 作为老年代的一部分来看待。A 把“老年代”换成了“新生代”，是典型的分代术语互换错误。C 前半句对，但 Region 大小的取值“应为 2 的 N 次幂”，不是任意整数值，所以整条不成立。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "基于计数器的热点探测为每个方法准备了两个计数器，它们分别统计什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "回边计数器：记录方法中的 for 或者 while 的运行次数"
+      },
+      {
+        "label": "B",
+        "content": "方法调用计数器：记录方法中循环体的执行次数"
+      },
+      {
+        "label": "C",
+        "content": "方法调用计数器：记录一个方法被调用的次数"
+      },
+      {
+        "label": "D",
+        "content": "回边计数器：记录该方法被外部调用的次数"
+      }
+    ],
+    "answer": [
+      "A",
+      "C"
+    ],
+    "analysis": "原文为每个方法准备了方法调用计数器和回边计数器：方法计数器记录一个方法被调用的次数，回边计数器记录方法中的 for 或者 while 的运行次数（也就是循环回边次数）。B 和 D 正好把两个计数器的职责互换了——这是记忆这组概念时最容易错位的地方。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "热点探测",
+      "解释器",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些属于常见的内存泄漏情况？",
+    "options": [
+      {
+        "label": "A",
+        "content": "使用 new 操作符在堆中创建对象"
+      },
+      {
+        "label": "B",
+        "content": "长时间被引用的集合类（List、Map）"
+      },
+      {
+        "label": "C",
+        "content": "未关闭的文件或数据库连接"
+      },
+      {
+        "label": "D",
+        "content": "未释放的资源对象，如打开的文件句柄或网络连接"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "原文列举的常见内存泄漏情况包括：未关闭的文件或数据库连接、未释放的资源对象（如打开的文件句柄或网络连接）、长时间被引用的集合类（List、Map）等——它们的共同点是对象或数据结构创建后没有适时释放对它们的引用，从而阻止垃圾回收器把它们清理出内存。D 不算泄漏：用 new 在堆上创建对象是正常的分配行为，只要引用不再被持有就可以被正常回收，只有创建后迟迟不释放引用才构成泄漏。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "内存泄漏",
+      "句柄",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "自定义类加载器时，关于重写方法与双亲委派模型的关系，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "不破坏双亲委派模型，也要同时重写 `loadClass` 方法"
+      },
+      {
+        "label": "B",
+        "content": "不破坏双亲委派模型，则只需要重写 `findClass()` 方法"
+      },
+      {
+        "label": "C",
+        "content": "要破坏双亲委派模型，需要继承 ClassLoader 并重写其中的 `loadClass` 方法和 `findClass()` 方法"
+      },
+      {
+        "label": "D",
+        "content": "要破坏双亲委派模型，只需要重写 `findClass()` 方法即可"
+      }
+    ],
+    "answer": [
+      "B",
+      "C"
+    ],
+    "analysis": "原文：要破坏双亲委派模型，就要继承 ClassLoader(抽象类) 并重写其中的 loadClass 方法和 findClass() 方法；不破坏则只需要重写 findClass() 方法。C 错：恰恰不该动 loadClass，因为 loadClass 里「父类加载器加载失败才调用自己的 findClass 完成加载」的逻辑正是保证双亲委派规则的地方。D 错：只重写 findClass() 是保持双亲委派的写法，破坏不了——只有把 loadClass 的委派链改掉才算破坏。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "双亲委派",
+      "双亲委派模型",
+      "父加载器",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 G1 采用的垃圾收集算法及其效果，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "由于整体基于“标记-清除”算法，G1 运行一段时间后仍会产生内存碎片"
+      },
+      {
+        "label": "B",
+        "content": "这两种算法意味着 G1 运作期间不会产生内存空间碎片"
+      },
+      {
+        "label": "C",
+        "content": "从整体来看，G1 是基于“标记-整理”算法实现的收集器"
+      },
+      {
+        "label": "D",
+        "content": "从局部（两个 Region 之间）上看，G1 又是基于“标记-复制”算法实现的"
+      }
+    ],
+    "answer": [
+      "B",
+      "C",
+      "D"
+    ],
+    "analysis": "原文：G1 从整体来看是基于“标记-整理”算法实现的收集器，但从局部（两个 Region 之间）上看又是基于“标记-复制”算法实现，无论哪种，都意味着 G1 运作期间不会产生内存空间碎片，收集完成后能提供规整的可用内存。D 把 G1 的整体算法说成“标记-清除”，那是 CMS 的算法——原文对比表里 CMS 的碎片一项是“存在内存碎片”，G1 是“可防止内存碎片产生”。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "原文列举的 Full GC 触发条件主要包含哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "老年代空间不足"
+      },
+      {
+        "label": "B",
+        "content": "空间分配担保失败"
+      },
+      {
+        "label": "C",
+        "content": "永久代空间不足"
+      },
+      {
+        "label": "D",
+        "content": "新生代 eden 区分配满"
+      },
+      {
+        "label": "E",
+        "content": "代码中执行 System.gc()"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C",
+      "E"
+    ],
+    "analysis": "原文列举的 Full GC 触发条件有四类：老年代空间不足、空间分配担保失败、永久代空间不足、代码中执行 System.gc()。A 是典型的混淆项——eden 区分配满触发的是 Young GC 而不是 Full GC，这也是最容易记混的一组条件。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "FullGC",
+      "老年代",
+      "永久代",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 G1 并发回收过程中新对象的分配（TAMS 指针），下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "并发回收时新分配的对象地址都必须要在这两个 TAMS 指针位置以上"
+      },
+      {
+        "label": "B",
+        "content": "并发回收期间新分配的对象会被当作垃圾，在本次回收中一并清理掉"
+      },
+      {
+        "label": "C",
+        "content": "G1 默认这个地址以上的对象是被隐式标记过的，即默认它们是存活的，不纳入回收范围"
+      },
+      {
+        "label": "D",
+        "content": "G1 为每一个 Region 设计了两个名为 TAMS（Top at Mark Start）的指针"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "A、B、C 合起来就是原文描述的完整机制：程序继续运行就肯定会持续有新对象被创建，G1 为每个 Region 设计两个 TAMS 指针，把 Region 中的一部分空间划分出来用于并发回收过程中的新对象分配，并发回收时新分配的对象地址都必须要在这两个指针位置以上；G1 默认在这个地址以上的对象是被隐式标记过的，即默认它们存活、不纳入回收范围。D 恰好相反——新对象不仅不会被清理，反而是被当作存活“保下来”的，这也正是需要 TAMS 把这部分空间划出来的原因。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列哪些 Java 特性不满足 AOT 静态编译所要求的“封闭性假设”？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JNI"
+      },
+      {
+        "label": "B",
+        "content": "动态代理"
+      },
+      {
+        "label": "C",
+        "content": "反射"
+      },
+      {
+        "label": "D",
+        "content": "方法内联"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文指出封闭性假设要求所有运行时的内容必须在编译时可见、并且可以被编译到 native image 中，反射就是不满足的典型，动态代理、序列化、JNI、动态类加载等同样违反，遇到这些代码需要额外适配。方法内联是编译器在调用关系明确的前提下做的编译期优化，不涉及运行时才能确定的内容，不属于违反封闭性假设的特性。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "AOT",
+      "JIT编译",
+      "类加载",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列关于标记-复制算法的说法，正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "复制对象会造成性能和时间上的消耗"
+      },
+      {
+        "label": "B",
+        "content": "浪费了一半的内存空间"
+      },
+      {
+        "label": "C",
+        "content": "需要遍历两次 GC Roots 才能完成回收"
+      },
+      {
+        "label": "D",
+        "content": "会产生内存碎片"
+      }
+    ],
+    "answer": [
+      "A",
+      "B"
+    ],
+    "analysis": "原文列出的缺点是“浪费了一半的内存空间，复制对象会造成性能和时间上的消耗”，故 A、C 正确。B 错：复制算法的优点恰恰是“内存空间是连续的，不会产生内存碎片”，产生碎片是标记-清除的问题；D 错：原文的流程是复制加整体清理，没有两次遍历 GC Roots 的说法。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "标记-复制",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于符号引用与直接引用，下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "直接引用是实际指向目标的内存地址，与具体的内存地址相关，在程序运行期间动态生成"
+      },
+      {
+        "label": "B",
+        "content": "直接引用在编译期间产生并存储在 class 文件中，符号引用则在程序运行期间动态生成"
+      },
+      {
+        "label": "C",
+        "content": "符号引用是在编译期间产生的，存储在编译后的 class 文件中"
+      },
+      {
+        "label": "D",
+        "content": "符号引用与实际的内存地址无关，只是一个用于描述被引用目标的标识符"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "原文：符号引用与实际的内存地址无关，只是一个标识符用于描述被引用的目标，在编译期间产生、存储在编译后的 class 文件中；直接引用是实际指向目标的内存地址，与具体的内存地址相关，在程序运行期间动态生成。D 把两者的产生时机与存储位置完全说反了——解析阶段要做的，正是把编译期产生的符号引用转换成运行期生成的直接引用。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "符号引用",
+      "直接引用",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "JIT 编译存在哪些不可忽视的缺点？",
+    "options": [
+      {
+        "label": "A",
+        "content": "必须满足封闭性假设才能进行编译"
+      },
+      {
+        "label": "B",
+        "content": "编译后的程序与平台绑定，无法跨平台运行"
+      },
+      {
+        "label": "C",
+        "content": "编译器在程序运行时编译代码，可能导致应用程序的启动时间较长"
+      },
+      {
+        "label": "D",
+        "content": "热点代码检测与代码编译都要占用运行期资源，可能影响应用性能"
+      }
+    ],
+    "answer": [
+      "C",
+      "D"
+    ],
+    "analysis": "原文列出两条 JIT 缺点：一是增加启动时间，因为编译器在程序运行时编译代码，可能导致启动时间较长；二是可能影响应用性能，因为热点代码检测、代码编译都要占用运行期资源。C 说的是 AOT 静态编译的特点，静态编译后的程序才是平台相关的；D 的封闭性假设是 AOT 静态编译的前提，不是 JIT 的缺点。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "热点代码",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "为了减少可达性分析的时间和开销，一些常见的回收器会采用哪些优化技术？",
+    "options": [
+      {
+        "label": "A",
+        "content": "分代收集"
+      },
+      {
+        "label": "B",
+        "content": "增量标记"
+      },
+      {
+        "label": "C",
+        "content": "标记-整理"
+      },
+      {
+        "label": "D",
+        "content": "增量拷贝"
+      }
+    ],
+    "answer": [
+      "B",
+      "D"
+    ],
+    "analysis": "原文列举的优化技术是“增量标记、增量拷贝”，因此 B、D 正确。A（分代收集）和 C（标记-整理）虽然都是真实的 GC 概念，但它们是另一种算法维度的划分，并非原文此处为削减可达性分析开销而提到的优化手段，属于用相关术语制造的干扰。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "可达性分析",
+      "三色标记",
+      "低频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 HotSpot 中不同收集器的标记实现方案，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "G1、Shenandoah 使用相当于堆内存 1/64 大小的 BitMap 结构记录标记信息"
+      },
+      {
+        "label": "B",
+        "content": "ZGC 同样使用相当于堆内存 1/64 大小的 BitMap 结构记录标记信息"
+      },
+      {
+        "label": "C",
+        "content": "Serial 收集器把标记直接记录在对象头上"
+      },
+      {
+        "label": "D",
+        "content": "Serial 收集器把标记记录在独立于对象的 BitMap 结构中"
+      }
+    ],
+    "answer": [
+      "A",
+      "C"
+    ],
+    "analysis": "原文一句里并列给出了两种方案：有的把标记直接记录在对象头上（如 Serial 收集器），有的把标记记录在与对象相互独立的数据结构上（如 G1、Shenandoah 使用了一种相当于堆内存的 1/64 大小的，称为 BitMap 的结构来记录标记信息），故 B、C 正确。A 错在给 Serial 安上了 BitMap，对象头才是 Serial 的标记载体；D 错在把 G1、Shenandoah 的 BitMap 方案安到 ZGC 头上，ZGC 用的是染色指针，标记信息直接记在引用对象的指针上，并不使用 BitMap。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "染色指针",
+      "G1",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于对象被第一次标记后与 finalize() 相关的处理，下列说法正确的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "finalize() 的调用是异步的，由 JVM 的 Finalizer 线程来执行"
+      },
+      {
+        "label": "B",
+        "content": "所有被第一次标记的对象都会进入 F-Queue 队列等待 finalize() 执行"
+      },
+      {
+        "label": "C",
+        "content": "finalize() 一旦被执行完，该对象就一定会被回收"
+      },
+      {
+        "label": "D",
+        "content": "若对象在 finalize() 执行后重新与 GC Roots 关联，则会被移出“即将回收”集合"
+      }
+    ],
+    "answer": [
+      "A",
+      "D"
+    ],
+    "analysis": "原文：只有“finalize() 方法被覆盖并且没有执行过”的对象才会被放进 F-Queue 等待执行，且注明“不一定会执行”；其调用是异步的，由 JVM 的 Finalizer 线程执行；若执行后与 GC Roots 关联，则移出“即将回收”集合，仍无关联才做第二次标记并回收。因此 A、D 正确。B 错在把“执行完”当成必然回收——执行后成功自救的对象会被移出“即将回收”集合；C 错在扩大范围，未覆盖 finalize() 或已执行过的对象不会进 F-Queue，没有第二步时会被直接回收。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "finalize",
+      "可达性分析",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "关于 ZGC（JDK 11 推出）和 Shenandoah GC（JDK 12 推出），下列说法正确的有？",
+    "options": [
+      {
+        "label": "A",
+        "content": "适用于单核、内存较小的机器"
+      },
+      {
+        "label": "B",
+        "content": "暂停时间通常在 10ms 以下，适合对响应时间有极高要求的应用"
+      },
+      {
+        "label": "C",
+        "content": "属于超低延迟垃圾收集器，适用于超大堆内存"
+      },
+      {
+        "label": "D",
+        "content": "在 JDK 8 上即可使用，特性已经非常成熟"
+      }
+    ],
+    "answer": [
+      "B",
+      "C"
+    ],
+    "analysis": "原文把 ZGC/Shenandoah 定位为超低延迟收集器，适用于超大堆内存，暂停时间通常在 10ms 以下，适合对响应时间有极高要求的应用。A 张冠李戴——单核、内存较小的机器对应的是 Serial GC；D 与原文“目前只支持较新的 JDK 版本，可能存在一些不成熟的特性”直接冲突，作者还特意提醒 ZGC 和 Shenandoah 的选择要慎重、稳定性有待验证。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "垃圾收集器",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "为什么需要双亲委派模型？它带来的好处有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "保证一致性，让 `java.lang.Object` 这类基础类在各种类加载器环境中都是同一个类"
+      },
+      {
+        "label": "B",
+        "content": "提高类加载的速度，减少类加载的耗时"
+      },
+      {
+        "label": "C",
+        "content": "保证 Java 类加载的安全性"
+      },
+      {
+        "label": "D",
+        "content": "避免重复加载"
+      }
+    ],
+    "answer": [
+      "A",
+      "C",
+      "D"
+    ],
+    "analysis": "原文结论是「保证了 Java 类加载的安全性、一致性和避免重复加载」，并举例 `java.lang.Object` 存放在 rt.jar 之中，无论哪一个类加载器要加载它，最终都委派给模型最顶端的启动类加载器，因此它在各种类加载器环境中都是同一个类。D 是凭空加上的性能收益：原文从未把提速列为该模型的好处，而且每次加载都要先向上委派再回落，本身就多了一层委派开销。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "双亲委派",
+      "双亲委派模型",
+      "类加载器",
+      "高频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列垃圾收集器中，属于并发回收器的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "CMS"
+      },
+      {
+        "label": "B",
+        "content": "ParNew"
+      },
+      {
+        "label": "C",
+        "content": "Parallel Scavenge"
+      },
+      {
+        "label": "D",
+        "content": "G1"
+      }
+    ],
+    "answer": [
+      "A",
+      "D"
+    ],
+    "analysis": "原文指出并发回收比较典型的就是 CMS，G1 也是并发回收器。B、D 的 Parallel Scavenge 与 ParNew 属于并行回收（Parallel GC 系列），回收期间会暂停应用程序执行，不属于并发回收器。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "并发回收",
+      "并行回收",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "MULTI",
+    "stem": "下列属于新生代收集器的有哪些？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Serial"
+      },
+      {
+        "label": "B",
+        "content": "Parallel Scavenge"
+      },
+      {
+        "label": "C",
+        "content": "ParNew"
+      },
+      {
+        "label": "D",
+        "content": "Parallel Old"
+      }
+    ],
+    "answer": [
+      "A",
+      "B",
+      "C"
+    ],
+    "analysis": "原文明确：新生代收集器有 Serial、ParNew、Parallel Scavenge。D 的 Parallel Old 是 Parallel Scavenge 的老年代版本，属于老年代收集器，不在新生代收集器之列。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "垃圾收集器",
+      "垃圾回收",
+      "Parallel",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC（The Z Garbage Collector）是在哪个 JDK 版本推出的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JDK 8"
+      },
+      {
+        "label": "B",
+        "content": "JDK 9"
+      },
+      {
+        "label": "C",
+        "content": "JDK 17"
+      },
+      {
+        "label": "D",
+        "content": "JDK 11"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文在列举常见回收器时写明 ZGC 于 JDK 11 推出。A、B 早于实际推出版本；D 的 JDK 17 在原文中没有依据，容易与“ZGC 是较新的收集器、较晚才被广泛使用”这一印象混淆。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "垃圾收集器",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 ParNew 与 Serial 的关系，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "ParNew 采用标记-整理算法，与 Serial 的标记-复制算法不同"
+      },
+      {
+        "label": "B",
+        "content": "ParNew 是并发收集器，回收时无需暂停应用线程"
+      },
+      {
+        "label": "C",
+        "content": "ParNew 是 Serial 的多线程版本，在参数和回收算法上与 Serial 完全一样"
+      },
+      {
+        "label": "D",
+        "content": "ParNew 以吞吐量优先，与 Parallel Scavenge 的目标相同"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确：ParNew 其实就是 Serial 的多线程版本，在参数、回收算法上和 Serial 是完全一样的，同样采用标记-复制算法。B 错，标记-整理是 Serial Old / Parallel Old 采用的算法；C 错，ParNew 在垃圾回收时同样会 STW，只是多线程并行使停顿时间通常比 Serial 短一些；D 错，吞吐量优先是 Parallel Scavenge 的目标，这也正是它与 ParNew 最大的不同。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "ParNew",
+      "Parallel",
+      "垃圾收集器",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "可达性分析算法难以适用于大型程序的分析，其根本原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它无法在一次分析中处理完所有的 GC Roots"
+      },
+      {
+        "label": "B",
+        "content": "它只能识别新生代对象，对老年代对象无效"
+      },
+      {
+        "label": "C",
+        "content": "它在分析过程中会移动存活对象，导致引用地址全部失效"
+      },
+      {
+        "label": "D",
+        "content": "它需要对程序进行全局分析，时间复杂度较高，且整个过程都是 STW 的"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：可达性分析算法需要对程序进行全局分析，因此时间复杂度较高，可能需要很长时间才能完成，并且整个过程都是 STW 的，对应用整体性能影响很大，“这也使得可达性分析算法难以适用于大型程序的分析”。B 是臆造的限制；C 与事实相反，可达性分析正是面向全局对象的判定算法，并非只针对新生代；D 描述的是标记-整理这类会移动对象的算法，可达性分析本身不移动对象。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "STW",
+      "可达性分析",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "G1 判定一个对象为大对象（需存入 Humongous 区域）的阈值是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "大小超过整个 Region 的容量"
+      },
+      {
+        "label": "B",
+        "content": "大小超过一个 Region 容量的四分之一"
+      },
+      {
+        "label": "C",
+        "content": "大小超过了一个 Region 容量的一半"
+      },
+      {
+        "label": "D",
+        "content": "大小超过 1MB"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文的判定标准是：只要大小超过了一个 Region 容量一半的对象即可判定为大对象。A 说的是更进一步的“超级大对象”——超过整个 Region 容量的对象会被存放在 N 个连续的 Humongous Region 之中，它当然也是大对象，但不是判定阈值，用 A 当阈值会把一半到一整个 Region 之间的大对象漏掉。B 把阈值错记成四分之一。C 混淆了概念，1MB～32MB 是 Region 自身大小的取值范围，与对象是否为大对象无关（Region 大小不同，阈值也随之不同）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "发生 Minor GC 时，Remembered Set 中记录的对象会被如何处理？",
+    "options": [
+      {
+        "label": "A",
+        "content": "被加入到 GC Roots 中进行扫描"
+      },
+      {
+        "label": "B",
+        "content": "被直接晋升到老年代"
+      },
+      {
+        "label": "C",
+        "content": "被标记为黑色并判定为存活，不再扫描其引用"
+      },
+      {
+        "label": "D",
+        "content": "被移动到 Survivor 区以消除跨代引用"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说：在 Remember Set 中的对象也会被加入到 GC Roots 进行扫描。B 把晋升机制（年龄/空间分配担保）张冠李戴到这里；C 是三色标记里黑色对象的含义，与 Remembered Set 的处理方式无关；D 把复制算法的复制动作和 Remembered Set 的作用混为一谈，Remembered Set 只负责记录引用关系，不搬移对象。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "跨代引用",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "分代收集算法中，老年代通常选用哪种垃圾回收算法，原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "标记-复制，因为对象存活率较高"
+      },
+      {
+        "label": "B",
+        "content": "标记-清除，因为老年代不会产生内存碎片"
+      },
+      {
+        "label": "C",
+        "content": "标记-复制，因为老年代 GC 频率高"
+      },
+      {
+        "label": "D",
+        "content": "标记-整理，因为对象存活率较高"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：老年代用标记-整理算法，因为对象存活率较高；虽然效率低一点，但可以减少空间浪费且不会有空间碎片。B、D 错在把复制算法安到老年代——存活率高意味着每次要复制大量对象，复制代价极大，而“GC 频率高”是新生代的特征；C 错在理由不成立，标记-清除恰恰会产生内存碎片（原文提到像 CMS 这类回收器为降低 STW 时长才在老年代采用标记-清除，那是以碎片换停顿的取舍，并非因为老年代不产生碎片）。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "G1 之所以能建立“可预测的停顿时间模型”，主要依靠下列哪项机制？",
+    "options": [
+      {
+        "label": "A",
+        "content": "每次都对整个 Java 堆做一次全区域的垃圾收集，从而精确控制停顿时长"
+      },
+      {
+        "label": "B",
+        "content": "固定每次回收的 Region 数量，使每次停顿时间恒定不变"
+      },
+      {
+        "label": "C",
+        "content": "只在老年代被填满之后才发起回收，从而把停顿集中在少数几次上"
+      },
+      {
+        "label": "D",
+        "content": "以 Region 作为单次回收的最小单元，跟踪各 Region 里垃圾堆积的“价值”并维护优先级列表，优先处理回收收益最大的 Region"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文的机制是：以 Region 作为单次回收的最小单元，跟踪各个 Region 里垃圾堆积的“价值”（即回收所获得的空间大小以及回收所需时间的经验值），后台维护优先级列表，再结合用户设定的允许停顿时间（-XX：MaxGCPauseMillis，默认 200 毫秒）优先处理收益最大的 Region。A 与原文正好相反——G1 的设计目标是有计划地避免在整个 Java 堆中进行全区域的垃圾收集。B 错在“固定”，G1 是根据目标停顿时间动态决定每次回收多少 Region。D 是传统分代收集器的思路，G1 的回收集不按属于哪个分代来划定，而是看哪块内存垃圾最多、收益最大。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "堆",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "按照文中的选择步骤，堆内存大约达到多大才建议考虑使用 G1、ZGC 这类收集器？",
+    "options": [
+      {
+        "label": "A",
+        "content": "至少 512M 以上"
+      },
+      {
+        "label": "B",
+        "content": "至少 4G 以上，通常超过 8G、16G 效果才更好"
+      },
+      {
+        "label": "C",
+        "content": "至少 1G 以上"
+      },
+      {
+        "label": "D",
+        "content": "没有门槛，小堆同样推荐使用"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文的判断标准是：至少达到 4G 以上才可以用 G1、ZGC 等，通常要超过 8G、16G 这样效果才更好。A、C 都低于这个门槛，小堆用 G1/ZGC 发挥不出优势；D 与原文“至少达到4G 以上才可以”直接矛盾。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "ZGC",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标记-整理算法既不会产生内存碎片也不浪费内存空间，它的代价是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "太耗时间（性能低）"
+      },
+      {
+        "label": "B",
+        "content": "每次只能使用一半的内存空间"
+      },
+      {
+        "label": "C",
+        "content": "无法解决对象之间的循环引用问题"
+      },
+      {
+        "label": "D",
+        "content": "需要额外维护一张引用计数表"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文给出的缺点是“太耗时间（性能低）”——因为整理需要移动所有存活对象并按地址次序排列。A 是标记-复制算法的代价，B 是引用计数法的缺陷，D 属于引用计数法的实现细节，与标记-整理无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "标记-整理",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "类的加载阶段中，JVM 根据类的全限定名找到 class 文件并加载后，会在内存中生成什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只把类的字节码原样存放在堆中，不生成其它结构"
+      },
+      {
+        "label": "B",
+        "content": "直接生成该类的实例对象并放到堆中"
+      },
+      {
+        "label": "C",
+        "content": "在方法区生成类构造器 `<clinit>()` 并立即执行它"
+      },
+      {
+        "label": "D",
+        "content": "在方法区（或者说元空间）生成类对应的元数据，并生成对应的 `Class` 对象作为该类各种数据的访问入口"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：加载阶段先在方法区或者说元空间生成类对应的元数据（类名、变量名、方法名等），然后生成对应的 `Class` 对象，作为这个类的各种数据的访问入口。A 错：元数据生成在方法区/元空间而不是原样丢进堆，而且一定会生成 Class 对象。C 错：加载阶段生成的是 Class 对象，不是类的实例对象，实例要等 new 的时候才创建。D 错：`<clinit>()` 是初始化阶段才执行的类构造器，不在加载阶段。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "类加载",
+      "方法区",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标记-复制算法解决了碎片问题，却带来了新的问题，这个新问题是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "标记阶段需要遍历两次 GC Roots，耗时翻倍"
+      },
+      {
+        "label": "B",
+        "content": "无法处理对象之间的相互循环引用"
+      },
+      {
+        "label": "C",
+        "content": "每次申请内存时都只能使用一半的内存空间，内存利用率严重不足"
+      },
+      {
+        "label": "D",
+        "content": "回收后内存空间仍然不连续，碎片问题只是被缓解"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确指出新问题：“因为每次在申请内存时，都只能使用一半的内存空间。内存利用率严重不足。”A 原文没有遍历两次的说法；B 是引用计数法的缺陷；C 与原文相反，复制算法的优点正是“内存空间是连续的，不会产生内存碎片”。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "标记-复制",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Linux 下 64 位指针的高 18 位不能用来寻址，ZGC 的染色指针盯上的是剩下多少位的指针宽度？",
+    "options": [
+      {
+        "label": "A",
+        "content": "剩下的 46 位指针宽度"
+      },
+      {
+        "label": "B",
+        "content": "剩下的 47 位指针宽度"
+      },
+      {
+        "label": "C",
+        "content": "剩下的 52 位指针宽度"
+      },
+      {
+        "label": "D",
+        "content": "剩下的 44 位指针宽度"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说 Linux 下 64 位指针的高 18 位不能用来寻址，ZGC 的染色指针技术继续盯上了这剩下的 46 位指针宽度，正是从这 46 位里再取高 4 位存标志信息，所以选 46 位。其余三个数字都出自原文但含义各不相同：47 位是 64 位 Linux 支持的进程虚拟地址空间位数（128TB），52 位是 AMD64 架构的地址总线位数（4PB），44 位是 64 位 Windows 系统支持的物理地址空间位数（16TB），它们都不是染色指针所利用的「剩余指针宽度」，属于典型的数字易混项。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "染色指针",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 CMS 垃圾回收器在 JDK 中的引入与废弃过程，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JDK 1.4 时引入，JDK 8 被标记弃用，JDK 11 被移除"
+      },
+      {
+        "label": "B",
+        "content": "JDK 1.5 时引入，JDK 9 被标记弃用，JDK 14 被移除"
+      },
+      {
+        "label": "C",
+        "content": "JDK 1.5 时引入，JDK 9 被标记弃用，JDK 17 被移除"
+      },
+      {
+        "label": "D",
+        "content": "JDK 1.6 时引入，JDK 9 被标记弃用，JDK 14 被移除"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：JDK1.5 时引入，JDK9 被标记弃用，JDK14 被移除。A 的引入、弃用、移除版本全部提前；B 把移除版本说成 JDK 17；C 把引入版本说成 JDK 1.6。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "CMS",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "一个实时交易系统要选垃圾收集器，按文中的选择步骤，首先应该按哪一维度判断、最看重什么指标？",
+    "options": [
+      {
+        "label": "A",
+        "content": "看吞吐量，优先选 Parallel Scavenge 这类高吞吐收集器"
+      },
+      {
+        "label": "B",
+        "content": "看内存占用，优先选占用最小的 Serial GC"
+      },
+      {
+        "label": "C",
+        "content": "看业务类型：实时交易系统更在意 STW 的时长，应选停顿可控的低延迟收集器"
+      },
+      {
+        "label": "D",
+        "content": "只看 JDK 版本，版本支持就一律选最新的 ZGC 或 Shenandoah GC"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文第二步：根据业务类型判断更在意吞吐量还是 STW 时长，批处理任务更在意吞吐量，实时交易系统更在意 STW 的时长——所以 D 对。A 把批处理场景的判断套到了交易系统上；B 里 Serial GC 是单核/小内存机器的选择依据，跟“内存占用最小”无关；C 错在“一律选最新”——JDK 版本只是四个判断维度之一，且作者明确提醒 ZGC 和 Shenandoah 的稳定性还有待验证，选择要慎重。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "垃圾收集器",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 Java 8 及以上版本中，设置 Metaspace 的初始大小和最大大小应该使用哪组参数？",
+    "options": [
+      {
+        "label": "A",
+        "content": "-XX:PermSize 和 -XX:MaxPermSize"
+      },
+      {
+        "label": "B",
+        "content": "-XX:MetaspaceSize 和 -XX:MaxMetaspaceSize"
+      },
+      {
+        "label": "C",
+        "content": "-Xms 和 -Xmx"
+      },
+      {
+        "label": "D",
+        "content": "-XX:+PrintGCDetails 和 -verbose:gc"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文按版本区分得很明确：-XX:PermSize / -XX:MaxPermSize 是 Java 8 之前设置永久代初始和最大大小的参数，Java 8 及以上改用 -XX:MetaspaceSize / -XX:MaxMetaspaceSize 设置 Metaspace。A 正好是这组易混参数的旧版本写法，是最强干扰项；C 是堆的初始/最大大小；D 是打印、输出垃圾回收详细信息的参数。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "启动参数",
+      "调优",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "运行时常量池位于哪个内存区域，主要存放什么内容？",
+    "options": [
+      {
+        "label": "A",
+        "content": "位于方法区，存放字面量和符号引用常量"
+      },
+      {
+        "label": "B",
+        "content": "位于 Java 堆，存放对象实例"
+      },
+      {
+        "label": "C",
+        "content": "位于 Java 虚拟机栈，存放局部变量"
+      },
+      {
+        "label": "D",
+        "content": "位于程序计数器，存放字节码指令地址"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：运行时常量池是方法区的一部分，用于存储编译阶段生成的信息，主要有字面量和符号引用常量两类，其中符号引用常量包括类的全限定名称、字段的名称和描述符、方法的名称和描述符。B 错，对象实例存放在 Java 堆。C 错，局部变量在虚拟机栈的栈帧里。D 错，程序计数器只记录当前线程正在执行的字节码指令地址，不存常量。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "方法区",
+      "内存结构",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "HotSpot 基于计数器的热点探测中，触发 JIT 编译的方法调用阈值 CompileThreshold 默认值是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "10000"
+      },
+      {
+        "label": "B",
+        "content": "1000"
+      },
+      {
+        "label": "C",
+        "content": "100000"
+      },
+      {
+        "label": "D",
+        "content": "1500"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写的是某个方法超过阀值（CompileThreshold，默认为 10000）就认为是热点方法，触发 JIT 编译。B、D 数量级不对；C 差了十倍，是把 10000 记成 100000 的典型口误。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "热点探测",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "HotSpot 引入 JIT 技术的直接原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "字节码无法在机器上直接执行"
+      },
+      {
+        "label": "B",
+        "content": "为了减少类加载的时间开销"
+      },
+      {
+        "label": "C",
+        "content": "为了让 Java 程序能够跨平台移植"
+      },
+      {
+        "label": "D",
+        "content": "解释器一边翻译一边执行，执行效率很低"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文的因果链条是：解释器的执行方式是一边翻译一边执行，因此执行效率很低，为了解决这一低效问题 HotSpot 引入了 JIT。A 是最强干扰项——字节码不能在机器上直接执行是 JVM 内置解释器的原因，不是引入 JIT 的原因，两者常被混为一谈；B、C 与 JIT 的定位无关。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "解释器",
+      "解释执行",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "本地方法栈与 Java 虚拟机栈的主要区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "本地方法栈是线程共享的，而虚拟机栈是线程私有的"
+      },
+      {
+        "label": "B",
+        "content": "两者功能相同，但本地方法栈支持本地代码（Native Code）的执行"
+      },
+      {
+        "label": "C",
+        "content": "本地方法栈存放对象实例，虚拟机栈存放类信息"
+      },
+      {
+        "label": "D",
+        "content": "本地方法栈由垃圾回收器管理，虚拟机栈不参与垃圾回收"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：本地方法栈是一种特殊的栈，它与 Java 虚拟机栈有着相同的功能，但是它支持本地代码（Native Code）的执行，栈中存放本地方法（Native Method）的参数和局部变量。A 错，两者都是线程私有的（原文明确说虚拟机栈是线程私有的存储器，本地方法栈与它功能相同）。C 错，对象实例在 Java 堆、类信息在方法区，都不在这两个栈里。D 原文没有这个说法，两个栈描述的都是方法调用相关的内存，不是 GC 管理的区域。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "本地方法栈",
+      "内存结构",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在只扫描新生代的 Young GC 中，为什么会出现「本来还活着的对象被回收」的情况？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为可达性分析算法本身会把老年代中的对象误判为垃圾"
+      },
+      {
+        "label": "B",
+        "content": "因为该对象在新生代中确实已经没有任何引用指向它"
+      },
+      {
+        "label": "C",
+        "content": "因为扫描到老年代对象就中断了这条路径，导致只被老年代引用的新生代对象没被标记到"
+      },
+      {
+        "label": "D",
+        "content": "因为 Minor GC 会把老年代和新生代一起回收，标记范围被重复覆盖"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说：正在进行 Young GC 时，如果发现一个对象处于老年代，JVM 就会中断这条路径，于是只认为 A 和 B 可达，把 E 回收掉，而 E 其实是有引用的，只不过引用在老年代，发生了跨代引用。A 错，可达性分析不会主动把老年代对象判成垃圾，问题出在路径被中断；B 与题干前提矛盾，E 是有引用的；D 错，Minor GC 并不回收老年代。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "跨代引用",
+      "新生代",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "HotSpot 虚拟机中的“栈上分配”本质上是通过什么技术实现的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "锁消除"
+      },
+      {
+        "label": "B",
+        "content": "标量替换"
+      },
+      {
+        "label": "C",
+        "content": "方法内联"
+      },
+      {
+        "label": "D",
+        "content": "公共子表达式消除"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文加粗强调：hotspot 的栈上分配本质是标量替换实现的。A 锁消除去掉的是不必要的同步操作，B 方法内联去掉的是方法调用开销，D 公共子表达式消除去掉的是重复计算，三者都不负责把对象的内存分配从堆挪走。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "栈上分配",
+      "标量替换",
+      "JIT",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "G1 垃圾收集器是在哪个 JDK 版本被设置为默认垃圾收集器的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JDK 9"
+      },
+      {
+        "label": "B",
+        "content": "JDK 7"
+      },
+      {
+        "label": "C",
+        "content": "JDK 8"
+      },
+      {
+        "label": "D",
+        "content": "JDK 11"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写得很清楚：G1 在 JDK 7 中推出，JDK 9 中设置为默认。A 是“推出”的版本，题目问的是“设为默认”，这是最常见的记混点；B 在原文中没有依据；D 是 ZGC 推出的版本，别把两件事串在一起。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "垃圾收集器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "分代收集算法中，新生代为什么选用标记-复制算法？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为新生代对象存活率高，需要复制的存活对象很少"
+      },
+      {
+        "label": "B",
+        "content": "因为新生代空间充足，浪费一半内存也无所谓"
+      },
+      {
+        "label": "C",
+        "content": "因为大部分对象生命周期短，GC频率高"
+      },
+      {
+        "label": "D",
+        "content": "因为标记-复制算法不会产生 STW"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：新生代用标记-复制算法，“因为大部分对象生命周期短，GC频率高”——每次 GC 存活下来的对象很少，复制的代价就小。A 把“存活率高”安到新生代上，那是老年代的特征，存活率高的场景恰恰不适合复制；B 与原文相反，原文说新生代细分 Eden/Survivor 正是为了解决复制算法浪费空间的问题（正因为空间不富裕才要这么分）；D 无据，可达性分析过程本身就是 STW 的，复制算法并不消除 STW。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "新生代",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "把 Parallel Scavenge 的 -XX:GCTimeRatio 设置为 19 时，允许的最大垃圾收集时间占总时间的比例是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "19%"
+      },
+      {
+        "label": "B",
+        "content": "1%"
+      },
+      {
+        "label": "C",
+        "content": "10%"
+      },
+      {
+        "label": "D",
+        "content": "5%（即 1/(1+19)）"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文给出换算：该参数是垃圾收集时间占总时间的比率、相当于吞吐量的倒数，设为 19 时允许的最大垃圾收集时间占总时间的 5%，即 1/(1+19)。A 把参数值直接当成了百分比；B 的 1% 是默认值 99 对应的比例（1/(1+99)），不是设为 19 时的结果；C 没有任何依据。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "Parallel",
+      "吞吐量",
+      "垃圾收集器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于内存泄漏与内存溢出的关系，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "两者没有必然联系，内存泄漏不会引起内存溢出"
+      },
+      {
+        "label": "B",
+        "content": "内存溢出会导致内存泄漏，顺序是溢出在前"
+      },
+      {
+        "label": "C",
+        "content": "内存泄漏会导致内存溢出，因为泄漏的内存一直无法被回收，久而久之就没有内存可以分配了"
+      },
+      {
+        "label": "D",
+        "content": "只要发生了内存溢出，就一定先发生了内存泄漏"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：一般来说，内存泄漏是会导致内存溢出的，因为内存泄漏会导致部分内存一直无法被回收，久而久之就会没有内存可以分配，就会导致内存溢出。A 直接否定了原文给出的因果关系。B 把因果方向说反了，是泄漏累积导致溢出，不是溢出导致泄漏。D 把充分条件当成了必要条件——内存泄漏可以导致溢出，但溢出的成因不止泄漏一种（例如一次性申请超大对象、堆空间本身就配置得过小），所以不能反推。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "内存泄漏",
+      "内存溢出",
+      "OOM",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "双亲委派模型中，一个类加载器收到类加载请求后的正确处理过程是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "先自己尝试加载，加载失败后再把请求委派给父加载器"
+      },
+      {
+        "label": "B",
+        "content": "先检查该类是否已经加载过，没有则委派给父加载器，父加载器找不到时才由自己尝试加载"
+      },
+      {
+        "label": "C",
+        "content": "先委派给自己的子加载器，子加载器找不到时再由自己加载"
+      },
+      {
+        "label": "D",
+        "content": "先委派给父加载器，且无论父加载器能否完成，自己都要再加载一次"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：收到请求后先检查是否已经加载过这个类，有则直接返回；没有也不会自己去尝试加载，而是委派给父加载器完成，每一层都如此，只有父加载器反馈自己无法完成（搜索范围中没有找到所需的类）时，子加载器才会尝试自己加载。B 把父子顺序整个颠倒了。C 错在委派方向——双亲委派是向上委派，不是向下。D 错在父加载器已经成功加载后子加载器不会重复加载，避免重复加载正是该模型的好处之一。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "双亲委派",
+      "双亲委派模型",
+      "父加载器",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "AOT（Ahead-of-Time）编译与 JIT 编译最核心的区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "AOT 在编译期间就将字节码转换为机器码，不像 JIT 那样在运行期才生成机器码"
+      },
+      {
+        "label": "B",
+        "content": "AOT 依赖运行期的热点代码检测结果来决定编译哪些方法"
+      },
+      {
+        "label": "C",
+        "content": "AOT 只对热点代码做编译，非热点代码仍交给解释器执行"
+      },
+      {
+        "label": "D",
+        "content": "AOT 编译后的产物仍然是字节码，可以在任意平台上交给 JVM 执行"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：AOT 翻译一下就是提前编译，它不像 JIT 一样在运行期才生成机器码，而是在编译期间就将字节码转换为机器码，直接省去了运行时对 JVM 的依赖，是一种典型的静态编译技术。A、B 描述的都是 JIT 依赖运行期热点检测的行为；C 与原文相反，静态编译以后的代码程序是平台相关的，不再是跨平台字节码。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "AOT",
+      "JIT",
+      "JIT编译",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Java 中的方法内联指的是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把方法的字节码提前编译成机器码，避免运行期再编译"
+      },
+      {
+        "label": "B",
+        "content": "把签名相同的多个方法合并成一个方法，减少字节码体积"
+      },
+      {
+        "label": "C",
+        "content": "将一个方法的代码直接插入到调用它的地方，从而避免方法调用的开销"
+      },
+      {
+        "label": "D",
+        "content": "把多个小对象合并成一个聚合量，减少堆内存占用"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文定义：方法内联意味着将一个方法的代码直接插入到调用它的地方，从而避免了方法调用的开销，对小型且频繁调用的方法特别有用。A 描述的是 AOT 提前编译；C 的“合并方法”不是内联的含义；D 说的是把标量聚成聚合量，方向与标量替换正好相反。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "JIT编译",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Java 中的对象一定在堆上分配内存吗？",
+    "options": [
+      {
+        "label": "A",
+        "content": "不一定，JIT 优化中的逃逸分析发现局部对象没有逃逸到线程和方法外时，可能进行栈上分配"
+      },
+      {
+        "label": "B",
+        "content": "一定，所有对象实例都必须在堆上分配"
+      },
+      {
+        "label": "C",
+        "content": "不一定，但只有基本数据类型才可能不在堆上分配"
+      },
+      {
+        "label": "D",
+        "content": "不一定，只要对象足够小就一定会在栈上分配"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说不一定：HotSpot 中存在 JIT 优化机制，JIT 优化中可能会进行逃逸分析，当逃逸分析发现某个局部对象没有逃逸到线程和方法外时，这个对象就可能不会在堆上分配内存，而是进行栈上分配。A 过于绝对，忽略了 JIT 优化。C 错在把范围缩到基本数据类型——基本类型局部变量本来就在栈帧里，这里说的是对象实例。D 错在条件说错了：触发栈上分配的是逃逸分析的结果（是否逃逸出线程和方法），不是对象大小，而且原文说的是「可能」而非「一定」。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "堆",
+      "JIT",
+      "逃逸分析",
+      "栈上分配",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "软引用指向的对象在什么时机会被垃圾回收？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只要发生 GC，无论内存是否充足都会被回收"
+      },
+      {
+        "label": "B",
+        "content": "当内存不足时，垃圾回收器会优先回收软引用指向的对象"
+      },
+      {
+        "label": "C",
+        "content": "只有显式调用 System.gc() 时才会被回收"
+      },
+      {
+        "label": "D",
+        "content": "永远不会被回收，除非把引用变量显式置为 null"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：通过 SoftReference 创建的对象就是软引用，当内存不足时垃圾回收器会优先回收软引用指向的对象以释放内存，内存充足时可以保留对象提高性能（缓存机制），从而在内存不足时自动回收缓存对象避免 OOM。A 说的是弱引用而不是软引用——把两者的回收时机互换是最典型的错误。B 错，软引用的回收由内存是否充足决定，不依赖是否显式调用 System.gc()。C 错，软引用在内存不足时就会被回收，不需要把引用变量置为 null。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "软引用",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Young GC 的复制阶段结束后，剩余存活对象的大小既大于 Survivor 区、又大于老年代可用内存，会发生什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "触发一次 Full GC"
+      },
+      {
+        "label": "B",
+        "content": "存活对象被直接晋升到老年代，随后老年代自己再做一次回收"
+      },
+      {
+        "label": "C",
+        "content": "直接抛出 OOM"
+      },
+      {
+        "label": "D",
+        "content": "只清理 Eden 区，把存活对象留在 From Survivor 区等下一次 GC"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文列出复制阶段后的三种情况，第三种就是：剩余存活对象的大小大于 Survivor 并且大于老年代，触发 Full GC。A 描述的是第二种情况（大于 Survivor 区但小于老年代可用内存时直接去老年代）；B 错，OOM 是老年代做 Full GC 之后空间仍然不够才触发的，不是这里的直接结果；C 与复制算法先复制再清理的流程不符，存活对象不会留在 From Survivor 区。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "空间分配担保",
+      "Survivor",
+      "晋升",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "内存泄漏和内存溢出的根本区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "内存泄漏是指程序申请的内存超过了可用内存；内存溢出是指内存申请后没有释放"
+      },
+      {
+        "label": "B",
+        "content": "内存泄漏是指分配的内存在不再需要时没有被正确释放或回收；内存溢出是指程序试图分配超过其可用内存的内存空间"
+      },
+      {
+        "label": "C",
+        "content": "内存溢出一定是由内存泄漏引起的，两者没有本质区别"
+      },
+      {
+        "label": "D",
+        "content": "内存泄漏会直接导致 Java 程序崩溃，而内存溢出不会"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文对两者分别下了定义：内存泄漏指的是程序中分配的内存在不再需要时没有被正确释放或回收的情况，会让可用内存逐渐减少；内存溢出指的是程序试图分配超过其可用内存的内存空间的情况，通常会直接导致 Java 程序崩溃。B 把两个定义对调了，这是本题最容易踩的坑。C 错，原文只说内存泄漏「会导致」内存溢出，反过来不成立。D 说反了，直接导致程序崩溃的是内存溢出。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "内存泄漏",
+      "内存溢出",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "并发（Concurrent）与并行（Parallel）这两个概念的核心区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "并发是多个CPU同时执行不同任务，并行是一个CPU通过时间片切换执行不同任务"
+      },
+      {
+        "label": "B",
+        "content": "并发指多条GC线程同时回收，并行指GC线程与应用线程同时运行"
+      },
+      {
+        "label": "C",
+        "content": "并发指多个任务在同一时刻真正同时执行，并行指多个任务在同一时间段内交替执行"
+      },
+      {
+        "label": "D",
+        "content": "并发是一个CPU不断通过时间片切换执行不同任务，并行是多个CPU同时执行不同任务"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文明确：并发指的是一个CPU不断的通过时间片切换来执行不同的任务，并行是指多个CPU同时执行不同的任务。A 把两者完全说反；C 描述的是垃圾回收器语境下“并发/并行”的具体体现（并行指多条 GC 线程同时工作、并发指 GC 线程与应用线程同时运行），并不是这两个概念本身的定义；D 同样把“同一时刻真正同时执行”（属于并行）和“同一时间段内交替执行”（属于并发）对调了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "并发回收",
+      "并行回收",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 Java 8 的 HotSpot JVM 中，默认的垃圾收集器组合是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Parallel Scavenge + Parallel Old"
+      },
+      {
+        "label": "B",
+        "content": "Serial + Serial Old"
+      },
+      {
+        "label": "C",
+        "content": "ParNew + CMS"
+      },
+      {
+        "label": "D",
+        "content": "G1"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文明确：在 Java 8 HotSpot JVM，默认的垃圾收集器是 Parallel Scavenge + Parallel Old。A 是串行组合，需要显式指定；B 是以低停顿为目标的组合，同样不是默认；C 的 G1 是 JDK 9 中才被设置为默认的收集器。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "Parallel",
+      "垃圾收集器",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标记-复制算法是如何解决标记-清除算法的空间碎片问题的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "清除后把存活对象按内存地址次序重新排列，回收末端内存"
+      },
+      {
+        "label": "B",
+        "content": "把这一块内存中所有存活的对象复制到另一块上，再把已使用的内存整个清理掉"
+      },
+      {
+        "label": "C",
+        "content": "只回收引用计数为 0 的对象，其余对象原地保留"
+      },
+      {
+        "label": "D",
+        "content": "在清除阶段对相邻空闲块做合并整理"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：将内存分成两块，每次只使用其中一块，当内存不够时“将这一块内存中所有存活的复制到另一块上。然后将已使用的内存整个清理掉。复制算法解决了空间碎片的问题”。A 描述的是标记-整理的“整理”阶段；B 是引用计数法的判据；D 描述的空闲块合并属于外部碎片整理的思路，原文并未提及，且复制算法靠的是整体搬运而非原地合并。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "标记-复制",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 Shenandoah 收集器的来源与定位，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "由 Oracle 开发，只存在于 OracleJDK 中，OpenJDK 里没有"
+      },
+      {
+        "label": "B",
+        "content": "由 Sun 开发，随 JDK7 一起成为默认垃圾收集器"
+      },
+      {
+        "label": "C",
+        "content": "由 RedHat 开发，OracleJDK 与 OpenJDK 中均默认提供"
+      },
+      {
+        "label": "D",
+        "content": "由 RedHat 开发并捐赠给 OpenJDK，在 OracleJDK 中没有"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：Shenandoah 收集器是 RedHat 开发的收集器，捐赠给 OpenJDK，在 OracleJDK 中没有，主要是改进了 G1 收集器在回收阶段无法与用户进程并发的问题。A 把开发者和归属都搞反了。C 错，JDK7 引入、JDK9 成为默认收集器的是 G1，不是 Shenandoah。D 的前半句对，但“OracleJDK 中默认提供”与原文“在 OracleJDK 中没有”直接矛盾。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "Shenandoah",
+      "G1",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "JDK 1.8 为什么要用元空间取代永久代？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为永久代不能存储类信息，只有元空间能存储被加载的类"
+      },
+      {
+        "label": "B",
+        "content": "因为元空间同样位于堆上，只是换了一种垃圾回收算法"
+      },
+      {
+        "label": "C",
+        "content": "因为元空间把类信息移到了 Java 虚拟机栈中"
+      },
+      {
+        "label": "D",
+        "content": "因为永久代是堆的一部分、大小受堆大小限制容易发生 OOM，而元空间在本地内存上、不受堆大小限制"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文给出的核心原因：永久代是堆上的一部分，大小受堆大小的限制，容易发生 OOM；元空间在本地内存上，不受堆大小的限制，不容易发生 OOM。A 错，永久代和元空间都是方法区的具体实现形式，都能存储类信息——原文说法区作为元空间和永久代的主要区域，里面存储了大量被加载的类。B 错，元空间在本地内存（堆外）而不是堆上，而且原文强调的是空间位置与大小限制，不是回收算法。D 错，类信息在方法区/元空间，虚拟机栈里放的是栈帧和局部变量。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "元空间",
+      "永久代",
+      "方法区",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "根据逃逸状态与优化手段的对应关系，下列哪种优化只有对象处于无逃逸（NoEscape）状态时才能进行？",
+    "options": [
+      {
+        "label": "A",
+        "content": "方法内联"
+      },
+      {
+        "label": "B",
+        "content": "循环优化"
+      },
+      {
+        "label": "C",
+        "content": "锁消除"
+      },
+      {
+        "label": "D",
+        "content": "栈上分配"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "表格中栈上分配一行是 N、N、Y，即只有无逃逸状态才可以做，这是最容易记错的一行。方法内联和循环优化在三种状态下都是 Y，A、B 把适用范围说窄了；锁消除是全局逃逸为 N、参数逃逸和无逃逸为 Y，D 把适用范围说宽了，参数逃逸的对象同样可以做锁消除。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "栈上分配",
+      "逃逸分析",
+      "JIT",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "每一次执行 Young GC 之前，虚拟机会先做哪一项检查？",
+    "options": [
+      {
+        "label": "A",
+        "content": "检查老年代最大可用连续空间是否大于历次晋升到老年代对象的平均大小"
+      },
+      {
+        "label": "B",
+        "content": "检查 Eden 区剩余空间是否大于 Survivor 区总空间"
+      },
+      {
+        "label": "C",
+        "content": "检查老年代最大可用的连续空间是否大于新生代所有对象的总空间"
+      },
+      {
+        "label": "D",
+        "content": "检查新生代对象总大小是否大于老年代已使用空间"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：在每一次执行 YoungGC 之前，虚拟机会检查老年代最大可用的连续空间是否大于新生代所有对象的总空间；大于则说明本次 Young GC 是安全的。A 是这一步检查不通过之后才进行的第二层检查（历史上还要 HandlePromotionFailure 允许担保失败），把它当成「先做的检查」就跳过了第一步；C、D 的比较对象在原文里都不存在。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "空间分配担保",
+      "老年代",
+      "YoungGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "分代收集中的“动态对象年龄判断”，其判定规则是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "从年龄小的对象开始累加对象大小，累加总和超过 Survivor 空间一半时，当前年龄及以上的对象晋升"
+      },
+      {
+        "label": "B",
+        "content": "从年龄大的对象开始累加，超过 Survivor 空间一半时，当前年龄及以下的对象晋升"
+      },
+      {
+        "label": "C",
+        "content": "当某一个年龄的对象总大小超过整个 Survivor 空间时，该年龄的对象晋升"
+      },
+      {
+        "label": "D",
+        "content": "当 Survivor 中对象的平均年龄达到 MaxTenuringThreshold 的一半时，全部晋升"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文规则是“从年龄小的对象开始，不断地累加对象的大小，当累加总和超过survivor空间一半时，当前年龄及以上的对象将晋升到老年代”（TargetSurvivorRatio=50 时为一半）。A 把累加方向和晋升方向都反了——是从小到大累加、当前年龄及以上晋升；B 把阈值从“一半”错抬到“整个 Survivor 空间”；C 混淆了两个独立条件，平均年龄与 MaxTenuringThreshold 一半都不是判据。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "Survivor",
+      "新生代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪种情况才会触发类的初始化？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只有在第一次主动使用类时才会触发，比如调用类的静态方法、访问静态变量、new 对象等"
+      },
+      {
+        "label": "B",
+        "content": "类被类加载器加载到内存时就会立即触发初始化"
+      },
+      {
+        "label": "C",
+        "content": "链接阶段的准备阶段完成后就会触发初始化"
+      },
+      {
+        "label": "D",
+        "content": "JVM 启动时会把 ClassPath 下的所有类都初始化一遍"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：只有在第一次主动使用类时才会触发初始化（比如调用类的静态方法、访问静态变量、new 对象等），也就是懒加载。A 错：加载完成不等于初始化，中间还隔着整个链接阶段。B 错：准备阶段只给静态变量赋默认初始值，不会触发初始化。D 错：初始化是按需的懒加载，不是启动时批量完成。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "类加载",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Young GC 的触发条件是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "新生代中的 eden 区分配满的时候"
+      },
+      {
+        "label": "B",
+        "content": "老年代空间不足时"
+      },
+      {
+        "label": "C",
+        "content": "永久代空间不足时"
+      },
+      {
+        "label": "D",
+        "content": "代码中执行 System.gc() 的时候"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：YoungGC 的触发条件比较简单，那就是当新生代中的 eden 区分配满的时候就会触发。B、C 都属于 Full GC 的触发条件（老年代空间不足、永久代空间不足）；D 触发的是 Full GC，而且原文还特别说明并不保证一定会立即触发。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "YoungGC",
+      "新生代",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC 的再标记（Remark）阶段，停顿时间一般不超过多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "10 毫秒"
+      },
+      {
+        "label": "B",
+        "content": "1 毫秒"
+      },
+      {
+        "label": "C",
+        "content": "100 毫秒"
+      },
+      {
+        "label": "D",
+        "content": "没有固定上限，随堆容量线性增长"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确写道再标记阶段“这个阶段的停顿时间一般不超过1毫秒”。A 是拿 ZGC 整体停顿量级（10ms 以内）来冒充再标记这一具体阶段；C 差了两个数量级；D 恰好与原文相反——ZGC 的停顿时间基本固定，与堆的容量、堆中对象的数量没有正比例关系，这正是它能用于超大堆的原因。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "JIT 编译器编译同步块时，依据什么判断可以对该同步块做锁消除（同步省略）？",
+    "options": [
+      {
+        "label": "A",
+        "content": "同步块中不包含任何 I/O 操作"
+      },
+      {
+        "label": "B",
+        "content": "锁对象被 final 修饰"
+      },
+      {
+        "label": "C",
+        "content": "逃逸分析证实该同步块的锁对象只能够被一个线程访问，没有被发布到其他线程"
+      },
+      {
+        "label": "D",
+        "content": "同步块所在方法已被判定为热点方法并完成了方法内联"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说 JIT 借助逃逸分析判断同步块使用的锁对象是否只能够被一个线程访问而没有被发布到其他线程，一旦被证实就取消这部分代码的同步，这个过程叫同步省略也叫锁消除。A 把能否消除同步归因于有没有 I/O，原文没有这种依据；C 中锁对象是否 final 与能否取消同步无关；D 的热点判定和方法内联是触发 JIT 编译的条件，不是取消同步的依据。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "锁消除",
+      "逃逸分析",
+      "JIT",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 HotSpot 中，当堆中的内存是离散（不连续）的时，JVM 采用哪种方式为对象分配内存？",
+    "options": [
+      {
+        "label": "A",
+        "content": "指针碰撞，用一个指针标记当前可用位置并把指针向前移动"
+      },
+      {
+        "label": "B",
+        "content": "栈上分配，直接在当前线程的栈帧中创建对象"
+      },
+      {
+        "label": "C",
+        "content": "空闲列表，维护并遍历空闲列表找到足够大小的内存块"
+      },
+      {
+        "label": "D",
+        "content": "TLAB，为每个线程预先在堆中划分一块私有缓冲区"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文把两种分配方式的适用条件说得很清楚：堆内存连续时用指针碰撞，堆内存离散时用空闲列表——JVM 维护一个空闲列表记录可用内存块，分配时遍历找到足够大小的块。A 是连续内存下的方式，条件说反了，这是最常见的错法。B 是 JIT 逃逸分析之后才可能出现的优化，不属于这里的两种分配方式。D 的 TLAB 解决的是分配时的并发安全问题，与内存是否连续无关，别把「怎么分」和「怎么安全地并发分」混起来。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "创建对象",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "JDK 自带的基础类一定不会被回收，那么真正会被回收掉的是哪些类？",
+    "options": [
+      {
+        "label": "A",
+        "content": "会被回收的是自定义类加载器场景下的类，比如 tomcat、SPI、JSP 等临时类"
+      },
+      {
+        "label": "B",
+        "content": "只有自定义类加载器本身会被回收，它加载的那些类不会被回收"
+      },
+      {
+        "label": "C",
+        "content": "类一旦被加载就永远不会从方法区被回收"
+      },
+      {
+        "label": "D",
+        "content": "JDK 自带的基础类会在 FULLGC 时被回收，因为它们同样占用方法区"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：JVM 自带的类加载器因为需要一直加载基础对象，所以 JDK 自带的基础类是一定不会被回收掉的；会被回收掉的答案是那些自定义类加载器一些场景的类，如 tomcat、SPI、JSP 等临时类，它们存活不久所以需要不断回收。B 说反了：被回收的正是自定义类加载器加载的那些类本身。C 否定了类卸载这件事，与本节主题冲突。D 与原文直接相反，JDK 自带的基础类一定不会被回收。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "类卸载",
+      "自定义类加载器",
+      "类加载器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "现在不提倡覆盖 finalize() 方法，其主要原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它影响了 JAVA 的安全和 GC 的性能"
+      },
+      {
+        "label": "B",
+        "content": "覆盖后对象就无法被 GC Roots 关联到"
+      },
+      {
+        "label": "C",
+        "content": "Java 语法层面已经不允许重写该方法"
+      },
+      {
+        "label": "D",
+        "content": "Finalizer 线程无法调用用户重写过的 finalize()"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说 finalize 的本意是像 C++ 那样在对象销毁前执行清理，但“它影响了 JAVA 的安全和 GC 的性能”，所以不提倡覆盖，这类“第二次判断”也会越来越少。A、C 与原文相反：覆盖 finalize() 正是自救（重新关联 GC Roots）的前提，且由 JVM 的 Finalizer 线程调用；B 也不成立，原文说的是“不推荐使用（不重写就不会使用）”，并未废弃该方法。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "finalize",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "自定义类加载器要把加载请求直接委派给启动类加载器时，父加载器参数应该怎么写？",
+    "options": [
+      {
+        "label": "A",
+        "content": "通过 `BootstrapClassLoader.getInstance()` 拿到实例后调用它的 `loadClass` 方法"
+      },
+      {
+        "label": "B",
+        "content": "直接传 `null` 代替"
+      },
+      {
+        "label": "C",
+        "content": "通过 `ClassLoader.getSystemClassLoader()` 获取启动类加载器"
+      },
+      {
+        "label": "D",
+        "content": "通过 `sun.misc.Launcher$ExtClassLoader` 获取启动类加载器"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确说明：启动类加载器无法被 Java 程序直接引用，自定义类加载器需要把加载请求委派给引导类加载器时，直接使用 `null` 代替即可。A 错：既然无法被 Java 程序直接引用，就不存在可以获取到的 Java 实例。C 错：`getSystemClassLoader()` 返回的是应用程序（系统）类加载器，不是启动类加载器。D 错：`sun.misc.Launcher$ExtClassLoader` 是扩展类加载器的实现类，用它拿到的是扩展类加载器。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "类加载器",
+      "类加载",
+      "自定义类加载器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Serial 这类单线程串行收集器最主要的好处是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "能充分利用多核 CPU，提高垃圾回收的吞吐量"
+      },
+      {
+        "label": "B",
+        "content": "减少上下文切换，减少系统资源的开销"
+      },
+      {
+        "label": "C",
+        "content": "可以与应用线程并发执行，避免 Stop The World"
+      },
+      {
+        "label": "D",
+        "content": "能自动整理内存碎片，避免提前触发 Full GC"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：单线程地好处就是减少上下文切换，减少系统资源的开销。A 是并行收集器的特点；B 错，Serial 在 GC 期间必须暂停其他所有工作线程；C 错，Serial 采用标记-复制算法，整理碎片是标记-整理算法（如 Serial Old）的特点。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "串行",
+      "垃圾收集器",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "G1 的并发标记周期（Concurrent Marking Cycle）由哪个条件触发？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Eden 区空间不足以分配新对象时"
+      },
+      {
+        "label": "B",
+        "content": "总堆占有率达到预设阈值 -XX:InitiatingHeapOccupancyPercent（默认 45%）时"
+      },
+      {
+        "label": "C",
+        "content": "标记完成后垃圾在整个堆中的占比大于 -XX:G1HeapWastePercent（默认 5%）时"
+      },
+      {
+        "label": "D",
+        "content": "发生一次 Full GC 之后"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：当总堆占有率达到预设阈值（-XX:InitiatingHeapOccupancyPercent 默认 45%）时，就会触发并发标记周期。B 是本题最大的干扰项，它描述的是并发标记“标记完后”触发混合回收（Mixed GC）的条件——垃圾在整堆中占比大于 -XX:G1HeapWastePercent（默认 5%）才触发 Mixed GC，顺序不能颠倒。A 是 Young GC 的触发条件（Eden 区空间不够新对象分配时触发，采用标记-复制算法）。C 没有依据，并发标记周期恰恰是为了提前回收、避免走到 Full GC。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "堆",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 G1 中，新生代和老年代的内存布局是怎样的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "仍然坚持固定大小以及固定数量的分代区域划分，且各自必须连续"
+      },
+      {
+        "label": "B",
+        "content": "都是一系列区域（不需要连续）的动态集合，不再是固定大小、固定数量的"
+      },
+      {
+        "label": "C",
+        "content": "新生代仍是固定的连续区域，只有老年代由不连续的 Region 组成"
+      },
+      {
+        "label": "D",
+        "content": "老年代概念被取消，堆中只剩新生代的 Region"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说 G1 不再坚持固定大小以及固定数量的分代区域划分，虽然仍保留新生代和老年代的概念，但它们不再是固定的，都是一系列（不需要连续的）区域的动态集合。B 描述的是 G1 之前收集器的做法，恰是 G1 跳出的樊笼。C 只说对了一半，新生代同样是不连续 Region 的集合。D 错，老年代概念被保留下来了，只是不再固定。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "Region",
+      "新生代",
+      "老年代",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "CMS 默认在老年代使用率达到多少时启动回收？",
+    "options": [
+      {
+        "label": "A",
+        "content": "68%"
+      },
+      {
+        "label": "B",
+        "content": "75%"
+      },
+      {
+        "label": "C",
+        "content": "92%"
+      },
+      {
+        "label": "D",
+        "content": "100%"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确：默认在老年代使用率达到 92% 时启动，由 -XX:CMSInitiatingOccupancyFraction 控制。A 没有依据；B 的 75% 是原文举例时用户自行设定的阈值，不是默认值；D 错，等到老年代 100% 占满才启动，并发回收就没有足够的余量在应用运行的同时完成清理。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "CMS",
+      "老年代",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在垃圾识别方式上，Java 8 与 Java 11 中的 G1 有什么区别？",
+    "options": [
+      {
+        "label": "A",
+        "content": "两者都采用三色标记法，只是参数默认值不同"
+      },
+      {
+        "label": "B",
+        "content": "Java 8 采用三色标记法，Java 11 的 G1 反而改用单纯的可达性分析"
+      },
+      {
+        "label": "C",
+        "content": "Java 11 的 G1 不再做可达性分析，改为引用计数判断对象是否存活"
+      },
+      {
+        "label": "D",
+        "content": "Java 8 基于单纯的可达性分析，Java 11 的 G1 采用三色标记法，可以大大降低 STW 的时长"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：Java 8 基于的是单纯地可达性分析，而 Java 11 中的 G1 采用三色标记法，可以大大降低 STW 的时长。A 抹平了两者的差异；C 把两者的关系说反了；D 错在“引用计数”——JVM 用的是可达性分析而非引用计数，三色标记也是在可达性分析基础上做并发标记的手段。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "垃圾收集器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "日常情况下，Full GC 的频率保持在什么范围内可以认为是正常的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "一小时不超过一次"
+      },
+      {
+        "label": "B",
+        "content": "一天不超过一次"
+      },
+      {
+        "label": "C",
+        "content": "一个月不超过一次"
+      },
+      {
+        "label": "D",
+        "content": "一周不超过一次"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文给出的经验值是：一般来说，日常情况，FullGC 不应该超过一周一次的这个频率。A、C 比这个口径频繁得多，通常意味着堆大小或代码存在问题；D 比原文给出的判断口径宽松，不是原文的标准。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "FullGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "在 Eden 区创建对象但 Eden 区内存不够时，JVM 会怎么做？",
+    "options": [
+      {
+        "label": "A",
+        "content": "直接把这个对象分配到老年代"
+      },
+      {
+        "label": "B",
+        "content": "尝试触发一次 Young GC，且在 Young GC 前会做一次空间分配担保，担保失败可能直接触发 Full GC"
+      },
+      {
+        "label": "C",
+        "content": "立即触发一次 Full GC"
+      },
+      {
+        "label": "D",
+        "content": "先触发一次 Young GC 把存活对象复制到另一个 Survivor 区，放不下才会去老年代"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：Eden 区内存不够时就会尝试触发一次 YoungGC，并会在 YoungGC 前做一次空间分配担保，如果失败可能直接触发 FullGC。A 混淆了「大对象超过 PretenureSizeThreshold 直接进入老年代」这个独立场景；B 忽略了先尝试 Young GC 以及空间分配担保这一步，Full GC 只是担保失败后的可能结果；C 描述了 Young GC 内部的复制流程，但漏掉了担保失败会直接触发 Full GC 这一分支，因此不完整。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "Eden",
+      "新生代",
+      "FullGC",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标量替换能给程序带来的直接好处是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "大大减少堆内存的占用，因为一旦不需要创建对象，就不再需要分配堆内存"
+      },
+      {
+        "label": "B",
+        "content": "减少方法调用的开销，提升小方法的执行效率"
+      },
+      {
+        "label": "C",
+        "content": "让未逃逸的对象可以被多个线程安全地共享访问"
+      },
+      {
+        "label": "D",
+        "content": "避免热点代码被重复编译，减少 JIT 的编译开销"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文给出的好处很明确：标量替换可以大大减少堆内存的占用，因为一旦不需要创建对象了，就不再需要分配堆内存。A 说的是方法内联的作用；B 与标量替换矛盾——对象能被多线程访问说明已经逃逸，根本不满足标量替换的前提；C 把标量替换和 JIT 缓存机器码混为一谈，原文没有这个说法。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "标量替换",
+      "堆",
+      "逃逸分析",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于推荐使用 G1 收集器的堆内存门槛及其原因，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "至少要 4G，小堆用 G1 低停顿的优势不突出，反而会消耗更多 CPU 来管理 Region"
+      },
+      {
+        "label": "B",
+        "content": "至少 1G 即可推荐使用，因为 G1 管理 Region 的额外开销极小"
+      },
+      {
+        "label": "C",
+        "content": "至少 2G，因为堆低于 2G 时无法划分出 Region"
+      },
+      {
+        "label": "D",
+        "content": "至少要 8G，因为 Humongous 区域要求堆至少 8G 才能划分出来"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文明确：至少要 4G 内存才推荐使用 G1，原因是小堆用 G1 时低停顿的优势不突出，反而会消耗更多 CPU 来管理 Region。A、B 的门槛数字都不对，且给出的理由是编出来的——G1 恰恰因为要维护 Region、记忆集等结构而有额外的 CPU 与内存开销，小堆上这笔开销不划算。D 的 8G 没有依据，Humongous 区域是按 Region 容量（1MB～32MB）判定的，与堆必须达到 8G 无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于老年代收集器的归属，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "CMS 是整堆收集器，与 G1、ZGC 同类"
+      },
+      {
+        "label": "B",
+        "content": "Serial Old、Parallel Old、CMS 都是老年代收集器"
+      },
+      {
+        "label": "C",
+        "content": "Parallel Scavenge 是老年代收集器"
+      },
+      {
+        "label": "D",
+        "content": "G1 是老年代收集器，只负责老年代回收"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：老年代收集器有 Serial Old、Parallel Old、CMS。B 错，G1、ZGC 才是整堆收集器；C 错，Parallel Scavenge 是新生代收集器，它的老年代版本是 Parallel Old；D 错，G1 属于整堆收集器，并非只负责老年代。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "垃圾收集器",
+      "垃圾回收",
+      "Parallel",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "阿里 Dragonwell 的 JwarmUp 技术是靠什么来缓解 JIT 预热问题的？",
+    "options": [
+      {
+        "label": "A",
+        "content": "启动时禁用解释器，强制所有代码都由 JIT 编译后再执行"
+      },
+      {
+        "label": "B",
+        "content": "调低热点代码的判定阈值，让更多方法更快被编译"
+      },
+      {
+        "label": "C",
+        "content": "记录 Java 应用上一次运行时的编译信息到文件，下次启动时读取该文件，在流量进来之前提前完成类的加载、初始化和方法编译"
+      },
+      {
+        "label": "D",
+        "content": "在程序运行前把字节码静态编译成机器码，直接生成 native image"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文说 JwarmUp 通过记录上次运行时的编译信息到文件，下次启动读取该文件，从而在流量进来之前提前完成类的加载、初始化和方法编译，跳过解释阶段直接执行编译好的机器码。B 的“禁用解释器”原文没有提及；C 调低阈值只是让热点更早触发，仍然要靠运行期执行来收集信息；D 描述的是 AOT 静态编译，属于另一条技术路线。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "热点代码",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "三色标记能大幅降低 GC 停顿时长，关键在于它对哪个阶段做了处理？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把初始标记改成与应用线程并发执行"
+      },
+      {
+        "label": "B",
+        "content": "把重新标记改成与应用线程并发执行"
+      },
+      {
+        "label": "C",
+        "content": "直接取消了清除阶段，省掉了这部分停顿"
+      },
+      {
+        "label": "D",
+        "content": "把最耗时的并发标记（需要遍历整个对象树）做成与应用线程并发执行"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：最耗时的其实就是并发标记这个阶段，因为这个阶段需要遍历整个对象树，而三色标记把这个阶段做到了和应用线程并发执行，大大降低了 GC 的停顿时长。B、C 错，初始标记和重新标记在原文中仍明确标注为 Stop The World，只是耗时较短；D 错，原文说重新标记结束之后垃圾回收器仍会执行清除操作。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "三色标记",
+      "STW",
+      "并发标记",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Remembered Set 的核心目标是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "记录新生代指向老年代的引用，避免老年代对象被错误回收"
+      },
+      {
+        "label": "B",
+        "content": "完全替代 GC Roots，让 Minor GC 不再需要做可达性分析"
+      },
+      {
+        "label": "C",
+        "content": "在 Full GC 时加速老年代对象的标记过程"
+      },
+      {
+        "label": "D",
+        "content": "避免为了回收新生代而扫描整个老年代，从而减少扫描开销"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：Remembered Set 记录了老年代对象指向新生代对象的引用关系，发生 Minor GC 时垃圾回收器不需要扫描整个老年代来确定哪些对象存活，只需扫描 Remembered Set 中的条目，从而减少扫描开销，其核心目标就是减少全堆扫描的开销。A 把引用方向说反了，记录的是老年代指向新生代；B 夸大了它的作用，它只是被加入 GC Roots 一起扫描，并未取代可达性分析；C 场景错了，Remembered Set 服务的是 Minor GC 而非 Full GC 的老年代标记。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "跨代引用",
+      "新生代",
+      "老年代",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC 的并发转移（Concurrent Relocation）阶段主要做什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把重分配集中的存活对象复制到新的 Region"
+      },
+      {
+        "label": "B",
+        "content": "整堆扫描，确定收集哪些 Region 并组成重分配集"
+      },
+      {
+        "label": "C",
+        "content": "修正堆中指向重分配集中旧对象的所有引用"
+      },
+      {
+        "label": "D",
+        "content": "修正并发标记阶段因并发引起的标记不一致"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文把并发转移阶段定义为“修正堆中指向重分配集中旧对象的所有引用”，也就是真正进行对象引用修复的一步，Shenandoah 的并发引用更新阶段与之对应。B 描述的是初始转移阶段（Initial Relocation）的工作；C 是并发转移准备阶段（Concurrent Prepare for Relocate）；D 是再标记阶段（Remark）的职责。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "Region",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "可达性分析算法在内存方面的不足体现在哪里？",
+    "options": [
+      {
+        "label": "A",
+        "content": "需要存储程序中所有的对象和它们之间的引用关系，占用大量内存空间"
+      },
+      {
+        "label": "B",
+        "content": "回收后会产生大量内存碎片，导致空间浪费"
+      },
+      {
+        "label": "C",
+        "content": "必须把内存分成两块，只能使用其中一半"
+      },
+      {
+        "label": "D",
+        "content": "需要搬移存活对象，复制过程消耗额外内存"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文把“内存消耗”单列为一个不足：可达性分析算法需要存储程序中所有的对象和它们之间的引用关系，这些信息占用大量内存空间。A 是标记-清除算法的缺点，B 是标记-复制算法的代价，D 也是标记-复制算法的特点——三项都是把其它回收算法的缺点错安到可达性分析上。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "可达性分析",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "引用计数法实现简单、效率高，但主流虚拟机并没有选择它来管理内存，最主要的原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它需要为每个对象额外开辟一块引用计数内存，空间开销过大"
+      },
+      {
+        "label": "B",
+        "content": "它对每一次引用赋值都要维护计数器，编译期无法优化"
+      },
+      {
+        "label": "C",
+        "content": "它很难解决对象之间相互循环引用的问题"
+      },
+      {
+        "label": "D",
+        "content": "它无法与可达性分析算法配合使用"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确指出：引用计数法“实现简单，效率高”，主流虚拟机不选它“最主要的原因是它很难解决对象之间相互循环引用的问题”。A、B 把次要的实现代价说成主因，原文并未如此归因；D 属于无中生有，两者是并列的两种判定算法，不存在配合关系。循环引用会让两个已无用的对象计数器始终不为 0，从而无法被回收，进而导致内存泄漏和内存溢出。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "引用计数法",
+      "可达性分析",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "三色标记法中，灰色对象表示什么状态？",
+    "options": [
+      {
+        "label": "A",
+        "content": "该对象没有被标记过"
+      },
+      {
+        "label": "B",
+        "content": "该对象已经被标记过了，但该对象的引用对象还没标记完"
+      },
+      {
+        "label": "C",
+        "content": "该对象已经被标记过了，且他的全部引用对象也都标记完了"
+      },
+      {
+        "label": "D",
+        "content": "该对象已被判定为垃圾，等待被清除"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文定义：灰色是该对象已经被标记过了，但该对象的引用对象还没标记完。A 描述的是白色；C 描述的是黑色；D 混淆了「未被标记」与「已判定为垃圾」，白色只表示还没被标记，是否回收要等标记阶段结束后才确定。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "三色标记",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标记-清除算法在识别出垃圾后直接将其清除，这带来的最明显缺点是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "清除阶段需要暂停两次应用线程，STW 时间翻倍"
+      },
+      {
+        "label": "B",
+        "content": "会导致内存空间的不连续，产生很多的内存碎片"
+      },
+      {
+        "label": "C",
+        "content": "每次只能使用一半的内存空间，内存利用率不足"
+      },
+      {
+        "label": "D",
+        "content": "移动存活对象需要大量时间，性能低下"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：当 JVM 识别出内存中的垃圾以后直接将其清除，“这样有一个很明显的缺点，就是会导致内存空间的不连续，也就是会产生很多的内存碎片”，并总结缺点为“会产生内存碎片，造成内存的浪费”。C 是标记-复制算法的代价；D 是标记-整理算法的代价，而标记-清除恰恰因为不移动对象才快；A 原文没有“暂停两次”的说法。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "标记-清除",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC 的并发转移准备阶段在确定重分配集时，与 G1 选择回收集的方式有什么不同？",
+    "options": [
+      {
+        "label": "A",
+        "content": "两者都只扫描部分 Region，从中计算最有价值的回收集"
+      },
+      {
+        "label": "B",
+        "content": "ZGC 扫描所有的 Region 组成重分配集，而 G1 是计算最有价值回收的 Region"
+      },
+      {
+        "label": "C",
+        "content": "ZGC 只扫描分代中的新生代 Region，G1 扫描整堆"
+      },
+      {
+        "label": "D",
+        "content": "ZGC 需要靠写屏障维护记忆集来确定重分配集，G1 则依赖染色指针"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文说 ZGC 的重分配集扫描所有的 Region，而不是计算最有价值回收的 Region，其目的是确定存活对象将被复制到哪些 Region，且由于染色指针的存在扫描很快。A 把 G1 的做法（计算最有价值）同时安到了 ZGC 头上；B 错在“分代/新生代”——ZGC 根本没有引入分代概念；D 把两种技术张冠李戴：染色指针是 ZGC 的，写屏障维护记忆集（卡表）恰恰是 ZGC 不需要做的事。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "Region",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "把 `rt.jar` 改名为 `myrt.jar` 后放到 `<JAVA_HOME>\\lib` 目录下，启动类加载器会加载它吗？",
+    "options": [
+      {
+        "label": "A",
+        "content": "会，只要存放在 `<JAVA_HOME>\\lib` 目录下的类库都会被启动类加载器加载"
+      },
+      {
+        "label": "B",
+        "content": "不会，`<JAVA_HOME>\\lib` 目录只用于存放扩展类库，只有 `<JAVA_HOME>\\lib\\ext` 下的类库才会被加载"
+      },
+      {
+        "label": "C",
+        "content": "会，启动类加载器会扫描 jar 包内容来识别类库，与文件名无关"
+      },
+      {
+        "label": "D",
+        "content": "不会，启动类加载器仅按照文件名识别类库，名字不符合的类库即使放在 `lib` 目录中也不会被加载"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文限定得很死：只有存放在 `<JAVA_HOME>\\lib` 或 `-Xbootclasspath` 指定路径中「并且是虚拟机识别的（仅按照文件名识别，如 rt.jar）」的类库才会被加载，名字不符合的即使放在 lib 目录中也不会被加载。A、C 都漏掉了这条按文件名识别的校验规则。B 结论碰巧对了但理由完全错：`<JAVA_HOME>\\lib` 正是启动类加载器的搜索范围，`<JAVA_HOME>\\lib\\ext` 才是扩展类加载器的地盘。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "类加载器",
+      "类加载",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "空间分配担保中要参考「历次晋升到老年代对象的平均大小」，原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为老年代最大连续空间每次 GC 都在变，需要用平均值平滑波动"
+      },
+      {
+        "label": "B",
+        "content": "因为老年代对象存活时间更长，平均大小更能代表它们的实际占用"
+      },
+      {
+        "label": "C",
+        "content": "因为新生代所有对象的总空间无法准确统计"
+      },
+      {
+        "label": "D",
+        "content": "因为回收后有多少对象存活下来是不可预知的，只好取历次晋升大小的平均值作为参考"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文解释得很直接：一共有多少对象在内存回收后存活下来是不可预知的，因此只好取之前每次垃圾回收后晋升到老年代的对象大小的平均值作为参考。A、B 都给出了听起来合理但原文并未提及的理由；D 与原文相反，新生代所有对象的总空间恰恰是被明确拿来和老年代连续空间比较的量。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "空间分配担保",
+      "晋升",
+      "老年代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "G1 在并发标记阶段，标记线程与用户线程同时运行导致对象引用关系发生变化，G1 用什么办法解决？",
+    "options": [
+      {
+        "label": "A",
+        "content": "原始快照（SATB）"
+      },
+      {
+        "label": "B",
+        "content": "增量更新（Incremental Update）"
+      },
+      {
+        "label": "C",
+        "content": "让整个标记阶段都暂停用户线程，避免引用关系变化"
+      },
+      {
+        "label": "D",
+        "content": "记忆集（卡表）"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文写得很直接：通过原始快照解决并发标记阶段线程与用户线程同时进行带来的对象引用关系改变问题。A 的增量更新是 CMS 的做法——原文对比表里写着 CMS 是“三色标记法——增量更新解决漏标”，G1 是“三色标记法——原始快照解决漏标”，这是最容易互换记混的一对术语。B 错，并发标记的“并发”就是指与用户线程同时运行，全程 STW 就失去意义了。D 的记忆集解决的是跨代引用问题，不是并发标记期间的引用变化问题。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "CMS",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "标记-整理算法的“整理”阶段具体做了什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把存活对象复制到另一块空闲内存上，再清空原内存块"
+      },
+      {
+        "label": "B",
+        "content": "直接清除垃圾对象，存活对象保持在原地不动"
+      },
+      {
+        "label": "C",
+        "content": "把相邻的内存碎片合并成一块连续空间"
+      },
+      {
+        "label": "D",
+        "content": "移动所有存活的对象并按内存地址次序依次排列，然后将末端内存地址以后的内存全部回收"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：“整理：移动所有存活的对象，且按照内存地址次序依次排列，然后将末端内存地址以后的内存全部回收。”A 是标记-复制算法的做法（需要另一块内存），B 是标记-清除算法的做法（不移动所以会留碎片），C 描述的是碎片合并思路，原文并未这样说，整理是靠“移动存活对象”而非“合并空闲块”实现的。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "标记-整理",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Java 到底是编译型语言还是解释型语言？",
+    "options": [
+      {
+        "label": "A",
+        "content": "纯编译型语言，源码在运行前全部编译为机器码后执行"
+      },
+      {
+        "label": "B",
+        "content": "既是编译型也是解释型，默认采用解释器和编译器混合的模式"
+      },
+      {
+        "label": "C",
+        "content": "纯解释型语言，字节码只能由解释器逐条解释执行"
+      },
+      {
+        "label": "D",
+        "content": "既不是编译型也不是解释型，由操作系统决定执行方式"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文结论是 Java 既是编译型也是解释型语言，默认采用解释器和编译器混合的模式——源码先被编译成字节码（编译性），字节码由解释器解释运行，热点代码则由 JIT 编译成机器码（解释性）。A、B 都只看到了一半，是这道题最常见的一刀切误解；D 与“混合模式”无关，原文没有这种说法。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "解释执行",
+      "JIT",
+      "解释器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "可达性分析算法判定一个对象“不可用”的依据是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "该对象的引用计数器值为 0"
+      },
+      {
+        "label": "B",
+        "content": "该对象没有覆盖 finalize() 方法"
+      },
+      {
+        "label": "C",
+        "content": "该对象的引用链长度超过 GC Roots 的搜索深度"
+      },
+      {
+        "label": "D",
+        "content": "该对象到 GC Roots 没有任何引用链相连"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文定义：以 GC Roots 为起点向下搜索，走过的路径称为引用链，“当一个对象到 GC Roots 没有任何引用链相连的话，则证明此对象是不可用的”。A 是引用计数法的判据，属于两套算法的易混点；C 与可达性判定无关，finalize() 只影响是否需要第二次标记；D 原文没有“搜索深度”这一说法，属于编造的边界条件。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "可达性分析",
+      "GC Roots",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC 是在哪个 JDK 版本中新增的垃圾收集器？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JDK 8"
+      },
+      {
+        "label": "B",
+        "content": "JDK 9"
+      },
+      {
+        "label": "C",
+        "content": "JDK 11"
+      },
+      {
+        "label": "D",
+        "content": "JDK 17"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确写着 jdk 11 中新增了一种垃圾收集器 ZGC，所以选 JDK 11。JDK 8 时代还没有 ZGC，服务端默认仍是吞吐优先的并行收集器；JDK 9 是 G1 成为服务端默认收集器的版本，也不含 ZGC；JDK 17 是后续的 LTS 版本，ZGC 早在 JDK 11 就已引入，说它在 17 才新增属于把「后续长期支持版本」和「首次引入版本」混淆了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Java 11 中默认使用哪款垃圾收集器进行整堆回收？",
+    "options": [
+      {
+        "label": "A",
+        "content": "ZGC"
+      },
+      {
+        "label": "B",
+        "content": "CMS"
+      },
+      {
+        "label": "C",
+        "content": "G1"
+      },
+      {
+        "label": "D",
+        "content": "Parallel Scavenge GC + Parallel Old GC"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写的是 Java 11 中默认采用 G1 进行整堆回收（Java 9 中就是默认的了）。A 是最容易误选的干扰项：ZGC 确实是 Java 11 新增的收集器，但它只是“新增”，并非默认；B 的 CMS 在原文中根本没被列为任何版本的默认；C 是 Java 8 的默认组合，分别负责新生代和老年代。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "垃圾收集器",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Serial GC 主要采用哪种垃圾回收算法？",
+    "options": [
+      {
+        "label": "A",
+        "content": "标记-清除算法"
+      },
+      {
+        "label": "B",
+        "content": "标记-整理算法"
+      },
+      {
+        "label": "C",
+        "content": "标记-复制算法"
+      },
+      {
+        "label": "D",
+        "content": "引用计数算法"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确：Serial 是单线程的串行垃圾回收器，主要采用标记-复制算法进行垃圾回收。A 的标记-清除是 CMS 采用的算法；C 的标记-整理是 Serial Old 采用的算法；D 的引用计数并非 JVM 主流的可达性分析回收算法，也与本节内容无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "串行",
+      "垃圾收集器",
+      "标记-复制",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "虚引用（PhantomReference）的主要用途是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "在内存不足时优先回收缓存对象，避免 OOM"
+      },
+      {
+        "label": "B",
+        "content": "延长对象的生命周期，让对象不容易被 GC 回收"
+      },
+      {
+        "label": "C",
+        "content": "替代强引用，使对象在下一次 GC 之前被回收"
+      },
+      {
+        "label": "D",
+        "content": "跟踪对象被回收的状态，在对象被回收后做一些后续处理（如清理本地资源）"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文：虚引用是最弱的一种引用，它的存在不会影响对象的生命周期，垃圾回收器在回收对象时不会考虑虚引用，主要用于跟踪对象被回收的状态并在对象被回收后进行一些后续处理（如清理本地资源等）；对象被 GC 回收时，PhantomReference 实例会被加入队列。B 是软引用的用途。C 与虚引用的性质相反——它连对象生命周期都影响不了，更谈不上延长。D 是弱引用的行为描述，不是虚引用的用途。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "虚引用",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "一个对响应时间敏感的在线交易处理系统，希望尽可能减少 GC 引起的停顿，应优先选择哪类垃圾回收方式？",
+    "options": [
+      {
+        "label": "A",
+        "content": "串行垃圾回收，以减少上下文切换和系统资源开销"
+      },
+      {
+        "label": "B",
+        "content": "并发垃圾回收，让 GC 线程与应用线程同时工作以降低停顿"
+      },
+      {
+        "label": "C",
+        "content": "并行垃圾回收，以最大化吞吐量"
+      },
+      {
+        "label": "D",
+        "content": "只在老年代快满时才触发 Full GC 的回收策略"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：并发垃圾回收适用于对响应时间敏感的应用，如在线交易处理系统、游戏服务器等，这些应用需要尽可能减少 GC 引起的停顿。A 的串行回收是单线程的，GC 期间必须暂停其他所有工作线程，不适合低延迟场景；B 的并行回收以吞吐量为目标，收集期间会 STW，适用于对停顿时间要求不严格的应用；D 只是 CMS 的触发时机描述，不是一种回收方式的选择。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "并发回收",
+      "STW",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "常见的 JVM 工具中，`jps` 的作用是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "实时查看 JVM 的堆内存占用与 GC 情况"
+      },
+      {
+        "label": "B",
+        "content": "生成当前 JVM 的线程转储快照"
+      },
+      {
+        "label": "C",
+        "content": "展示显示当前所有 Java 进程的 pid"
+      },
+      {
+        "label": "D",
+        "content": "查看指定 Java 进程的 JVM 启动参数"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文对 jps 的描述只有一句：展示显示当前所有 java 进程 pid。A 的堆内存与 GC 监控、C 的线程转储快照、D 的启动参数查看都不是原文赋予 jps 的职责，用它们替换 jps 是最常见的记混方式。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "JVM工具",
+      "jps",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "并行回收器与并发回收器在关注目标上的主要区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "并行回收器主要关注吞吐量，并发回收器主要关注 STW 的时长"
+      },
+      {
+        "label": "B",
+        "content": "两者都以最大化吞吐量为唯一目标，区别只在垃圾回收线程的数量"
+      },
+      {
+        "label": "C",
+        "content": "并行回收器主要关注缩短 STW 时长，并发回收器主要关注吞吐量"
+      },
+      {
+        "label": "D",
+        "content": "两者都以彻底消除 STW 为目标，区别只在回收算法不同"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文分别强调：并行回收器主要的关注目标是吞吐量；并发回收器主要关注的目标是 STW 的时长。A 抹掉了并发回收器的低停顿目标；B 把两者的关注目标对调；D 错误，并发回收器只是减少停顿、在特定阶段仍会发生短暂的 STW，并非彻底消除 STW。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "并发回收",
+      "并行回收",
+      "吞吐量",
+      "STW",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Serial 与 Serial Old 的主要区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "二者优缺点基本相同，主要是回收算法不一样"
+      },
+      {
+        "label": "B",
+        "content": "Serial 是多线程收集器，Serial Old 是单线程收集器"
+      },
+      {
+        "label": "C",
+        "content": "Serial 用于老年代，Serial Old 用于新生代"
+      },
+      {
+        "label": "D",
+        "content": "Serial Old 在 GC 时不会暂停应用线程"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文明确：优缺点基本和 Serial 差不多，二者主要是回收算法不一样（Serial 采用标记-复制算法，Serial Old 采用标记-整理算法）。A 错，两者都是单线程收集器；B 说反了，Serial Old 是 Serial 的老年代版本、适用于老年代；D 错，二者优缺点基本相同，Serial Old 同样会在 GC 期间暂停工作线程。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "串行",
+      "垃圾收集器",
+      "老年代",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "JVM 创建对象时，第一步要做什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "直接在堆中为对象划分一块内存空间"
+      },
+      {
+        "label": "B",
+        "content": "检查指令的参数能否在常量池中定位到该类的符号引用，并检查这个类是否已被加载、解析和初始化过"
+      },
+      {
+        "label": "C",
+        "content": "调用该类的构造方法完成对象初始化"
+      },
+      {
+        "label": "D",
+        "content": "设置对象头，写入哈希码和 GC 分代年龄"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文第一步：先去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并检查该符号引用代表的类是否已被加载、解析和初始化过；如果没有，必须先执行相应的类加载过程。B 是第二步分配内存，C 是第五步调用构造方法，D 是第四步设置对象头，都发生在类加载检查之后。整个流程是：检查类是否加载 -> 分配内存 -> 初始化内存 -> 设置对象头 -> 调用构造方法 -> 返回对象引用。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "创建对象",
+      "符号引用",
+      "类加载",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪项属于类被加载完毕后的「类使用」过程？",
+    "options": [
+      {
+        "label": "A",
+        "content": "为类的静态变量分配内存并赋予默认初始值"
+      },
+      {
+        "label": "B",
+        "content": "有代码段来引用该类，例如初始化该类的对象，或者通过反射获取该类的元数据"
+      },
+      {
+        "label": "C",
+        "content": "把类的符号引用转换为直接引用"
+      },
+      {
+        "label": "D",
+        "content": "执行类构造器 `<clinit>()`，完成静态变量的显式赋值"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文：类的使用，即是类在加载完毕后，会有代码段来引用该类，如初始化该类的对象，或者通过反射获取该类的元数据。A 是链接阶段中「准备」做的事，B 是链接阶段中「解析」做的事，D 是初始化阶段做的事——三者都是使用之前的准备步骤，不属于类使用过程。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "类加载",
+      "类加载器",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 Java 的直接内存，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "它属于 JVM 运行时数据区的一部分，大小受堆大小限制"
+      },
+      {
+        "label": "B",
+        "content": "它由垃圾回收器统一管理，因此不会发生内存溢出"
+      },
+      {
+        "label": "C",
+        "content": "它只能通过 new 关键字在堆上申请，受 -Xmx 参数控制"
+      },
+      {
+        "label": "D",
+        "content": "它不属于 JVM 运行时数据区，通过 NIO 引入，使用受本机总内存限制"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "直接内存是堆外内存：原文说它「不属于 JVM 运行时数据区的一部分，通过 NIO 类引入」，并且「直接内存的使用受到本机总内存的限制，若分配不当，可能导致 OutOfMemoryError 异常」。A 错在把直接内存归入运行时数据区并说受堆限制——它受的是本机总内存限制。B 错在认为不会溢出，原文明确说分配不当会导致 OutOfMemoryError。C 错在 new 出来的对象在堆上，而直接内存是堆外内存、不走 -Xmx。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "内存结构",
+      "堆",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "CMS 与 Parallel 系列收集器最大的区别是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "CMS 更加关注吞吐量，会尽量提高 CPU 时间利用率"
+      },
+      {
+        "label": "B",
+        "content": "CMS 采用标记-整理算法，可以避免产生内存碎片"
+      },
+      {
+        "label": "C",
+        "content": "CMS 更加关注垃圾回收的停顿时间，采用的是耗时更短的标记-清除算法"
+      },
+      {
+        "label": "D",
+        "content": "CMS 是新生代收集器，Parallel 是老年代收集器"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文明确：CMS 与 Parallel 最大的区别是他更加关注垃圾回收的停顿时间，采用的是耗时更短的标记-清除算法。B 说的是 Parallel Scavenge 这类吞吐量优先收集器的目标；C 错，CMS 用标记-清除并会产生大量空间碎片，标记-整理是 Serial Old / Parallel Old 的算法；D 错，CMS 同样是老年代收集器。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "CMS",
+      "停顿时间",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 JDK 1.8 及之前系统提供的三种类加载器，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "扩展类加载器由 `sun.misc.Launcher$App-ClassLoader` 实现，负责加载用户类路径（`ClassPath`）上的类库"
+      },
+      {
+        "label": "B",
+        "content": "应用程序类加载器由 `sun.misc.Launcher$ExtClassLoader` 实现，负责加载 `<JAVA_HOME>\\lib\\ext` 目录中的类库"
+      },
+      {
+        "label": "C",
+        "content": "扩展类加载器由 `sun.misc.Launcher$ExtClassLoader` 实现，负责加载 `<JAVA_HOME>\\lib\\ext` 目录中的类库"
+      },
+      {
+        "label": "D",
+        "content": "应用程序类加载器由 `sun.misc.Launcher$App-ClassLoader` 实现，负责加载 `<JAVA_HOME>\\lib` 目录中被虚拟机识别的类库"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：扩展类加载器由 `sun.misc.Launcher$ExtClassLoader` 实现，负责加载 `<JAVA_HOME>\\lib\\ext` 目录中的、或者被 `java.ext.dirs` 系统变量所指定的路径中的所有类库。A、B 都把 `ExtClassLoader` 与 `App-ClassLoader` 这对易混实现类互换了。D 前半句的实现类写对了，但把职责换成了启动类加载器的——`<JAVA_HOME>\\lib` 目录中被虚拟机识别的类库归启动类加载器管，应用程序类加载器负责的是用户类路径 ClassPath。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "类加载器",
+      "类加载",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 Full GC 与 Minor GC 的对比，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Full GC 只对老年代和永久代进行回收，不会回收新生代"
+      },
+      {
+        "label": "B",
+        "content": "Full GC 除了回收新生代，还会回收老年代或者永久代，且相比 Minor GC 收集频率更低、耗时更长"
+      },
+      {
+        "label": "C",
+        "content": "Full GC 的收集频率比 Minor GC 更高，但单次耗时更短"
+      },
+      {
+        "label": "D",
+        "content": "Full GC 与 Minor GC 的回收范围完全相同，区别只在触发时机"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文明确：Full GC 除了对新生代垃圾回收以外，还会对老年代或者永久代进行回收，且相比较于 Minor GC 收集频率更低、耗时更长。A 错在把新生代排除在 Full GC 的回收范围之外；C 把频率和耗时两个方向都说反了；D 抹掉了两者回收范围的差异，事实上 Minor GC 只针对新生代。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "分代收集",
+      "老年代",
+      "新生代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "关于 G1 垃圾回收器的推出与默认版本，下列说法正确的是？",
+    "options": [
+      {
+        "label": "A",
+        "content": "JDK 6 中推出，JDK 8 中设置为默认"
+      },
+      {
+        "label": "B",
+        "content": "JDK 9 中推出，JDK 11 中设置为默认"
+      },
+      {
+        "label": "C",
+        "content": "JDK 7 中推出，JDK 9 中设置为默认"
+      },
+      {
+        "label": "D",
+        "content": "JDK 11 中推出，JDK 17 中设置为默认"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文写明 G1 在 JDK 7 中推出、JDK 9 中设置为默认。A 两个版本号都提前了；C、D 把 G1 与 ZGC（JDK 11 推出）的版本信息混淆了。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "G1",
+      "垃圾收集器",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "如果没有使用双亲委派模型，用户自己编写了一个 `java.lang.Object` 类并放在程序的 ClassPath 中，会发生什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "这个自定义类会覆盖掉 rt.jar 里的 Object，程序照常运行"
+      },
+      {
+        "label": "B",
+        "content": "这个类会被当成普通类正常加载，不会对其它类产生任何影响"
+      },
+      {
+        "label": "C",
+        "content": "系统中会出现多个不同的 Object 类，Java 类型体系中最基础的行为无法保证，应用程序会变得一片混乱"
+      },
+      {
+        "label": "D",
+        "content": "它会因为包名以 `java.lang` 开头而被 JVM 直接拒绝加载"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：如果没有双亲委派、由各个类加载器自行去加载，用户编写的 `java.lang.Object` 放在 ClassPath 中，系统中将会出现多个不同的 Object 类，Java 类型体系中最基础的行为也就无法保证，应用程序也将一片混乱。A 错：rt.jar 中的 Object 由启动类加载器加载，自定义的那份会被别的加载器再加载一份，两边同时存在，谈不上覆盖。B 错：恰恰相反，它会污染整个类型体系。C 错：原文说的是它会被加载从而造成混乱，不是被拒绝加载。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "双亲委派",
+      "类加载",
+      "类加载器",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "下列哪个 JVM 启动参数用于设置每个线程的栈大小？",
+    "options": [
+      {
+        "label": "A",
+        "content": "-Xss"
+      },
+      {
+        "label": "B",
+        "content": "-Xmx"
+      },
+      {
+        "label": "C",
+        "content": "-Xms"
+      },
+      {
+        "label": "D",
+        "content": "-XX:MaxMetaspaceSize"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "-Xss 设置的是每个线程的栈大小。A 的 -Xmx 是堆的最大大小，B 的 -Xms 是堆的初始大小——-Xms/-Xmx 这对“堆”参数最容易被误用到栈上；C 是 Java 8 及以上设置 Metaspace 最大大小的参数，与线程栈无关。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "启动参数",
+      "调优",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "ZGC 标志性的染色指针（Colored Pointer）技术，本质上是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "把标记信息直接记录在对象头上的技术"
+      },
+      {
+        "label": "B",
+        "content": "使用相当于堆内存 1/64 大小的 BitMap 结构记录标记信息的技术"
+      },
+      {
+        "label": "C",
+        "content": "把标记信息记录在与对象相互独立的数据结构上的技术"
+      },
+      {
+        "label": "D",
+        "content": "直接将少量额外的信息存储在指针上的技术"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文对染色指针的定义就是「直接将少量额外的信息存储在指针上的技术」，ZGC 直接把标记信息记在引用对象的指针上。A 是 Serial 收集器的做法（标记直接记录在对象头上）；C 是 G1、Shenandoah 的做法（用相当于堆内存 1/64 大小的 BitMap 结构记录标记信息）；D 描述的正是 G1、Shenandoah 那一类「与对象相互独立的数据结构」方案，都不是把信息记在指针本身上。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "染色指针",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "为什么方法区放在堆上（永久代）会导致频繁的 GC 和 OOM 问题？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为方法区存储了大量被加载的类，项目中使用 Spring 等动态生成类的框架时会占用很多空间"
+      },
+      {
+        "label": "B",
+        "content": "因为堆上的对象实例数量太多，挤占了方法区的空间"
+      },
+      {
+        "label": "C",
+        "content": "因为永久代里的类信息不允许被垃圾回收，只能一直累积"
+      },
+      {
+        "label": "D",
+        "content": "因为元空间的大小不能超过堆的大小，导致类信息放不下"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：方法区作为元空间和永久代的主要区域，里面存储了大量的被加载的类，而很多时候项目中用了很多动态生成类的框架（比如 Spring 等等）就会占用很多空间，如果在堆上，就会导致频繁的 GC 以及 OOM 的问题。A 错，问题出在类的元数据量大，不是对象实例抢占空间——对象实例本来就在堆上，两者不是此消彼长的关系。C 原文没有这个说法，强调的是空间占用和大小受限。D 说反了，元空间在本地内存、不受堆大小限制，正是为了解决这个问题。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "方法区",
+      "永久代",
+      "OOM",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "CMS 作为低延迟垃圾收集器，它要付出的主要代价是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "只能单线程工作，无法利用多核 CPU"
+      },
+      {
+        "label": "B",
+        "content": "吞吐量显著高于 Parallel Scavenge，但堆内存占用翻倍"
+      },
+      {
+        "label": "C",
+        "content": "无法与应用线程并发，每次回收都要全程 STW"
+      },
+      {
+        "label": "D",
+        "content": "容易产生碎片，可能需要 Full GC 进行碎片整理，而 Full GC 时会有较长暂停"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文对 CMS 的描述是低延迟、适合高响应性应用，但容易产生碎片，可能需要 Full GC 进行碎片整理，而 Full GC 时会有较长暂停——这正是它后来被 G1 取代的原因。B 描述的是 Serial GC（单线程、适用于单核）；C 原文没有这类说法，也并非 CMS 的代价；D 与 CMS 并发、低延迟的定位相反，全程 STW 更像是 Serial/Parallel 的特点。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "垃圾收集器",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "WeakHashMap 中的 key 已经不再被使用时，对应的 Entry 会被自动回收掉，原因是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "因为 Entry 使用了弱引用，key 不再被使用时会随着 GC 被自动回收"
+      },
+      {
+        "label": "B",
+        "content": "即使 key 不再被使用，Entry 也会一直保留在 Map 中，不会被回收"
+      },
+      {
+        "label": "C",
+        "content": "因为 WeakHashMap 的 Entry 使用了软引用，内存不足时才清理"
+      },
+      {
+        "label": "D",
+        "content": "因为 WeakHashMap 的 key 使用的是虚引用，GC 后入队才被清理"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文：基于弱引用类型实现的 HashMap 就是 WeakHashMap，当 WeakHashMap 中的 key 已经不再被使用的时候，Entry 因为是弱引用，就会被自动回收掉。A 与原文直接矛盾，那描述的是强引用的 HashMap。B 错在实现用的是弱引用而非软引用，回收时机是「发生 GC」而不是「内存不足」。D 错在引用类型，虚引用不影响对象生命周期、只用于跟踪回收状态，WeakHashMap 用的是弱引用。",
+    "difficulty": "EASY",
+    "score": 1,
+    "category": "jvm",
+    "tags": [
+      "弱引用",
+      "垃圾回收",
+      "低频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Parallel Scavenge 与 ParNew 最大的不同是什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "Parallel Scavenge 是单线程收集器，ParNew 是多线程收集器"
+      },
+      {
+        "label": "B",
+        "content": "Parallel Scavenge 用于老年代，ParNew 用于新生代"
+      },
+      {
+        "label": "C",
+        "content": "Parallel Scavenge 采用标记-整理算法，ParNew 采用标记-清除算法"
+      },
+      {
+        "label": "D",
+        "content": "Parallel Scavenge 关注的是垃圾回收的吞吐量，以吞吐量优先"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文明确：与 ParNew 最大的不同是，Parallel Scavenge 关注的是垃圾回收的吞吐量，以吞吐量优先。A 错，两者都是多线程并行执行的新生代收集器；B 错，Parallel Scavenge 也是新生代收集器，它的老年代版本是 Parallel Old；C 错，两者同样采用标记-复制算法，标记-整理是 Parallel Old 的算法。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "Parallel",
+      "吞吐量",
+      "垃圾收集器",
+      "垃圾回收",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "受染色指针标志位压缩地址空间的影响，ZGC 能够管理的内存上限是多少？",
+    "options": [
+      {
+        "label": "A",
+        "content": "256TB"
+      },
+      {
+        "label": "B",
+        "content": "64TB"
+      },
+      {
+        "label": "C",
+        "content": "16TB"
+      },
+      {
+        "label": "D",
+        "content": "4TB"
+      }
+    ],
+    "answer": [
+      "D"
+    ],
+    "analysis": "原文指出：这些标志位进一步压缩了原本就只有 46 位的地址空间，直接导致 ZGC 能够管理的内存不可以超过 4TB（2 的 42 次幂），即 46 位减去被占用的高 4 位只剩 42 位可寻址，故选 4TB。256TB 是 AMD64 架构 48 位虚拟地址空间的上限，64TB 既是 64 位 Linux 的物理地址空间上限、也是剩余 46 位指针所能支持的内存量，16TB 是 64 位 Windows 系统支持的物理地址空间上限——这三个都是硬件或操作系统层面的数字，而非 ZGC 因染色指针而受到的限制，把它仨当成 ZGC 内存上限是最常见的错答。",
+    "difficulty": "HARD",
+    "score": 3,
+    "category": "jvm",
+    "tags": [
+      "ZGC",
+      "染色指针",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "Young GC 之后，需要移到老年代的对象在老年代存不下时，会发生什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "这些对象被留在 Survivor 区，等待下一次 GC 再处理"
+      },
+      {
+        "label": "B",
+        "content": "触发一次 Full GC"
+      },
+      {
+        "label": "C",
+        "content": "直接抛出 OOM"
+      },
+      {
+        "label": "D",
+        "content": "把这些对象重新放回 Eden 区"
+      }
+    ],
+    "answer": [
+      "B"
+    ],
+    "analysis": "原文把它归在「老年代空间不足」这一类里：YoungGC 之后，发现要移到老年代的对象老年代存不下的时候，会触发一次 Full GC。A、C 都与「老年代存不下」这个前提相矛盾，对象既然晋升不了也不会退回 Eden 或 Survivor；B 错，OOM 是老年代做 Full GC 之后空间还是不够时的最终结局，不是这里的直接动作。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "FullGC",
+      "老年代",
+      "新生代",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "JIT 把热点代码编译完成之后还会做什么？",
+    "options": [
+      {
+        "label": "A",
+        "content": "翻译成本地机器相关的机器码并进行优化，然后把机器码缓存起来以备下次使用"
+      },
+      {
+        "label": "B",
+        "content": "只做一次性的解释执行，不缓存任何编译结果"
+      },
+      {
+        "label": "C",
+        "content": "直接用机器码替换掉字节码，后续不再经过解释器"
+      },
+      {
+        "label": "D",
+        "content": "把生成的机器码写回磁盘的 class 文件，永久保留"
+      }
+    ],
+    "answer": [
+      "A"
+    ],
+    "analysis": "原文说 JIT 会把部分热点代码翻译成本地机器相关的机器码并进行优化，然后把翻译后的机器码缓存起来以备下次使用。B 与 JIT 的意义正好相反；C、D 都错在认为 JIT 会改动字节码或 class 文件——JIT 是运行时的行为，只是把机器码缓存起来，class 文件本身不被修改。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "JIT",
+      "热点代码",
+      "中频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "被弱引用指向的对象能存活多久？",
+    "options": [
+      {
+        "label": "A",
+        "content": "与强引用一样，只要引用变量还在就不会被回收"
+      },
+      {
+        "label": "B",
+        "content": "和软引用相同，只有在内存不足时才会被回收"
+      },
+      {
+        "label": "C",
+        "content": "只能存活到下一次垃圾回收之前，只要发生 GC 无论内存是否充足都会被回收"
+      },
+      {
+        "label": "D",
+        "content": "会一直存活到程序运行结束"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：通过 WeakReference 创建的对象就是弱引用，被弱引用指向的对象只能存活到下一次垃圾回收之前，只要发生 GC，无论内存是否充足都会被回收。A 描述的是强引用（引用一直在就不会被 GC 回收）。B 描述的是软引用——弱引用的关键恰恰在于「无论内存是否充足」，不能加内存不足这个前提。D 与「存活到下一次 GC 之前」直接矛盾。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "弱引用",
+      "垃圾回收",
+      "高频"
+    ]
+  },
+  {
+    "type": "SINGLE",
+    "stem": "并发标记阶段为什么要引入写屏障（Write Barrier）？",
+    "options": [
+      {
+        "label": "A",
+        "content": "为了减少初始标记阶段遍历根对象的开销"
+      },
+      {
+        "label": "B",
+        "content": "为了在重新标记阶段把已经标记为黑色的对象重新标成灰色"
+      },
+      {
+        "label": "C",
+        "content": "因为并发标记期间应用线程可能会修改对象图，需要它来保证并发标记的正确性"
+      },
+      {
+        "label": "D",
+        "content": "为了在清除阶段把未被标记的对象标记成白色"
+      }
+    ],
+    "answer": [
+      "C"
+    ],
+    "analysis": "原文：并发标记过程中，应用程序线程可能会修改对象图，因此垃圾回收器需要使用写屏障技术来保证并发标记的正确性。A 错，写屏障与初始标记遍历根对象的开销无关；B 错，重新标记是从灰色对象重新开始遍历对象图完成的，不是靠写屏障把黑色改回灰色；D 错，把未标记对象标记为白色是清除阶段的动作，不是写屏障的职责。",
+    "difficulty": "MEDIUM",
+    "score": 2,
+    "category": "jvm",
+    "tags": [
+      "写屏障",
+      "并发标记",
+      "三色标记",
+      "高频"
+    ]
+  }
+]
