@@ -28,6 +28,13 @@
 
 ### Changed
 
+- **MySQL 容器加 `mem_swappiness: 60`、临时表上限钉到 64M**（2026-10-19）：18:31 又一次 OOM，现场是
+  `anon 383.6MB` 顶满 `384MB`、文件缓存仅 0.4MB、容器 swap 占用 0——匿名页在 `swappiness=0` 下永远换不出去，
+  宿主还有 753MB 空闲 swap 也无路可退。实测 dump 只多吃 6–7MB，真正的原因是匿名内存水位棘轮（只抬不降）。
+  现在容器显式允许换出（`mem_swappiness: 60`），并把 `temptable_max_ram` 从默认 1GB 钉到 **64M**
+  （1GB 比 384MB 硬顶还大，等于没有上限）。取证见 fit-app 的
+  `docs/todo/2026-10-19-TODO-备份时MySQL被OOM.md`，判据见[《内存策略》](./docs/operations/内存策略.md)。
+
 - **MySQL 缓冲池 128M → 64M（第四刀）**：这台 MySQL 已被内核 OOM-killer 杀掉**三次**（10-14 14:59、10-16 09:37、10-16 13:07），
   容器驻留从 161MB 涨到 315MB / 硬顶 384MB——推力是共用同一实例的 fit-app 的餐照（往 `meal_photo` 写数 MB 的
   `MEDIUMBLOB` 时，InnoDB 要在缓冲池**之外**再分配行缓冲，正好顶在天花板上）。这次同时把

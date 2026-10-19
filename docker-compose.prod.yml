@@ -26,6 +26,11 @@ services:
     # JVM/MySQL 自己的参数只管它们认识的内存；真出泄漏时让内核 OOM-kill 单个容器，
     # 而不是把整机拖到 swap、甚至杀掉别的容器。取值逻辑见 docs/operations/内存策略.md。
     mem_limit: 384m
+    # 2026-10-19：容器 swappiness 之前继承宿主的 0 —— 匿名页永远不换出。
+    #   那次 OOM 的现场是 anon 383.6MB 顶满 384MB、file 仅 0.4MB、容器 swap 占用 0，
+    #   即使宿主还有 700MB+ 空闲 swap 也无路可退。调到 60 后，顶到上限时先换出冷页，
+    #   表现是「变慢」而不是「被内核杀掉」。代价：真被换出时查询延迟会变差。
+    mem_swappiness: 60
     # ⚠️ 只绑**宿主回环**，不是 0.0.0.0。
     #    用途：让本机能经 SSH 隧道直连（IDEA 的数据库工具、临时排障都靠它），
     #    同时数据库仍不对公网开口。见 ADR 0016 的 Amendment 2。
@@ -76,6 +81,10 @@ services:
       #    JDBC/3306，X Protocol（mysqlx）从来没用过，关掉省十几 MB。代价：将来若要用
       #    MySQL Shell 的 X DevAPI 连它，得改回 ON 并重建容器。
       - --mysqlx=OFF
+      # 5) 2026-10-19：临时表内存上限 1G → 64M。`temptable_max_ram` 默认 1GB，
+      #    比容器的 384MB 硬顶还大，等于没有上限——一次大 GROUP BY／排序就能把它顶穿。
+      #    超出后落盘（`internal_tmp_mem_storage_engine=TempTable`），本项目的数据量下感知不到。
+      - --temptable-max-ram=64M
     volumes:
       - type: bind
         source: ${MYSQL_DATA_DIR:?请在 /srv/quizzy/.env 里设置 MYSQL_DATA_DIR（Linux 绝对路径）}
