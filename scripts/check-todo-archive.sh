@@ -72,7 +72,7 @@ for f in "$TODO_DIR"/*.md; do
   if [ "$name" = 'README.md' ]; then continue; fi
   case "$SECTION_INDEX" in
     *"$name"*) ;;
-    *) report "$f 没出现在主索引表里（未决事项必须登记，见 .codebuddy/rules/todo-discipline.md）" ;;
+    *) report "$f 没出现在主索引表里（未决事项必须登记，见 .agents/rules/todo-discipline.md）" ;;
   esac
 done
 

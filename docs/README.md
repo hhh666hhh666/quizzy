@@ -18,9 +18,9 @@
 | [../PRODUCT.md](../PRODUCT.md) | 产品真相：受众 / 用途 / 定位 / 语气 / 约束（**不复制范围清单**，指 `scope.md`） | 判断"某个设计对不对"的人 | 本文件（范围与能力见 `scope.md`） |
 | [../DESIGN.md](../DESIGN.md) | 视觉系统「安静的练习室」的**可读快照**（色板 / 排版 / 材质口径） | 改前端视觉的人 | **从 `quizzy-web/src/styles/tokens.css` 派生**；过时了用 `impeccable document` 重新生成 |
 | [../CHANGELOG.md](../CHANGELOG.md) | 版本变更与安全修复记录 | 所有人 | `git tag` |
-| [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.codebuddy/rules/` |
-| [../.codebuddy/rules/](../.codebuddy/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
-| [../.codebuddy/commands/wrap-up.md](../.codebuddy/commands/wrap-up.md) | `/wrap-up` 收尾自检：把未决事项落 `docs/todo/`、补文档与引用、跑断链检查 | AI / 收尾时 | 本文件 |
+| [../AGENTS.md](../AGENTS.md) | **给 AI 的规矩**（跨工具摘要） | AI / 未来的自己 | `.agents/rules/` |
+| [../.agents/rules/](../.agents/rules/) | 项目规则的**权威版本**，每次会话自动加载 | AI | 本目录 |
+| [../.agents/skills/wrap-up/SKILL.md](../.agents/skills/wrap-up/SKILL.md) | `/wrap-up` 收尾自检：把未决事项落 `docs/todo/`、补文档与引用、跑断链检查 | AI / 收尾时 | 本文件 |
 | [../scripts/check-doc-links.sh](../scripts/check-doc-links.sh) | 链接与路径引用自检，提交前跑 | 提交代码的人 | 文件系统 |
 | [../scripts/check-module-tests.sh](../scripts/check-module-tests.sh) | 断言每个带 Controller 的模块都配了测试类（ADR 0021 的机械守卫，CI 上跑） | 加新模块的人 / CI | 文件系统 |
 | [../scripts/check-todo-archive.sh](../scripts/check-todo-archive.sh) | 断言已结案的待办都已移入 `docs/todo/archive/`（ADR 0025 的机械守卫，CI 上跑） | 结案待办的人 / CI | 文件系统 |
@@ -39,7 +39,7 @@
 | [design/API.md](./design/API.md) | 怎么看真实接口、通用响应与错误约定 | 对接接口或改 Controller 的人 | springdoc 与各 Controller |
 | [design/前端.md](./design/前端.md) | **PC 端**（`quizzy-web`）页面流、路由、状态与 API 边界 | 改前端的人 | `router/` `views/` `stores/` `api/` |
 | [design/移动端.md](./design/移动端.md) | 移动端 / 小程序的页面流、编译目标与后端边界 | 改移动端的人 | `quizzy-mobile/src/` |
-| [design/设计skill清单.md](./design/设计skill清单.md) | 项目级 skill（`.agents/skills/`）的角色、安装完整性与舍弃项（档案；设计类速查在 `.codebuddy/rules/design-skills.md`） | 改前端 UI 或用项目 skill 的人 / AI | 本文件 |
+| [design/设计skill清单.md](./design/设计skill清单.md) | 项目级 skill（`.agents/skills/`）的角色、安装完整性与舍弃项（档案；设计类速查在 `.agents/rules/design-skills.md`） | 改前端 UI 或用项目 skill 的人 / AI | 本文件 |
 | [adr/](./adr/) | **决策结论**卡片（Status / Considered Options / Consequences） | 查「为什么这么定」的人 | ADR 自身 |
 | [operations/runbook.md](./operations/runbook.md) | 应急预案：按症状查处置步骤 | 出事时的自己 | 脚本与 compose |
 | [operations/deployment.md](./operations/deployment.md) | 上线路径、上线前检查、回滚 | 要上线的人 | `scripts/server-deploy.sh` 与 [../.github/workflows/release.yml](../.github/workflows/release.yml) |
@@ -74,7 +74,7 @@
 
 命名与索引规则见 [todo/README.md](./todo/README.md)。那个文件里还有一张「已定，不用再想」的表——那些已经拍板并写进 ADR，列出来是为了防止以后重新纠结一遍。
 
-这条纪律对 AI 同样生效：项目规则里有**总是加载**的一条专门管它（见 [.codebuddy/rules/](../.codebuddy/rules/)），收尾时可以用 `/wrap-up` 自检。取舍记录在 [ADR 0014](./adr/0014-ai-discipline-in-repo.md)。
+这条纪律对 AI 同样生效：项目规则里有**总是加载**的一条专门管它（见 [.agents/rules/](../.agents/rules/)），收尾时可以用 `/wrap-up` 自检。取舍记录在 [ADR 0014](./adr/0014-ai-discipline-in-repo.md)。
 
 ## 单一信息源纪律（本项目的真实教训）
 

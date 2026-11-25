@@ -4,7 +4,7 @@
 
 **读者**：改前端 UI 或使用项目级 skill 的人 / 未来的自己 / AI。
 
-**真相源**：本文件。设计类 skill 的**用途与禁区**速查表在 [`.codebuddy/rules/design-skills.md`](../../.codebuddy/rules/design-skills.md)（每次会话自动加载，那里才是"开工前该看"的）；本文件是**档案**，记录动机与完整性——两处**允许重叠，但速查口径以规则为准**。
+**真相源**：本文件。设计类 skill 的**用途与禁区**速查表在 [`.agents/rules/design-skills.md`](../../.agents/rules/design-skills.md)（每次会话自动加载，那里才是"开工前该看"的）；本文件是**档案**，记录动机与完整性——两处**允许重叠，但速查口径以规则为准**。
 
 > ⚠️ `ADR 0031` 只记了"选定这五个 + 均为部分安装 + 不设 alwaysApply + impeccable 不装 hooks"这一层结论。**逐项的安装完整性与舍取原因只在本文**——上游核实过（`nextlevelbuilder/ui-ux-pro-max-skill` 的 README 与目录树），不是凭印象。
 
@@ -22,10 +22,11 @@
 
 ## 同在 `.agents/skills/` 下的其他项目级 skill
 
-除上述 5 个前端设计 skill 外，另收录 3 组（4 个目录）与本仓协作流程和题库生产直接绑定的 skill：
+除上述 5 个前端设计 skill 外，另收录 4 组（5 个目录）与本仓协作流程和题库生产直接绑定的 skill：
 
 | Skill | 角色 | 什么时候用 |
 |---|---|---|
+| **wrap-up** | 收尾自检（原 `.codebuddy/commands/wrap-up.md`） | 每次改动收尾或输入 `/wrap-up` 时：捞未决事项、补文档、跑断链检查、更新工作台并提议 commit |
 | **domain-modeling** | 领域术语表与 ADR 治理 | 讨论新概念、维护 `CONTEXT.md`、按三条标准克制决定是否新建 ADR |
 | **grilling** / **grill-with-docs** | 决策树追问对齐（后者联动 `domain-modeling`） | 复杂需求或方案开工前，分轮追问消歧并同步沉淀术语与 ADR |
 | **md-to-question-bank** | Markdown → Quizzy 题库 JSON 流水线 | 把 `question-bank/` 下的 Markdown 笔记切分、出题、溯源校验并合并成裸数组 JSON（对齐 [《导入导出》](./导入导出.md)） |

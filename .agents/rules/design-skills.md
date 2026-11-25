@@ -1,6 +1,6 @@
 ---
 description: 改 UI 前先看这条：五个外部设计 skill 的用途与禁区（已入仓 `.agents/skills/`、按描述命中）。含 ui-ux-pro-max 禁用 --persist 的唯一硬约束。
-alwaysApply: true
+trigger: always_on
 ---
 
 # 外部设计 skill 的使用纪律

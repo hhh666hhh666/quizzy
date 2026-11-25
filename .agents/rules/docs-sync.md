@@ -1,6 +1,6 @@
 ---
 description: 改代码必须同步改文档；改 ADR 后必须同步核对 docs/requirements/scope.md 的范围口径；移动/删除/重命名文件后必须全仓搜引用（含注释与脚本），提交前跑 scripts/check-doc-links.sh。
-alwaysApply: true
+trigger: always_on
 ---
 
 # 改代码 = 改文档

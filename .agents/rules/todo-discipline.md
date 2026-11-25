@@ -1,6 +1,6 @@
 ---
 description: 未决事项必须落盘到 docs/todo/，不许停留在对话里。含触发信号、落盘动作、索引维护、每次回复结束前的自检。
-alwaysApply: true
+trigger: always_on
 ---
 
 # 未决事项落盘

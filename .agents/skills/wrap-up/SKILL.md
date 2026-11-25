@@ -1,6 +1,6 @@
 ---
-description: 收尾自检——把对话里飘着的未决事项落进 docs/todo/，把改动对应的文档与引用补齐，跑断链检查，并输出收尾报告。
-argument-hint: "[可选：本次主题，用于决定 TODO 文件名]"
+name: wrap-up
+description: 收尾自检——把对话里飘着的未决事项落进 docs/todo/，把改动对应的文档与引用补齐，跑断链检查，并输出收尾报告。可在任务收尾或触发 /wrap-up 时使用。
 ---
 
 # 收尾自检
@@ -51,7 +51,7 @@ bash scripts/check-doc-links.sh
 
 ## 5. 更新会话工作台
 
-本次动过文件的话，`docs/worklog/` 下应当有本次会话的工作台文档（规范见 `.codebuddy/rules/session-worklog.md`）：
+本次动过文件的话，`docs/worklog/` 下应当有本次会话的工作台文档（规范见 `.agents/rules/session-worklog.md`）：
 
 - 把「本轮状态」改成 `本轮完成`；若本次是在等用户回复，就写 `等你确认`
 - 「现在在哪」「接下来要做什么」「卡住」三段按当前事实重写

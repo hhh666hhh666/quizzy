@@ -44,3 +44,11 @@ Status: accepted
 **二、调度权的归属变了。** 原先把「改 UI 时用哪些 skill」的表放在 `docs/design/前端.md`，但**规则只在会话开头注入一次、每次会话都付税，文档则要主动去读**——「开工前就该知道」的内容放规则更对位。于是 `前端.md` 只留**文档域的事实**（skill 装在用户级、屏幕工具属一次性参照），**表与禁区不再复述**，避免两处真相。`AGENTS.md` 的路由与 `docs/development/contributing.md` 的规则条数同步改。
 
 依 Amendment 1 的「只追加不改」，正文与 Amendment 1 原文保留；`contributing.md` 与 `AGENTS.md` 里「三条规则」的表述按本 Amendment 更新。
+
+## Amendment 3（2026-11-25）：规则与收尾命令合并迁入 `.agents/`
+
+工作主力切换至 Antigravity 后，将原 `.codebuddy/` 目录整体合并进项目级 `.agents/`（Antigravity 自动发现目录）：
+
+- **五条常驻规则**（`todo-discipline` / `docs-sync` / `session-worklog` / `design-skills` / `server-ssh`）由 `.codebuddy/rules/` 迁入 `.agents/rules/`，frontmatter 触发器由 `alwaysApply: true` 改为 `trigger: always_on`。
+- **收尾命令 `/wrap-up`** 由 `.codebuddy/commands/wrap-up.md` 迁为项目级 skill `.agents/skills/wrap-up/SKILL.md`（兼顾斜杠命令调用与按需语义发现）。
+- 原 `.codebuddy/` 目录随迁移移除；根目录 `AGENTS.md` 路由、文档索引与脚本提示已同步指向 `.agents/`。正文与前两条 Amendment 原文保留。

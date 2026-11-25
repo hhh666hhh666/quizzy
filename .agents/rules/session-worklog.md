@@ -1,6 +1,6 @@
 ---
 description: 任何要动手的任务，在动手之前先在 docs/worklog/ 下建立本次会话的工作台文档，并随进度更新。
-alwaysApply: true
+trigger: always_on
 ---
 
 # 会话工作台
