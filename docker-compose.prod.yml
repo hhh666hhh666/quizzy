@@ -42,6 +42,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在 /srv/quizzy/.env 里设置 MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-quizzy}
       TZ: ${TZ:-Asia/Shanghai}
+      # 2026-11-25：37 天巡检确认 0 OOM，但容器 Swap 已涨到 603MB（memsw 峰值 704/768MB，
+      #   宿主机 Swap 956/1024MB）。`/proc/<pid>/smaps` 证实 12 个 64MB 对齐的 glibc
+      #   per-thread malloc arena 吃掉 412MB（每个 30–45MB，90%+ 在 Swap）。
+      #   将 arena 上限从默认 16（8×CPU）压到 2，并收紧 trim 阈值促使空闲内存归还 OS；
+      #   实测峰值并发仅 15，压到 2 个 arena 无明显锁竞争副作用。
+      MALLOC_ARENA_MAX: "2"
+      GLIBC_TUNABLES: "glibc.malloc.trim_threshold=131072"
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
