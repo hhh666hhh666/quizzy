@@ -6,7 +6,7 @@ Spring Boot + Vue 的自用刷题工具，围绕「一道题反复练到会」�
 
 **测试相关的三处入口**（文档入口，不属于纪律）：现状与盲区看 `docs/testing/README.md`；「改了代码要补哪层测试」看 `docs/testing/系统说明.md`；要让 AI 像真实用户跑一次探索测试 → 任务书在 `docs/testing/agent-exploration.md`（**手动触发**，报告写到 `.workbuddy/exploration/`，不进仓库）。
 
-**改前端 UI 时的入口**（工作方式，不属于纪律）：该用哪几个设计 skill、禁区与安装口径 → `.codebuddy/rules/design-skills.md`；设计系统的真相源在哪个文件 → `docs/design/前端.md` 末节。
+**改前端 UI 与项目级 skill 的入口**（工作方式，不属于纪律）：项目级 skill 放在 `.agents/skills/`（Antigravity 自动发现，完整清单见 `docs/design/设计skill清单.md`）；设计 skill 的用途与禁区 → `.codebuddy/rules/design-skills.md`；设计系统的真相源在哪个文件 → `docs/design/前端.md` 末节。
 
 ## 纪律 → 去哪读全文
 

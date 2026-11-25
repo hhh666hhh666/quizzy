@@ -1,11 +1,11 @@
 ---
-description: 改 UI 前先看这条：五个外部设计 skill 的用途与禁区（装在用户级、按描述命中）。含 ui-ux-pro-max 禁用 --persist 的唯一硬约束。
+description: 改 UI 前先看这条：五个外部设计 skill 的用途与禁区（已入仓 `.agents/skills/`、按描述命中）。含 ui-ux-pro-max 禁用 --persist 的唯一硬约束。
 alwaysApply: true
 ---
 
 # 外部设计 skill 的使用纪律
 
-五个 skill **装在用户级 `~/.workbuddy/skills/`、不在仓库里**——换机器不跟着走；它们**按描述命中、不是每次自动加载**，所以开工时**点名（或 @ 提及）最稳**。下表是**调度表的唯一位置**（`docs/design/前端.md` 只留文档域事实，不复述本表）。**逐项的角色、安装完整性与舍取原因**（档案性）见 [`docs/design/设计skill清单.md`](../../docs/design/设计skill清单.md)。
+五个设计 skill **已入仓到项目级 `.agents/skills/`**（Antigravity 等支持 `.agents/skills/` 的工具会自动发现、随仓库跨机器走；不扫该目录的工具可在用户级 `~/.workbuddy/skills/` 同步或按路径读取）。它们**按描述命中、不是每次自动加载**，所以开工时**点名（或 @ 提及）最稳**。下表是**调度表的唯一位置**（`docs/design/前端.md` 只留文档域事实，不复述本表）。**逐项的角色、安装完整性与舍取原因**（档案性，含同目录其他项目级 skill）见 [`docs/design/设计skill清单.md`](../../docs/design/设计skill清单.md)。
 
 ## 什么时候用哪个
 
@@ -15,7 +15,7 @@ alwaysApply: true
 | 细节工艺：圆角、阴影、悬停态、图标、动效克制 | `make-interfaces-feel-better` | 整份安装 |
 | 无障碍与规范审查：键盘、对比度、i18n、深色、网址状态 | `web-design-guidelines` | 每次从 Vercel 源拉最新规则，**需联网** |
 | 查色板 / 字体搭配 / 风格资料 | `ui-ux-pro-max` | 见下方禁区 |
-| 用 shadcn-vue 组件（`add` / `search` / preset） | `shadcn-vue`（官方） | ⚠️ `user-invocable: false`，**只能 AI 自己用，@ 不到** |
+| 用 shadcn-vue 组件（`add` / `search` / preset） | `shadcn-vue`（官方） | ⚠️ `user-invocable: false`（部分宿主里只能 AI 自己按描述触发、@ 不到） |
 
 **一个都不设 `alwaysApply`**（不常驻注入）；`impeccable` **不装 hooks**（探测器只在被主动调用时跑）。理由见 [ADR 0031](../../docs/adr/0031-pc-frontend-rebuild-shadcn-vue.md)。
 
