@@ -68,11 +68,12 @@ list_tracked() {
 mapfile -t MD_HITS < <(
   list_tracked '*.md' \
     | xargs -0 -r awk '
+        FNR == 1 { inf = 0 }
         {
           line = $0
-          gsub(/`[^`]*`/, "", line)
           if (line ~ /^[[:space:]]*```/) { inf = !inf; next }
           if (inf) next
+          gsub(/`[^`]*`/, "", line)
           s = line
           while (match(s, /\]\([^)]*\)/)) {
             print FILENAME ":" substr(s, RSTART, RLENGTH)
