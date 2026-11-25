@@ -14,7 +14,7 @@ Spring Boot + Vue 的自用刷题工具，围绕「一道题反复练到会」�
 - **改代码 = 改文档**：改了行为就顺手改文档；移动 / 删除文件后全仓搜旧名 → `.codebuddy/rules/docs-sync.md`
 - **会话工作台**：任务要动文件，动手**之前**先建 `docs/worklog/` 工作台 → `.codebuddy/rules/session-worklog.md`
 - **外部设计 skill**：用哪个、什么禁区（`ui-ux-pro-max` 禁用 `--persist`） → `.codebuddy/rules/design-skills.md`
-- **本机 SSH 与服务器入口**：密钥位置、连接别名、Windows 权限坑与红线 → `.codebuddy/rules/server-ssh.md`
+- **服务器入口与部署凭据红线**：服务器别名、档案出处（GitHub `servers` 仓库）、流水线耦合点与红线 → `.codebuddy/rules/server-ssh.md`
 
 规则的体积预算：**单条 ≤ 100 行**，常驻规则越少越好（ADR 0014）。
 

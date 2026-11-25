@@ -4,7 +4,7 @@
 
 **命令分层**：默认只写**只读诊断命令**；会改变状态的动作一律只写「用哪个脚本 / 看哪篇文档的哪一节」——命令留在脚本里，那儿才是真相源，而且脚本会随 compose 一起改。
 
-**前提**：prod 跑在阿里云轻量服务器上（`8.137.172.6`），本机只剩开发形态。下面除非明说「本机」，命令都在**服务器**上跑。
+**前提**：prod 跑在阿里云服务器（Host 别名 `aliyun`，机器规格、IP、域名与 SSH / Cloudflare 隧道接入见 GitHub [hhh666hhh666/servers](https://github.com/hhh666hhh666/servers) 的 `aliyun/` 目录，查阅以 GitHub 为准），本机只剩开发形态。下面除非明说「本机」，命令都在**服务器**上跑。
 
 ## 30 秒定性
 
@@ -54,7 +54,7 @@ docker exec quizzy-mysql mysql -uroot -p"$(grep '^MYSQL_ROOT_PASSWORD=' /srv/qui
 结论只有一句：**删除容器 ≠ 删除数据**。真正能毁掉数据的只有「手工删那个目录」和「`down -v`」，两者都在下面的红线清单里。
 
 **顺带一条新能力**：MySQL 现在绑在宿主回环 `127.0.0.1:3306`（[ADR 0016 Amendment 2](../adr/0016-cloud-deploy-with-release-pipeline.md)），
-所以**本机可以经 SSH 隧道直连**排障，不必再从容器里绕（别名与密钥位置见 [.codebuddy/rules/server-ssh.md](../../.codebuddy/rules/server-ssh.md)）：
+所以**本机可以经 SSH 隧道直连**排障，不必再从容器里绕（入口别名与接入方式见 [.codebuddy/rules/server-ssh.md](../../.codebuddy/rules/server-ssh.md)）：
 
 ```bash
 ssh -N -L 13306:127.0.0.1:3306 aliyun

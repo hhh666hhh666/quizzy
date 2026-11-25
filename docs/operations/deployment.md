@@ -1,5 +1,7 @@
 # 部署
 
+> **机器级档案不在这里**：部署主机 `aliyun` 的规格、端口总表、域名解析（灰云 / 橙云）与 SSH / Cloudflare 隧道接入方式，统一维护在 GitHub 仓库 [hhh666hhh666/servers](https://github.com/hhh666hhh666/servers) 的 `aliyun/` 目录（查阅以 GitHub 为准，不假设本机有克隆副本）；本文只管 quizzy 自己的发版、配置与回滚。
+
 ## 分工：CI 管「能不能上线」，`release.yml` 管「上线」
 
 | 流水线 | 触发 | 干什么 | 会改动运行中的服务吗 |
